@@ -1,0 +1,729 @@
+[versions]
+# Gradle
+# provides a repository for downloading JVMs
+foojay-resolver-convention = "0.8.0"
+# build config
+build-config = "4.1.1"
+# pre-commit hooks
+gradle-pre-commit-git-hooks = "2.0.4"
+# publishing
+vanniktech-maven-publish = "0.30.0"
+# Java
+# logging
+logback-classic = "1.5.11"
+# access class members
+reflections = "0.10.2"
+# pdf generator
+itext = "8.0.5"
+# parse xml
+jackson-dataformat-xml = "2.17.2"
+# read microsoft access point
+jackcess = "4.0.7"
+# user input hooks
+jnativehook = "2.2.2"
+jna = "5.14.0"
+# webcam
+sarxos-webcam = "0.3.12"
+# ftp
+commons-net = "3.11.0"
+sshj = "0.38.0"
+jsch = "0.1.55"
+# Kotlin
+kotlin = "2.0.21"
+# compiler processor for generating code during compilation
+ksp = "2.0.21-1.0.25"
+# multiplatform logging
+napier = "2.7.1"
+kotlinx-datetime = "0.6.1"
+kotlinx-uuid-core = "0.0.25"
+kotlinx-serialization = "1.7.3"
+kotlinx-serialization-csv = "0.0.18"
+kotlinx-serialization-smile-core = "0.2.0"
+serialization-msgpack = "0.5.5"
+xmlutil-serialization = "0.86.3"
+knbt = "0.11.5"
+tomlkt = "0.3.7"
+yamlkt = "0.13.0"
+kotlinx-coroutines = "1.9.0"
+stately-concurrency = "2.1.0"
+atomicfu = "0.25.0"
+kasechange = "1.4.1"
+bignum = "0.3.9"
+cryptography = "0.3.1"
+pgpainless = "1.6.6"
+colormath = "3.6.0"
+arrow = "1.2.4"
+dataframe = "0.14.1"
+okio = "3.9.1"
+okio-extras = "1.1.3"
+junit = "4.13.2"
+kotest = "5.8.1"
+# generate code coverage report
+kover = "0.9.0-RC"
+# code format check and fix
+spotless = "6.25.0"
+# code analysis
+sonarqube = "5.0.0.4638"
+# create project documentation
+dokka = "1.9.20"
+# A tool that produces Kotlin source example files and tests from markdown documents with embedded snippets of Kotlin code
+knit = "0.5.0"
+# the tool allows dumping binary API of a JVM part of a Kotlin library that is public in the sense of Kotlin visibilities and ensures that the public binary API wasn't changed in a way that makes this change binary incompatible.
+binary-compatibility-validator = "0.16.3"
+# Android
+agp = "8.5.2"
+android-compileSdk = "34"
+android-minSdk = "24"
+android-targetSdk = "34"
+# Compose
+androidx-appcompat = "1.7.0"
+androidx-constraint-layout = "2.1.4"
+androidx-core-ktx = "1.13.1"
+androidx-espresso-core = "3.6.1"
+androidx-lifecycle = "2.8.3"
+androidx-material = "1.12.0"
+androidx-test-junit = "1.2.1"
+compose-multiplatform = "1.7.0"
+androidx-activity-compose = "1.9.3"
+navigation-compose = "2.8.0-alpha10"
+material-navigation = "1.7.0-beta02"
+material3-adaptive = "1.0.0"
+compose-icons = "1.1.1"
+compose-settings = "2.4.0"
+filekit-compose = "0.8.1"
+# Multiplatform settings
+multiplatform-settings = "1.1.1"
+compass = "1.2.0"
+# Permissions
+permissions = "0.18.0"
+# SQLDelight database
+sqldelight = "2.0.2"
+# Room database
+room = "2.7.0-alpha10"
+# Web datetime
+js-joda-timezone = "2.3.0"
+# Kotysa ORM (postgresql, my sql, microsoft sql server, maria db, oracle, h 2 for jvm, android)
+kotysa = "3.2.2"
+kotysa-r2dbc = "3.2.1"
+# R2DBC
+r2dbc-pool = "1.0.1.RELEASE"
+r2dbc-h2 = "1.0.0.RELEASE"
+r2dbc-oracle = "1.2.0"
+r2dbc-mariadb = "1.1.4"
+r2dbc-mysql = "2.2.4"
+r2dbc-mssql = "1.0.2.RELEASE"
+r2dbc-postgresql = "1.0.3.RELEASE"
+# Ktor
+ktor = "3.0.0"
+ktor-swagger-ui = "2.9.0"
+ktorfit = "1.11.1"
+# GraphQL
+apollo3 = "4.0.0-beta.3"
+kgraphql = "0.19.0"
+# Metrics
+prometheus = "1.12.2"
+dropwizard = "4.2.25"
+# Koin
+koin = "4.0.0"
+koin-annotations = "1.4.0-RC4"
+
+[libraries]
+# Gradle
+# plugin
+kotlin-gradle-plugin = { group = "org.jetbrains.kotlin", name = "kotlin-gradle-plugin", version.ref = "kotlin" }
+# Java
+# logging
+logback-classic  = { module ="ch.qos.logback:logback-classic", version.ref = "logback-classic" }
+# reflections
+reflections = { module = "org.reflections:reflections", version.ref = "reflections" }
+# parse xml
+jackson-dataformat-xml = { module = "com.fasterxml.jackson.dataformat:jackson-dataformat-xml", version.ref = "jackson-dataformat-xml" }
+# read microfost sccess point
+jackcess = { module = "com.healthmarketscience.jackcess:jackcess", version.ref = "jackcess" }
+# pdf generator
+itext-core = { module = "com.itextpdf:itext-core", version.ref = "itext" }
+# user input hooks
+jnativehook = { module = "com.github.kwhat:jnativehook", version.ref = "jnativehook" }
+jna = { module = "net.java.dev.jna:jna", version.ref = "jna" }
+jna-platform = { module = "net.java.dev.jna:jna-platform", version.ref = "jna" }
+# webcam
+webcam-capture = { module = "com.github.sarxos:webcam-capture", version.ref = "sarxos-webcam" }
+webcam-capture-driver-ffmpeg-cli = { module = "com.harium:webcam-capture-driver-ffmpeg-cli", version.ref = "sarxos-webcam" }
+webcam-capture-driver-fswebcam = { module = "com.github.sarxos:webcam-capture-driver-fswebcam", version.ref = "sarxos-webcam" }
+webcam-capture-driver-gstreamer = { module = "com.github.sarxos:webcam-capture-driver-gstreamer", version.ref = "sarxos-webcam" }
+webcam-capture-driver-ipcam = { module = "com.github.sarxos:webcam-capture-driver-ipcam", version.ref = "sarxos-webcam" }
+webcam-capture-driver-jmf = { module = "com.github.sarxos:webcam-capture-driver-jmf", version.ref = "sarxos-webcam" }
+webcam-capture-driver-lti-civil = { module = "com.github.sarxos:webcam-capture-driver-lti-civil", version.ref = "sarxos-webcam" }
+webcam-capture-driver-opencv = { module = "com.github.sarxos:webcam-capture-driver-opencv", version.ref = "sarxos-webcam" }
+webcam-capture-driver-openimaj = { module = "com.github.sarxos:webcam-capture-driver-openimaj", version.ref = "sarxos-webcam" }
+webcam-capture-driver-v4l4j = { module = "com.github.sarxos:webcam-capture-driver-v4l4j", version.ref = "sarxos-webcam" }
+webcam-capture-driver-vlcj = { module = "com.github.sarxos:webcam-capture-driver-vlcj", version.ref = "sarxos-webcam" }
+# commons network
+commons-net = { module = "commons-net:commons-net", version.ref = "commons-net" }
+# ssh
+sshj = { module = "com.hierynomus:sshj", version.ref = "sshj" }
+# ftp
+jsch = { module = "com.jcraft:jsch", version.ref = "jsch" }
+# testing
+junit = { group = "junit", name = "junit", version.ref = "junit" }
+# Kotlin
+napier = { group = "org.jetbrains.kotlinx", name = "io.github.aakira:napier", version.ref = "napier" }
+kotlinx-datetime = { group = "org.jetbrains.kotlinx", name = "kotlinx-datetime", version.ref = "kotlinx-datetime" }
+kotlinx-uuid-core = { module = "app.softwork:kotlinx-uuid-core", version.ref = "kotlinx-uuid-core" }
+# official serialization
+kotlinx-serialization-json = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "kotlinx-serialization" }
+kotlinx-serialization-csv = { module = "app.softwork:kotlinx-serialization-csv", version.ref = "kotlinx-serialization-csv" }
+kotlinx-serialization-flf = { module = "app.softwork:kotlinx-serialization-flf", version.ref = "kotlinx-serialization-csv" }
+kotlinx-serialization-json-okio = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json-okio", version.ref = "kotlinx-serialization" }
+kotlinx-serialization-protobuf = { module = "org.jetbrains.kotlinx:kotlinx-serialization-protobuf", version.ref = "kotlinx-serialization" }
+kotlinx-serialization-cbor = { module = "org.jetbrains.kotlinx:kotlinx-serialization-cbor", version.ref = "kotlinx-serialization" }
+kotlinx-serialization-properties = { module = "org.jetbrains.kotlinx:kotlinx-serialization-properties", version.ref = "kotlinx-serialization" }
+kotlinx-serialization-smile-core = { module = "io.github.vooft:kotlinx-serialization-smile-core", version.ref = "kotlinx-serialization-smile-core" }
+# community-supported serialization
+xmlutil-serialization = { module = "io.github.pdvrieze.xmlutil:serialization", version.ref = "xmlutil-serialization" }
+serialization-msgpack = { module = "com.ensarsarajcic.kotlinx:serialization-msgpack", version.ref = "serialization-msgpack" }
+serialization-msgpack-timestamp-extension = { module = "com.ensarsarajcic.kotlinx:serialization-msgpack-timestamp-extension", version.ref = "serialization-msgpack" }
+knbt = { module = "net.benwoodworth.knbt:knbt", version.ref = "knbt" }
+yamlkt = { module = "net.mamoe.yamlkt:yamlkt", version.ref = "yamlkt" }
+tomlkt = { module = "net.peanuuutz.tomlkt:tomlkt", version.ref = "tomlkt" }
+kotlinx-coroutines-core = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "kotlinx-coroutines" }
+kotlinx-coroutines-android = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-android", version.ref = "kotlinx-coroutines" }
+kotlinx-coroutines-swing = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-swing", version.ref = "kotlinx-coroutines" }
+kotlinx-coroutines-test = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-test", version.ref = "kotlinx-coroutines" }
+stately-concurrency = { module = "co.touchlab:stately-concurrency", version.ref = "stately-concurrency" }
+stately-concurrent-collections = { module = "co.touchlab:stately-concurrent-collections", version.ref = "stately-concurrency" }
+atomicfu = { module = "org.jetbrains.kotlinx:atomicfu", version.ref = "atomicfu" }
+# change string case
+kasechange = { module = "net.pearx.kasechange:kasechange", version.ref = "kasechange" }
+# big numbers
+bignum = { module = "com.ionspin.kotlin:bignum", version.ref = "bignum" }
+# cryptography
+cryptography-core = { module = "dev.whyoleg.cryptography:cryptography-core", version.ref = "cryptography" }
+cryptography-provider-jdk = { module = "dev.whyoleg.cryptography:cryptography-provider-jdk", version.ref = "cryptography" }
+cryptography-provider-webcrypto = { module = "dev.whyoleg.cryptography:cryptography-provider-webcrypto", version.ref = "cryptography" }
+cryptography-provider-openssl3 = { module = "dev.whyoleg.cryptography:cryptography-provider-openssl3-prebuilt", version.ref = "cryptography" }
+cryptography-random = { module = "dev.whyoleg.cryptography:cryptography-random", version.ref = "cryptography" }
+cryptography-serialization-asn1 = { module = "dev.whyoleg.cryptography:cryptography-serialization-asn1", version.ref = "cryptography" }
+cryptography-serialization-asn1-modules = { module = "dev.whyoleg.cryptography:cryptography-serialization-asn1-modules", version.ref = "cryptography" }
+cryptography-serialization-pem = { module = "dev.whyoleg.cryptography:cryptography-serialization-pem", version.ref = "cryptography" }
+pgpainless-core = { module = "org.pgpainless:pgpainless-core", version.ref = "pgpainless" }
+pgpainless-sop = { module = "org.pgpainless:pgpainless-sop", version.ref = "pgpainless" }
+# color space conversions
+colormath = { module = "com.github.ajalt.colormath:colormath", version.ref = "colormath" }
+# arrow
+arrow-core = { module = "io.arrow-kt:arrow-core", version.ref = "arrow" }
+arrow-fx-coroutines = { module = "io.arrow-kt:arrow-fx-coroutines", version.ref = "arrow" }
+arrow-optics= { module = "io.arrow-kt:arrow-optics", version.ref = "arrow" }
+arrow-optics-ksp-plugin = { module = "io.arrow-kt:arrow-optics-ksp-plugin", version.ref = "arrow" }
+# dataframe for data pipeline processing
+dataframe = { module = "org.jetbrains.kotlinx:dataframe", version.ref = "dataframe" }
+# file system
+okio = { module = "com.squareup.okio:okio", version.ref = "okio" }
+okio-nodefilesystem = { module = "com.squareup.okio:okio-nodefilesystem", version.ref = "okio" }
+okio-fakefilesystem = { module = "com.squareup.okio:okio-fakefilesystem", version.ref = "okio" }
+okio-extras = { module = "com.saveourtool.okio-extras:okio-extras", version.ref = "okio-extras" }
+# testing
+kotlin-test = { module = "org.jetbrains.kotlin:kotlin-test", version.ref = "kotlin" }
+kotlin-test-junit = { module = "org.jetbrains.kotlin:kotlin-test-junit", version.ref = "kotlin" }
+kotest-assertions-core = { module = "io.kotest:kotest-assertions-core", version.ref = "kotest" }
+kotest-framework-engine = { module = "io.kotest:kotest-framework-engine", version.ref = "kotest" }
+kotest-framework-datatest = { module = "io.kotest:kotest-framework-datatest", version.ref = "kotest" }
+kotest-runner-junit5 = { module = "io.kotest:kotest-runner-junit5", version.ref = "kotest" }
+
+# Android
+# gradle plugin
+android-gradle-plugin = { group = "com.android.tools.build", name = "gradle", version.ref = "agp" }
+androidx-activity-compose = { module = "androidx.activity:activity-compose", version.ref = "androidx-activity-compose" }
+androidx-appcompat = { group = "androidx.appcompat", name = "appcompat", version.ref = "androidx-appcompat" }
+androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "androidx-core-ktx" }
+androidx-test-junit = { group = "androidx.test.ext", name = "junit", version.ref = "androidx-test-junit" }
+androidx-espresso-core = { group = "androidx.test.espresso", name = "espresso-core", version.ref = "androidx-espresso-core" }
+androidx-material = { group = "com.google.android.material", name = "material", version.ref = "androidx-material" }
+androidx-constraintlayout = { group = "androidx.constraintlayout", name = "constraintlayout", version.ref = "androidx-constraint-layout" }
+
+# Compose multiplatform
+androidx-lifecycle-viewmodel = { group = "org.jetbrains.androidx.lifecycle", name = "lifecycle-viewmodel", version.ref = "androidx-lifecycle" }
+androidx-lifecycle-runtime-compose = { group = "org.jetbrains.androidx.lifecycle", name = "lifecycle-runtime-compose", version.ref = "androidx-lifecycle" }
+androidx-navigation-compose = { module = "org.jetbrains.androidx.navigation:navigation-compose", version.ref = "navigation-compose" }
+androidx-material-navigation = { module = "org.jetbrains.compose.material:material-navigation", version.ref = "material-navigation" }
+# icons
+compose-icons-css-gg = { module = "br.com.devsrsouza.compose.icons:css-gg", version.ref = "compose-icons" }
+compose-icons-weather-icons = { module = "br.com.devsrsouza.compose.icons:erikflowers-weather-icons", version.ref = "compose-icons" }
+compose-icons-eva-icons = { module = "br.com.devsrsouza.compose.icons:eva-icons", version.ref = "compose-icons" }
+compose-icons-feather = { module = "br.com.devsrsouza.compose.icons:feather", version.ref = "compose-icons" }
+compose-icons-font-awesome = { module = "br.com.devsrsouza.compose.icons:font-awesome", version.ref = "compose-icons" }
+compose-icons-line-awesome = { module = "br.com.devsrsouza.compose.icons:line-awesome", version.ref = "compose-icons" }
+compose-icons-linea = { module = "br.com.devsrsouza.compose.icons:linea", version.ref = "compose-icons" }
+compose-icons-octicons = { module = "br.com.devsrsouza.compose.icons:octicons", version.ref = "compose-icons" }
+compose-icons-simple-icons = { module = "br.com.devsrsouza.compose.icons:simple-icons", version.ref = "compose-icons" }
+compos-icons-tabler-icons = { module = "br.com.devsrsouza.compose.icons:tabler-icons", version.ref = "compose-icons" }
+# material3 Adaptive
+material3-window-size-clazz = { module = "org.jetbrains.compose.material3:material3-window-size-class", version.ref = "compose-multiplatform" }
+material3-adaptive-navigation-suite = { module = "org.jetbrains.compose.material3:material3-adaptive-navigation-suite", version.ref = "compose-multiplatform" }
+material3-adaptive = { module = "org.jetbrains.compose.material3.adaptive:adaptive", version.ref = "material3-adaptive" }
+material3-adaptive-layout = { module = "org.jetbrains.compose.material3.adaptive:adaptive-layout", version.ref = "material3-adaptive" }
+material3-adaptive-navigation = { module = "org.jetbrains.compose.material3.adaptive:adaptive-navigation", version.ref = "material3-adaptive" }
+# settings ui
+compose-settings-ui = { group = "com.github.alorma.compose-settings", name = "ui-tiles", version.ref = "compose-settings" }
+compose-settings-ui-extended = { group = "com.github.alorma.compose-settings", name = "ui-tiles-extended", version.ref = "compose-settings" }
+
+# File picker
+filekit-compose = { module = "io.github.vinceglb:filekit-compose", version.ref = "filekit-compose" }
+
+# Multiplatform settings
+multiplatform-settings = { module = "com.russhwolf:multiplatform-settings", version.ref = "multiplatform-settings" }
+multiplatform-settings-coroutines = { module = "com.russhwolf:multiplatform-settings-coroutines", version.ref = "multiplatform-settings" }
+multiplatform-settings-datastore = { module = "com.russhwolf:multiplatform-settings-datastore", version.ref = "multiplatform-settings" }
+multiplatform-settings-no-arg = { module = "com.russhwolf:multiplatform-settings-no-arg", version.ref = "multiplatform-settings" }
+multiplatform-settings-serialization = { module = "com.russhwolf:multiplatform-settings-serialization", version.ref = "multiplatform-settings" }
+
+# Permissions
+permissions = { module = "dev.icerock.moko:permissions", version.ref = "permissions" }
+permissions-compose = { module = "dev.icerock.moko:permissions-compose", version.ref = "permissions" }
+permissions-test = { module = "dev.icerock.moko:permissions-test", version.ref = "permissions" }
+
+# SQLDelight database
+sqldelight-coroutines-extension = { module = "app.cash.sqldelight:coroutines-extensions", version.ref = "sqldelight" }
+sqldelight-primitive-adapters = { module = "app.cash.sqldelight:primitive-adapters", version.ref = "sqldelight" }
+sqldelight-android-driver = { module = "app.cash.sqldelight:android-driver", version.ref = "sqldelight" }
+sqldelight-native-driver = { module = "app.cash.sqldelight:native-driver", version.ref = "sqldelight" }
+sqldelight-sqlite-driver = { module = "app.cash.sqldelight:sqlite-driver", version.ref = "sqldelight" }
+sqldelight-web-worker-driver = { module = "app.cash.sqldelight:web-worker-driver", version.ref = "sqldelight" }
+
+# Room dataabase
+room-runtime = { group = "androidx.room", name = "room-runtime", version.ref = "room" }
+room-runtime-android = { group = "androidx.room", name = "room-runtime-android", version.ref = "room" }
+room-compiler = { group = "androidx.room", name = "room-compiler", version.ref = "room" }
+
+# Compass Geolocation
+compass-autocomplete = { module = "dev.jordond.compass:autocomplete", version.ref = "compass" }
+compass-autocomplete-mobile = { module = "dev.jordond.compass:autocomplete-mobile", version.ref = "compass" }
+compass-autocomplete-web = { module = "dev.jordond.compass:autocomplete-web", version.ref = "compass" }
+compass-autocomplete-geocoder-googlemaps = { module = "dev.jordond.compass:autocomplete-geocoder-googlemaps", version.ref = "compass" }
+compass-autocomplete-geocoder-mapbox = { module = "dev.jordond.compass:autocomplete-geocoder-mapbox", version.ref = "compass" }
+compass-geocoder = { module = "dev.jordond.compass:geocoder", version.ref = "compass" }
+compass-geocoder-mobile = { module = "dev.jordond.compass:geocoder-mobile", version.ref = "compass" }
+compass-geocoder-web = { module = "dev.jordond.compass:geocoder-web", version.ref = "compass" }
+compass-geocoder-web-googlemaps = { module = "dev.jordond.compass:geocoder-web-googlemaps", version.ref = "compass" }
+compass-geocoder-web-mapbox = { module = "dev.jordond.compass:geocoder-web-mapbox", version.ref = "compass" }
+compass-geocoder-web-opencage = { module = "dev.jordond.compass:geocoder-web-opencage", version.ref = "compass" }
+compass-geolocation = { module = "dev.jordond.compass:geolocation", version.ref = "compass" }
+compass-geolocation-mobile = { module = "dev.jordond.compass:geolocation-mobile", version.ref = "compass" }
+compass-geolocation-browser = { module = "dev.jordond.compass:geolocation-browser", version.ref = "compass" }
+compass-permissions-mobile = { module = "dev.jordond.compass:permissions-mobile", version.ref = "compass" }
+
+# Kotysa ORM (postgresql, my sql, microsoft sql server, maria db, oracle, h 2 for jvm, android)
+kotysa = { module = "org.ufoss.kotysa:kotysa-core", version.ref = "kotysa" }
+kotysa-r2dbc = { module = "org.ufoss.kotysa:kotysa-r2dbc", version.ref = "kotysa-r2dbc" }
+# R2DBC
+r2dbc-pool = { module = "io.r2dbc:r2dbc-pool", version.ref = "r2dbc-pool" }
+r2dbc-h2 = { module = "io.r2dbc:r2dbc-h2", version.ref = "r2dbc-h2" }
+r2dbc-mariadb = { module = "org.mariadb:r2dbc-mariadb", version.ref = "r2dbc-mariadb" }
+r2dbc-mysql = { module = "com.github.jasync-sql:jasync-r2dbc-mysql", version.ref = "r2dbc-mysql" }
+r2dbc-mssql = { module = "io.r2dbc:r2dbc-mssql", version.ref = "r2dbc-mssql" }
+r2dbc-postgresql = { module = "org.postgresql:r2dbc-postgresql", version.ref = "r2dbc-postgresql" }
+r2dbc-oracle = { module = "com.oracle.database.r2dbc:oracle-r2dbc", version.ref = "r2dbc-oracle" }
+
+# Ktor
+ktor-serialization-kotlinx-json = { module = "io.ktor:ktor-serialization-kotlinx-json", version.ref = "ktor" }
+ktor-serialization-kotlinx-xml = { module = "io.ktor:ktor-serialization-kotlinx-xml", version.ref = "ktor" }
+ktor-serialization-kotlinx-cbor = { module = "io.ktor:ktor-serialization-kotlinx-cbor", version.ref = "ktor" }
+ktor-serialization-kotlinx-protobuf = { module = "io.ktor:ktor-serialization-kotlinx-protobuf", version.ref = "ktor" }
+# ktor server
+ktor-server-core   = { module ="io.ktor:ktor-server-core", version.ref = "ktor" }
+ktor-server-netty   = { module ="io.ktor:ktor-server-netty", version.ref = "ktor" }
+ktor-server-test-host  = { module ="io.ktor:ktor-server-test-host", version.ref = "ktor" }
+# sse
+ktor-server-sse  = { module ="io.ktor:ktor-server-sse", version.ref = "ktor" }
+# csrf
+ktor-server-csrf  = { module ="io.ktor:ktor-server-csrf", version.ref = "ktor" }
+# content negotiation
+ktor-server-content-negotiation = { module = "io.ktor:ktor-server-content-negotiation", version.ref = "ktor" }
+# ssl/tls
+ktor-network-tls-certificates = { module = "io.ktor:ktor-network-tls-certificates", version.ref = "ktor" }
+# yaml configuration file
+ktor-server-config-yaml = { module = "io.ktor:ktor-server-config-yaml", version.ref = "ktor" }
+# cors
+ktor-server-cors = { module = "io.ktor:ktor-server-cors", version.ref = "ktor" }
+# auth
+ktor-server-auth = { module = "io.ktor:ktor-server-auth", version.ref = "ktor" }
+ktor-server-auth-jwt = { module = "io.ktor:ktor-server-auth-jwt", version.ref = "ktor" }
+ktor-server-auth-ldap = { module = "io.ktor:ktor-server-auth-ldap", version.ref = "ktor" }
+ktor-server-host-common = { module = "io.ktor:ktor-server-host-common", version.ref = "ktor" }
+# compression
+ktor-server-compression = { module = "io.ktor:ktor-server-compression", version.ref = "ktor" }
+# websockets
+ktor-server-websockets = { module = "io.ktor:ktor-server-websockets", version.ref = "ktor" }
+#  content validation
+ktor-server-request-validation = { module = "io.ktor:ktor-server-request-validation", version.ref = "ktor" }
+# server status pages
+ktor-server-status-pages = { module = "io.ktor:ktor-server-status-pages", version.ref = "ktor" }
+# server rate limit
+ktor-server-rate-limit = { module = "io.ktor:ktor-server-rate-limit", version.ref = "ktor" }
+# openapi swagger ui
+ktor-server-swagger = { module = "io.ktor:ktor-server-swagger", version.ref = "ktor" }
+ktor-server-openapi = { module = "io.ktor:ktor-server-openapi", version.ref = "ktor" }
+ktor-swagger-ui = { module = "io.github.smiley4:ktor-swagger-ui", version.ref = "ktor-swagger-ui" }
+# Templating
+ktor-server-freemarker = { module = "io.ktor:ktor-server-freemarker", version.ref = "ktor" }
+# Type-safe routing
+ktor-server-resources = { module = "io.ktor:ktor-server-resources", version.ref = "ktor" }
+# Auto head response
+ktor-server-auto-head-response = { module = "io.ktor:ktor-server-auto-head-response", version.ref = "ktor" }
+# XHttpMethodOverride
+ktor-server-method-override = { module = "io.ktor:ktor-server-method-override", version.ref = "ktor" }
+# Caching headers
+ktor-server-caching-headers = { module = "io.ktor:ktor-server-caching-headers", version.ref = "ktor" }
+# Default headers
+ktor-server-default-headers = { module = "io.ktor:ktor-server-default-headers", version.ref = "ktor" }
+# Conditional headers
+ktor-server-conditional-headers = { module = "io.ktor:ktor-server-conditional-headers", version.ref = "ktor" }
+# Forwarded headers
+ktor-server-forwarded-header = { module = "io.ktor:ktor-server-forwarded-header", version.ref = "ktor" }
+# HSTS (HTTP Strict Transport Security)
+ktor-server-hsts = { module = "io.ktor:ktor-server-hsts", version.ref = "ktor" }
+# Https redirect
+ktor-server-http-redirect = { module = "io.ktor:ktor-server-http-redirect", version.ref = "ktor" }
+# Partial content
+ktor-server-partial-content = { module = "io.ktor:ktor-server-partial-content", version.ref = "ktor" }
+# Data conversion
+ktor-server-data-conversion = { module = "io.ktor:ktor-server-data-conversion", version.ref = "ktor" }
+# Call logging
+ktor-server-call-logging = { module = "io.ktor:ktor-server-call-logging", version.ref = "ktor" }
+# Call ID
+ktor-server-call-id = { module = "io.ktor:ktor-server-call-id", version.ref = "ktor" }
+# Micrometer Metrics
+ktor-server-metrics-micrometer = { module = "io.ktor:ktor-server-metrics-micrometer", version.ref = "ktor" }
+# Micrometer Metrics
+ktor-server-metrics = { module = "io.ktor:ktor-server-metrics", version.ref = "ktor" }
+# ktor client
+ktor-client-core = { module = "io.ktor:ktor-client-core", version.ref = "ktor" }
+ktor-client-content-negotiation = { module = "io.ktor:ktor-client-content-negotiation", version.ref = "ktor" }
+ktor-client-auth = { module = "io.ktor:ktor-client-auth", version.ref = "ktor" }
+ktor-client-logging = { module = "io.ktor:ktor-client-logging", version.ref = "ktor" }
+ktor-client-okhttp = { module = "io.ktor:ktor-client-okhttp", version.ref = "ktor" }
+ktor-client-android = { module = "io.ktor:ktor-client-android", version.ref = "ktor" }
+ktor-client-darwin = { module = "io.ktor:ktor-client-darwin", version.ref = "ktor" }
+ktor-client-java = { module = "io.ktor:ktor-client-java", version.ref = "ktor" }
+ktor-client-js = { module = "io.ktor:ktor-client-js", version.ref = "ktor" }
+ktor-client-json = { module = "io.ktor:ktor-client-json", version.ref = "ktor" }
+ktor-client-serialization = { module = "io.ktor:ktor-client-serialization", version.ref = "ktor" }
+
+# Http client generator
+ktorfit-lib = { module = "de.jensklingenberg.ktorfit:ktorfit-lib", version.ref = "ktorfit" }
+ktorfit-ksp = { module = "de.jensklingenberg.ktorfit:ktorfit-ksp", version.ref = "ktorfit" }
+
+# GraphQL
+# server
+kgraphql = { module = "com.apurebase:kgraphql", version.ref = "kgraphql" }
+kgraphql-ktor = { module = "com.apurebase:kgraphql-ktor", version.ref = "kgraphql" }
+# client
+apollo-runtime = { module = "com.apollographql.apollo3:apollo-runtime", version.ref = "apollo3" }
+apollo-normalized-cache = { module = "com.apollographql.apollo3:apollo-normalized-cache", version.ref = "apollo3" }
+
+# Metrics
+# prometheus
+micrometer-registry-prometheus = { module = "io.micrometer:micrometer-registry-prometheus", version.ref = "prometheus" }
+# dropwizard
+metrics-jmx = { module = "io.dropwizard.metrics:metrics-jmx", version.ref = "dropwizard" }
+
+# Koin DI
+koin-core = { module = "io.insert-koin:koin-core", version.ref = "koin" }
+koin-core-coroutines = { module = "io.insert-koin:koin-core-coroutines", version.ref = "koin" }
+koin-compose = { module = "io.insert-koin:koin-compose", version.ref = "koin" }
+koin-compose-viewmodel = { module = "io.insert-koin:koin-compose-viewmodel", version.ref = "koin" }
+koin-compose-viewmodel-navigation = { module = "io.insert-koin:koin-compose-viewmodel-navigation", version.ref = "koin" }
+koin-android = { module = "io.insert-koin:koin-android", version.ref = "koin" }
+koin-test = { module = "io.insert-koin:koin-test", version.ref = "koin" }
+koin-annotations = { module = "io.insert-koin:koin-annotations", version.ref = "koin-annotations" }
+koin-ksp-compiler = { module = "io.insert-koin:koin-ksp-compiler", version.ref = "koin-annotations" }
+koin-logger-slf4j = { module = "io.insert-koin:koin-logger-slf4j", version.ref = "koin" }
+koin-ktor = { module = "io.insert-koin:koin-ktor", version.ref = "koin" }
+koin-test-junit5 = { module = "io.insert-koin:koin-test-junit5", version.ref = "koin" }
+
+[bundles]
+# Java
+# cryptography
+pgpainless = [
+    "pgpainless-core",
+    "pgpainless-sop",
+]
+jna = [
+    "jna",
+    "jna-platform"
+]
+# webcam
+webcam-capture = [
+    "webcam-capture",
+    "webcam-capture-driver-ipcam",
+    "webcam-capture-driver-fswebcam",
+    "webcam-capture-driver-gstreamer",
+    "webcam-capture-driver-openimaj",
+    "webcam-capture-driver-v4l4j",
+    "webcam-capture-driver-jmf",
+    "webcam-capture-driver-lti-civil",
+    "webcam-capture-driver-vlcj",
+    "webcam-capture-driver-opencv",
+    "webcam-capture-driver-ffmpeg-cli",
+]
+# Kotlin
+# official serialization
+kotlinx-serialization = [
+    "kotlinx-serialization-json",
+    "kotlinx-serialization-properties",
+    "kotlinx-serialization-protobuf",
+    "kotlinx-serialization-cbor",
+    "kotlinx-serialization-csv",
+    "kotlinx-serialization-flf",
+    "kotlinx-serialization-json-okio",
+    #    "kotlinx-serialization-smile-core"
+]
+# communoty supported serialization
+serialization = [
+    "xmlutil-serialization",
+    "serialization-msgpack",
+    "serialization-msgpack-timestamp-extension",
+    "knbt",
+    "yamlkt",
+    #    "tomlkt",
+]
+# coroutines
+stately-concurrency = [
+    "stately-concurrency",
+    "stately-concurrent-collections"
+]
+# cryptograhpy
+cryptography = [
+    "cryptography-core",
+    "cryptography-random",
+    "cryptography-serialization-asn1",
+    "cryptography-serialization-asn1-modules",
+    "cryptography-serialization-pem",
+]
+# testins
+kotest-multiplatform = [
+    "kotest-assertions-core",
+    "kotest-framework-engine",
+    "kotest-framework-datatest"
+]
+
+# Compose
+# compose icons
+compose-icons = [
+    "compose-icons-css-gg",
+    "compose-icons-weather-icons",
+    "compose-icons-eva-icons",
+    "compose-icons-feather",
+    "compose-icons-font-awesome",
+    "compose-icons-line-awesome",
+    "compose-icons-linea",
+    "compose-icons-octicons",
+    "compose-icons-simple-icons",
+    "compos-icons-tabler-icons"
+]
+material3-adaptive = [
+    "material3-window-size-clazz",
+    "material3-adaptive-navigation-suite",
+    "material3-adaptive",
+    "material3-adaptive-layout",
+    "material3-adaptive-navigation"
+]
+compose-settings-ui = [
+    "compose-settings-ui",
+    "compose-settings-ui-extended"
+]
+
+# Compass geolocation
+compass = [
+    "compass-geocoder",
+    "compass-geocoder-web-googlemaps",
+    "compass-autocomplete-geocoder-googlemaps",
+    "compass-geocoder-web-mapbox",
+    "compass-autocomplete-geocoder-mapbox",
+    "compass-geocoder-web-opencage",
+    "compass-geocoder-web",
+    "compass-autocomplete-web",
+    "compass-geolocation",
+    "compass-autocomplete",
+]
+compass-mobile = [
+    "compass-geocoder-mobile",
+    "compass-geolocation-mobile",
+    "compass-autocomplete-mobile",
+    "compass-permissions-mobile",
+]
+
+sqldelight = [
+    "sqldelight-coroutines-extension",
+    "sqldelight-primitive-adapters"
+]
+
+# Kotysa ORM
+kotysa = [
+    "kotysa",
+    "kotysa-r2dbc",
+    "r2dbc-pool",
+    "r2dbc-h2",
+    "r2dbc-mariadb",
+    "r2dbc-mysql",
+    "r2dbc-mssql",
+    "r2dbc-postgresql",
+    "r2dbc-oracle",
+]
+
+# Ktor
+ktor-common = [
+    "ktor-serialization-kotlinx-json",
+    #    "ktor-serialization-kotlinx-xml",
+    "ktor-serialization-kotlinx-cbor",
+    "ktor-serialization-kotlinx-protobuf",
+    #    "ktor-network-tls-certificates",
+]
+ktor-server = [
+    "ktor-server-core",
+    "ktor-server-netty",
+    "ktor-server-config-yaml",
+    "ktor-server-cors",
+    "ktor-server-auth",
+    "ktor-server-auth-jwt",
+    "ktor-server-auth-ldap",
+    "ktor-server-host-common",
+    "ktor-server-compression",
+    "ktor-server-websockets",
+    "ktor-server-content-negotiation",
+    "ktor-server-request-validation",
+    "ktor-server-status-pages",
+    "ktor-server-rate-limit",
+    "ktor-server-freemarker",
+    "ktor-server-resources",
+    "ktor-server-auto-head-response",
+    "ktor-server-method-override",
+    "ktor-server-caching-headers",
+    "ktor-server-default-headers",
+    "ktor-server-conditional-headers",
+    "ktor-server-forwarded-header",
+    "ktor-server-hsts",
+    "ktor-server-http-redirect",
+    "ktor-server-partial-content",
+    "ktor-server-data-conversion",
+    "ktor-server-call-logging",
+    "ktor-server-call-id",
+    "ktor-server-metrics-micrometer",
+    "ktor-server-metrics",
+    "ktor-swagger-ui"
+]
+ktor-client = [
+    "ktor-client-core",
+    "ktor-client-content-negotiation",
+    "ktor-client-auth",
+    "ktor-client-logging",
+    "ktor-client-json",
+    "ktor-client-serialization",
+]
+
+# GraphQL
+# server
+kgraphql = [
+    "kgraphql",
+    "kgraphql-ktor",
+]
+# client
+apollo = [
+    "apollo-runtime",
+    "apollo-normalized-cache"
+]
+
+# Metrics
+metrics = [
+    "micrometer-registry-prometheus",
+    "metrics-jmx",
+]
+
+# Koin DI
+koin-kotlin-multiplatform = [
+    "koin-core",
+    "koin-core-coroutines",
+    "koin-annotations",
+]
+koin-compose-multiplatform = [
+    "koin-compose",
+    "koin-compose-viewmodel",
+    "koin-compose-viewmodel-navigation",
+]
+koin-ktor = [
+    "koin-ktor",
+    "koin-annotations",
+    "koin-ksp-compiler",
+    "koin-logger-slf4j",
+]
+koin-test = [
+    "koin-test",
+    "koin-test-junit5"
+]
+
+[plugins]
+# Gradle
+# provides a repository for downloading JVMs
+foojay-resolver-convention = { id = "org.gradle.toolchains.foojay-resolver-convention", version.ref = "foojay-resolver-convention" }
+# build config
+build-config = { id = "com.github.gmazzo.buildconfig", version.ref = "build-config" }
+# pre-commit hooks
+gradle-pre-commit-git-hooks = { id = "org.danilopianini.gradle-pre-commit-git-hooks", version.ref = "gradle-pre-commit-git-hooks" }
+# publishing
+vanniktech-maven-publish = { id = "com.vanniktech.maven.publish", version.ref = "vanniktech-maven-publish" }
+# Kotlin
+# compiler processor for generating code during compilation
+ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
+# generate no arg contructor by specified annotation
+noarg = { id = "org.jetbrains.kotlin.plugin.noarg", version.ref = "kotlin" }
+# make class open for inheritance by specified annotation
+allopen = { id = "org.jetbrains.kotlin.plugin.allopen", version.ref = "kotlin" }
+# serialization
+kotlin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
+# jvm
+kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
+# multiplatform
+kotlin-multiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref = "kotlin" }
+# data pipeline processing
+dataframe = { id = "org.jetbrains.kotlinx.dataframe", version.ref = "dataframe" }
+# generate coverage analysis
+kover = { id = "org.jetbrains.kotlinx.kover", version.ref = "kover" }
+# code format check and fix
+spotless = { id = "com.diffplug.spotless", version.ref = "spotless" }
+# code analysis
+sonarqube = { id = "org.sonarqube", version.ref = "sonarqube" }
+# create project documentation
+dokka = { id = "org.jetbrains.dokka", version.ref = "dokka" }
+# the tool that produces Kotlin source example files and tests from markdown documents with embedded snippets of Kotlin code
+knit = { id = "org.jetbrains.kotlinx.knit", version.ref = "knit" }
+# the tool allows dumping binary API of a JVM part of a Kotlin library that is public in the sense of Kotlin visibilities and ensures that the public binary API wasn't changed in a way that makes this change binary incompatible.
+binary-compatibility-validator = { id = "org.jetbrains.kotlinx.binary-compatibility-validator", version.ref = "binary-compatibility-validator" }
+# testing
+kotest-multiplatform = { id = "io.kotest.multiplatform", version.ref = "kotest" }
+
+# Android
+android-application = { id = "com.android.application", version.ref = "agp" }
+android-library = { id = "com.android.library", version.ref = "agp" }
+
+#Compose
+compose-multiplatform = { id = "org.jetbrains.compose", version.ref = "compose-multiplatform" }
+compose-compiler = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
+
+# SQLDelight dataabase
+sqldelight = { id = "app.cash.sqldelight", version.ref = "sqldelight" }
+
+# Room database
+room = { id = "androidx.room", version.ref = "room" }
+
+# Ktor
+ktor = { id = "io.ktor.plugin", version.ref = "ktor" }
+
+# Http client generator
+ktorfit = { id = "de.jensklingenberg.ktorfit", version.ref = "ktorfit" }
+
+# GraphQL
+# client
+apollo3 = { id = "com.apollographql.apollo3", version.ref = "apollo3" }
+# Convensions
+convention-settings = { id = "convention.settings" }
+convention-root = { id = "plugin.convention.root" }
