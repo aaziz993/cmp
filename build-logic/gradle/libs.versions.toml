@@ -809,7 +809,7 @@ apollo3 = { id = "com.apollographql.apollo3", version.ref = "apollo3" }
 # Convensions
 settings-convention = { id = "settings.convention" }
 root-convention = { id = "root.convention" }
+java-app-convention = { id = "java.app.convention" }
 kmp-lib-convention = { id = "kmp.lib.convention" }
 cmp-lib-convention = { id = "cmp.lib.convention" }
 cmp-app-convention = { id = "cmp.app.convention" }
-java-app-convention = { id = "java.app.convention" }

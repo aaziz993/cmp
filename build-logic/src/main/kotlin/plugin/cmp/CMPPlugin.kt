@@ -46,7 +46,7 @@ internal class CMPPlugin(
                             implementation(bundle("compose.icons"))
                             implementation(bundle("material3.adaptive"))
                             implementation(bundle("compose.settings.ui"))
-                            implementation(bundle("androidx"))
+                            implementation(bundle("androidx.multiplatform"))
                             implementation(lib("filekit.compose"))
                             implementation(bundle("koin.compose.multiplatform"))
                         }
