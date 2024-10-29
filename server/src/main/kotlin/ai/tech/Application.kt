@@ -3,7 +3,7 @@ package ai.tech
 import io.ktor.network.tls.certificates.*
 import io.ktor.server.application.*
 import io.ktor.server.netty.*
-//import plugin.di.configKoin
+import ai.tech.plugin.di.configKoin
 import java.io.File
 
 public fun main(args: Array<String>) {
@@ -13,11 +13,11 @@ public fun main(args: Array<String>) {
 
 @Suppress("unused")
 public fun Application.module() {
-//    configKoin()
+    configKoin()
 }
 
 private fun createKeystore() {
-    val keyStoreFile = File("resources/keystore.p12")
+    val keyStoreFile = File("server/src/main/resources/keystore.p12")
 
     if (keyStoreFile.exists()) return
 
