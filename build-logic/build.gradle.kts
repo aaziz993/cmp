@@ -124,12 +124,27 @@ gradlePlugin {
             implementationClass = "plugin.root.RootPlugin"
         }
 
-        register("KMPLibplugin") {
+        register("KMPLibPlugin") {
             id =
                 libs.plugins.kmp.lib.convention
                     .get()
                     .pluginId
             implementationClass = "plugin.kmp.KMPLibPlugin"
+        }
+
+        register("CMPLibPlugin") {
+            id =
+                libs.plugins.cmp.lib.convention
+                    .get()
+                    .pluginId
+            implementationClass = "plugin.cmp.CMPLibPlugin"
+        }
+        register("CMPAppPlugin") {
+            id =
+                libs.plugins.cmp.app.convention
+                    .get()
+                    .pluginId
+            implementationClass = "plugin.cmp.CMPAppPlugin"
         }
 
         register("JavaAppPlugin") {

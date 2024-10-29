@@ -579,10 +579,14 @@ compose-icons = [
 ]
 material3-adaptive = [
     "material3-window-size-clazz",
-    "material3-adaptive-navigation-suite",
+#    "material3-adaptive-navigation-suite",
     "material3-adaptive",
     "material3-adaptive-layout",
     "material3-adaptive-navigation"
+]
+andoidx-lifecycle = [
+    "androidx-lifecycle-viewmodel",
+    "androidx-lifecycle-runtime-compose"
 ]
 compose-settings-ui = [
     "compose-settings-ui",
@@ -802,4 +806,6 @@ apollo3 = { id = "com.apollographql.apollo3", version.ref = "apollo3" }
 settings-convention = { id = "settings.convention" }
 root-convention = { id = "root.convention" }
 kmp-lib-convention = { id = "kmp.lib.convention" }
+cmp-lib-convention = { id = "cmp.lib.convention" }
+cmp-app-convention = { id = "cmp.app.convention" }
 java-app-convention = { id = "java.app.convention" }
