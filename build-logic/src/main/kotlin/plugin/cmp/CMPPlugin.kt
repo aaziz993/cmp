@@ -67,6 +67,7 @@ internal class CMPPlugin(
 
                         androidMain.dependencies {
                             implementation(composeDeps.preview)
+                            implementation(lib("androidx.activity.compose"))
                         }
 
                         wasmJsMain.dependencies {
@@ -74,6 +75,8 @@ internal class CMPPlugin(
                         }
                     }
                 }
+
+                
             }
         }
 }

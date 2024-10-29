@@ -43,6 +43,7 @@ dependencyResolutionManagement {
 }
 
 include(":kmp-lib")
+include(":cmp-lib")
 include(":shared")
 include(":server")
-//include(":composeApp")
+include(":composeApp")

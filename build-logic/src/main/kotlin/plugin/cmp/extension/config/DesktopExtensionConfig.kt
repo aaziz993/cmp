@@ -7,9 +7,11 @@ import org.gradle.kotlin.dsl.config
 import org.jetbrains.compose.desktop.DesktopExtension
 import org.jetbrains.compose.desktop.application.dsl.TargetFormat
 
-public fun Project.configDesktopExtension(extension: DesktopExtension): DesktopExtension =
+internal fun Project.configDesktopExtension(extension: DesktopExtension): DesktopExtension =
     extension.apply {
         application {
+            mainClass = "${settings.config.group}.MainKt"
+
             jvmArgs("--add-opens", "java.desktop/sun.awt=ALL-UNNAMED")
             jvmArgs("--add-opens", "java.desktop/java.awt.peer=ALL-UNNAMED")
 //            jvmArgs("--add-exports", "java.base/java.lang=ALL-UNNAMED")
@@ -29,15 +31,6 @@ public fun Project.configDesktopExtension(extension: DesktopExtension): DesktopE
             buildTypes.release.proguard {
                 configurationFiles.from("compose-desktop.pro")
             }
-        }
-
-        settings.config.applyTo("jvm.app", this)
-    }
-
-public fun Project.configDesktopAppExtension(extension: DesktopExtension): DesktopExtension =
-    extension.apply {
-        application {
-            mainClass = "${settings.config.group}.MainKt"
         }
 
         settings.config.applyTo("jvm.app", this)

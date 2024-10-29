@@ -23,21 +23,6 @@ internal fun Project.configKMPExtension(extension: KotlinMultiplatformExtension)
             iosSimulatorArm64(),
         ).forEach { configKotlinIosTarget(it) }
 
-        @OptIn(ExperimentalWasmDsl::class)
-        wasmJs {
-            browser {
-                webpackTask {
-                    mainOutputFileName.set(path.split(":").drop(1).joinToString("-"))
-                }
-                commonWebpackConfig {
-                    cssSupport {
-                        enabled.set(true)
-                    }
-                }
-            }
-            binaries.executable()
-        }
-
         // Apply the default hierarchy again. It'll create additional source sets:
         @OptIn(ExperimentalKotlinGradlePluginApi::class)
         applyDefaultHierarchyTemplate {

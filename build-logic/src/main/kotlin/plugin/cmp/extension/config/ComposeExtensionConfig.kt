@@ -9,14 +9,6 @@ import org.jetbrains.compose.desktop.DesktopExtension
 
 internal fun Project.configComposeExtension(extension: ComposeExtension): ComposeExtension =
     extension.apply {
-        extensions.configure<DesktopExtension>(::configDesktopExtension)
-
-        settings.config.applyTo("compose", this)
-    }
-
-internal fun Project.configComposeAppExtension(extension: ComposeExtension): ComposeExtension =
-    extension.apply {
-        extensions.configure<DesktopExtension>(::configDesktopAppExtension)
 
         settings.config.applyTo("compose", this)
     }
