@@ -43,14 +43,14 @@ internal class CMPPlugin(
                             implementation(composeDeps.components.uiToolingPreview)
                             implementation(composeDeps.material3AdaptiveNavigationSuite)
                             implementation(composeDeps.materialIconsExtended)
-//                            implementation(bundle("compose.icons"))
-//                            implementation(bundle("androidx.lifecycle"))
-//                            implementation(lib("navigation.compose"))
-//                            implementation(lib("material.navigation"))
-//                            implementation(bundle("material3.adaptive"))
-//                            implementation(bundle("compose.settings.ui"))
-//                            implementation(lib("filekit.compose"))
-//                            implementation(bundle("koin.compose.multiplatform"))
+                            implementation(bundle("compose.icons"))
+                            implementation(bundle("androidx.lifecycle"))
+                            implementation(lib("navigation.compose"))
+                            implementation(lib("material.navigation"))
+                            implementation(bundle("material3.adaptive"))
+                            implementation(bundle("compose.settings.ui"))
+                            implementation(lib("filekit.compose"))
+                            implementation(bundle("koin.compose.multiplatform"))
                         }
 
                         commonTest.dependencies {

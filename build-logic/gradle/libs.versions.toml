@@ -584,7 +584,7 @@ material3-adaptive = [
     "material3-adaptive-layout",
     "material3-adaptive-navigation"
 ]
-andoidx-lifecycle = [
+androidx-lifecycle = [
     "androidx-lifecycle-viewmodel",
     "androidx-lifecycle-runtime-compose"
 ]
