@@ -5,12 +5,10 @@ import com.android.build.gradle.BaseExtension
 import com.google.devtools.ksp.gradle.KspExtension
 import extension.config.configAndroidBaseExtension
 import extension.config.configKotlinProjectExtension
-import extension.config.configKoverProjectExtension
 import extension.config.configSqlDelightExtension
 import extension.config.kspCommonMainMetadata
 import extension.id
 import extension.lib
-import kotlinx.kover.gradle.plugin.dsl.KoverProjectExtension
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.kotlin.dsl.configure
@@ -41,9 +39,6 @@ internal class KMPPlugin(
 
             extensions.configure<SqlDelightExtension>(::configSqlDelightExtension)
 
-            // Test coverage analyze
-            extensions.configure<KoverProjectExtension>(::configKoverProjectExtension)
-
             dependencies.apply {
                 kspCommonMainMetadata(lib("arrow.optics.ksp.plugin"))
                 kspCommonMainMetadata(lib("room.compiler"))
@@ -52,7 +47,7 @@ internal class KMPPlugin(
                 kspCommonMainMetadata(lib("koin.ksp.compiler"))
             }
 
-            // Workaround for KSP only in Common Main.
+            // In older Kotlin/KSP versions, it was necessary to manually add the KSP output as a source directory with kotlin.srcDir("build/generated/ksp/metadata/commonMain/kotlin"). That’s no longer required as it’s automatically configured now. Same goes for the dependsOn kspCommonMainKotlinMetadata workaround you might find online. That’s why it’s recommended to use the latest dependencies.
             tasks.withType<KotlinCompilationTask<*>>().configureEach {
                 if (name != "kspCommonMainKotlinMetadata") {
                     dependsOn("kspCommonMainKotlinMetadata")

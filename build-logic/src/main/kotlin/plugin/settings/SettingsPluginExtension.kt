@@ -47,6 +47,8 @@ public open class SettingsPluginExtension(
                 repositories {
                     google()
                     mavenCentral()
+                    // Sonatype OSS Snapshot Repository
+                    maven("https://oss.sonatype.org/content/repositories/snapshots")
                     // Space Packages releases
                     maven("https://maven.pkg.jetbrains.space/aaziz93/p/aaziz-93/releases")
                     // Space Packages snapshots

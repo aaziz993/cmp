@@ -7,7 +7,7 @@ import org.gradle.kotlin.dsl.config
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import org.jetbrains.kotlin.gradle.dsl.KotlinProjectExtension
 
-public fun Project.configKotlinProjectExtension(extension: KotlinProjectExtension): KotlinProjectExtension =
+internal fun Project.configKotlinProjectExtension(extension: KotlinProjectExtension): KotlinProjectExtension =
     extension.apply {
         explicitApi()
 
@@ -18,7 +18,7 @@ public fun Project.configKotlinProjectExtension(extension: KotlinProjectExtensio
                 progressiveMode = true
             }
         }
-        
+
         settings.config.applyTo("kotlin", this)
     }
 

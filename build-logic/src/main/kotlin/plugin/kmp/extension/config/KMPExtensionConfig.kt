@@ -68,7 +68,7 @@ internal fun Project.configKMPExtension(extension: KotlinMultiplatformExtension)
                 kotlin.srcDir(projectDir.resolve("build/generated/ksp/metadata/commonMain/kotlin"))
 
                 dependencies {
-                    implementation(lib("napier"))
+//                    implementation(lib("napier"))
                     implementation(lib("kotlinx.datetime"))
                     implementation(lib("kotlinx.uuid.core"))
                     implementation(bundle("kotlinx.serialization"))

@@ -1,20 +1,34 @@
 package ai.tech
 
+import io.ktor.network.tls.certificates.*
 import io.ktor.server.application.*
-import io.ktor.server.engine.*
 import io.ktor.server.netty.*
-import io.ktor.server.response.*
-import io.ktor.server.routing.*
+//import plugin.di.configKoin
+import java.io.File
 
-fun main() {
-    embeddedServer(Netty, port = SERVER_PORT, host = "0.0.0.0", module = Application::module)
-        .start(wait = true)
+public fun main(args: Array<String>) {
+    createKeystore()
+    EngineMain.main(args)
 }
 
-fun Application.module() {
-    routing {
-        get("/") {
-            call.respondText("Ktor: ${Greeting().greet()}")
+@Suppress("unused")
+public fun Application.module() {
+//    configKoin()
+}
+
+private fun createKeystore() {
+    val keyStoreFile = File("resources/keystore.p12")
+
+    if (keyStoreFile.exists()) return
+
+    val keyStore = buildKeyStore {
+        certificate("applicationTLS") {
+            password = "AITech"
+            daysValid = 365
+            keySizeInBits = 4096
+            domains = listOf("127.0.0.1", "0.0.0.0", "localhost")
         }
     }
+
+    keyStore.saveToFile(keyStoreFile, "AITech")
 }

@@ -1,0 +1,31 @@
+# Configure the application based on the environment variables
+ktor:
+  ## Development mode
+  # Enable development mode. Recommended to set it via -Dktor.deployment.environment=development
+  # development = true
+
+  deployment:
+    host: 0.0.0.0
+    port: '$PORT:8080'
+    ## SSL, you need to enable it
+    #    sslPort: '$SSL_PORT:8443'
+    ## Watch for changes in this directory and automatically reload the application if any file changes in development mode.
+    watch:
+      - classes
+      - resources
+
+  # Configure the main module
+  application:
+    modules:
+      - ai.tech.ApplicationKt.module
+
+  ## Environment
+  environment: '$KTOR_ENV:development'
+
+  ## To enable SSL, you need to generate a certificate and configure it here
+  security:
+    ssl:
+      keyStore: keystore.p12
+      keyStorePassword: "AITech"
+      keyAlias: "applicationTLS"
+      privateKeyPassword: "AITech"
