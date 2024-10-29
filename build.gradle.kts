@@ -1,14 +1,7 @@
 plugins {
-    id(
-        projectLibs.plugins.convention.root
-            .get().pluginId,
-    )
+    id(projectLibs.plugins.root.convention.get().pluginId)
 }
-
-private val Project.projectLibs
-    get(): VersionCatalog = extensions.getByType<VersionCatalogsExtension>().named("projectLibs")
-
-////plugins {
+//plugins {
 //    // this is necessary to avoid the plugins to be loaded multiple times
 //    // in each subproject's classloader
 //    alias(libs.plugins.androidApplication) apply false

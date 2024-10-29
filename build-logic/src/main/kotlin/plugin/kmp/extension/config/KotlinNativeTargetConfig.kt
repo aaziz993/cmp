@@ -1,0 +1,14 @@
+package plugin.kmp.extension.config
+
+import org.gradle.api.Project
+import org.gradle.kotlin.dsl.get
+import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTarget
+
+internal fun Project.configKotlinNativeTarget(target: KotlinNativeTarget) =
+    target.apply {
+        compilations["main"].compileTaskProvider.configure {
+            compilerOptions {
+                freeCompilerArgs.add("-Xexport-kdoc")
+            }
+        }
+    }

@@ -8,8 +8,11 @@ internal const val ANDROID_JAVA_TARGET_VERSION = JAVA_SOURCE_VERSION
 
 // PROJECT
 internal const val GROUP = "com.example"
+
 internal const val VERSION = "1.0.0"
+
 internal const val VERSION_CATALOG_NAME = "projectLibs"
-internal const val VERSION_CATALOG_FILE = "build-logic/gradle/libs.versions.toml"
+
+internal const val VERSION_CATALOG_FILE = "gradle/libs.versions.toml"
 
 internal const val ALL_WARNINGS_AS_ERRORS = false

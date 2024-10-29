@@ -1,8 +1,8 @@
-package plugin.extension.config
+package extension.config
 
 import org.gradle.api.Project
 import org.gradle.kotlin.dsl.config
-import plugin.extension.settings
+import extension.settings
 import org.jetbrains.kotlin.allopen.gradle.AllOpenExtension
 
 internal fun Project.configAllOpenExtension(extension: AllOpenExtension): AllOpenExtension =

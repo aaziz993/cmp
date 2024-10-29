@@ -72,9 +72,19 @@ knit = "0.5.0"
 binary-compatibility-validator = "0.16.3"
 # Android
 agp = "8.5.2"
-android-compileSdk = "34"
-android-minSdk = "24"
-android-targetSdk = "34"
+# in project version
+android-compile-sdk = "34"
+# in project version
+android-min-sdk = "24"
+# in project version
+android-target-sdk = "34"
+# in project version
+android-version-code = "1"
+# in project version
+android-version-name = "1.0"
+# Desktop
+# in project version
+desktop-package-version = "1.0.0"
 # Compose
 androidx-appcompat = "1.7.0"
 androidx-constraint-layout = "2.1.4"
@@ -93,7 +103,8 @@ compose-settings = "2.4.0"
 filekit-compose = "0.8.1"
 # Multiplatform settings
 multiplatform-settings = "1.1.1"
-compass = "1.2.0"
+compass = "1.6.7"
+worldwind = "1.5.19"
 # Permissions
 permissions = "0.18.0"
 # SQLDelight database
@@ -233,6 +244,8 @@ kotest-runner-junit5 = { module = "io.kotest:kotest-runner-junit5", version.ref 
 # Android
 # gradle plugin
 android-gradle-plugin = { group = "com.android.tools.build", name = "gradle", version.ref = "agp" }
+# dokka documentation
+android-documentation-plugin = { module = "org.jetbrains.dokka:android-documentation-plugin", version.ref = "dokka" }
 androidx-activity-compose = { module = "androidx.activity:activity-compose", version.ref = "androidx-activity-compose" }
 androidx-appcompat = { group = "androidx.appcompat", name = "appcompat", version.ref = "androidx-appcompat" }
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "androidx-core-ktx" }
@@ -294,6 +307,9 @@ sqldelight-web-worker-driver = { module = "app.cash.sqldelight:web-worker-driver
 room-runtime = { group = "androidx.room", name = "room-runtime", version.ref = "room" }
 room-runtime-android = { group = "androidx.room", name = "room-runtime-android", version.ref = "room" }
 room-compiler = { group = "androidx.room", name = "room-compiler", version.ref = "room" }
+
+# Map for Js, Jvm and Android
+worldwind = { module = "earth.worldwind:worldwind", version.ref = "worldwind" }
 
 # Compass Geolocation
 compass-autocomplete = { module = "dev.jordond.compass:autocomplete", version.ref = "compass" }
@@ -467,8 +483,8 @@ webcam-capture = [
     "webcam-capture-driver-ffmpeg-cli",
 ]
 # Kotlin
-# official serialization
 kotlinx-serialization = [
+    # official serialization
     "kotlinx-serialization-json",
     "kotlinx-serialization-properties",
     "kotlinx-serialization-protobuf",
@@ -477,9 +493,7 @@ kotlinx-serialization = [
     "kotlinx-serialization-flf",
     "kotlinx-serialization-json-okio",
     #    "kotlinx-serialization-smile-core"
-]
-# communoty supported serialization
-serialization = [
+    # communoty supported serialization
     "xmlutil-serialization",
     "serialization-msgpack",
     "serialization-msgpack-timestamp-extension",
@@ -488,7 +502,8 @@ serialization = [
     #    "tomlkt",
 ]
 # coroutines
-stately-concurrency = [
+coroutines = [
+    "kotlinx-coroutines-core",
     "stately-concurrency",
     "stately-concurrent-collections"
 ]
@@ -499,6 +514,25 @@ cryptography = [
     "cryptography-serialization-asn1",
     "cryptography-serialization-asn1-modules",
     "cryptography-serialization-pem",
+]
+# arrow
+arrow = [
+    "arrow-core",
+    "arrow-fx-coroutines",
+    "arrow-optics"
+]
+# okio local filesystem
+okio = [
+    "okio",
+    "okio-extras"
+]
+# multiplatform settings
+multiplatform-settings = [
+    "multiplatform-settings",
+    "multiplatform-settings-coroutines",
+#    "multiplatform-settings-datastore",
+    "multiplatform-settings-no-arg",
+    "multiplatform-settings-serialization"
 ]
 # testins
 kotest-multiplatform = [
@@ -572,16 +606,18 @@ kotysa = [
 ]
 
 # Ktor
-ktor-common = [
+ktor-serialization = [
     "ktor-serialization-kotlinx-json",
     #    "ktor-serialization-kotlinx-xml",
     "ktor-serialization-kotlinx-cbor",
     "ktor-serialization-kotlinx-protobuf",
-    #    "ktor-network-tls-certificates",
 ]
 ktor-server = [
     "ktor-server-core",
     "ktor-server-netty",
+    "ktor-server-sse",
+    "ktor-server-csrf",
+    "ktor-network-tls-certificates",
     "ktor-server-config-yaml",
     "ktor-server-cors",
     "ktor-server-auth",
@@ -724,6 +760,8 @@ ktorfit = { id = "de.jensklingenberg.ktorfit", version.ref = "ktorfit" }
 # GraphQL
 # client
 apollo3 = { id = "com.apollographql.apollo3", version.ref = "apollo3" }
+
 # Convensions
-convention-settings = { id = "convention.settings" }
-convention-root = { id = "plugin.convention.root" }
+settings-convention = { id = "settings.convention" }
+root-convention = { id = "root.convention" }
+kmp-lib-convention = { id = "kmp.lib.convention" }

@@ -1,4 +1,4 @@
-package plugin.extension.config
+package extension.config
 
 import org.gradle.api.Project
 import org.gradle.api.file.DuplicatesStrategy

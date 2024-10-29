@@ -1,4 +1,4 @@
-package plugin.extension.config
+package extension.config
 
 import ALL_WARNINGS_AS_ERRORS
 import org.gradle.api.Project

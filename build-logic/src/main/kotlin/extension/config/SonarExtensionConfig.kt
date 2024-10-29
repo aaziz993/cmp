@@ -1,9 +1,9 @@
-package plugin.extension.config
+package extension.config
 
 import org.gradle.api.Project
 import org.gradle.kotlin.dsl.config
 import org.sonarqube.gradle.SonarExtension
-import plugin.extension.settings
+import extension.settings
 
 internal fun Project.configSonarExtension(extension: SonarExtension) =
     extension.apply {

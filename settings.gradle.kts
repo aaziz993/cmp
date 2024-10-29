@@ -19,11 +19,14 @@ pluginManagement {
 }
 
 plugins {
-    id("convention.settings")
+    id("settings.convention")
 }
 
 config {
     group = "ai.tech"
+    versionCatalogFile = "build-logic/gradle/libs.versions.toml"
+
+    create()
 }
 
 dependencyResolutionManagement {
@@ -39,6 +42,7 @@ dependencyResolutionManagement {
     }
 }
 
+include(":kmp-lib")
 //include(":composeApp")
 //include(":server")
 //include(":shared")

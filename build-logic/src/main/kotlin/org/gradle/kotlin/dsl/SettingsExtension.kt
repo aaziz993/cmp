@@ -8,7 +8,7 @@ import plugin.settings.SettingsPluginExtension
  * DSL entry point for the git hooks commits.
  * This function is needed because Gradle doesn't generate accessors for settings extensions.
  */
-public inline fun Settings.config(configure: SettingsPluginExtension.() -> Unit) {
+public fun Settings.config(configure: SettingsPluginExtension.() -> Unit) {
     extensions.getByType<SettingsPluginExtension>().configure()
 }
 

@@ -3,7 +3,7 @@ package plugin.root
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.kotlin.dsl.config
-import plugin.extension.settings
+import extension.settings
 
 public class RootPlugin : Plugin<Project> {
     override fun apply(target: Project): Unit =

@@ -12,16 +12,16 @@ import org.jetbrains.kotlin.allopen.gradle.AllOpenExtension
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompilationTask
 import org.jetbrains.kotlin.noarg.gradle.NoArgExtension
 import org.sonarqube.gradle.SonarExtension
-import plugin.extension.config.configKspExtension
-import plugin.extension.config.configNoArgExtension
-import plugin.extension.config.configAllOpenExtension
-import plugin.extension.config.configSpotlessExtension
-import plugin.extension.config.configSonarExtension
-import plugin.extension.config.configDokka
-import plugin.extension.config.configApolloExtension
-import plugin.extension.config.configKotlinCompilationTask
-import plugin.extension.config.configPublishExtension
-import plugin.extension.id
+import extension.config.configKspExtension
+import extension.config.configNoArgExtension
+import extension.config.configAllOpenExtension
+import extension.config.configSpotlessExtension
+import extension.config.configSonarExtension
+import extension.config.configDokka
+import extension.config.configApolloExtension
+import extension.config.configKotlinCompilationTask
+import extension.config.configPublishExtension
+import extension.id
 
 public class BasePlugin : Plugin<Project> {
     override fun apply(target: Project): Unit = with(target) {
@@ -36,7 +36,6 @@ public class BasePlugin : Plugin<Project> {
             apply(id("sonarqube"))
             apply(id("dokka"))
             apply(id("build.config"))
-            apply(id("vanniktech.maven.publish"))
         }
 
         // Compiler processor for generating code during compilation
@@ -62,9 +61,6 @@ public class BasePlugin : Plugin<Project> {
 
         // Configure kotlin compilation task
         tasks.withType<KotlinCompilationTask<*>>().configureEach { configKotlinCompilationTask(this) }
-
-        // Publish library to repository
-        extensions.configure<MavenPublishBaseExtension>(::configPublishExtension)
 
         tasks.getByName("clean") {
             doLast {
