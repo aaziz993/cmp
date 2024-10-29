@@ -45,7 +45,7 @@ kotlin = "2.0.21"
 # compiler processor for generating code during compilation
 ksp = "2.0.21-1.0.25"
 # multiplatform logging
-napier = "2.7.1"
+km-logging = "1.5.0"
 kotlinx-datetime = "0.6.1"
 kotlinx-uuid-core = "0.0.25"
 kotlinx-serialization = "1.7.3"
@@ -191,7 +191,7 @@ jsch = { module = "com.jcraft:jsch", version.ref = "jsch" }
 # testing
 junit = { group = "junit", name = "junit", version.ref = "junit" }
 # Kotlin
-napier = { group = "org.jetbrains.kotlinx", name = "io.github.aakira:napier", version.ref = "napier" }
+km-logging = { module = "org.lighthousegames:logging", version.ref = "km-logging" }
 kotlinx-datetime = { group = "org.jetbrains.kotlinx", name = "kotlinx-datetime", version.ref = "kotlinx-datetime" }
 kotlinx-uuid-core = { module = "app.softwork:kotlinx-uuid-core", version.ref = "kotlinx-uuid-core" }
 # official serialization
