@@ -101,11 +101,11 @@ androidx-material = "1.12.0"
 androidx-test-junit = "1.2.1"
 compose-multiplatform = "1.7.0"
 androidx-activity-compose = "1.9.3"
-navigation-compose = "2.8.0-alpha10"
-material-navigation = "1.7.0-beta02"
-material3-adaptive = "1.0.0"
 compose-icons = "1.1.1"
+material3-adaptive = "1.0.0"
 compose-settings = "2.4.0"
+androidx-navigation-compose = "2.8.0-alpha10"
+androidx-material-navigation = "1.7.0-beta02"
 filekit-compose = "0.8.1"
 # Multiplatform settings
 multiplatform-settings = "1.1.1"
@@ -275,10 +275,6 @@ androidx-material = { group = "com.google.android.material", name = "material", 
 androidx-constraintlayout = { group = "androidx.constraintlayout", name = "constraintlayout", version.ref = "androidx-constraint-layout" }
 
 # Compose multiplatform
-androidx-lifecycle-viewmodel = { group = "org.jetbrains.androidx.lifecycle", name = "lifecycle-viewmodel", version.ref = "androidx-lifecycle" }
-androidx-lifecycle-runtime-compose = { group = "org.jetbrains.androidx.lifecycle", name = "lifecycle-runtime-compose", version.ref = "androidx-lifecycle" }
-androidx-navigation-compose = { module = "org.jetbrains.androidx.navigation:navigation-compose", version.ref = "navigation-compose" }
-androidx-material-navigation = { module = "org.jetbrains.compose.material:material-navigation", version.ref = "material-navigation" }
 # icons
 compose-icons-css-gg = { module = "br.com.devsrsouza.compose.icons:css-gg", version.ref = "compose-icons" }
 compose-icons-weather-icons = { module = "br.com.devsrsouza.compose.icons:erikflowers-weather-icons", version.ref = "compose-icons" }
@@ -299,6 +295,12 @@ material3-adaptive-navigation = { module = "org.jetbrains.compose.material3.adap
 # settings ui
 compose-settings-ui = { group = "com.github.alorma.compose-settings", name = "ui-tiles", version.ref = "compose-settings" }
 compose-settings-ui-extended = { group = "com.github.alorma.compose-settings", name = "ui-tiles-extended", version.ref = "compose-settings" }
+# lifecycle
+androidx-lifecycle-viewmodel = { group = "org.jetbrains.androidx.lifecycle", name = "lifecycle-viewmodel", version.ref = "androidx-lifecycle" }
+androidx-lifecycle-runtime-compose = { group = "org.jetbrains.androidx.lifecycle", name = "lifecycle-runtime-compose", version.ref = "androidx-lifecycle" }
+# navigation
+androidx-navigation-compose = { module = "org.jetbrains.androidx.navigation:navigation-compose", version.ref = "androidx-navigation-compose" }
+androidx-material-navigation = { module = "org.jetbrains.compose.material:material-navigation", version.ref = "androidx-material-navigation" }
 
 # File picker
 filekit-compose = { module = "io.github.vinceglb:filekit-compose", version.ref = "filekit-compose" }
@@ -584,13 +586,15 @@ material3-adaptive = [
     "material3-adaptive-layout",
     "material3-adaptive-navigation"
 ]
-androidx-lifecycle = [
-    "androidx-lifecycle-viewmodel",
-    "androidx-lifecycle-runtime-compose"
-]
 compose-settings-ui = [
     "compose-settings-ui",
     "compose-settings-ui-extended"
+]
+androidx-multiplatform = [
+    "androidx-lifecycle-viewmodel",
+    "androidx-lifecycle-runtime-compose",
+    "androidx-navigation-compose",
+    "androidx-material-navigation"
 ]
 
 # Compass geolocation
