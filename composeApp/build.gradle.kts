@@ -15,7 +15,3 @@ kotlin {
 room {
     schemaDirectory("$projectDir/schemas")
 }
-
-dependencies {
-    debugImplementation(compose.uiTooling)
-}

@@ -3,6 +3,7 @@ package plugin.cmp
 import com.android.build.gradle.BaseExtension
 import extension.bundle
 import extension.config.configComposeAndroidBaseExtension
+import extension.config.debugImplementation
 import extension.id
 import extension.lib
 import org.gradle.api.Plugin
@@ -76,7 +77,9 @@ internal class CMPPlugin(
                     }
                 }
 
-                
+                dependencies.apply {
+                    debugImplementation(composeDeps.uiTooling)
+                }
             }
         }
 }
