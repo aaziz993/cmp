@@ -6,6 +6,7 @@ import extension.config.configJavaPluginExtension
 import extension.config.implementation
 import extension.id
 import extension.lib
+import extension.version
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.plugins.JavaApplication
@@ -42,36 +43,51 @@ public class JavaAppPlugin : Plugin<Project> {
                     implementation(lib("reflections"))
                     implementation(lib("kotlinx.datetime"))
                     implementation(lib("bignum"))
-                    implementation(bundle("ktor.serialization"))
                     implementation(lib("kasechange"))
                     implementation(lib("jackson.dataformat.xml"))
                     implementation(lib("itext.core"))
                     implementation(lib("jackcess"))
-                    implementation(lib("sqldelight.sqlite.driver"))
-                    implementation(lib("room.runtime"))
+                    implementation(lib("jnativehook"))
+                    implementation(bundle("jna"))
+                    implementation(bundle("webcam.capture"))
+                    implementation(lib("commons.net"))
+                    implementation(lib("sshj"))
+                    implementation(lib("jsch"))
+                    implementation(bundle("kotlinx.serialization"))
+                    implementation(bundle("serialization"))
+                    implementation(lib("kotlinx.coroutines.swing"))
+                    implementation(lib("cryptography.provider.jdk"))
+                    implementation(bundle("pgpainless"))
+                    implementation(bundle("jdbc"))
+                    implementation(lib("dataframe"))
+                    implementation(bundle("r2dbc"))
                     implementation(bundle("kotysa"))
+                    implementation(bundle("ktor.serialization"))
                     implementation(bundle("ktor.server"))
                     implementation(bundle("ktor.client"))
+                    implementation(lib("ktor.client.okhttp"))
                     implementation(lib("ktorfit.lib"))
                     implementation(bundle("kgraphql"))
                     implementation(bundle("metrics"))
                     implementation(bundle("koin.ktor"))
-                    kspJvm(lib("arrow.optics.ksp.plugin"))
-                    kspJvm(lib("room.compiler"))
-                    kspJvm(lib("ktorfit.ksp"))
-                    kspJvm(lib("koin.ksp.compiler"))
+                    // KSP
+                    ksp(lib("arrow.optics.ksp.plugin"))
+                    ksp(lib("room.compiler"))
+                    ksp(lib("ktorfit.ksp"))
+                    ksp(lib("koin.ksp.compiler"))
+                    // Testing
                     testImplementation(bundle("kotest.multiplatform"))
                     testImplementation(lib("kotest.runner.junit5"))
                     testImplementation(lib("kotlinx.coroutines.test"))
                     testImplementation(lib("ktor.server.test.host"))
-                    testImplementation(bundle("koin-test"))
-                    
+                    testImplementation(lib("koin.test.junit5"))
+
                     // To enable HTTP/2 in Netty, use OpenSSL bindings (tcnative netty port).
                     // The below shows how to add a native implementation (statically linked BoringSSL library, a fork of OpenSSL)
                     if (tcnativeClassifier != null) {
-                        implementation("io.netty:netty-tcnative-boringssl-static:${lib("tcnative")}:$tcnativeClassifier")
+                        implementation("io.netty:netty-tcnative-boringssl-static:${version("tcnative")}:$tcnativeClassifier")
                     } else {
-                        implementation("io.netty:netty-tcnative-boringssl-static:${lib("tcnative")}")
+                        implementation("io.netty:netty-tcnative-boringssl-static:${version("tcnative")}")
                     }
                 }
 

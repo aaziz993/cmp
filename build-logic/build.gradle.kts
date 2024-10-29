@@ -116,7 +116,7 @@ gradlePlugin {
             implementationClass = "plugin.settings.SettingsPlugin"
         }
 
-        register("Root") {
+        register("RootPlugin") {
             id =
                 libs.plugins.root.convention
                     .get()
@@ -124,12 +124,20 @@ gradlePlugin {
             implementationClass = "plugin.root.RootPlugin"
         }
 
-        register("KMPLib") {
+        register("KMPLibplugin") {
             id =
                 libs.plugins.kmp.lib.convention
                     .get()
                     .pluginId
             implementationClass = "plugin.kmp.KMPLibPlugin"
+        }
+
+        register("JavaAppPlugin") {
+            id =
+                libs.plugins.java.app.convention
+                    .get()
+                    .pluginId
+            implementationClass = "plugin.java.JavaAppPlugin"
         }
     }
 }

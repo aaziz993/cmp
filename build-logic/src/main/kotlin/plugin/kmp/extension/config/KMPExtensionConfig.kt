@@ -172,19 +172,19 @@ internal fun Project.configKMPExtension(extension: KotlinMultiplatformExtension)
                 implementation(lib("compass.geocoder.web.googlemaps"))
             }
 
-//            wasmJsMain {
-//                dependencies {
-//                    implementation(npm("@js-joda/timezone", version("js.joda.timezone").toString()))
-//                    implementation(devNpm("copy-webpack-plugin", version("copy.webpack.plugin").toString()))
-//                    implementation(npm("encoding-japanese", version("encoding.japanese").toString()))
-//                    implementation(npm("@types/encoding-japanese", version("encoding.japanese.types").toString()))
-//                    // The synchronous sqljs-driver (pre-2.0) has been replaced with the asynchronous web-worker-driver. This requires configuring the generateAsync setting in your Gradle configuration.
-//                    implementation(lib("sqldelight.web.worker.driver"))
-//                    implementation(lib("ktor.client.js"))
-//                    implementation(lib("compass.geolocation.browser"))
-//                    implementation(lib("worldwind"))
-//                }
-//            }
+            wasmJsMain {
+                dependencies {
+                    implementation(npm("@js-joda/timezone", version("js.joda.timezone").toString()))
+                    implementation(devNpm("copy-webpack-plugin", version("copy.webpack.plugin").toString()))
+                    implementation(npm("encoding-japanese", version("encoding.japanese").toString()))
+                    implementation(npm("@types/encoding-japanese", version("encoding.japanese.types").toString()))
+                    // The synchronous sqljs-driver (pre-2.0) has been replaced with the asynchronous web-worker-driver. This requires configuring the generateAsync setting in your Gradle configuration.
+                    implementation(lib("sqldelight.web.worker.driver"))
+                    implementation(lib("compass.geolocation.browser"))
+                    implementation(lib("ktor.client.js"))
+                    implementation(lib("worldwind"))
+                }
+            }
         }
 
         // https://kotlinlang.org/docs/native-objc-interop.html#export-of-kdoc-comments-to-generated-objective-c-headers

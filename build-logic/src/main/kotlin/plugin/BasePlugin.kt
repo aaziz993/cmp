@@ -29,6 +29,7 @@ import org.jetbrains.kotlin.powerassert.gradle.PowerAssertGradleExtension
 public class BasePlugin : Plugin<Project> {
         override fun apply(target: Project): Unit = with(target) {
                 with(pluginManager) {
+                        apply(id("kover"))
                         apply(id("spotless"))
                         apply(id("sonarqube"))
                         apply(id("dokka"))
@@ -37,8 +38,6 @@ public class BasePlugin : Plugin<Project> {
                         apply(id("noarg"))
                         apply(id("allopen"))
                         apply(id("kotlin.serialization"))
-                        apply(id("sqldelight"))
-                        apply(id("room"))
                         apply(id("dataframe"))
                         apply(id("apollo3"))
                         apply(id("power.assert"))

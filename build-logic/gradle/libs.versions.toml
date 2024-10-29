@@ -58,7 +58,7 @@ tomlkt = "0.3.7"
 yamlkt = "0.13.0"
 kotlinx-coroutines = "1.9.0"
 stately-concurrency = "2.1.0"
-atomicfu = "0.25.0"
+atomicfu = "0.26.0"
 kasechange = "1.4.1"
 bignum = "0.3.9"
 cryptography = "0.3.1"
@@ -802,3 +802,4 @@ apollo3 = { id = "com.apollographql.apollo3", version.ref = "apollo3" }
 settings-convention = { id = "settings.convention" }
 root-convention = { id = "root.convention" }
 kmp-lib-convention = { id = "kmp.lib.convention" }
+java-app-convention = { id = "java.app.convention" }

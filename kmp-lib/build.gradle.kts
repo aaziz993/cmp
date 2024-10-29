@@ -1,9 +1,5 @@
 plugins {
-    id(
-        projectLibs.plugins.kmp.lib.convention
-            .get()
-            .pluginId,
-    )
+    id(projectLibs.plugins.kmp.lib.convention.get().pluginId)
 }
 
 sqldelight {

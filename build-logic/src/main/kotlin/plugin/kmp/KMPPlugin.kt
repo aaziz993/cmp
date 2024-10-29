@@ -30,7 +30,7 @@ internal class KMPPlugin(
                 apply(id("kotlin.multiplatform"))
                 apply(androidPluginId)
                 apply(id("sqldelight"))
-                apply(id("kover"))
+                apply(id("room"))
             }
 
             extensions.configure<KotlinProjectExtension>(::configKotlinProjectExtension)
