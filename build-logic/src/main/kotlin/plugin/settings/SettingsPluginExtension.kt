@@ -65,6 +65,8 @@ public open class SettingsPluginExtension(
 
             }
         }
+
+        logger.info("Applied settings plugin extension")
     }
 
     public companion object {

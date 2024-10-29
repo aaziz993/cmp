@@ -29,7 +29,7 @@ internal class KMPPlugin(
             with(pluginManager) {
                 apply(id("kotlin.multiplatform"))
                 apply(androidPluginId)
-                apply(id("sql.delight"))
+                apply(id("sqldelight"))
                 apply(id("kover"))
             }
 
@@ -45,6 +45,9 @@ internal class KMPPlugin(
             extensions.configure<KoverProjectExtension>(::configKoverProjectExtension)
 
             dependencies.apply {
+                kspCommonMainMetadata(lib("arrow.optics.ksp.plugin"))
+                kspCommonMainMetadata(lib("room.compiler"))
+                kspCommonMainMetadata(lib("ktorfit.ksp"))
                 // Use import org.koin.ksp.generated.*
                 kspCommonMainMetadata(lib("koin.ksp.compiler"))
             }

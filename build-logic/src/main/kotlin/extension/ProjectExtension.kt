@@ -17,7 +17,7 @@ internal val Project.libs: VersionCatalog
 
 internal fun Project.id(alias: String): String = libs.findPlugin(alias).get().get().pluginId
 
-internal fun Project.version(alias: String): VersionConstraint = libs.findVersion("android-compile-sdk").get()
+internal fun Project.version(alias: String): VersionConstraint = libs.findVersion(alias).get()
 
 internal fun Project.lib(alias: String): Provider<MinimalExternalModuleDependency> = libs.findLibrary(alias).get()
 

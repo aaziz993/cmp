@@ -1,9 +1,12 @@
 package plugin.kmp
 
+import com.android.build.gradle.LibraryExtension
 import extension.id
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import plugin.BaseLibPlugin
+import extension.config.configComposeAndroidLibExtension
+import org.gradle.kotlin.dsl.configure
 
 public class KMPLibPlugin : Plugin<Project> {
     override fun apply(target: Project): Unit =
@@ -13,7 +16,7 @@ public class KMPLibPlugin : Plugin<Project> {
             BaseLibPlugin().apply(target)
         }.also {
             with(target) {
-//                extensions.configure<LibraryExtension>(::configComposeAndroidLibExtension)
+                extensions.configure<LibraryExtension>(::configComposeAndroidLibExtension)
             }
         }
 }

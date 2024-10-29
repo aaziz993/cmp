@@ -41,7 +41,7 @@ internal fun Project.configAndroidBaseExtension(
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
 
-//        consumerProguardFiles(consumerProguardFile)
+        consumerProguardFiles(consumerProguardFile)
     }
 
     buildTypes {

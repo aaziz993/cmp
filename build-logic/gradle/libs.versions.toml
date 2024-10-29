@@ -6,6 +6,18 @@ foojay-resolver-convention = "0.8.0"
 build-config = "4.1.1"
 # pre-commit hooks
 gradle-pre-commit-git-hooks = "2.0.4"
+# generate code coverage report
+kover = "0.9.0-RC"
+# code format check and fix
+spotless = "6.25.0"
+# code analysis
+sonarqube = "5.0.0.4638"
+# create project documentation
+dokka = "1.9.20"
+# the tool that produces Kotlin source example files and tests from markdown documents with embedded snippets of Kotlin code
+knit = "0.5.0"
+# the tool allows dumping binary API of a JVM part of a Kotlin library that is public in the sense of Kotlin visibilities and ensures that the public binary API wasn't changed in a way that makes this change binary incompatible.
+binary-compatibility-validator = "0.16.3"
 # publishing
 vanniktech-maven-publish = "0.30.0"
 # Java
@@ -58,18 +70,6 @@ okio = "3.9.1"
 okio-extras = "1.1.3"
 junit = "4.13.2"
 kotest = "5.8.1"
-# generate code coverage report
-kover = "0.9.0-RC"
-# code format check and fix
-spotless = "6.25.0"
-# code analysis
-sonarqube = "5.0.0.4638"
-# create project documentation
-dokka = "1.9.20"
-# A tool that produces Kotlin source example files and tests from markdown documents with embedded snippets of Kotlin code
-knit = "0.5.0"
-# the tool allows dumping binary API of a JVM part of a Kotlin library that is public in the sense of Kotlin visibilities and ensures that the public binary API wasn't changed in a way that makes this change binary incompatible.
-binary-compatibility-validator = "0.16.3"
 # Android
 agp = "8.5.2"
 # in project version
@@ -82,14 +82,20 @@ android-target-sdk = "34"
 android-version-code = "1"
 # in project version
 android-version-name = "1.0"
-# Desktop
-# in project version
-desktop-package-version = "1.0.0"
-# Compose
 androidx-appcompat = "1.7.0"
+ktx = "1.9.3"
 androidx-constraint-layout = "2.1.4"
 androidx-core-ktx = "1.13.1"
 androidx-espresso-core = "3.6.1"
+# Desktop
+# in project version
+desktop-package-version = "1.0.0"
+# Web
+js-joda-timezone = "2.3.0"
+copy-webpack-plugin = "9.1.0"
+encoding-japanese = "2.2.0"
+encoding-japanese-types = "v2.0.5"
+# Compose
 androidx-lifecycle = "2.8.3"
 androidx-material = "1.12.0"
 androidx-test-junit = "1.2.1"
@@ -103,7 +109,7 @@ compose-settings = "2.4.0"
 filekit-compose = "0.8.1"
 # Multiplatform settings
 multiplatform-settings = "1.1.1"
-compass = "1.6.7"
+compass = "1.2.4"
 worldwind = "1.5.19"
 # Permissions
 permissions = "0.18.0"
@@ -111,11 +117,12 @@ permissions = "0.18.0"
 sqldelight = "2.0.2"
 # Room database
 room = "2.7.0-alpha10"
-# Web datetime
-js-joda-timezone = "2.3.0"
-# Kotysa ORM (postgresql, my sql, microsoft sql server, maria db, oracle, h 2 for jvm, android)
-kotysa = "3.2.2"
-kotysa-r2dbc = "3.2.1"
+# JDBC
+mariadb-java-client = "3.5.0"
+postgresql = "42.7.4"
+mysql-connector-j = "9.1.0"
+sqlite-jdbc = "3.47.0.0"
+mssql-jdbc = "12.8.1.jre11"
 # R2DBC
 r2dbc-pool = "1.0.1.RELEASE"
 r2dbc-h2 = "1.0.0.RELEASE"
@@ -124,10 +131,15 @@ r2dbc-mariadb = "1.1.4"
 r2dbc-mysql = "2.2.4"
 r2dbc-mssql = "1.0.2.RELEASE"
 r2dbc-postgresql = "1.0.3.RELEASE"
+# Kotysa ORM (postgresql, my sql, microsoft sql server, maria db, oracle, h 2 for jvm, android)
+kotysa = "3.2.2"
+kotysa-r2dbc = "3.2.1"
 # Ktor
 ktor = "3.0.0"
 ktor-swagger-ui = "2.9.0"
 ktorfit = "1.11.1"
+# http2
+tcnative = "2.0.62.Final"
 # GraphQL
 apollo3 = "4.0.0-beta.3"
 kgraphql = "0.19.0"
@@ -228,6 +240,12 @@ arrow-optics= { module = "io.arrow-kt:arrow-optics", version.ref = "arrow" }
 arrow-optics-ksp-plugin = { module = "io.arrow-kt:arrow-optics-ksp-plugin", version.ref = "arrow" }
 # dataframe for data pipeline processing
 dataframe = { module = "org.jetbrains.kotlinx:dataframe", version.ref = "dataframe" }
+dataframe-jdbc = { module = "org.jetbrains.kotlinx:dataframe-jdbc", version.ref = "dataframe" }
+mariadb-java-client = { module ="org.mariadb.jdbc:mariadb-java-client", version.ref = "mariadb-java-client" }
+postgresql = { module ="org.postgresql:postgresql", version.ref = "postgresql" }
+mysql-connector-j = { module ="com.mysql:mysql-connector-j", version.ref = "mysql-connector-j" }
+sqlite-jdbc = { module ="org.xerial:sqlite-jdbc", version.ref = "sqlite-jdbc" }
+mssql-jdbc = { module ="com.microsoft.sqlserver:mssql-jdbc", version.ref = "mssql-jdbc" }
 # file system
 okio = { module = "com.squareup.okio:okio", version.ref = "okio" }
 okio-nodefilesystem = { module = "com.squareup.okio:okio-nodefilesystem", version.ref = "okio" }
@@ -248,6 +266,8 @@ android-gradle-plugin = { group = "com.android.tools.build", name = "gradle", ve
 android-documentation-plugin = { module = "org.jetbrains.dokka:android-documentation-plugin", version.ref = "dokka" }
 androidx-activity-compose = { module = "androidx.activity:activity-compose", version.ref = "androidx-activity-compose" }
 androidx-appcompat = { group = "androidx.appcompat", name = "appcompat", version.ref = "androidx-appcompat" }
+androidx-fragment-ktx = { module = "androidx.fragment:fragment-ktx", version.ref = "ktx" }
+androidx-activity-ktx = { module = "androidx.activity:activity-ktx", version.ref = "ktx" }
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "androidx-core-ktx" }
 androidx-test-junit = { group = "androidx.test.ext", name = "junit", version.ref = "androidx-test-junit" }
 androidx-espresso-core = { group = "androidx.test.espresso", name = "espresso-core", version.ref = "androidx-espresso-core" }
@@ -446,13 +466,13 @@ metrics-jmx = { module = "io.dropwizard.metrics:metrics-jmx", version.ref = "dro
 # Koin DI
 koin-core = { module = "io.insert-koin:koin-core", version.ref = "koin" }
 koin-core-coroutines = { module = "io.insert-koin:koin-core-coroutines", version.ref = "koin" }
+koin-test = { module = "io.insert-koin:koin-test", version.ref = "koin" }
+koin-annotations = { module = "io.insert-koin:koin-annotations", version.ref = "koin-annotations" }
+koin-ksp-compiler = { module = "io.insert-koin:koin-ksp-compiler", version.ref = "koin-annotations" }
 koin-compose = { module = "io.insert-koin:koin-compose", version.ref = "koin" }
 koin-compose-viewmodel = { module = "io.insert-koin:koin-compose-viewmodel", version.ref = "koin" }
 koin-compose-viewmodel-navigation = { module = "io.insert-koin:koin-compose-viewmodel-navigation", version.ref = "koin" }
 koin-android = { module = "io.insert-koin:koin-android", version.ref = "koin" }
-koin-test = { module = "io.insert-koin:koin-test", version.ref = "koin" }
-koin-annotations = { module = "io.insert-koin:koin-annotations", version.ref = "koin-annotations" }
-koin-ksp-compiler = { module = "io.insert-koin:koin-ksp-compiler", version.ref = "koin-annotations" }
 koin-logger-slf4j = { module = "io.insert-koin:koin-logger-slf4j", version.ref = "koin" }
 koin-ktor = { module = "io.insert-koin:koin-ktor", version.ref = "koin" }
 koin-test-junit5 = { module = "io.insert-koin:koin-test-junit5", version.ref = "koin" }
@@ -483,8 +503,8 @@ webcam-capture = [
     "webcam-capture-driver-ffmpeg-cli",
 ]
 # Kotlin
+# official serialization
 kotlinx-serialization = [
-    # official serialization
     "kotlinx-serialization-json",
     "kotlinx-serialization-properties",
     "kotlinx-serialization-protobuf",
@@ -493,7 +513,9 @@ kotlinx-serialization = [
     "kotlinx-serialization-flf",
     "kotlinx-serialization-json-okio",
     #    "kotlinx-serialization-smile-core"
-    # communoty supported serialization
+]
+# communoty supported serialization
+serialization = [
     "xmlutil-serialization",
     "serialization-msgpack",
     "serialization-msgpack-timestamp-extension",
@@ -592,10 +614,17 @@ sqldelight = [
     "sqldelight-primitive-adapters"
 ]
 
-# Kotysa ORM
-kotysa = [
-    "kotysa",
-    "kotysa-r2dbc",
+# JDBC
+jdbc = [
+    "mariadb-java-client",
+    "postgresql",
+    "mysql-connector-j",
+    "sqlite-jdbc",
+    "mssql-jdbc",
+]
+
+# R2DBC
+r2dbc = [
     "r2dbc-pool",
     "r2dbc-h2",
     "r2dbc-mariadb",
@@ -603,6 +632,12 @@ kotysa = [
     "r2dbc-mssql",
     "r2dbc-postgresql",
     "r2dbc-oracle",
+]
+
+# Kotysa ORM
+kotysa = [
+    "kotysa",
+    "kotysa-r2dbc",
 ]
 
 # Ktor
@@ -705,6 +740,18 @@ foojay-resolver-convention = { id = "org.gradle.toolchains.foojay-resolver-conve
 build-config = { id = "com.github.gmazzo.buildconfig", version.ref = "build-config" }
 # pre-commit hooks
 gradle-pre-commit-git-hooks = { id = "org.danilopianini.gradle-pre-commit-git-hooks", version.ref = "gradle-pre-commit-git-hooks" }
+# generate coverage analysis
+kover = { id = "org.jetbrains.kotlinx.kover", version.ref = "kover" }
+# code format check and fix
+spotless = { id = "com.diffplug.spotless", version.ref = "spotless" }
+# code analysis
+sonarqube = { id = "org.sonarqube", version.ref = "sonarqube" }
+# create project documentation
+dokka = { id = "org.jetbrains.dokka", version.ref = "dokka" }
+# the tool that produces Kotlin source example files and tests from markdown documents with embedded snippets of Kotlin code
+knit = { id = "org.jetbrains.kotlinx.knit", version.ref = "knit" }
+# the tool allows dumping binary API of a JVM part of a Kotlin library that is public in the sense of Kotlin visibilities and ensures that the public binary API wasn't changed in a way that makes this change binary incompatible.
+binary-compatibility-validator = { id = "org.jetbrains.kotlinx.binary-compatibility-validator", version.ref = "binary-compatibility-validator" }
 # publishing
 vanniktech-maven-publish = { id = "com.vanniktech.maven.publish", version.ref = "vanniktech-maven-publish" }
 # Kotlin
@@ -722,18 +769,8 @@ kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
 kotlin-multiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref = "kotlin" }
 # data pipeline processing
 dataframe = { id = "org.jetbrains.kotlinx.dataframe", version.ref = "dataframe" }
-# generate coverage analysis
-kover = { id = "org.jetbrains.kotlinx.kover", version.ref = "kover" }
-# code format check and fix
-spotless = { id = "com.diffplug.spotless", version.ref = "spotless" }
-# code analysis
-sonarqube = { id = "org.sonarqube", version.ref = "sonarqube" }
-# create project documentation
-dokka = { id = "org.jetbrains.dokka", version.ref = "dokka" }
-# the tool that produces Kotlin source example files and tests from markdown documents with embedded snippets of Kotlin code
-knit = { id = "org.jetbrains.kotlinx.knit", version.ref = "knit" }
-# the tool allows dumping binary API of a JVM part of a Kotlin library that is public in the sense of Kotlin visibilities and ensures that the public binary API wasn't changed in a way that makes this change binary incompatible.
-binary-compatibility-validator = { id = "org.jetbrains.kotlinx.binary-compatibility-validator", version.ref = "binary-compatibility-validator" }
+# providing detailed failure messages with contextual information during testing.
+power-assert = { id="org.jetbrains.kotlin.plugin.power-assert", version.ref = "kotlin" }
 # testing
 kotest-multiplatform = { id = "io.kotest.multiplatform", version.ref = "kotest" }
 

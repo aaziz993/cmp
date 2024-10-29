@@ -6,15 +6,19 @@ plugins {
     )
 }
 
-//sqldelight {
-//    databases {
-//        //Note: Name of your Database and .sq file should be same
-//        create("KeyValue") {
-//            packageName.set("core")
-//            // Required by asynchronous web-worker-driver for js.
-//            generateAsync = true
-//        }
-//    }
-//    // To avoid library linking issues.
-//    linkSqlite = true
-//}
+sqldelight {
+    databases {
+        //Note: Name of your Database and .sq file should be same
+        create("KeyValue") {
+            packageName.set("core.data.database.sqldelight")
+            // Required by asynchronous web-worker-driver for js.
+            generateAsync = true
+        }
+    }
+    // To avoid library linking issues.
+    linkSqlite = true
+}
+
+room {
+    schemaDirectory("$projectDir/schemas")
+}

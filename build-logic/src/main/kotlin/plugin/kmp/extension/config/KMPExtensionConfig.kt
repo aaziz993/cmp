@@ -71,6 +71,7 @@ internal fun Project.configKMPExtension(extension: KotlinMultiplatformExtension)
                     implementation(lib("napier"))
                     implementation(lib("kotlinx.datetime"))
                     implementation(lib("kotlinx.uuid.core"))
+                    implementation(bundle("kotlinx.serialization"))
                     implementation(bundle("serialization"))
                     implementation(bundle("coroutines"))
                     implementation(lib("atomicfu"))
@@ -82,10 +83,10 @@ internal fun Project.configKMPExtension(extension: KotlinMultiplatformExtension)
                     implementation(bundle("okio"))
                     implementation(bundle("multiplatform.settings"))
                     implementation(bundle("sqldelight"))
-                    implementation(lib("room"))
+                    implementation(lib("room.runtime"))
                     implementation(bundle("ktor.serialization"))
                     implementation(lib("ktorfit.lib"))
-                    implementation(lib("apollo"))
+                    implementation(bundle("apollo"))
                     implementation(bundle("ktor.client"))
                     implementation(bundle("compass"))
                     implementation(bundle("koin.kotlin.multiplatform"))
@@ -93,14 +94,14 @@ internal fun Project.configKMPExtension(extension: KotlinMultiplatformExtension)
             }
 
             commonTest.dependencies {
-                implementation(bundle("kotest"))
+                implementation(bundle("kotest.multiplatform"))
                 implementation(lib("kotlinx.coroutines.test"))
                 implementation(lib("koin.test"))
                 implementation(lib("okio.fakefilesystem"))
             }
 
             // Intermediate dependencies for jvm and android
-            getByName("jvmAndAndroid").dependencies {
+            getByName("jvmAndAndroidMain").dependencies {
                 implementation(lib("itext.core"))
                 implementation(lib("cryptography.provider.jdk"))
                 implementation(bundle("pgpainless"))
@@ -120,14 +121,16 @@ internal fun Project.configKMPExtension(extension: KotlinMultiplatformExtension)
                 implementation(bundle("jna"))
                 implementation(bundle("webcam.capture"))
                 implementation(lib("kotlinx.coroutines.swing"))
-                implementation(lib("dataframe"))
                 implementation(lib("sqldelight.sqlite.driver"))
+                implementation(bundle("jdbc"))
+                implementation(bundle("r2dbc"))
                 implementation(bundle("kotysa"))
+                implementation(lib("dataframe"))
                 implementation(bundle("ktor.server"))
                 implementation(bundle("kgraphql"))
                 implementation(bundle("metrics"))
-                implementation(bundle("koin.ktor"))
                 implementation(lib("worldwind"))
+                implementation(bundle("koin.ktor"))
             }
 
             jvmTest.dependencies {
@@ -147,10 +150,11 @@ internal fun Project.configKMPExtension(extension: KotlinMultiplatformExtension)
 
             androidMain.dependencies {
                 implementation(lib("kotlinx.coroutines.android"))
-                implementation(lib("android-documentation-plugin"))
+                implementation(lib("android.documentation.plugin"))
                 implementation(lib("androidx.activity.ktx"))
                 implementation(lib("androidx.fragment.ktx"))
                 implementation(lib("sqldelight.android.driver"))
+                implementation(lib("room.runtime.android"))
                 implementation(lib("permissions"))
                 implementation(lib("worldwind"))
             }
@@ -168,34 +172,19 @@ internal fun Project.configKMPExtension(extension: KotlinMultiplatformExtension)
                 implementation(lib("compass.geocoder.web.googlemaps"))
             }
 
-            wasmJsMain {
-                dependencies {
-                    implementation(npm("@js-joda/timezone", version("js.joda.timezone").toString()))
-                    implementation(
-                        devNpm(
-                            "copy-webpack-plugin",
-                            version("copy.webpack.plugin").toString()
-                        ),
-                    )
-                    implementation(
-                        npm(
-                            "encoding-japanese",
-                            version("encoding.japanese").toString()
-                        ),
-                    )
-                    implementation(
-                        npm(
-                            "@types/encoding-japanese",
-                            version("encoding.japanese.types").toString()
-                        ),
-                    )
-                    // The synchronous sqljs-driver (pre-2.0) has been replaced with the asynchronous web-worker-driver. This requires configuring the generateAsync setting in your Gradle configuration.
-                    implementation(lib("sqldelight.web.worker.driver"))
-                    implementation(lib("ktor.client.js"))
-                    implementation(lib("compass.geolocation.browser"))
-                    implementation(lib("worldwind"))
-                }
-            }
+//            wasmJsMain {
+//                dependencies {
+//                    implementation(npm("@js-joda/timezone", version("js.joda.timezone").toString()))
+//                    implementation(devNpm("copy-webpack-plugin", version("copy.webpack.plugin").toString()))
+//                    implementation(npm("encoding-japanese", version("encoding.japanese").toString()))
+//                    implementation(npm("@types/encoding-japanese", version("encoding.japanese.types").toString()))
+//                    // The synchronous sqljs-driver (pre-2.0) has been replaced with the asynchronous web-worker-driver. This requires configuring the generateAsync setting in your Gradle configuration.
+//                    implementation(lib("sqldelight.web.worker.driver"))
+//                    implementation(lib("ktor.client.js"))
+//                    implementation(lib("compass.geolocation.browser"))
+//                    implementation(lib("worldwind"))
+//                }
+//            }
         }
 
         // https://kotlinlang.org/docs/native-objc-interop.html#export-of-kdoc-comments-to-generated-objective-c-headers

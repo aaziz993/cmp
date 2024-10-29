@@ -48,7 +48,6 @@ dependencies {
     runtimeOnly(libs.plugins.allopen.toDep())
     // multiplatform
     implementation(libs.plugins.kotlin.multiplatform.toDep())
-    runtimeOnly(libs.plugins.kotest.multiplatform.toDep())
     // compiler processor for generating code during compilation
     implementation(libs.plugins.ksp.toDep())
     // generate coverage report
@@ -65,7 +64,16 @@ dependencies {
     runtimeOnly(libs.plugins.dokka.toDep())
     // provides a repository for downloading JVMs
     implementation(libs.plugins.binary.compatibility.validator.toDep())
+    // the tool that produces Kotlin source example files and tests from markdown documents with embedded snippets of Kotlin code
     implementation(libs.plugins.knit.toDep())
+    runtimeOnly(libs.plugins.kotlin.jvm.toDep())
+    // data pipleline processing
+    runtimeOnly(libs.plugins.dataframe.toDep())
+    // providing detailed failure messages with contextual information during testing.
+    implementation(libs.plugins.power.assert.toDep())
+    runtimeOnly(libs.plugins.power.assert.toDep())
+    // testing
+    runtimeOnly(libs.plugins.kotest.multiplatform.toDep())
 
     // Compose multiplatform
     implementation(libs.plugins.compose.multiplatform.toDep())
@@ -80,6 +88,7 @@ dependencies {
 
     // SQLDelight
     implementation(libs.plugins.sqldelight.toDep())
+    runtimeOnly(libs.plugins.sqldelight.toDep())
 
     // Room
     implementation(libs.plugins.room.toDep())
