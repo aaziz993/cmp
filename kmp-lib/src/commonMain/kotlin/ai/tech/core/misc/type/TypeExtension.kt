@@ -378,7 +378,7 @@ public inline fun <T : R, R> T.letIf(
 public fun Any.accessor(
     json: Json = Json.Default,
     yaml: Yaml = Yaml.Default,
-    stringTransformer: (String) -> Any = {
+    stringTransform: (String) -> Any = {
         when (it.extension) {
             "json" -> json.decode<Map<*, *>>(it)
             "xml" -> throw NotImplementedError()
@@ -389,20 +389,20 @@ public fun Any.accessor(
             else -> throw IllegalArgumentException("Unknown string \"$it\" extension")
         }
     },
-    listTransformer: (List<Any?>) -> Any = { it },
-    keyTransformer: (Any?) -> Any? = { it },
+    listTransform: (List<Any?>) -> Any = { it },
+    keyTransform: (Any?) -> Any? = { it },
     parentKey: Any? = null,
 ): Accessor =
     when (val value = when (this) {
-        is String -> stringTransformer(this)
-        is List<*> -> listTransformer(this)
+        is String -> stringTransform(this)
+        is List<*> -> listTransform(this)
         else -> this
     }) {
         is List<*> -> ListAccessor(value, parentKey)
 
-        is Map<*, *> -> MapLikeAccessor(value, value, keyTransformer, parentKey)
+        is Map<*, *> -> MapLikeAccessor(value, value, keyTransform, parentKey)
 
-        else -> MapLikeAccessor(value, json.toGeneric<Map<*, *>>(value), keyTransformer, parentKey)
+        else -> MapLikeAccessor(value, json.toGeneric<Map<*, *>>(value), keyTransform, parentKey)
     }
 
 public inline fun <T : Any> T.accessorOrNull(
@@ -536,7 +536,7 @@ public fun Any.assign(
 //}, TypeResolver(kClass))
 
 @Suppress("UNCHECKED_CAST")
-public fun <T : Any> T.transform(
+public fun <T : Any> T.map(
     transform: (transforms: List<T>, value: Any?) -> Iterator<Any?>?,
     removeLast: (transforms: List<T>, transform: Any?) -> Unit
 ) {
