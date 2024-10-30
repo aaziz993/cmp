@@ -1,0 +1,259 @@
+{
+  "input": [
+    "<nodeModules>/@types/encoding-japanese/index.d.ts",
+    "<nodeModules>/openpgp/openpgp.d.ts",
+    "<nodeModules>/@openpgp/web-stream-tools/**/*.d.ts",
+    "<nodeModules>/basic-ftp/dist/*.d.ts"
+  ],
+  "output": "src/jsMain/kotlin/generated",
+  "libraryName": "generated",
+  "libraryNameOutputPrefix": false,
+  "granularity": "top-level",
+  "ignoreOutput": [
+    "**/base64Decode.kt",
+    "**/base64Encode.kt",
+    "**/codeToString.kt",
+    "**/ConvertOptions.kt",
+    "**/detect.kt",
+    "**/EncodingDetection.kt",
+    "**/index.kt",
+    "**/stringToCode.kt",
+    "**/toHankakuCase.kt",
+    "**/toHankakuSpace.kt",
+    "**/toHankanaCase.kt",
+    "**/toHiraganaCase.kt",
+    "**/toKatakanaCase.kt",
+    "**/toZenkakuCase.kt",
+    "**/toZenkakuSpace.kt",
+    "**/toZenkanaCase.kt",
+    "**/urlDecode.kt",
+    "**/urlEncode.kt"
+  ],
+  "importInjector": {
+    "encoding/convert.kt": [
+      "js.buffer.ArrayBuffer"
+    ],
+    "openpgp/BasePacket.kt": [
+      "js.typedarrays.Uint8Array"
+    ],
+    "openpgp/BasePublicKeyPacket.kt": [
+      "js.date.Date",
+      "js.typedarrays.Uint8Array"
+    ],
+    "openpgp/BaseSecretKeyPacket.kt": [
+      "js.promise.Promise"
+    ],
+    "openpgp/CleartextMessage.kt": [
+      "js.date.Date",
+      "js.promise.Promise"
+    ],
+    "openpgp/createCleartextMessage.kt": [
+      "js.promise.Promise"
+    ],
+    "openpgp/createMessage.kt": [
+      "js.promise.Promise"
+    ],
+    "openpgp/CreateMessageOptions.kt": [
+      "js.date.Date"
+    ],
+    "openpgp/decrypt.kt": [
+      "js.promise.Promise"
+    ],
+    "openpgp/decryptKey.kt": [
+      "js.promise.Promise"
+    ],
+    "openpgp/DecryptOptions.kt": [
+      "js.date.Date"
+    ],
+    "openpgp/decryptSessionKeys.kt": [
+      "js.promise.Promise"
+    ],
+    "openpgp/DecryptSessionKeysOptions.kt": [
+      "js.date.Date"
+    ],
+    "openpgp/encrypt.kt": [
+      "js.promise.Promise",
+      "js.typedarrays.Uint8Array"
+    ],
+    "openpgp/encryptKey.kt": [
+      "js.promise.Promise"
+    ],
+    "openpgp/EncryptOptions.kt": [
+      "js.date.Date"
+    ],
+    "openpgp/encryptSessionKey.kt": [
+      "js.promise.Promise"
+    ],
+    "openpgp/EncryptSessionKeyOptions.kt": [
+      "js.date.Date"
+    ],
+    "openpgp/generateKey.kt": [
+      "js.promise.Promise"
+    ],
+    "openpgp/GenerateKeyOptions.kt": [
+      "js.date.Date"
+    ],
+    "openpgp/generateSessionKey.kt": [
+      "js.promise.Promise"
+    ],
+    "openpgp/GenerateSessionKeyOptions.kt": [
+      "js.date.Date"
+    ],
+    "openpgp/Key.kt": [
+      "js.date.Date",
+      "js.promise.Promise",
+      "js.typedarrays.Uint8Array"
+    ],
+    "openpgp/lib/Data.kt": [
+      "web.streams.ReadableStream"
+    ],
+    "openpgp/lib/isStream.kt": [
+      "web.streams.ReadableStream"
+    ],
+    "openpgp/lib/MaybeStream.kt": [
+      "web.streams.ReadableStream"
+    ],
+    "openpgp/lib/NodeWebStream.kt": [
+      "web.streams.ReadableStream"
+    ],
+    "openpgp/lib/readToEnd.kt": [
+      "js.promise.Promise",
+      "web.streams.ReadableStream"
+    ],
+    "openpgp/lib/slice.kt": [
+      "web.streams.ReadableStream"
+    ],
+    "openpgp/lib/Stream.kt": [
+      "web.streams.ReadableStream"
+    ],
+    "openpgp/lib/toStream.kt": [
+      "web.streams.ReadableStream"
+    ],
+    "openpgp/lib/WebStream.kt": [
+      "web.streams.ReadableStream"
+    ],
+    "openpgp/Message.kt": [
+      "js.date.Date",
+      "js.promise.Promise",
+      "js.typedarrays.Uint8Array"
+    ],
+    "openpgp/OnePassSignaturePacket.kt": [
+      "js.promise.Promise"
+    ],
+    "openpgp/PacketList.kt": [
+      "js.typedarrays.Uint8Array"
+    ],
+    "openpgp/PrivateKey.kt": [
+      "js.date.Date",
+      "js.promise.Promise"
+    ],
+    "openpgp/RawNotation.kt": [
+      "js.typedarrays.Uint8Array"
+    ],
+    "openpgp/readCleartextMessage.kt": [
+      "js.promise.Promise"
+    ],
+    "openpgp/readKey.kt": [
+      "js.promise.Promise"
+    ],
+    "openpgp/ReadKeyOptions.kt": [
+      "js.typedarrays.Uint8Array"
+    ],
+    "openpgp/readKeys.kt": [
+      "js.promise.Promise"
+    ],
+    "openpgp/ReadKeysOptions.kt": [
+      "js.typedarrays.Uint8Array"
+    ],
+    "openpgp/readMessage.kt": [
+      "js.promise.Promise"
+    ],
+    "openpgp/readPrivateKey.kt": [
+      "js.promise.Promise"
+    ],
+    "openpgp/ReadPrivateKeyOptions.kt": [
+      "js.typedarrays.Uint8Array"
+    ],
+    "openpgp/readPrivateKeys.kt": [
+      "js.promise.Promise"
+    ],
+    "openpgp/ReadPrivateKeysOptions.kt": [
+      "js.typedarrays.Uint8Array"
+    ],
+    "openpgp/readSignature.kt": [
+      "js.promise.Promise"
+    ],
+    "openpgp/ReadSignatureOptions.kt": [
+      "js.typedarrays.Uint8Array"
+    ],
+    "openpgp/reformatKey.kt": [
+      "js.promise.Promise"
+    ],
+    "openpgp/ReformatKeyOptions.kt": [
+      "js.date.Date"
+    ],
+    "openpgp/revokeKey.kt": [
+      "js.promise.Promise"
+    ],
+    "openpgp/RevokeKeyOptions.kt": [
+      "js.date.Date"
+    ],
+    "openpgp/SessionKey.kt": [
+      "js.typedarrays.Uint8Array"
+    ],
+    "openpgp/sign.kt": [
+      "js.promise.Promise",
+      "js.typedarrays.Uint8Array"
+    ],
+    "openpgp/SignaturePacket.kt": [
+      "js.date.Date",
+      "js.promise.Promise",
+      "js.typedarrays.Uint8Array"
+    ],
+    "openpgp/SignOptions.kt": [
+      "js.date.Date"
+    ],
+    "openpgp/Subkey.kt": [
+      "js.date.Date",
+      "js.promise.Promise"
+    ],
+    "openpgp/SubkeyOptions.kt": [
+      "js.date.Date"
+    ],
+    "openpgp/Temp11.kt": [
+      "js.typedarrays.Uint8Array"
+    ],
+    "openpgp/Temp7.kt": [
+      "js.typedarrays.Uint8Array"
+    ],
+    "openpgp/unarmor.kt": [
+      "js.promise.Promise"
+    ],
+    "openpgp/VerificationResult.kt": [
+      "js.promise.Promise"
+    ],
+    "openpgp/verify.kt": [
+      "js.promise.Promise",
+      "js.typedarrays.Uint8Array"
+    ],
+    "openpgp/VerifyOptions.kt": [
+      "js.date.Date"
+    ]
+  },
+  "moduleNameMapper": {
+    "generated/@types/encoding-japanese/index": "encoding-japanese",
+    "generated/@openpgp/web-stream-tools/lib/index": "@openpgp/web-stream-tools",
+    "generated/openpgp/openpgp": "openpgp"
+  },
+  "packageNameMapper": {
+    "@types.encoding-japanese": "encoding",
+    "@openpgp": "openpgp",
+    "basic-ftp/dist": "ftp"
+  },
+  "namespaceStrategy": {
+  },
+  "conflictResolutionStrategy": {
+
+  },
+  "inheritanceModifiers": "open"
+}
