@@ -1,6 +1,5 @@
 package ai.tech.core.misc.type.multiple
 
-import ai.tech.core.misc.type.multiple.model.AbstractAsyncIterator
 import ai.tech.core.misc.type.multiple.model.AsyncIterator
 import ai.tech.core.misc.type.multiple.model.ClosableAbstractAsyncIterator
 import ai.tech.core.misc.type.multiple.model.ClosableAbstractIterator
