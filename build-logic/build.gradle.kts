@@ -1,6 +1,7 @@
+@file:Suppress("DSL_SCOPE_VIOLATION")
+
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
-@Suppress("DSL_SCOPE_VIOLATION")
 plugins {
     `java-gradle-plugin`
     // Support convention plugins written in Kotlin.
@@ -174,9 +175,3 @@ fun Provider<PluginDependency>.toDep() =
     map {
         "${it.pluginId}:${it.pluginId}.gradle.plugin:${it.version}"
     }
-
-tasks.getByName("clean") {
-    doLast {
-        delete(rootProject.layout.buildDirectory)
-    }
-}

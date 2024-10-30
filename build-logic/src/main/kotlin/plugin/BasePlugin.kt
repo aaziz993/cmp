@@ -74,11 +74,5 @@ internal class BasePlugin : Plugin<Project> {
 
         // Configure kotlin compilation task
         tasks.withType<KotlinCompilationTask<*>>().configureEach { configKotlinCompilationTask(this) }
-
-        tasks.getByName("clean") {
-            doLast {
-                delete(rootProject.layout.buildDirectory.get())
-            }
-        }
     }
 }
