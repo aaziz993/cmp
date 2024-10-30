@@ -29,7 +29,7 @@ import com.ionspin.kotlin.bignum.decimal.BigDecimal
 import com.ionspin.kotlin.bignum.integer.BigInteger
 import ai.tech.core.misc.type.accessor.Accessor
 import ai.tech.core.misc.type.accessor.ListAccessor
-import ai.tech.core.misc.type.accessor.MapAccessor
+import ai.tech.core.misc.type.accessor.MapLikeAccessor
 import ai.tech.core.misc.type.multiple.depthIterator
 import ai.tech.core.misc.type.multiple.extension
 import ai.tech.core.misc.type.single.parseOrNull
@@ -375,16 +375,10 @@ public inline fun <T : R, R> T.letIf(
 }
 
 // ///////////////////////////////////////////////////////ACCESSOR///////////////////////////////////////////////////////
-public fun List<*>.accessor(parentKey: Any? = null): ListAccessor = ListAccessor(this, parentKey)
-
-public fun Map<*, *>.accessor(keyTransformer: (Any?) -> Any? = { it }, parentKey: Any? = null): MapAccessor =
-    MapAccessor(this, keyTransformer, parentKey)
-
 public fun Any.accessor(
     json: Json = Json.Default,
     yaml: Yaml = Yaml.Default,
-    parentKey: Any? = null,
-    onString: (String) -> Any = {
+    stringTransformer: (String) -> Any = {
         when (it.extension) {
             "json" -> json.decode<Map<*, *>>(it)
             "xml" -> throw NotImplementedError()
@@ -395,19 +389,20 @@ public fun Any.accessor(
             else -> throw IllegalArgumentException("Unknown string \"$it\" extension")
         }
     },
-    onList: (List<Any?>) -> Any = { it },
+    listTransformer: (List<Any?>) -> Any = { it },
     keyTransformer: (Any?) -> Any? = { it },
+    parentKey: Any? = null,
 ): Accessor =
     when (val value = when (this) {
-        is String -> onString(this)
-        is List<*> -> onList(this)
+        is String -> stringTransformer(this)
+        is List<*> -> listTransformer(this)
         else -> this
     }) {
-        is List<*> -> value.accessor(parentKey)
+        is List<*> -> ListAccessor(value, parentKey)
 
-        is Map<*, *> -> value.accessor(keyTransformer, parentKey)
+        is Map<*, *> -> MapLikeAccessor(value, value, keyTransformer, parentKey)
 
-        else -> json.toGeneric<Map<*, *>>(value).accessor()
+        else -> MapLikeAccessor(value, json.toGeneric<Map<*, *>>(value), keyTransformer, parentKey)
     }
 
 public inline fun <T : Any> T.accessorOrNull(
