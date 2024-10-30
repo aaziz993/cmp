@@ -160,7 +160,7 @@ prometheus = "1.12.2"
 dropwizard = "4.2.25"
 # Koin
 koin = "4.0.0"
-koin-annotations = "1.4.0-RC4"
+koin-annotations = "2.0.0-Beta1"
 
 [libraries]
 # Gradle
