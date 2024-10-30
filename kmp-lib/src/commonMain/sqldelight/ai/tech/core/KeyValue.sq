@@ -1,0 +1,22 @@
+CREATE TABLE IF NOT EXISTS KV (key TEXT NOT NULL, value TEXT);
+
+insert:
+INSERT INTO KV(key,value) VALUES(?, ?);
+
+select:
+SELECT KV.* FROM KV WHERE key = ?;
+
+selectAll:
+SELECT KV.* FROM KV;
+
+delete:
+DELETE FROM KV WHERE key = ?;
+
+deleteLike:
+DELETE FROM KV WHERE key LIKE ?;
+
+deleteAll:
+DELETE FROM KV;
+
+exists:
+SELECT EXISTS(SELECT 1 FROM KV WHERE key=? LIMIT 1);
