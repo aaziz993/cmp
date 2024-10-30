@@ -1,6 +1,6 @@
 package plugin.java.extension.config
 
-import extension.settings
+import plugin.extension.settings
 import org.gradle.api.Project
 import org.gradle.api.plugins.JavaApplication
 import org.gradle.kotlin.dsl.config

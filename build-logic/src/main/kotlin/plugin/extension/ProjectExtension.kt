@@ -1,4 +1,4 @@
-package extension
+package plugin.extension
 
 import VERSION_CATALOG_NAME
 import org.gradle.api.Project

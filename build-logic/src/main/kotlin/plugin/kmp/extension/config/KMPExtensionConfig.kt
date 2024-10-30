@@ -1,8 +1,8 @@
 package plugin.kmp.extension.config
 
-import extension.bundle
-import extension.lib
-import extension.version
+import plugin.extension.bundle
+import plugin.extension.lib
+import plugin.extension.version
 import org.gradle.api.Project
 import org.gradle.kotlin.dsl.withType
 import org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi
@@ -156,8 +156,15 @@ internal fun Project.configKMPExtension(extension: KotlinMultiplatformExtension)
                 implementation(lib("compass.geocoder.web.googlemaps"))
             }
 
-            wasmJsMain {
+            jsMain {
+                val karakumGeneratedDir = projectDir.resolve("src/jsMain/generated")
+                if (karakumGeneratedDir.exists()) {
+                    kotlin.srcDir(karakumGeneratedDir)
+                }
                 dependencies {
+                    implementation(lib("seskar"))
+                    api(lib("kotlin-browser"))
+                    api(lib("kotlin-node"))
                     implementation(npm("@js-joda/timezone", version("js.joda.timezone").toString()))
                     implementation(devNpm("copy-webpack-plugin", version("copy.webpack.plugin").toString()))
                     implementation(npm("encoding-japanese", version("encoding.japanese").toString()))

@@ -92,6 +92,11 @@ androidx-espresso-core = "3.6.1"
 # in project version
 desktop-package-version = "1.0.0"
 # Web
+js-plain-objects = "2.0.20-Beta1"
+seskar = "3.0.0"
+karakum = "1.0.0-alpha.45"
+kotlin-browser = "1.0.0-pre.766"
+kotlin-node = "20.11.30-pre.767"
 js-joda-timezone = "2.3.0"
 copy-webpack-plugin = "9.1.0"
 encoding-japanese = "2.2.0"
@@ -275,6 +280,10 @@ androidx-espresso-core = { group = "androidx.test.espresso", name = "espresso-co
 androidx-material = { group = "com.google.android.material", name = "material", version.ref = "androidx-material" }
 androidx-constraintlayout = { group = "androidx.constraintlayout", name = "constraintlayout", version.ref = "androidx-constraint-layout" }
 
+# Web
+seskar = { module = "io.github.turansky.seskar:seskar-core", version.ref = "seskar" }
+kotlin-browser = { module = "org.jetbrains.kotlin-wrappers:kotlin-browser", version.ref = "kotlin-browser" }
+kotlin-node = { module = "org.jetbrains.kotlin-wrappers:kotlin-node", version.ref = "kotlin-node" }
 # Compose multiplatform
 # icons
 compose-icons-css-gg = { module = "br.com.devsrsouza.compose.icons:css-gg", version.ref = "compose-icons" }
@@ -786,6 +795,11 @@ kotest-multiplatform = { id = "io.kotest.multiplatform", version.ref = "kotest" 
 # Android
 android-application = { id = "com.android.application", version.ref = "agp" }
 android-library = { id = "com.android.library", version.ref = "agp" }
+
+# Web
+js-plain-objects = { id = "org.jetbrains.kotlin.plugin.js-plain-objects", version.ref = "js-plain-objects" }
+seskar = { id = "io.github.turansky.seskar", version.ref = "seskar" }
+karakum = { id = "io.github.sgrishchenko.karakum", version.ref = "karakum" }
 
 #Compose
 compose-multiplatform = { id = "org.jetbrains.compose", version.ref = "compose-multiplatform" }

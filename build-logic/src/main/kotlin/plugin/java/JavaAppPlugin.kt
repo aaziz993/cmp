@@ -1,12 +1,9 @@
 package plugin.java
 
-import extension.bundle
-import extension.config.*
-import extension.config.configJavaPluginExtension
-import extension.config.implementation
-import extension.id
-import extension.lib
-import extension.version
+import plugin.extension.bundle
+import plugin.extension.id
+import plugin.extension.lib
+import plugin.extension.version
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.plugins.JavaApplication
@@ -14,6 +11,11 @@ import org.gradle.api.plugins.JavaPluginExtension
 import org.gradle.kotlin.dsl.configure
 import org.jetbrains.kotlin.gradle.dsl.KotlinProjectExtension
 import plugin.BasePlugin
+import plugin.extension.config.*
+import plugin.extension.config.configJavaPluginExtension
+import plugin.extension.config.implementation
+import plugin.extension.config.ksp
+import plugin.extension.config.testImplementation
 import plugin.java.extension.config.configJavaApp
 
 public class JavaAppPlugin : Plugin<Project> {

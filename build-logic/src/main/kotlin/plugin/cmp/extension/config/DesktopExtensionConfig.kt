@@ -1,7 +1,7 @@
 package plugin.cmp.extension.config
 
-import extension.settings
-import extension.version
+import plugin.extension.settings
+import plugin.extension.version
 import org.gradle.api.Project
 import org.gradle.kotlin.dsl.config
 import org.jetbrains.compose.desktop.DesktopExtension

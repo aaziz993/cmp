@@ -1,11 +1,11 @@
 package plugin.cmp
 
 import com.android.build.gradle.BaseExtension
-import extension.bundle
-import extension.config.configComposeAndroidBaseExtension
-import extension.config.debugImplementation
-import extension.id
-import extension.lib
+import plugin.extension.bundle
+import plugin.extension.config.configComposeAndroidBaseExtension
+import plugin.extension.config.debugImplementation
+import plugin.extension.id
+import plugin.extension.lib
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.kotlin.dsl.configure

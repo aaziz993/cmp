@@ -1,9 +1,9 @@
-package extension.config
+package plugin.extension.config
 
 import com.vanniktech.maven.publish.MavenPublishBaseExtension
 import org.gradle.api.Project
 import org.gradle.kotlin.dsl.config
-import extension.settings
+import plugin.extension.settings
 
 internal fun Project.configPublishExtension(extension: MavenPublishBaseExtension) =
     extension.apply {

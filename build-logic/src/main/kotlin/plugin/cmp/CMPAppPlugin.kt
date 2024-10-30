@@ -1,8 +1,8 @@
 package plugin.cmp
 
 import com.android.build.gradle.internal.dsl.BaseAppModuleExtension
-import extension.config.configComposeAndroidBaseAppExtension
-import extension.id
+import plugin.extension.config.configComposeAndroidBaseAppExtension
+import plugin.extension.id
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.kotlin.dsl.configure
@@ -33,25 +33,19 @@ public class CMPAppPlugin : Plugin<Project> {
             extensions.configure<BaseAppModuleExtension>(::configComposeAndroidBaseAppExtension)
 
             extensions.configure<KotlinMultiplatformExtension> {
-                @OptIn(ExperimentalWasmDsl::class)
-                wasmJs {
-                    moduleName = "composeApp"
-                    browser {
-                        val rootDirPath = project.rootDir.path
-                        val projectDirPath = project.projectDir.path
-                        commonWebpackConfig {
-                            outputFileName = "composeApp.js"
-                            devServer = (devServer ?: KotlinWebpackConfig.DevServer()).apply {
-                                static = (static ?: mutableListOf()).apply {
-                                    // Serve sources to debug inside browser
-                                    add(rootDirPath)
-                                    add(projectDirPath)
-                                }
-                            }
-                        }
-                    }
-                    binaries.executable()
-                }
+//                js {
+//                    browser {
+//                        webpackTask {
+//                            mainOutputFileName.set(path.split(":").drop(1).joinToString("-"))
+//                        }
+//                        commonWebpackConfig {
+//                            cssSupport {
+//                                enabled.set(true)
+//                            }
+//                        }
+//                    }
+//                    binaries.executable()
+//                }
             }
 
             extensions.configure<ComposeExtension> {

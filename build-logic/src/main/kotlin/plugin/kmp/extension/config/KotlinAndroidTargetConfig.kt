@@ -1,8 +1,8 @@
 package plugin.kmp.extension.config
 
-import extension.config.toJvmTarget
+import plugin.extension.config.toJvmTarget
 import KOTLIN_JVM_TARGET_VERSION
-import extension.settings
+import plugin.extension.settings
 import org.gradle.api.Project
 import org.gradle.kotlin.dsl.config
 import org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi

@@ -1,9 +1,9 @@
-package extension.config
+package plugin.extension.config
 
 import kotlinx.kover.gradle.plugin.dsl.KoverProjectExtension
 import org.gradle.api.Project
 import org.gradle.kotlin.dsl.config
-import extension.settings
+import plugin.extension.settings
 
 internal fun Project.configKoverProjectExtension(extension: KoverProjectExtension) =
     extension.apply {

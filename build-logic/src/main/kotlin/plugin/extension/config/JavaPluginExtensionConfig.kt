@@ -1,8 +1,8 @@
-package extension.config
+package plugin.extension.config
 
 import JAVA_SOURCE_VERSION
 import JAVA_TARGET_VERSION
-import extension.settings
+import plugin.extension.settings
 import org.gradle.api.JavaVersion
 import org.gradle.api.Project
 import org.gradle.api.artifacts.dsl.DependencyHandler

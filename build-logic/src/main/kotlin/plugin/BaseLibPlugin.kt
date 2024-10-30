@@ -2,14 +2,13 @@ package plugin
 
 import com.android.build.gradle.LibraryExtension
 import com.vanniktech.maven.publish.MavenPublishBaseExtension
-import extension.config.configComposeAndroidLibExtension
-import extension.config.configPublishExtension
-import extension.id
+import plugin.extension.config.configComposeAndroidLibExtension
+import plugin.extension.config.configPublishExtension
+import plugin.extension.id
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.kotlin.dsl.configure
 import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
-import org.jetbrains.kotlin.gradle.ExperimentalWasmDsl
 
 internal class BaseLibPlugin : Plugin<Project> {
     override fun apply(target: Project): Unit = with(target) {
@@ -21,8 +20,7 @@ internal class BaseLibPlugin : Plugin<Project> {
         extensions.configure<LibraryExtension>(::configComposeAndroidLibExtension)
 
         extensions.configure<KotlinMultiplatformExtension> {
-            @OptIn(ExperimentalWasmDsl::class)
-            wasmJs {
+            js {
                 browser {
                     webpackTask {
                         mainOutputFileName.set(path.split(":").drop(1).joinToString("-"))

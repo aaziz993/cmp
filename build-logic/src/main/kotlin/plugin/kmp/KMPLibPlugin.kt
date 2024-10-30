@@ -1,6 +1,6 @@
 package plugin.kmp
 
-import extension.id
+import plugin.extension.id
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import plugin.BaseLibPlugin

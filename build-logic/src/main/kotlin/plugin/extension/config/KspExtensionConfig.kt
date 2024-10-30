@@ -1,10 +1,10 @@
-package extension.config
+package plugin.extension.config
 
 import com.google.devtools.ksp.gradle.KspExtension
 import org.gradle.api.Project
 import org.gradle.api.artifacts.dsl.DependencyHandler
 import org.gradle.kotlin.dsl.config
-import extension.settings
+import plugin.extension.settings
 
 internal fun Project.configKspExtension(extension: KspExtension): KspExtension =
     extension.apply {

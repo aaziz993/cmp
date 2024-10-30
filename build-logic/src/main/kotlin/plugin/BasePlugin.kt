@@ -4,8 +4,7 @@ import com.apollographql.apollo3.gradle.api.ApolloExtension
 import com.diffplug.gradle.spotless.SpotlessExtension
 import com.google.devtools.ksp.gradle.KspExtension
 import de.jensklingenberg.ktorfit.gradle.KtorfitGradleConfiguration
-import extension.config.*
-import extension.id
+import plugin.extension.id
 import kotlinx.kover.gradle.plugin.dsl.KoverProjectExtension
 import org.gradle.api.Plugin
 import org.gradle.api.Project
@@ -17,6 +16,11 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompilationTask
 import org.jetbrains.kotlin.noarg.gradle.NoArgExtension
 import org.jetbrains.kotlin.powerassert.gradle.PowerAssertGradleExtension
 import org.sonarqube.gradle.SonarExtension
+import plugin.extension.config.*
+import plugin.extension.config.configApolloExtension
+import plugin.extension.config.configKotlinCompilationTask
+import plugin.extension.config.configPowerAssertGradleExtension
+import plugin.extension.config.configSonarExtension
 
 internal class BasePlugin : Plugin<Project> {
     override fun apply(target: Project): Unit = with(target) {

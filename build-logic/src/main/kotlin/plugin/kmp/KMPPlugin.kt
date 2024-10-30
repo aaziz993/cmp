@@ -3,16 +3,16 @@ package plugin.kmp
 import androidx.room.gradle.RoomExtension
 import app.cash.sqldelight.gradle.SqlDelightExtension
 import com.android.build.gradle.BaseExtension
-import com.google.devtools.ksp.gradle.KspExtension
-import extension.config.configAndroidBaseExtension
-import extension.config.configKotlinProjectExtension
-import extension.config.configSqlDelightExtension
-import extension.config.configRoomExtension
-import extension.config.kspCommonMainMetadata
-import extension.id
-import extension.lib
+import plugin.extension.config.configAndroidBaseExtension
+import plugin.extension.config.configKotlinProjectExtension
+import plugin.extension.config.configSqlDelightExtension
+import plugin.extension.config.configRoomExtension
+import plugin.extension.config.kspCommonMainMetadata
+import plugin.extension.id
+import plugin.extension.lib
 import org.gradle.api.Plugin
 import org.gradle.api.Project
+import org.gradle.kotlin.dsl.apply
 import org.gradle.kotlin.dsl.configure
 import org.gradle.kotlin.dsl.withType
 import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
@@ -27,6 +27,8 @@ internal class KMPPlugin(
     override fun apply(target: Project): Unit = BasePlugin().apply(target).also {
         with(target) {
             with(pluginManager) {
+                apply(id("js.plain.objects"))
+                apply(id("karakum"))
                 apply(id("kotlin.multiplatform"))
                 apply(androidPluginId)
                 apply(id("sqldelight"))
@@ -57,6 +59,9 @@ internal class KMPPlugin(
                     dependsOn("kspCommonMainKotlinMetadata")
                 }
             }
+
+            // Apply only last because of jsMainImplementation error
+            apply(plugin = id("seskar"))
         }
     }
 }
