@@ -57,7 +57,6 @@ internal class CMPPlugin(
                         commonTest.dependencies {
                             @OptIn(ExperimentalComposeLibrary::class)
                             implementation(composeDeps.uiTest)
-                            implementation(lib("koin.test"))
                         }
 
                         jvmMain {
