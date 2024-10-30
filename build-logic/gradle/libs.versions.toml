@@ -96,7 +96,7 @@ androidx-ui-test = "1.8.0-alpha04"
 desktop-package-version = "1.0.0"
 # Web
 js-plain-objects = "2.0.20-Beta1"
-seskar = "3.0.0"
+seskar = "3.41.0"
 karakum = "1.0.0-alpha.45"
 kotlin-browser = "1.0.0-pre.766"
 kotlin-node = "20.11.30-pre.767"
