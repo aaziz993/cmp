@@ -13,5 +13,5 @@ internal fun Project.configPowerAssertGradleExtension(extension: PowerAssertGrad
             "kotlin.test.assertEquals",
             "kotlin.test.assertNull"
         )
-        includedSourceSets.addAll("commonMain", "jvmMain", "androidMain", "wasmJsMain", "nativeMain")
+        includedSourceSets.addAll("commonMain", "jvmMain", "androidMain", "jsMain", "nativeMain")
     }

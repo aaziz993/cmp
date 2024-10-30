@@ -555,11 +555,6 @@ arrow = [
     "arrow-fx-coroutines",
     "arrow-optics"
 ]
-# okio local filesystem
-okio = [
-    "okio",
-    "okio-extras"
-]
 # multiplatform settings
 multiplatform-settings = [
     "multiplatform-settings",

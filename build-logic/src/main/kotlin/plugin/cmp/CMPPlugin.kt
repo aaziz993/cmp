@@ -71,7 +71,7 @@ internal class CMPPlugin(
                             implementation(lib("androidx.activity.compose"))
                         }
 
-                        wasmJsMain.dependencies {
+                        jsMain.dependencies {
                             implementation(composeDeps.html.core)
                         }
                     }
