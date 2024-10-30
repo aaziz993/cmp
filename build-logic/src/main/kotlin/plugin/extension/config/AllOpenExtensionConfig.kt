@@ -10,6 +10,6 @@ internal fun Project.configAllOpenExtension(extension: AllOpenExtension): AllOpe
         annotation("javax.ws.rs.Path")
         annotation("javax.enterprise.context.ApplicationScoped")
         annotation("javax.persistence.Entity")
-        annotation("core.misc.type.annotation.AllOpen")
+        annotation("${settings.config.group}.core.misc.type.annotation.AllOpen")
         settings.config.applyTo("allopen", this)
     }

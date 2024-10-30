@@ -7,6 +7,6 @@ import plugin.extension.settings
 
 internal fun Project.configNoArgExtension(extension: NoArgExtension): NoArgExtension =
     extension.apply {
-        annotation("core.misc.type.annotation.NoArg")
+        annotation("${settings.config.group}.core.misc.type.annotation.NoArg")
         settings.config.applyTo("noarg", this)
     }

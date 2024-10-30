@@ -3,9 +3,9 @@ package ai.tech.core.data.expression
 import com.benasher44.uuid.Uuid
 import com.ionspin.kotlin.bignum.decimal.BigDecimal
 import com.ionspin.kotlin.bignum.integer.BigInteger
-import ai.tech.core.misc.type.model.BigDecimalSerial
-import ai.tech.core.misc.core.type.model.BigIntegerSerial
-import ai.tech.core.misc.core.type.model.UuidSerial
+import ai.tech.core.misc.serializer.BigDecimalSerial
+import ai.tech.core.misc.core.serializer.BigIntegerSerial
+import ai.tech.core.misc.core.serializer.UuidSerial
 import ai.tech.core.misc.core.type.multiple.removeLast
 import ai.tech.core.misc.core.type.transform
 import kotlinx.datetime.LocalDate

@@ -35,7 +35,7 @@ internal class BasePlugin : Plugin<Project> {
             apply(id("allopen"))
             apply(id("kotlin.serialization"))
             apply(id("dataframe"))
-            apply(id("kotlinx.rpc"))
+//            apply(id("kotlinx.rpc"))
             apply(id("ktorfit"))
             apply(id("apollo3"))
             apply(id("power.assert"))
