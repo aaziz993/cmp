@@ -26,6 +26,17 @@ internal fun Project.configDesktopExtension(extension: DesktopExtension): Deskto
                 targetFormats(TargetFormat.Dmg, TargetFormat.Msi, TargetFormat.Deb)
                 packageName = group.toString()
                 packageVersion = version("desktop.package.version").toString()
+
+                linux {
+                    iconFile.set(project.file("desktopAppIcons/LinuxIcon.png"))
+                }
+                windows {
+                    iconFile.set(project.file("desktopAppIcons/WindowsIcon.ico"))
+                }
+                macOS {
+                    iconFile.set(project.file("desktopAppIcons/MacOSIcon.icns"))
+                    bundleID = "${settings.config.group}.desktopApp"
+                }
             }
             // also proguard rules
             buildTypes.release.proguard {

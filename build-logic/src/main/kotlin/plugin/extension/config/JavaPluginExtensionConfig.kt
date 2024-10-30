@@ -18,24 +18,24 @@ internal fun Project.configJavaPluginExtension(extension: JavaPluginExtension) =
         settings.config.applyTo("java", this)
     }
 
-internal fun DependencyHandler.implementation(dependency: Any) {
+internal fun DependencyHandler.implementation(dependencyNotation: Any) {
     add(
         JavaPlugin.IMPLEMENTATION_CONFIGURATION_NAME,
-        dependency,
+        dependencyNotation,
     )
 }
 
-internal fun DependencyHandler.debugImplementation(dependency: Any) {
+internal fun DependencyHandler.debugImplementation(dependencyNotation: Any) {
     add(
         "debugImplementation",
-        dependency,
+        dependencyNotation,
     )
 }
 
-internal fun DependencyHandler.testImplementation(dependency: Any) {
+internal fun DependencyHandler.testImplementation(dependencyNotation: Any) {
     add(
         JavaPlugin.TEST_IMPLEMENTATION_CONFIGURATION_NAME,
-        dependency,
+        dependencyNotation,
     )
 }
 

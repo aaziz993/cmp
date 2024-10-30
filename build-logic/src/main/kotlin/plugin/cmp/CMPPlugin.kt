@@ -11,13 +11,16 @@ import org.gradle.api.Project
 import org.gradle.kotlin.dsl.configure
 import org.gradle.kotlin.dsl.getByType
 import org.jetbrains.compose.ComposeExtension
+import org.jetbrains.compose.ExperimentalComposeLibrary
 import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
 import plugin.kmp.KMPPlugin
 import plugin.cmp.extension.config.configComposeExtension
+import plugin.extension.config.androidTestImplementation
 
 internal class CMPPlugin(
     private val androidPluginId: String,
 ) : Plugin<Project> {
+    @OptIn(ExperimentalComposeLibrary::class)
     override fun apply(target: Project): Unit =
         KMPPlugin(androidPluginId).apply(target).also {
             with(target) {
@@ -37,7 +40,6 @@ internal class CMPPlugin(
                         commonMain.dependencies {
                             implementation(composeDeps.runtime)
                             implementation(composeDeps.foundation)
-//                                implementation(composeDeps.material)
                             implementation(composeDeps.material3)
                             implementation(composeDeps.ui)
                             implementation(composeDeps.components.resources)
@@ -53,6 +55,8 @@ internal class CMPPlugin(
                         }
 
                         commonTest.dependencies {
+                            @OptIn(ExperimentalComposeLibrary::class)
+                            implementation(composeDeps.uiTest)
                             implementation(lib("koin.test"))
                         }
 
@@ -79,6 +83,8 @@ internal class CMPPlugin(
 
                 dependencies.apply {
                     debugImplementation(composeDeps.uiTooling)
+                    androidTestImplementation(lib("androidx.uitest.junit4"))
+                    debugImplementation(lib("androidx.uitest.test.manifest"))
                 }
             }
         }

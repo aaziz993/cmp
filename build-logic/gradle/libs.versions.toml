@@ -73,7 +73,7 @@ kotest = "5.8.1"
 # Android
 agp = "8.5.2"
 # in project version
-android-compile-sdk = "34"
+android-compile-sdk = "35"
 # in project version
 android-min-sdk = "24"
 # in project version
@@ -88,6 +88,7 @@ androidx-activity-ktx = "1.10.0-alpha02"
 androidx-constraint-layout = "2.1.4"
 androidx-core-ktx = "1.13.1"
 androidx-espresso-core = "3.6.1"
+androidx-ui-test = "1.8.0-alpha04"
 # Desktop
 # in project version
 desktop-package-version = "1.0.0"
@@ -279,6 +280,8 @@ androidx-test-junit = { group = "androidx.test.ext", name = "junit", version.ref
 androidx-espresso-core = { group = "androidx.test.espresso", name = "espresso-core", version.ref = "androidx-espresso-core" }
 androidx-material = { group = "com.google.android.material", name = "material", version.ref = "androidx-material" }
 androidx-constraintlayout = { group = "androidx.constraintlayout", name = "constraintlayout", version.ref = "androidx-constraint-layout" }
+androidx-uitest-test-manifest = { module = "androidx.compose.ui:ui-test-manifest", version.ref = "androidx-ui-test" }
+androidx-uitest-junit4 = { module = "androidx.compose.ui:ui-test-junit4", version.ref = "androidx-ui-test" }
 
 # Web
 seskar = { module = "io.github.turansky.seskar:seskar-core", version.ref = "seskar" }

@@ -12,10 +12,14 @@ import ANDROID_JAVA_TARGET_VERSION
 import plugin.extension.settings
 import plugin.extension.version
 import org.gradle.api.Project
+import org.gradle.kotlin.dsl.add
 import org.gradle.kotlin.dsl.config
 import org.gradle.kotlin.dsl.get
 import org.gradle.kotlin.dsl.getByType
 import org.jetbrains.compose.ComposeExtension
+import org.gradle.api.artifacts.Dependency
+
+import org.gradle.api.artifacts.dsl.DependencyHandler
 
 internal fun Project.configAndroidBaseExtension(
     extension: BaseExtension,
@@ -78,11 +82,6 @@ internal fun Project.configAndroidBaseExtension(
 }
 
 internal fun Project.configComposeAndroidBaseExtension(extension: BaseExtension) = extension.apply {
-    val composeDeps = extensions.getByType<ComposeExtension>().dependencies
-
-    dependencies.apply {
-        debugImplementation(composeDeps.uiTooling)
-    }
 
     settings.config.applyTo("android", this)
 }
@@ -115,6 +114,8 @@ internal fun Project.configComposeAndroidBaseAppExtension(extension: BaseAppModu
     settings.config.applyTo("android", this)
 }
 
+public fun DependencyHandler.androidTestImplementation(dependencyNotation: Any): Dependency? =
+    add("androidTestImplementation", dependencyNotation)
 
 
 
