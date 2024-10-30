@@ -102,6 +102,8 @@ dependencies {
     implementation(libs.plugins.room.toDep())
 //    runtimeOnly(libs.plugins.room.toDep())
 
+    runtimeOnly(libs.plugins.kmp.nativecoroutines.toDep())
+
     // Ktor
     runtimeOnly(libs.plugins.ktor.toDep())
 
