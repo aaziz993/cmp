@@ -440,7 +440,7 @@ public inline fun <T : Any> T.removeOrNull(
 ): Any? = accessorOrNull(keys.dropLast(1), accessor)?.remove(keys.last())
 
 // //////////////////////////////////////////////////////TRAVERSER///////////////////////////////////////////////////////
-public fun Any.aßssign(
+public fun Any.assign(
     from: Any,
     keyTransformer: (keys: List<Any?>, fromKey: Any?) -> Any? = { _, fromKey -> fromKey },
     valueTransform: (keys: List<Any?>, thisValueKType: KType, thisValue: Any?, fromValue: Any?) -> Any? = { _, _, thisValue, fromValue ->
