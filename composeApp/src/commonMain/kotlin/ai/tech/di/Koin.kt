@@ -8,7 +8,7 @@ public fun koinConfiguration(): KoinApplication = koinApplication {
     printLogger()
 
     modules(
-        CommonModule().module,
+        CommonModule(true).module,
         PlatformModule().module
     )
 }

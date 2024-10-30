@@ -167,3 +167,9 @@ fun Provider<PluginDependency>.toDep() =
     map {
         "${it.pluginId}:${it.pluginId}.gradle.plugin:${it.version}"
     }
+
+tasks.getByName("clean") {
+    doLast {
+        delete(rootProject.layout.buildDirectory)
+    }
+}
