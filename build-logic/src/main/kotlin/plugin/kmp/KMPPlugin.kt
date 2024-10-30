@@ -32,7 +32,7 @@ internal class KMPPlugin(
     override fun apply(target: Project): Unit = BasePlugin().apply(target).also {
         with(target) {
             with(pluginManager) {
-//                apply(id("js.plain.objects"))
+                apply(id("js.plain.objects"))
                 apply(id("karakum"))
                 apply(id("kotlin.multiplatform"))
                 apply(androidPluginId)

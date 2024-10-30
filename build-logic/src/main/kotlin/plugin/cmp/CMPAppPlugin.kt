@@ -18,18 +18,6 @@ public class CMPAppPlugin : Plugin<Project> {
         CMPPlugin(target.id("android.application")).apply(target)
 
         with(target) {
-            extensions.configure<KotlinMultiplatformExtension> {
-                sourceSets.apply {
-                    commonMain.dependencies {
-
-                    }
-
-                    androidMain.dependencies {
-
-                    }
-                }
-            }
-
             extensions.configure<BaseAppModuleExtension>(::configComposeAndroidBaseAppExtension)
 
             extensions.configure<KotlinMultiplatformExtension> {
