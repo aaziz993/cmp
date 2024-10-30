@@ -1,4 +1,4 @@
-package core.data.validator
+package ai.tech.core.data.validator
 
 import kotlinx.serialization.Serializable
 
@@ -21,7 +21,7 @@ public data class Validator(
     public companion object {
         public fun nonEmpty(emptyMessage: String = "value_is_empty"): Validator = Validator(
             rules = listOf(
-                ValidatorRule.nonEmpty(emptyMessage)
+                ValidatorRule.Companion.nonEmpty(emptyMessage)
             )
         )
 
@@ -35,12 +35,12 @@ public data class Validator(
             patternMessage: String = "value_is_invalid",
         ): Validator = Validator(
             rules = listOf(
-                ValidatorRule.nonEmpty(emptyMessage),
-                ValidatorRule.numericPhoneLength(lengthMessage),
-                ValidatorRule.startsWith("+", message = prefixMessage),
-                ValidatorRule.hasDigit(digitsMessage),
-                ValidatorRule.noLetters(lettersMessage),
-                ValidatorRule.numericPhonePattern(patternMessage),
+                ValidatorRule.Companion.nonEmpty(emptyMessage),
+                ValidatorRule.Companion.numericPhoneLength(lengthMessage),
+                ValidatorRule.Companion.startsWith("+", message = prefixMessage),
+                ValidatorRule.Companion.hasDigit(digitsMessage),
+                ValidatorRule.Companion.noLetters(lettersMessage),
+                ValidatorRule.Companion.numericPhonePattern(patternMessage),
             ),
             required = required
         )
@@ -55,12 +55,12 @@ public data class Validator(
             patternMessage: String = "value_is_invalid",
         ): Validator = Validator(
             rules = listOf(
-                ValidatorRule.nonEmpty(emptyMessage),
-                ValidatorRule.delimitedPhoneLength(lengthMessage),
-                ValidatorRule.startsWith("+", message = prefixMessage),
-                ValidatorRule.hasDigit(digitsMessage),
-                ValidatorRule.noLetters(lettersMessage),
-                ValidatorRule.delimitedPhonePattern(patternMessage),
+                ValidatorRule.Companion.nonEmpty(emptyMessage),
+                ValidatorRule.Companion.delimitedPhoneLength(lengthMessage),
+                ValidatorRule.Companion.startsWith("+", message = prefixMessage),
+                ValidatorRule.Companion.hasDigit(digitsMessage),
+                ValidatorRule.Companion.noLetters(lettersMessage),
+                ValidatorRule.Companion.delimitedPhonePattern(patternMessage),
             ),
             required = required
         )
@@ -73,10 +73,10 @@ public data class Validator(
             patternMessage: String = "value_is_invalid",
         ): Validator = Validator(
             rules = listOf(
-                ValidatorRule.nonEmpty(emptyMessage),
-                ValidatorRule.emailLength(lengthMessage),
-                ValidatorRule.noWhitespace(whitespaceMessage),
-                ValidatorRule.emailPattern(patternMessage)
+                ValidatorRule.Companion.nonEmpty(emptyMessage),
+                ValidatorRule.Companion.emailLength(lengthMessage),
+                ValidatorRule.Companion.noWhitespace(whitespaceMessage),
+                ValidatorRule.Companion.emailPattern(patternMessage)
             ),
             required = required
         )

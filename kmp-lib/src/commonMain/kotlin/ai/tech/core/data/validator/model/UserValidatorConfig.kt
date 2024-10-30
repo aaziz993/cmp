@@ -1,4 +1,4 @@
-package core.data.validator.model
+package ai.tech.core.data.validator.model
 
 import ai.tech.core.data.validator.Validator
 import kotlinx.serialization.Serializable

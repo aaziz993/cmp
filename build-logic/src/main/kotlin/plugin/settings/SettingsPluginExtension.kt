@@ -32,6 +32,7 @@ public open class SettingsPluginExtension(
         obj: Any,
     ) {
         applyToMap[key] = obj
+        logger.info("Configured \"$key\" on \"${obj::class.qualifiedName}\"")
     }
 
     public fun create(): Unit = with(target) {

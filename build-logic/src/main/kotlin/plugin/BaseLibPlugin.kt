@@ -16,24 +16,8 @@ internal class BaseLibPlugin : Plugin<Project> {
             apply(id("vanniktech.maven.publish"))
         }
 
-        // Andoird base library extension
+        // Android base library extension
         extensions.configure<LibraryExtension>(::configComposeAndroidLibExtension)
-
-        extensions.configure<KotlinMultiplatformExtension> {
-            js {
-                browser {
-                    webpackTask {
-                        mainOutputFileName.set(path.split(":").drop(1).joinToString("-"))
-                    }
-                    commonWebpackConfig {
-                        cssSupport {
-                            enabled.set(true)
-                        }
-                    }
-                }
-                binaries.executable()
-            }
-        }
 
         // Publishing
         extensions.configure<MavenPublishBaseExtension>(::configPublishExtension)

@@ -8,6 +8,7 @@ import org.gradle.kotlin.dsl.withType
 import org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi
 import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
 import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTarget
+import kotlin.text.set
 
 
 internal fun Project.configKMPExtension(extension: KotlinMultiplatformExtension) =
@@ -21,6 +22,20 @@ internal fun Project.configKMPExtension(extension: KotlinMultiplatformExtension)
             iosArm64(),
             iosSimulatorArm64(),
         ).forEach { configKotlinIosTarget(it) }
+
+        js {
+            browser {
+                webpackTask {
+                    mainOutputFileName.set(path.split(":").drop(1).joinToString("-"))
+                }
+                commonWebpackConfig {
+                    cssSupport {
+                        enabled.set(true)
+                    }
+                }
+            }
+            binaries.executable()
+        }
 
         // Apply the default hierarchy again. It'll create additional source sets:
         @OptIn(ExperimentalKotlinGradlePluginApi::class)

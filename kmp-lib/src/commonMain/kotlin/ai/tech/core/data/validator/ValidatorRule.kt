@@ -1,11 +1,11 @@
-package core.data.validator
+package ai.tech.core.data.validator
 
-import core.misc.type.multiple.AP
-import core.misc.type.multiple.LDP
-import core.misc.type.multiple.LLP
-import core.misc.type.multiple.LP
-import core.misc.type.multiple.LUP
-import core.misc.type.multiple.quotePattern
+import ai.tech.core.misc.type.multiple.AP
+import ai.tech.core.misc.type.multiple.LDP
+import ai.tech.core.misc.type.multiple.LLP
+import ai.tech.core.misc.type.multiple.LP
+import ai.tech.core.misc.type.multiple.LUP
+import ai.tech.core.misc.type.multiple.quotePattern
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.Transient
 import pro.respawn.kmmutils.inputforms.default.FieldLengths

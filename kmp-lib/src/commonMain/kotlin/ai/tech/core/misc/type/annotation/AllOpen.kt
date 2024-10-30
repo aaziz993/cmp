@@ -1,3 +1,3 @@
 package ai.tech.core.misc.type.annotation
 
-annotation class AllOpen
+public annotation class AllOpen

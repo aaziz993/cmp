@@ -26,7 +26,7 @@ public open class FtpHost(
         return sb.toString()
     }
 
-    companion object {
-        operator fun invoke(url: String): FtpHost = FtpUrl(url)
+    public companion object {
+        public operator fun invoke(url: String): FtpHost = FtpUrl(url)
     }
 }

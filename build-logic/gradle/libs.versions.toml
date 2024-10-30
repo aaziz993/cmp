@@ -35,7 +35,7 @@ jackcess = "4.0.7"
 jnativehook = "2.2.2"
 jna = "5.14.0"
 # webcam
-sarxos-webcam = "0.3.13-SNAPSHOT"
+sarxos-webcam = "0.3.12"
 # ftp
 commons-net = "3.11.0"
 sshj = "0.38.0"
@@ -535,7 +535,7 @@ webcam-capture = [
     "webcam-capture-driver-lti-civil",
     "webcam-capture-driver-vlcj",
     "webcam-capture-driver-opencv",
-#    "webcam-capture-driver-ffmpeg-cli",
+    "webcam-capture-driver-ffmpeg-cli",
 ]
 # Kotlin
 # official serialization

@@ -20,22 +20,6 @@ public class CMPAppPlugin : Plugin<Project> {
         with(target) {
             extensions.configure<BaseAppModuleExtension>(::configComposeAndroidBaseAppExtension)
 
-            extensions.configure<KotlinMultiplatformExtension> {
-//                js {
-//                    browser {
-//                        webpackTask {
-//                            mainOutputFileName.set(path.split(":").drop(1).joinToString("-"))
-//                        }
-//                        commonWebpackConfig {
-//                            cssSupport {
-//                                enabled.set(true)
-//                            }
-//                        }
-//                    }
-//                    binaries.executable()
-//                }
-            }
-
             extensions.configure<ComposeExtension> {
                 extensions.configure<DesktopExtension>(::configDesktopExtension)
             }

@@ -1,7 +1,7 @@
 package ai.tech.core.misc.type.serializer
 
 import com.ionspin.kotlin.bignum.decimal.BigDecimal
-import ai.tech.core.misc.type.model.PrimitiveSerializer
+import ai.tech.core.misc.type.serializer.PrimitiveSerializer
 import kotlinx.serialization.Serializable
 
 public object BigDecimalSerializer :
