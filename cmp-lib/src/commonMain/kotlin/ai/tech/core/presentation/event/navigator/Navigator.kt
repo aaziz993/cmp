@@ -1,18 +1,16 @@
 package ai.tech.core.presentation.event.navigator
 
+import ai.tech.core.misc.type.multiple.toLaunchedEffect
+import androidx.compose.runtime.Composable
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
 import androidx.navigation.NavOptionsBuilder
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.channels.BufferOverflow
-import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
-import kotlinx.coroutines.flow.SharedFlow
 
 public interface Navigator<T : Any> {
     public val startDestination: T
-
-    public val navigationActions: Flow<NavigationAction>
 
     public fun navigate(navAction: NavigationAction): Boolean
 
@@ -33,15 +31,16 @@ public interface Navigator<T : Any> {
     public fun navigateAndClearCurrent(route: String): Boolean
 
     public fun navigateAndClearCurrent(route: T): Boolean
+
+    @Composable
+    public fun handleAction(navController: NavHostController)
 }
 
 public class DefaultNavigator<T : Any>(override val startDestination: T) : Navigator<T> {
-    private val _navigationActions =
+    private val navigationActions =
         MutableSharedFlow<NavigationAction>(replay = 1, onBufferOverflow = BufferOverflow.DROP_LATEST)
 
-    override val navigationActions: SharedFlow<NavigationAction> = _navigationActions
-
-    override fun navigate(navAction: NavigationAction): Boolean = _navigationActions.tryEmit(navAction)
+    override fun navigate(navAction: NavigationAction): Boolean = navigationActions.tryEmit(navAction)
 
     override fun navigateBack(): Boolean = navigate(NavigationAction.NavigateBack)
 
@@ -68,7 +67,8 @@ public class DefaultNavigator<T : Any>(override val startDestination: T) : Navig
         navigate(NavigationAction.SafeNavigation.NavigateAndClearCurrent(route))
 
     @OptIn(ExperimentalCoroutinesApi::class)
-    public fun action(action: NavigationAction, navController: NavHostController) {
+    @Composable
+    override fun handleAction(navController: NavHostController): Unit = navigationActions.toLaunchedEffect { action ->
         when (action) {
             NavigationAction.NavigateBack -> navController.navigateUp()
 
@@ -110,7 +110,7 @@ public class DefaultNavigator<T : Any>(override val startDestination: T) : Navig
                 navController.navigateAndReplaceStartRoute(action.route)
         }
 
-        _navigationActions.resetReplayCache()
+        navigationActions.resetReplayCache()
     }
 
     public companion object {

@@ -27,8 +27,10 @@ import ai.tech.core.presentation.event.alert.GlobalAlertEventController
 import ai.tech.core.presentation.event.alert.model.AlertEvent
 import ai.tech.core.presentation.event.snackbar.GlobalSnackbarEventController
 import ai.tech.core.misc.type.multiple.toLaunchedEffect
+import ai.tech.core.presentation.event.navigator.Navigator
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.ui.tooling.preview.Preview
+import org.koin.compose.koinInject
 
 @Composable
 public fun NavScreen(
@@ -109,6 +111,10 @@ public fun NavScreen(
                         onConfirm = it.action,
                         onCancel = { scope.launch { GlobalAlertEventController.sendEvent(null) } })
                 }
+
+//                val navigator = koinInject<Navigator<Destination>>()
+//
+//                navigator.handleAction(navController)
 
                 NavScreenNavHost(
                     navController,

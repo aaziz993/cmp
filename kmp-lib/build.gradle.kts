@@ -14,7 +14,3 @@ sqldelight {
     // To avoid library linking issues.
     linkSqlite = true
 }
-
-room {
-    schemaDirectory("$projectDir/schemas")
-}

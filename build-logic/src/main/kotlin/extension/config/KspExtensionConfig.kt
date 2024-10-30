@@ -8,6 +8,14 @@ import extension.settings
 
 internal fun Project.configKspExtension(extension: KspExtension): KspExtension =
     extension.apply {
+        // 0 - Turn off all Ktorfit related error checking, 1 - Check for errors, 2 - Turn errors into warnings
+        arg("Ktorfit_Errors", "1")
+        // Compile Safety - check your Koin config at compile time (since 1.3.0)
+        arg("KOIN_CONFIG_CHECK", "true")
+        arg("KOIN_DEFAULT_MODULE", "false")
+        // to generate viewModel Koin definition with org.koin.compose.viewmodel.dsl.viewModel instead of regular org.koin.androidx.viewmodel.dsl.viewModel
+        arg("KOIN_USE_COMPOSE_VIEWMODEL", "true")
+
         settings.config.applyTo("ksp", this)
     }
 

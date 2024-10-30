@@ -1,5 +1,8 @@
 package ai.tech.di
 
+import ai.tech.core.presentation.event.navigator.DefaultNavigator
+import ai.tech.core.presentation.event.navigator.Navigator
+import ai.tech.navigation.presentation.Destination
 import kotlinx.serialization.json.Json
 import org.koin.core.annotation.Module
 import org.koin.core.annotation.Single
@@ -21,4 +24,7 @@ public class CommonModule {
 //            }
 //        }
 //    }
+
+    @Single
+    public fun provideNavigator(): Navigator<Destination> = DefaultNavigator(Destination.HomeGraph.Main)
 }

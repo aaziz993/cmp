@@ -9,7 +9,3 @@ kotlin {
         }
     }
 }
-
-room {
-    schemaDirectory("$projectDir/schemas")
-}

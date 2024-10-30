@@ -1,11 +1,13 @@
 package plugin.kmp
 
+import androidx.room.gradle.RoomExtension
 import app.cash.sqldelight.gradle.SqlDelightExtension
 import com.android.build.gradle.BaseExtension
 import com.google.devtools.ksp.gradle.KspExtension
 import extension.config.configAndroidBaseExtension
 import extension.config.configKotlinProjectExtension
 import extension.config.configSqlDelightExtension
+import extension.config.configRoomExtension
 import extension.config.kspCommonMainMetadata
 import extension.id
 import extension.lib
@@ -39,6 +41,8 @@ internal class KMPPlugin(
 
             extensions.configure<SqlDelightExtension>(::configSqlDelightExtension)
 
+            extensions.configure<RoomExtension>(::configRoomExtension)
+
             dependencies.apply {
                 kspCommonMainMetadata(lib("arrow.optics.ksp.plugin"))
                 kspCommonMainMetadata(lib("room.compiler"))
@@ -52,16 +56,6 @@ internal class KMPPlugin(
                 if (name != "kspCommonMainKotlinMetadata") {
                     dependsOn("kspCommonMainKotlinMetadata")
                 }
-            }
-
-            extensions.configure<KspExtension> {
-                // 0 - Turn off all Ktorfit related error checking, 1 - Check for errors, 2 - Turn errors into warnings
-                arg("Ktorfit_Errors", "1")
-                // Compile Safety - check your Koin config at compile time (since 1.3.0)
-                arg("KOIN_CONFIG_CHECK", "true")
-                arg("KOIN_DEFAULT_MODULE", "false")
-                // to generate viewModel Koin definition with org.koin.compose.viewmodel.dsl.viewModel instead of regular org.koin.androidx.viewmodel.dsl.viewModel
-                arg("KOIN_USE_COMPOSE_VIEWMODEL", "true")
             }
         }
     }
