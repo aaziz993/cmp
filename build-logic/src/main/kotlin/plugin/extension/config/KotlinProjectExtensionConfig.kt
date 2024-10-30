@@ -16,8 +16,12 @@ internal fun Project.configKotlinProjectExtension(extension: KotlinProjectExtens
         sourceSets.configureEach {
             languageSettings {
                 progressiveMode = true
+                optIn("kotlinx.cinterop.ExperimentalForeignApi")
+                optIn("kotlin.experimental.ExperimentalObjCName")
             }
         }
+
+
 
         settings.config.applyTo("kotlin", this)
     }

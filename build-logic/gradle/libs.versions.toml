@@ -40,7 +40,7 @@ sarxos-webcam = "0.3.12"
 commons-net = "3.11.0"
 sshj = "0.38.0"
 jsch = "0.1.55"
-# Kotlin
+# Kotlinß
 kotlin = "2.0.21"
 # compiler processor for generating code during compilation
 ksp = "2.0.21-1.0.25"
@@ -58,6 +58,7 @@ tomlkt = "0.3.7"
 yamlkt = "0.13.0"
 kotlinx-coroutines = "1.9.0"
 stately-concurrency = "2.1.0"
+kmp-nativecoroutines = "1.0.0-ALPHA-37"
 atomicfu = "0.26.0"
 kasechange = "1.4.1"
 bignum = "0.3.9"
@@ -126,6 +127,8 @@ permissions = "0.18.0"
 sqldelight = "2.0.2"
 # Room database
 room = "2.7.0-alpha10"
+# Store is a typed repository that returns a flow of Data /Loading /Error from local and network data sources
+store5 = "5.1.0-alpha05"
 # JDBC
 mariadb-java-client = "3.5.0"
 postgresql = "42.7.4"
@@ -358,6 +361,9 @@ sqldelight-web-worker-driver = { module = "app.cash.sqldelight:web-worker-driver
 room-runtime = { group = "androidx.room", name = "room-runtime", version.ref = "room" }
 room-runtime-android = { group = "androidx.room", name = "room-runtime-android", version.ref = "room" }
 room-compiler = { group = "androidx.room", name = "room-compiler", version.ref = "room" }
+
+# Store is a typed repository that returns a flow of Data /Loading /Error from local and network data sources
+store5 = { group = "org.mobilenativefoundation.store", name = "store5", version.ref = "store5" }
 
 # Map for Js, Jvm and Android
 worldwind = { module = "earth.worldwind:worldwind", version.ref = "worldwind" }
@@ -814,6 +820,7 @@ noarg = { id = "org.jetbrains.kotlin.plugin.noarg", version.ref = "kotlin" }
 allopen = { id = "org.jetbrains.kotlin.plugin.allopen", version.ref = "kotlin" }
 # serialization
 kotlin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
+kmp-nativecoroutines = { id = "com.rickclephas.kmp.nativecoroutines", version.ref = "kmp-nativecoroutines" }
 # jvm
 kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
 # multiplatform

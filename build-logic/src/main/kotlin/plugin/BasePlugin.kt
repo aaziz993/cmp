@@ -34,6 +34,7 @@ internal class BasePlugin : Plugin<Project> {
             apply(id("noarg"))
             apply(id("allopen"))
             apply(id("kotlin.serialization"))
+            apply(id("kmp.nativecoroutines"))
             apply(id("dataframe"))
 //            apply(id("kotlinx.rpc"))
             apply(id("ktorfit"))
