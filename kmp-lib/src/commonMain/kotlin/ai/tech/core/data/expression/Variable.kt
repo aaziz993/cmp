@@ -7,7 +7,7 @@ import ai.tech.core.misc.type.serializer.BigDecimalSerial
 import ai.tech.core.misc.type.serializer.BigIntegerSerial
 import ai.tech.core.misc.type.serializer.UuidSerial
 import ai.tech.core.misc.type.multiple.removeLast
-import ai.tech.core.misc.type.map
+import ai.tech.core.misc.type.transform
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.LocalDateTime
 import kotlinx.datetime.LocalTime
@@ -265,12 +265,12 @@ public interface Expression {
         childExpression: Expression.(expressions: List<Expression>) -> Unit,
         parentExpression: Expression.(expressions: List<Expression>) -> Unit
     ): Unit =
-        map({ transforms, value ->
+        transform({ transforms, value ->
             if (value is Expression) {
                 if (value.isSimple) {
                     value.childExpression(transforms)
                 } else {
-                    return@map value.arguments.iterator()
+                    return@transform value.arguments.iterator()
                 }
             }
             null
@@ -284,12 +284,12 @@ public interface Expression {
     ): Any? {
         val values = mutableListOf<Any?>()
 
-        map({ _, value ->
+        transform({ _, value ->
             if (value is Expression) {
                 if (value.isSimple) {
                     values.add(value.childExpression())
                 } else {
-                    return@map value.arguments.iterator()
+                    return@transform value.arguments.iterator()
                 }
             }
             null

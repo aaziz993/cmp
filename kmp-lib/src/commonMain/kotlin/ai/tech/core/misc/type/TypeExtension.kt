@@ -440,7 +440,7 @@ public inline fun <T : Any> T.removeOrNull(
 ): Any? = accessorOrNull(keys.dropLast(1), accessor)?.remove(keys.last())
 
 // //////////////////////////////////////////////////////TRAVERSER///////////////////////////////////////////////////////
-public fun Any.assign(
+public fun Any.aßssign(
     from: Any,
     keyTransformer: (keys: List<Any?>, fromKey: Any?) -> Any? = { _, fromKey -> fromKey },
     valueTransform: (keys: List<Any?>, thisValueKType: KType, thisValue: Any?, fromValue: Any?) -> Any? = { _, _, thisValue, fromValue ->
@@ -536,7 +536,7 @@ public fun Any.assign(
 //}, TypeResolver(kClass))
 
 @Suppress("UNCHECKED_CAST")
-public fun <T : Any> T.map(
+public fun <T : Any> T.transform(
     transform: (transforms: List<T>, value: Any?) -> Iterator<Any?>?,
     removeLast: (transforms: List<T>, transform: Any?) -> Unit
 ) {
