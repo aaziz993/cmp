@@ -77,7 +77,7 @@ internal class BasePlugin : Plugin<Project> {
 
         tasks.getByName("clean") {
             doLast {
-                delete(rootProject.layout.buildDirectory)
+                delete(rootProject.layout.buildDirectory.get())
             }
         }
     }

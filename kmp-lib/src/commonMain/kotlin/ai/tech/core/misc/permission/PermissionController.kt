@@ -1,7 +1,7 @@
 package ai.tech.core.misc.permission
 
-import core.permission.model.PermissionStateType
-import core.permission.model.PermissionType
+import ai.tech.core.misc.permission.model.PermissionStateType
+import ai.tech.core.misc.permission.model.PermissionType
 
 @Suppress("EXPECT_ACTUAL_CLASSIFIERS_ARE_IN_BETA_WARNING")
 public expect class PermissionController {
