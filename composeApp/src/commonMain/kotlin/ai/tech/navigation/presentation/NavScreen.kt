@@ -112,9 +112,9 @@ public fun NavScreen(
                         onCancel = { scope.launch { GlobalAlertEventController.sendEvent(null) } })
                 }
 
-//                val navigator = koinInject<Navigator<Destination>>()
-//
-//                navigator.handleAction(navController)
+                val navigator = koinInject<Navigator<Destination>>()
+
+                navigator.handleAction(navController)
 
                 NavScreenNavHost(
                     navController,

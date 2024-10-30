@@ -105,7 +105,10 @@ dependencies {
     // Ktor
     runtimeOnly(libs.plugins.ktor.toDep())
 
-    // Http client generator
+    //RPC
+    runtimeOnly(libs.plugins.kotlinx.rpc.toDep())
+
+    // generates http client
     implementation(libs.plugins.ktorfit.toDep())
 //    runtimeOnly(libs.plugins.ktorfit.toDep())
 

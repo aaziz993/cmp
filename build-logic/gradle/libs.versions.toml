@@ -66,6 +66,8 @@ pgpainless = "1.6.6"
 colormath = "3.6.0"
 arrow = "1.2.4"
 dataframe = "0.14.1"
+# kandy is an open-source plotting library for Kotlin that provides a powerful and flexible DSL for creating graphs and utilizes various popular engines.
+kandy = "0.7.1-dev-54"
 okio = "3.9.1"
 okio-extras = "1.1.3"
 junit = "4.13.2"
@@ -144,6 +146,9 @@ kotysa-r2dbc = "3.2.1"
 # Ktor
 ktor = "3.0.0"
 ktor-swagger-ui = "2.9.0"
+# RPC
+kotlinx-rpc = "0.3.0"
+# generates http client
 ktorfit = "1.11.1"
 # http2
 tcnative = "2.0.62.Final"
@@ -245,14 +250,25 @@ arrow-core = { module = "io.arrow-kt:arrow-core", version.ref = "arrow" }
 arrow-fx-coroutines = { module = "io.arrow-kt:arrow-fx-coroutines", version.ref = "arrow" }
 arrow-optics= { module = "io.arrow-kt:arrow-optics", version.ref = "arrow" }
 arrow-optics-ksp-plugin = { module = "io.arrow-kt:arrow-optics-ksp-plugin", version.ref = "arrow" }
-# dataframe for data pipeline processing
-dataframe = { module = "org.jetbrains.kotlinx:dataframe", version.ref = "dataframe" }
-dataframe-jdbc = { module = "org.jetbrains.kotlinx:dataframe-jdbc", version.ref = "dataframe" }
+# jdbc drivers
 mariadb-java-client = { module ="org.mariadb.jdbc:mariadb-java-client", version.ref = "mariadb-java-client" }
 postgresql = { module ="org.postgresql:postgresql", version.ref = "postgresql" }
 mysql-connector-j = { module ="com.mysql:mysql-connector-j", version.ref = "mysql-connector-j" }
 sqlite-jdbc = { module ="org.xerial:sqlite-jdbc", version.ref = "sqlite-jdbc" }
 mssql-jdbc = { module ="com.microsoft.sqlserver:mssql-jdbc", version.ref = "mssql-jdbc" }
+# r2dbc drivers
+r2dbc-pool = { module = "io.r2dbc:r2dbc-pool", version.ref = "r2dbc-pool" }
+r2dbc-h2 = { module = "io.r2dbc:r2dbc-h2", version.ref = "r2dbc-h2" }
+r2dbc-mariadb = { module = "org.mariadb:r2dbc-mariadb", version.ref = "r2dbc-mariadb" }
+r2dbc-mysql = { module = "com.github.jasync-sql:jasync-r2dbc-mysql", version.ref = "r2dbc-mysql" }
+r2dbc-mssql = { module = "io.r2dbc:r2dbc-mssql", version.ref = "r2dbc-mssql" }
+r2dbc-postgresql = { module = "org.postgresql:r2dbc-postgresql", version.ref = "r2dbc-postgresql" }
+r2dbc-oracle = { module = "com.oracle.database.r2dbc:oracle-r2dbc", version.ref = "r2dbc-oracle" }
+# dataframe for data pipeline processing
+dataframe = { module = "org.jetbrains.kotlinx:dataframe", version.ref = "dataframe" }
+dataframe-jdbc = { module = "org.jetbrains.kotlinx:dataframe-jdbc", version.ref = "dataframe" }
+# kandy is an open-source plotting library for Kotlin that provides a powerful and flexible DSL for creating graphs and utilizes various popular engines.
+kandy = { module = "org.jetbrains.kotlinx:kandy-api", version.ref = "kandy" }
 # file system
 okio = { module = "com.squareup.okio:okio", version.ref = "okio" }
 okio-nodefilesystem = { module = "com.squareup.okio:okio-nodefilesystem", version.ref = "okio" }
@@ -366,14 +382,6 @@ compass-permissions-mobile = { module = "dev.jordond.compass:permissions-mobile"
 # Kotysa ORM (postgresql, my sql, microsoft sql server, maria db, oracle, h 2 for jvm, android)
 kotysa = { module = "org.ufoss.kotysa:kotysa-core", version.ref = "kotysa" }
 kotysa-r2dbc = { module = "org.ufoss.kotysa:kotysa-r2dbc", version.ref = "kotysa-r2dbc" }
-# R2DBC
-r2dbc-pool = { module = "io.r2dbc:r2dbc-pool", version.ref = "r2dbc-pool" }
-r2dbc-h2 = { module = "io.r2dbc:r2dbc-h2", version.ref = "r2dbc-h2" }
-r2dbc-mariadb = { module = "org.mariadb:r2dbc-mariadb", version.ref = "r2dbc-mariadb" }
-r2dbc-mysql = { module = "com.github.jasync-sql:jasync-r2dbc-mysql", version.ref = "r2dbc-mysql" }
-r2dbc-mssql = { module = "io.r2dbc:r2dbc-mssql", version.ref = "r2dbc-mssql" }
-r2dbc-postgresql = { module = "org.postgresql:r2dbc-postgresql", version.ref = "r2dbc-postgresql" }
-r2dbc-oracle = { module = "com.oracle.database.r2dbc:oracle-r2dbc", version.ref = "r2dbc-oracle" }
 
 # Ktor
 ktor-serialization-kotlinx-json = { module = "io.ktor:ktor-serialization-kotlinx-json", version.ref = "ktor" }
@@ -460,7 +468,19 @@ ktor-client-js = { module = "io.ktor:ktor-client-js", version.ref = "ktor" }
 ktor-client-json = { module = "io.ktor:ktor-client-json", version.ref = "ktor" }
 ktor-client-serialization = { module = "io.ktor:ktor-client-serialization", version.ref = "ktor" }
 
-# Http client generator
+# RPC
+# serialization module. also, protobuf and cbor are available
+kotlinx-rpc-krpc-serialization-json = { module = "org.jetbrains.kotlinx:kotlinx-rpc-krpc-serialization-json", version.ref = "kotlinx-rpc" }
+kotlinx-rpc-krpc-serialization-protobuf = { module = "org.jetbrains.kotlinx:kotlinx-rpc-krpc-serialization-protobuf", version.ref = "kotlinx-rpc" }
+kotlinx-rpc-krpc-serialization-cbor = { module = "org.jetbrains.kotlinx:kotlinx-rpc-krpc-serialization-cbor", version.ref = "kotlinx-rpc" }
+# client
+kotlinx-rpc-krpc-client = { module = "org.jetbrains.kotlinx:kotlinx-rpc-krpc-client", version.ref = "kotlinx-rpc" }
+kotlinx-rpc-krpc-ktor-client = { module = "org.jetbrains.kotlinx:kotlinx-rpc-krpc-ktor-client", version.ref = "kotlinx-rpc" }
+# server
+kotlinx-rpc-krpc-server = { module = "org.jetbrains.kotlinx:kotlinx-rpc-krpc-server", version.ref = "kotlinx-rpc" }
+kotlinx-rpc-krpc-ktor-server = { module = "org.jetbrains.kotlinx:kotlinx-rpc-krpc-ktor-server", version.ref = "kotlinx-rpc" }
+
+# Generates http client
 ktorfit-lib = { module = "de.jensklingenberg.ktorfit:ktorfit-lib", version.ref = "ktorfit" }
 ktorfit-ksp = { module = "de.jensklingenberg.ktorfit:ktorfit-ksp", version.ref = "ktorfit" }
 
@@ -558,6 +578,24 @@ arrow = [
     "arrow-fx-coroutines",
     "arrow-optics"
 ]
+# jdbc drivers
+jdbc = [
+    "mariadb-java-client",
+    "postgresql",
+    "mysql-connector-j",
+    "sqlite-jdbc",
+    "mssql-jdbc",
+]
+# r2dbc drivers
+r2dbc = [
+    "r2dbc-pool",
+    "r2dbc-h2",
+    "r2dbc-mariadb",
+    "r2dbc-mysql",
+    "r2dbc-mssql",
+    "r2dbc-postgresql",
+    "r2dbc-oracle",
+]
 # multiplatform settings
 multiplatform-settings = [
     "multiplatform-settings",
@@ -630,26 +668,6 @@ sqldelight = [
     "sqldelight-primitive-adapters"
 ]
 
-# JDBC
-jdbc = [
-    "mariadb-java-client",
-    "postgresql",
-    "mysql-connector-j",
-    "sqlite-jdbc",
-    "mssql-jdbc",
-]
-
-# R2DBC
-r2dbc = [
-    "r2dbc-pool",
-    "r2dbc-h2",
-    "r2dbc-mariadb",
-    "r2dbc-mysql",
-    "r2dbc-mssql",
-    "r2dbc-postgresql",
-    "r2dbc-oracle",
-]
-
 # Kotysa ORM
 kotysa = [
     "kotysa",
@@ -708,6 +726,23 @@ ktor-client = [
     "ktor-client-serialization",
 ]
 
+# RPC
+# serialization
+kotlinx-rpc-serialization = [
+    "kotlinx-rpc-krpc-serialization-json",
+    "kotlinx-rpc-krpc-serialization-protobuf",
+    "kotlinx-rpc-krpc-serialization-cbor"
+]
+# client
+kotlinx-rpc-client = [
+    "kotlinx-rpc-krpc-client",
+    "kotlinx-rpc-krpc-ktor-client"
+]
+# server
+kotlinx-rpc-server = [
+    "kotlinx-rpc-krpc-server",
+    "kotlinx-rpc-krpc-ktor-server"
+]
 # GraphQL
 # server
 kgraphql = [
@@ -811,6 +846,9 @@ room = { id = "androidx.room", version.ref = "room" }
 
 # Ktor
 ktor = { id = "io.ktor.plugin", version.ref = "ktor" }
+
+# RPC
+kotlinx-rpc = { id = "org.jetbrains.kotlinx.rpc.plugin", version.ref = "kotlinx-rpc" }
 
 # Http client generator
 ktorfit = { id = "de.jensklingenberg.ktorfit", version.ref = "ktorfit" }
