@@ -86,6 +86,11 @@ dependencies {
     implementation(kotlin("android-extensions"))
     implementation(kotlin("script-runtime"))
 
+    // Web
+    runtimeOnly(libs.plugins.js.plain.objects.toDep())
+    implementation(libs.plugins.seskar.toDep())
+    implementation(libs.plugins.karakum.toDep())
+
     // SQLDelight
     implementation(libs.plugins.sqldelight.toDep())
     runtimeOnly(libs.plugins.sqldelight.toDep())
