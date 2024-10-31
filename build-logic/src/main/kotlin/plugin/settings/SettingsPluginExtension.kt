@@ -53,7 +53,7 @@ public open class SettingsPluginExtension(
     public val projectGroup: String = providers.gradleProperty("project.group").getOrElse(PROJECT_GROUP)
 
     public val projectVersionIsSnapshot: Boolean =
-        providers.gradleProperty("project.version.snapshot").getOrElse(PROJECT_VERSION_IS_SNAPSHOT.toString())
+        providers.gradleProperty("project.version.issnapshot").getOrElse(PROJECT_VERSION_IS_SNAPSHOT.toString())
             .toBoolean()
 
     public val projectVersionSuffix: String = if (projectVersionIsSnapshot) {
