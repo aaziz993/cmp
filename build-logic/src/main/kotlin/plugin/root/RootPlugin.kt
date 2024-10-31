@@ -51,8 +51,8 @@ public class RootPlugin : Plugin<Project> {
 
                 // Download or fallback to file and write to file contributing
                 downloadProjectFile(
-                    providers.gradleProperty("project.code.of.contributing.text.url").get(),
-                    providers.gradleProperty("project.code.of.contributing.fallback.file").get(),
+                    providers.gradleProperty("project.contributing.text.url").get(),
+                    providers.gradleProperty("project.contributing.fallback.file").get(),
                     "CONTRIBUTING.md",
                     ProjectFileOverrideType.valueOf(
                         providers.gradleProperty("project.contributing.file.override").get().uppercase(),
