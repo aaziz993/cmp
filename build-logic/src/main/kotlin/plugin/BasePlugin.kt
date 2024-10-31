@@ -57,6 +57,10 @@ internal class BasePlugin : Plugin<Project> {
         // Code format check and fix
         extensions.configure<SpotlessExtension>(::configSpotlessExtension)
 
+        tasks.withType<SpotlessApply> {
+            dependsOn("synchronizeRootFiles")
+        }
+
         // Code quality check
         extensions.configure<SonarExtension>(::configSonarExtension)
 

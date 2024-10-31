@@ -24,9 +24,9 @@ public class RootPlugin : Plugin<Project> {
                 project.version = projectVersion
             }
 
-            tasks.create("downloadProjectFiles", Task::class.java) {
+            tasks.create("synchronizeRootFiles", Task::class.java) {
                 // Download and write to file license
-                downloadProjectFile(
+                synchronizeRootFile(
                     providers.gradleProperty("project.license.text.url").get(),
                     providers.gradleProperty("project.license.fallback.file").get(),
                     "LICENSE",
@@ -40,7 +40,7 @@ public class RootPlugin : Plugin<Project> {
                 )
 
                 // Download or fallback to file and write to file code of conduct
-                downloadProjectFile(
+                synchronizeRootFile(
                     providers.gradleProperty("project.code.of.conduct.text.url").get(),
                     providers.gradleProperty("project.code.of.conduct.fallback.file").get(),
                     "CODE_OF_CONDUCT.md",
@@ -50,7 +50,7 @@ public class RootPlugin : Plugin<Project> {
                 )
 
                 // Download or fallback to file and write to file contributing
-                downloadProjectFile(
+                synchronizeRootFile(
                     providers.gradleProperty("project.contributing.text.url").get(),
                     providers.gradleProperty("project.contributing.fallback.file").get(),
                     "CONTRIBUTING.md",
@@ -63,7 +63,7 @@ public class RootPlugin : Plugin<Project> {
     }
 }
 
-private fun downloadProjectFile(
+private fun synchronizeRootFile(
     url: String,
     fallbackFile: String,
     destFile: String,
