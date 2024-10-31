@@ -18,9 +18,3 @@ internal const val ALL_WARNINGS_AS_ERRORS = false
 internal const val PROJECT_GROUP = "com.example"
 
 internal const val PROJECT_VERSION_IS_SNAPSHOT = false
-
-internal const val PROJECT_VERSION_MAJOR = "1"
-
-internal const val PROJECT_VERSION_MINOR = "0"
-
-internal const val PROJECT_VERSION_PATCH = "0"

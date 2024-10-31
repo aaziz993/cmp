@@ -57,10 +57,6 @@ internal class BasePlugin : Plugin<Project> {
         // Code format check and fix
         extensions.configure<SpotlessExtension>(::configSpotlessExtension)
 
-        tasks.withType<SpotlessApply> {
-            dependsOn("preparation")
-        }
-
         // Code quality check
         extensions.configure<SonarExtension>(::configSonarExtension)
 

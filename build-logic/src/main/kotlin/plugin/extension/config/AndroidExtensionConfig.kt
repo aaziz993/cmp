@@ -10,6 +10,7 @@ import com.android.build.gradle.BaseExtension
 import com.android.build.gradle.LibraryExtension
 import com.android.build.gradle.internal.dsl.BaseAppModuleExtension
 import java.util.*
+import org.gradle.api.JavaVersion
 import org.gradle.api.Project
 import org.gradle.api.artifacts.Dependency
 import org.gradle.api.artifacts.dsl.DependencyHandler
@@ -47,7 +48,26 @@ internal fun Project.configBaseExtension(
         getByName("release") {
             isMinifyEnabled = true
             debuggable(false)
-            proguardFile(proguardFile)
+            proguardFiles(
+                // Includes the default ProGuard rules files that are packaged with
+                // the Android Gradle plugin. To learn more, go to the section about
+                // R8 configuration files.
+                // getDefaultProguardFile() is a simple helper method that fetches them out of build/intermediates/proguard-files.
+                // The Android Gradle Plugin (AGP) puts them there.
+                getDefaultProguardFile("proguard-android-optimize.txt"),
+
+                // List additional ProGuard rules for the given build type here. By default,
+                // Android Studio creates and includes an empty rules file for you (located
+                // at the root directory of each module).
+
+                // Includes a local, custom Proguard rules file
+                "proguard-rules.pro",
+            )
+            testProguardFiles(
+                // The proguard files listed here are included in the
+                // test APK only.
+                "test-proguard-rules.pro",
+            )
         }
         getByName("debug") {
             isMinifyEnabled = false
@@ -70,9 +90,9 @@ internal fun Project.configBaseExtension(
 
     compileOptions {
         sourceCompatibility =
-            JavaVersion.toVersion(providers.gradleProperty("android.compile.options.source.compatibility").getOrElse(ANDROID_JAVA_SOURCE_VERSION))
+            providers.gradleProperty("android.compile.options.source.compatibility").getOrElse(ANDROID_JAVA_SOURCE_VERSION.toString()).toInt().toJavaVersion()
         targetCompatibility =
-            JavaVersion.toVersion(providers.gradleProperty("android.compile.options.target.compatibility").getOrElse(ANDROID_JAVA_TARGET_VERSION))
+            providers.gradleProperty("android.compile.options.target.compatibility").getOrElse(ANDROID_JAVA_TARGET_VERSION.toString()).toInt().toJavaVersion()
     }
 }
 
