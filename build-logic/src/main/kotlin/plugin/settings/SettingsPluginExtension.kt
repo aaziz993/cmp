@@ -158,7 +158,7 @@ public open class SettingsPluginExtension(
                         // better make it a variable and set it to true only for CI builds
                         isPush = true
                         credentials {
-                            username = if (System.getenv().containsKey("")) {
+                            username = if (System.getenv().containsKey("JB_SPACE_GRADLE_BUILD_CACHE_USERNAME")) {
                                 System.getenv("JB_SPACE_GRADLE_BUILD_CACHE_USERNAME")
                             }
                             else {
