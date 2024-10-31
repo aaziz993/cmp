@@ -1,6 +1,7 @@
 package plugin
 
 import com.apollographql.apollo3.gradle.api.ApolloExtension
+import com.diffplug.gradle.spotless.SpotlessApply
 import com.diffplug.gradle.spotless.SpotlessExtension
 import com.google.devtools.ksp.gradle.KspExtension
 import de.jensklingenberg.ktorfit.gradle.KtorfitGradleConfiguration
@@ -8,6 +9,8 @@ import plugin.extension.id
 import kotlinx.kover.gradle.plugin.dsl.KoverProjectExtension
 import org.gradle.api.Plugin
 import org.gradle.api.Project
+import org.gradle.api.Task
+import org.gradle.api.tasks.testing.Test
 import org.gradle.kotlin.dsl.configure
 import org.gradle.kotlin.dsl.withType
 import org.jetbrains.kotlin.allopen.gradle.AllOpenExtension
@@ -46,14 +49,24 @@ internal class BasePlugin : Plugin<Project> {
         // Test coverage analyze
         extensions.configure<KoverProjectExtension>(::configKoverProjectExtension)
 
+        tasks.create<Task>("generateKoverReport", Task::class.java) {
+            dependsOn("koverHtmlReport", "koverXmlReport", "test")
+        }
+
         // Code format check and fix
         extensions.configure<SpotlessExtension>(::configSpotlessExtension)
+
+        tasks.withType<SpotlessApply> {
+            dependsOn("preparation")
+        }
 
         // Code quality check
         extensions.configure<SonarExtension>(::configSonarExtension)
 
         // Create project documentation
         configDokka()
+
+//        extensions.configure<BuildConfigExtension>(::configBuildConfigExtension)
 
         // Compiler processor for generating code during compilation
         extensions.configure<KspExtension>(::configKspExtension)
@@ -76,5 +89,9 @@ internal class BasePlugin : Plugin<Project> {
 
         // Configure kotlin compilation task
         tasks.withType<KotlinCompilationTask<*>>().configureEach { configKotlinCompilationTask(this) }
+
+        tasks.withType<Test> {
+            finalizedBy("generateKoverReport")
+        }
     }
 }

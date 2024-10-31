@@ -1,10 +1,13 @@
 package ai.tech.core.presentation.viewmodel
 
 import androidx.lifecycle.ViewModel
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import org.koin.core.component.KoinComponent
 
 public abstract class AbstractViewModel<S : Any, A : Any> : ViewModel(), KoinComponent {
-//    private val _state: MutableStateFlow<ViewState<S>> = MutableStateFlow(ViewState.Uninitialized)
+    public val state: StateFlow<ViewState<S>>
+        field ms = MutableStateFlow(ViewState.Uninitialized)
 //
 //    val state: StateFlow<ViewState<S>> = _state.asStateFlow()
 //

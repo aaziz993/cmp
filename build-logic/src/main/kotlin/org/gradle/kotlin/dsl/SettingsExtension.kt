@@ -12,6 +12,6 @@ public fun Settings.config(configure: SettingsPluginExtension.() -> Unit) {
     extensions.getByType<SettingsPluginExtension>().configure()
 }
 
-internal val Settings.config: SettingsPluginExtension
+internal val Settings.extension: SettingsPluginExtension
     get() =
         (this as ExtensionAware).extensions.getByName(SettingsPluginExtension.NAME) as SettingsPluginExtension

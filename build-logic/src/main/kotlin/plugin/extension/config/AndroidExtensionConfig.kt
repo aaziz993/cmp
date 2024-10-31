@@ -5,27 +5,24 @@ package plugin.extension.config
 import com.android.build.api.dsl.CommonExtension
 import com.android.build.gradle.AppExtension
 import com.android.build.gradle.BaseExtension
-import com.android.build.gradle.LibraryExtension
 import com.android.build.gradle.internal.dsl.BaseAppModuleExtension
 import ANDROID_JAVA_SOURCE_VERSION
 import ANDROID_JAVA_TARGET_VERSION
+import com.android.build.gradle.LibraryExtension
 import plugin.extension.settings
 import plugin.extension.version
 import org.gradle.api.Project
-import org.gradle.kotlin.dsl.add
-import org.gradle.kotlin.dsl.config
+import org.gradle.kotlin.dsl.extension
 import org.gradle.kotlin.dsl.get
-import org.gradle.kotlin.dsl.getByType
-import org.jetbrains.compose.ComposeExtension
 import org.gradle.api.artifacts.Dependency
 
 import org.gradle.api.artifacts.dsl.DependencyHandler
 
-internal fun Project.configAndroidBaseExtension(
+internal fun Project.configBaseExtension(
     extension: BaseExtension,
 ) = extension.apply {
     namespace = project.group.toString()
-    compileSdkVersion = "android-${version("android-compile-sdk")}"
+    compileSdkVersion = "android-${version("android.compile.sdk")}"
 
     sourceSets["main"].manifest.srcFile("src/androidMain/AndroidManifest.xml")
     sourceSets["main"].res.srcDirs("src/androidMain/res")
@@ -35,13 +32,13 @@ internal fun Project.configAndroidBaseExtension(
     val consumerProguardFile = "consumer-proguard.pro"
 
     defaultConfig {
-        minSdk = version("android-min-sdk").toString().toInt()
+        minSdk = version("android.min.sdk").toString().toInt()
 
-        targetSdk = version("android-target-sdk").toString().toInt()
+        targetSdk = version("android.target.sdk").toString().toInt()
 
-        versionCode = version("android-version-code").toString().toInt()
+        versionCode = version("android.version.code").toString().toInt()
 
-        versionName = version("android-version-name").toString()
+        versionName = version("android.version.name").toString()
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
 
@@ -77,20 +74,13 @@ internal fun Project.configAndroidBaseExtension(
         sourceCompatibility = ANDROID_JAVA_SOURCE_VERSION.toJavaVersion()
         targetCompatibility = ANDROID_JAVA_TARGET_VERSION.toJavaVersion()
     }
-
-    settings.config.applyTo("android", this)
 }
 
-internal fun Project.configComposeAndroidBaseExtension(extension: BaseExtension) = extension.apply {
+internal fun Project.configLibraryExtension(extension: LibraryExtension) = extension.apply {
 
-    settings.config.applyTo("android", this)
 }
 
-internal fun Project.configComposeAndroidLibExtension(extension: LibraryExtension) = extension.apply {
-    settings.config.applyTo("android", this)
-}
-
-internal fun Project.configComposeAndroidBaseAppExtension(extension: BaseAppModuleExtension) = extension.apply {
+internal fun Project.configBaseAppModuleExtension(extension: BaseAppModuleExtension) = extension.apply {
     defaultConfig {
         applicationId = group.toString()
     }
@@ -110,8 +100,6 @@ internal fun Project.configComposeAndroidBaseAppExtension(extension: BaseAppModu
     buildFeatures {
         compose = true
     }
-
-    settings.config.applyTo("android", this)
 }
 
 public fun DependencyHandler.androidTestImplementation(dependencyNotation: Any): Dependency? =

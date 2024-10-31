@@ -3,14 +3,14 @@ package plugin.cmp.extension.config
 import plugin.extension.settings
 import plugin.extension.version
 import org.gradle.api.Project
-import org.gradle.kotlin.dsl.config
+import org.gradle.kotlin.dsl.extension
 import org.jetbrains.compose.desktop.DesktopExtension
 import org.jetbrains.compose.desktop.application.dsl.TargetFormat
 
 internal fun Project.configDesktopExtension(extension: DesktopExtension): DesktopExtension =
     extension.apply {
         application {
-            mainClass = "${settings.config.group}.MainKt"
+            mainClass = "${settings.extension.projectGroup}.MainKt"
 
             jvmArgs("--add-opens", "java.desktop/sun.awt=ALL-UNNAMED")
             jvmArgs("--add-opens", "java.desktop/java.awt.peer=ALL-UNNAMED")
@@ -35,7 +35,7 @@ internal fun Project.configDesktopExtension(extension: DesktopExtension): Deskto
                 }
                 macOS {
                     iconFile.set(project.file("desktopAppIcons/MacOSIcon.icns"))
-                    bundleID = "${settings.config.group}.desktopApp"
+                    bundleID = "${settings.extension.projectGroup}.${rootProject.name}.desktopApp"
                 }
             }
             // also proguard rules
@@ -43,6 +43,4 @@ internal fun Project.configDesktopExtension(extension: DesktopExtension): Deskto
                 configurationFiles.from("compose-desktop.pro")
             }
         }
-
-        settings.config.applyTo("jvm.app", this)
     }

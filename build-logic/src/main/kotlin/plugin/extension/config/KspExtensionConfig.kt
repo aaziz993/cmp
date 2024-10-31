@@ -3,7 +3,7 @@ package plugin.extension.config
 import com.google.devtools.ksp.gradle.KspExtension
 import org.gradle.api.Project
 import org.gradle.api.artifacts.dsl.DependencyHandler
-import org.gradle.kotlin.dsl.config
+import org.gradle.kotlin.dsl.extension
 import plugin.extension.settings
 
 internal fun Project.configKspExtension(extension: KspExtension): KspExtension =
@@ -15,8 +15,6 @@ internal fun Project.configKspExtension(extension: KspExtension): KspExtension =
         arg("KOIN_DEFAULT_MODULE", "false")
         // to generate viewModel Koin definition with org.koin.compose.viewmodel.dsl.viewModel instead of regular org.koin.androidx.viewmodel.dsl.viewModel
         arg("KOIN_USE_COMPOSE_VIEWMODEL", "true")
-
-        settings.config.applyTo("ksp", this)
     }
 
 internal fun DependencyHandler.ksp(dependencyNotation: Any) {

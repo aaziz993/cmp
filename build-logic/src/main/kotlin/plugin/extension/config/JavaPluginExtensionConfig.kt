@@ -8,14 +8,12 @@ import org.gradle.api.Project
 import org.gradle.api.artifacts.dsl.DependencyHandler
 import org.gradle.api.plugins.JavaPlugin
 import org.gradle.api.plugins.JavaPluginExtension
-import org.gradle.kotlin.dsl.config
+import org.gradle.kotlin.dsl.extension
 
 internal fun Project.configJavaPluginExtension(extension: JavaPluginExtension) =
     extension.apply {
         sourceCompatibility = JAVA_SOURCE_VERSION.toJavaVersion()
         targetCompatibility = JAVA_TARGET_VERSION.toJavaVersion()
-
-        settings.config.applyTo("java", this)
     }
 
 internal fun DependencyHandler.implementation(dependencyNotation: Any) {

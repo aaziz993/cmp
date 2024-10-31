@@ -1,28 +1,23 @@
 package plugin.cmp
 
 import com.android.build.gradle.internal.dsl.BaseAppModuleExtension
-import plugin.extension.config.configComposeAndroidBaseAppExtension
-import plugin.extension.id
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.kotlin.dsl.configure
 import org.jetbrains.compose.ComposeExtension
-import org.jetbrains.compose.desktop.DesktopExtension
-import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
-import org.jetbrains.kotlin.gradle.targets.js.webpack.KotlinWebpackConfig
-import plugin.cmp.extension.config.configDesktopExtension
-import org.jetbrains.kotlin.gradle.ExperimentalWasmDsl
+import plugin.cmp.extension.config.configComposeAppExtension
+import plugin.extension.config.configBaseAppModuleExtension
+import plugin.extension.id
 
 public class CMPAppPlugin : Plugin<Project> {
     override fun apply(target: Project) {
         CMPPlugin(target.id("android.application")).apply(target)
 
         with(target) {
-            extensions.configure<BaseAppModuleExtension>(::configComposeAndroidBaseAppExtension)
+            // Android app extension
+            extensions.configure<BaseAppModuleExtension>(::configBaseAppModuleExtension)
 
-            extensions.configure<ComposeExtension> {
-                extensions.configure<DesktopExtension>(::configDesktopExtension)
-            }
+            extensions.configure<ComposeExtension>(::configComposeAppExtension)
         }
     }
 }

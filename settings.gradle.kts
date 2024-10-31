@@ -23,10 +23,11 @@ plugins {
 }
 
 config {
-    group = "ai.tech"
     versionCatalogFile = "build-logic/gradle/libs.versions.toml"
 
-    create()
+    karakumConfFile = "build-logic/karakum.config.json"
+
+    apply()
 }
 
 dependencyResolutionManagement {

@@ -2,6 +2,8 @@
 
 package ai.tech.core.misc.type
 
+import ai.tech.core.misc.type.multiple.map
+import ai.tech.core.misc.type.multiple.toList
 import com.ionspin.kotlin.bignum.decimal.BigDecimal
 import com.ionspin.kotlin.bignum.integer.BigInteger
 import kotlinx.serialization.ExperimentalSerializationApi
@@ -76,7 +78,7 @@ public inline fun <reified T> Json.toGeneric(
 public fun Json.toGeneric(value: Any?, valueType: TypeResolver, genericType: TypeResolver): Any? =
     toGeneric(toJsonElement(value, valueType), genericType)
 
-public inline fun Json.toGeneric(
+public fun Json.toGeneric(
     value: Any,
     valueTypeParameters: List<TypeResolver> = emptyList(),
     genericType: TypeResolver,
@@ -106,7 +108,7 @@ public inline fun <reified T, reified R> Json.toGeneric(
     TypeResolver(R::class, *genericTypeParameters.toTypedArray())
 ) as R
 
-public inline fun <K, V> Json.toMap(value: Any): Map<K, V> = toGeneric<Map<K, V>>(value)
+public fun <K, V> Json.toMap(value: Any): Map<K, V> = toGeneric<Map<K, V>>(value)
 
 @OptIn(InternalSerializationApi::class)
 @Suppress("UNCHECKED_CAST")
@@ -157,7 +159,7 @@ public inline fun <reified T> Json.decode(value: String, typeParameters: List<Ty
     decode(value, TypeResolver(T::class, *typeParameters.toTypedArray()))
 
 @Suppress("UNCHECKED_CAST")
-public inline fun <T : Any> Json.create(map: Map<String, Any?> = emptyMap(), type: TypeResolver): T =
+public fun <T : Any> Json.create(map: Map<String, Any?> = emptyMap(), type: TypeResolver): T =
     toGeneric(map, genericType = type) as T
 
 public inline fun <reified T : Any> Json.create(map: Map<String, Any?> = emptyMap()): T =
@@ -166,5 +168,5 @@ public inline fun <reified T : Any> Json.create(map: Map<String, Any?> = emptyMa
 public inline fun <T : Any> Json.copy(value: T, onMap: (Map<String, Any?>) -> Map<String, Any?> = { it }): T =
     create(onMap(toMap(value)), TypeResolver(value::class))
 
-public inline fun <T : Any> Json.copy(value: T, map: Map<String, Any?>): T =
+public fun <T : Any> Json.copy(value: T, map: Map<String, Any?>): T =
     copy(value) { it + map }

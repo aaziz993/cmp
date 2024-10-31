@@ -1,12 +1,11 @@
 package plugin.extension.config
 
 import org.gradle.api.Project
-import org.gradle.kotlin.dsl.config
+import org.gradle.kotlin.dsl.extension
 import org.jetbrains.kotlin.noarg.gradle.NoArgExtension
 import plugin.extension.settings
 
 internal fun Project.configNoArgExtension(extension: NoArgExtension): NoArgExtension =
     extension.apply {
-        annotation("${settings.config.group}.core.misc.type.annotation.NoArg")
-        settings.config.applyTo("noarg", this)
+        annotation("${settings.extension.projectGroup}.core.misc.type.annotation.NoArg")
     }

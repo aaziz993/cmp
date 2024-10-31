@@ -1,4 +1,8 @@
 [versions]
+# Project
+project-version-major = 1
+project-version-minor = 0
+project-version-patch = 0
 # Gradle
 # provides a repository for downloading JVMs
 foojay-resolver-convention = "0.8.0"
@@ -109,6 +113,7 @@ encoding-japanese-types = "v2.0.5"
 androidx-lifecycle = "2.8.3"
 androidx-material = "1.12.0"
 androidx-test-junit = "1.2.1"
+compose-multiplatform-stable = "1.7.0"
 compose-multiplatform = "1.8.0-dev1899"
 androidx-activity-compose = "1.9.3"
 compose-icons = "1.1.1"
@@ -320,7 +325,7 @@ compose-icons-simple-icons = { module = "br.com.devsrsouza.compose.icons:simple-
 compos-icons-tabler-icons = { module = "br.com.devsrsouza.compose.icons:tabler-icons", version.ref = "compose-icons" }
 # material3 Adaptive
 material3-window-size-clazz = { module = "org.jetbrains.compose.material3:material3-window-size-class", version.ref = "compose-multiplatform" }
-material3-adaptive-navigation-suite = { module = "org.jetbrains.compose.material3:material3-adaptive-navigation-suite", version.ref = "compose-multiplatform" }
+material3-adaptive-navigation-suite = { module = "org.jetbrains.compose.material3:material3-adaptive-navigation-suite", version.ref = "compose-multiplatform-stable" }
 material3-adaptive = { module = "org.jetbrains.compose.material3.adaptive:adaptive", version.ref = "material3-adaptive" }
 material3-adaptive-layout = { module = "org.jetbrains.compose.material3.adaptive:adaptive-layout", version.ref = "material3-adaptive" }
 material3-adaptive-navigation = { module = "org.jetbrains.compose.material3.adaptive:adaptive-navigation", version.ref = "material3-adaptive" }

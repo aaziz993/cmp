@@ -2,13 +2,14 @@ package plugin
 
 import com.android.build.gradle.LibraryExtension
 import com.vanniktech.maven.publish.MavenPublishBaseExtension
-import plugin.extension.config.configComposeAndroidLibExtension
-import plugin.extension.config.configPublishExtension
+import plugin.extension.config.configLibraryExtension
+import plugin.extension.config.configMavenPublishBaseExtension
+import plugin.extension.config.configMavenPublication
 import plugin.extension.id
 import org.gradle.api.Plugin
 import org.gradle.api.Project
+import org.gradle.api.publish.maven.MavenPublication
 import org.gradle.kotlin.dsl.configure
-import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
 
 internal class BaseLibPlugin : Plugin<Project> {
     override fun apply(target: Project): Unit = with(target) {
@@ -16,10 +17,11 @@ internal class BaseLibPlugin : Plugin<Project> {
             apply(id("vanniktech.maven.publish"))
         }
 
-        // Android base library extension
-        extensions.configure<LibraryExtension>(::configComposeAndroidLibExtension)
+        // Android library extension
+        extensions.configure<LibraryExtension>(::configLibraryExtension)
 
         // Publishing
-        extensions.configure<MavenPublishBaseExtension>(::configPublishExtension)
+        extensions.configure<MavenPublication>(::configMavenPublication)
+        extensions.configure<MavenPublishBaseExtension>(::configMavenPublishBaseExtension)
     }
 }

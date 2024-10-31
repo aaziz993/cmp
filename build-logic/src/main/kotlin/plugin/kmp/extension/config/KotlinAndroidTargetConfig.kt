@@ -1,12 +1,10 @@
 package plugin.kmp.extension.config
 
-import plugin.extension.config.toJvmTarget
 import KOTLIN_JVM_TARGET_VERSION
-import plugin.extension.settings
 import org.gradle.api.Project
-import org.gradle.kotlin.dsl.config
 import org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi
 import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinAndroidTarget
+import plugin.extension.config.toJvmTarget
 
 internal fun Project.configKotlinAndroidTarget(target: KotlinAndroidTarget) =
     target.apply {
@@ -14,6 +12,4 @@ internal fun Project.configKotlinAndroidTarget(target: KotlinAndroidTarget) =
         compilerOptions {
             jvmTarget.set(KOTLIN_JVM_TARGET_VERSION.toJvmTarget())
         }
-
-        settings.config.applyTo("kotlin.android.target", this)
     }

@@ -1,11 +1,5 @@
 package plugin.cmp
 
-import com.android.build.gradle.BaseExtension
-import plugin.extension.bundle
-import plugin.extension.config.configComposeAndroidBaseExtension
-import plugin.extension.config.debugImplementation
-import plugin.extension.id
-import plugin.extension.lib
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.kotlin.dsl.configure
@@ -13,9 +7,13 @@ import org.gradle.kotlin.dsl.getByType
 import org.jetbrains.compose.ComposeExtension
 import org.jetbrains.compose.ExperimentalComposeLibrary
 import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
-import plugin.kmp.KMPPlugin
 import plugin.cmp.extension.config.configComposeExtension
+import plugin.extension.bundle
 import plugin.extension.config.androidTestImplementation
+import plugin.extension.config.debugImplementation
+import plugin.extension.id
+import plugin.extension.lib
+import plugin.kmp.KMPPlugin
 
 internal class CMPPlugin(
     private val androidPluginId: String,
@@ -28,8 +26,6 @@ internal class CMPPlugin(
                     apply(id("compose.multiplatform"))
                     apply(id("compose.compiler"))
                 }
-
-                extensions.configure<BaseExtension>(::configComposeAndroidBaseExtension)
 
                 extensions.configure<ComposeExtension>(::configComposeExtension)
 
@@ -44,7 +40,7 @@ internal class CMPPlugin(
                             implementation(composeDeps.ui)
                             implementation(composeDeps.components.resources)
                             implementation(composeDeps.components.uiToolingPreview)
-                            implementation(composeDeps.material3AdaptiveNavigationSuite)
+//                            implementation(composeDeps.material3AdaptiveNavigationSuite)
                             implementation(composeDeps.materialIconsExtended)
                             implementation(bundle("compose.icons"))
                             implementation(bundle("material3.adaptive"))

@@ -15,7 +15,7 @@ import org.jetbrains.kotlin.gradle.dsl.KotlinProjectExtension
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompilationTask
 import plugin.BasePlugin
 import plugin.extension.config.*
-import plugin.extension.config.configAndroidBaseExtension
+import plugin.extension.config.configBaseExtension
 import plugin.extension.config.configKotlinProjectExtension
 import plugin.extension.config.configRoomExtension
 import plugin.extension.config.configSqlDelightExtension
@@ -44,7 +44,8 @@ internal class KMPPlugin(
 
             extensions.configure<KotlinMultiplatformExtension>(::configKMPExtension)
 
-            extensions.configure<BaseExtension>(::configAndroidBaseExtension)
+            // Android base extension
+            extensions.configure<BaseExtension>(::configBaseExtension)
 
             // Generates kotlin code from typescript
             extensions.configure<KarakumExtension>(::configKarakumExtension)
