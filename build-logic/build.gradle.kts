@@ -51,8 +51,7 @@ dependencies {
 
     // Java
     // toml
-    implementation(libs.toml4j)
-    implementation("net.vieiro:toml-java:13.3.1")
+    implementation("org.tomlj:tomlj:1.1.1")
 
     // Kotlin
     runtimeOnly(libs.plugins.ksp.toDep())

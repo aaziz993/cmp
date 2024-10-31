@@ -10,3 +10,9 @@ dependencyResolutionManagement {
         gradlePluginPortal()
     }
 }
+
+buildscript {
+    dependencies {
+//        implementation("org.tomlj:tomlj:1.1.1")
+    }
+}

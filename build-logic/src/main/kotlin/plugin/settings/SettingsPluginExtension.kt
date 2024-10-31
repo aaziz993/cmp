@@ -8,11 +8,9 @@ import PROJECT_GROUP
 import PROJECT_VERSION_IS_SNAPSHOT
 import VERSION_CATALOG_FILE
 import VERSION_CATALOG_NAME
-import com.moandjiezana.toml.Toml
 import java.io.Serializable
 import java.net.URI
 import java.util.*
-import org.gradle.api.Project
 import org.gradle.api.initialization.Settings
 import org.gradle.caching.http.HttpBuildCache
 import org.gradle.internal.os.OperatingSystem
@@ -20,6 +18,7 @@ import org.gradle.kotlin.dsl.extension
 import org.gradle.kotlin.dsl.gitHooks
 import org.gradle.kotlin.dsl.maven
 import org.slf4j.LoggerFactory
+import org.tomlj.Toml
 
 public open class SettingsPluginExtension(
     private val target: Settings,
@@ -181,13 +180,13 @@ public open class SettingsPluginExtension(
         logger.info("Applied settings plugin extension")
     }
 
-    private fun calculateProjectVersion() = Toml().read(target.layout.rootDirectory.file("build-logic/gradle/test.toml").asFile).let {
+    private fun calculateProjectVersion() = Toml.parse(target.layout.rootDirectory.file(versionCatalogFile).asFile.path).let {
         "${
-            it.getString("project-version-major")
+            it.getString("project.version.major")
         }.${
-            it.getString("project-version-minor")
+            it.getString("project.version.minor")
         }.${
-            it.getString("project-version-patch")
+            it.getString("project.version.patch")
         }${
             if (providers.gradleProperty(
                     "github.actions.versioning.ref.name",
