@@ -21,7 +21,7 @@ internal class BaseLibPlugin : Plugin<Project> {
         extensions.configure<LibraryExtension>(::configLibraryExtension)
 
         // Publishing
-        extensions.configure<MavenPublication>(::configMavenPublication)
+//        extensions.configure<MavenPublication>(::configMavenPublication)
         extensions.configure<MavenPublishBaseExtension>(::configMavenPublishBaseExtension)
     }
 }

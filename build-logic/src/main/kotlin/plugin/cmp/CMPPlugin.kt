@@ -40,7 +40,7 @@ internal class CMPPlugin(
                             implementation(composeDeps.ui)
                             implementation(composeDeps.components.resources)
                             implementation(composeDeps.components.uiToolingPreview)
-//                            implementation(composeDeps.material3AdaptiveNavigationSuite)
+                            implementation(composeDeps.material3AdaptiveNavigationSuite)
                             implementation(composeDeps.materialIconsExtended)
                             implementation(bundle("compose.icons"))
                             implementation(bundle("material3.adaptive"))

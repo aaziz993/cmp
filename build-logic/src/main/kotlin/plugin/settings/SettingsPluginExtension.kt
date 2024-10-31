@@ -21,6 +21,7 @@ import org.gradle.kotlin.dsl.maven
 import org.slf4j.LoggerFactory
 import plugin.extension.version
 import java.io.Serializable
+import java.net.URI
 import java.util.*
 
 public open class SettingsPluginExtension(
@@ -58,7 +59,7 @@ public open class SettingsPluginExtension(
         providers.gradleProperty("project.version.snapshot").getOrElse(PROJECT_VERSION_IS_SNAPSHOT.toString())
             .toBoolean()
 
-    public val projectVersion: String = calculateProjectVersion()
+    public val projectVersion: String = "1.0.0"
 
     public val projectVersionSuffix: String = if (projectVersionIsSnapshot) {
         "snapshots"
@@ -72,14 +73,11 @@ public open class SettingsPluginExtension(
 
     public val projectLicenseUrl: String = providers.gradleProperty("project.license.text.url").get()
 
-    public val spacePackagesUrl: String =
-        providers.gradleProperty("jetbrains.space.packages.$projectVersionSuffix.url").get()
-
     public val spaceUsername: String? =
         if (System.getenv().containsKey("JB_SPACE_${projectVersionSuffix.uppercase()}_USERNAME")) {
             System.getenv("JB_SPACE_${projectVersionSuffix.uppercase()}_USERNAME")
         } else {
-            localProperties.getProperty("jetbrains.space.$projectVersionSuffix.username")
+            providers.gradleProperty("jetbrains.space.$projectVersionSuffix.username").get()
         }
 
     public val spacePassword: String? =
@@ -89,16 +87,14 @@ public open class SettingsPluginExtension(
             localProperties.getProperty("jetbrains.space.$projectVersionSuffix.password")
         }
 
-    public val githubPackagesUrl: String =
-        "${
-            providers.gradleProperty("github.packages.$projectVersionSuffix.url").get()
-        }/${target.rootProject.name}"
+    public val spacePackagesUrl: String =
+        providers.gradleProperty("jetbrains.space.packages.$projectVersionSuffix.url").get()
 
     public val githubUsername: String =
         if (System.getenv().containsKey("GITHUB_${projectVersionSuffix.uppercase()}_USERNAME")) {
             System.getenv("GITHUB_${projectVersionSuffix.uppercase()}_USERNAME")
         } else {
-            localProperties.getProperty("github.$projectVersionSuffix.username")
+            providers.gradleProperty("github.$projectVersionSuffix.username").get()
         }
 
     public val githubPassword: String =
@@ -107,6 +103,11 @@ public open class SettingsPluginExtension(
         } else {
             localProperties.getProperty("github.$projectVersionSuffix.password")
         }
+
+    public val githubPackagesUrl: String =
+        "${
+            providers.gradleProperty("github.packages.$projectVersionSuffix.url").get()
+        }/${target.rootProject.name}"
 
     public fun apply(): Unit = with(target) {
         with(extension) {
@@ -146,7 +147,7 @@ public open class SettingsPluginExtension(
             buildCache {
                 if (providers.gradleProperty("jetbrains.space.gradle.build.enable").get().toBoolean()) {
                     remote<HttpBuildCache>(HttpBuildCache::class.java) {
-                        url = uri(
+                        url = URI(
                             "${
                                 providers.gradleProperty("jetbrains.space.gradle.build.cache.url").get()
                             }/${rootProject.name}"

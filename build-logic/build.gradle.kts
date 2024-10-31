@@ -1,6 +1,8 @@
 @file:Suppress("DSL_SCOPE_VIOLATION")
 
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
+import java.util.Properties
+import kotlin.apply
 
 plugins {
     `java-gradle-plugin`
@@ -9,7 +11,15 @@ plugins {
     `kotlin-dsl`
 }
 
-group = "ai.tech"
+val gradleProperties: Properties = layout.projectDirectory.file("../gradle.properties").asFile.let { file ->
+    Properties().apply {
+        if (file.exists()) {
+            load(file.reader())
+        }
+    }
+}
+
+group = gradleProperties["project.group"].toString()
 version = "1.0.0"
 
 // Configure the build-logic plugins to target JDK 17
@@ -31,6 +41,7 @@ dependencies {
     //  provides a repository for downloading JVMs
     implementation(libs.plugins.foojay.resolver.convention.toDep())
     // build config
+    implementation(libs.plugins.build.config.toDep())
     runtimeOnly(libs.plugins.build.config.toDep())
     // pre-commit hooks
     implementation(libs.plugins.gradle.pre.commit.git.hooks.toDep())
@@ -38,9 +49,12 @@ dependencies {
     implementation(libs.plugins.vanniktech.maven.publish.toDep())
 //    runtimeOnly(libs.plugins.vanniktech.maven.publish.toDep())
 
+    // Java
+    implementation(libs.toml4j)
+
     // Kotlin
     runtimeOnly(libs.plugins.ksp.toDep())
-    // generate no arg contructor by specified annotation
+    // generate no arg contractor by specified annotation
     implementation(libs.plugins.noarg.toDep())
 //    runtimeOnly(libs.plugins.noarg.toDep())
     // make class open for inheritance by specified annotation

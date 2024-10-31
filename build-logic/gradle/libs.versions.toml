@@ -1,8 +1,15 @@
 [versions]
 # Project
-project-version-major = 1
-project-version-minor = 0
-project-version-patch = 0
+## semantic Versioning 2.0.0
+## major version when you make incompatible API changes
+## minor version when you add functionality in a backward compatible manner
+## patch version when you make backward compatible bug fixes
+## additional labels for pre-release and build metadata are available as extensions to the MAJOR.MINOR.PATCH format.
+## a pre-release version MAY be denoted by appending a hyphen and a series of dot separated identifiers immediately following the patch version. Identifiers MUST comprise only ASCII alphanumerics and hyphens [0-9A-Za-z-]. Identifiers MUST NOT be empty. Numeric identifiers MUST NOT include leading zeroes. Examples: 1.0.0-alpha, 1.0.0-alpha.1, 1.0.0-0.3.7, 1.0.0-x.7.z.92, 1.0.0-x-y-z.--.
+## build metadata MAY be denoted by appending a plus sign and a series of dot separated identifiers immediately following the patch or pre-release version. Identifiers MUST comprise only ASCII alphanumerics and hyphens [0-9A-Za-z-]. Identifiers MUST NOT be empty. Examples: 1.0.0-alpha+001, 1.0.0+20130313144700, 1.0.0-beta+exp.sha.5114f85, 1.0.0+21AF26D3----117B344092BD.
+project-version-major = "1"
+project-version-minor = "0"
+project-version-patch = "0"
 # Gradle
 # provides a repository for downloading JVMs
 foojay-resolver-convention = "0.8.0"
@@ -33,6 +40,8 @@ reflections = "0.10.2"
 itext = "8.0.5"
 # parse xml
 jackson-dataformat-xml = "2.17.2"
+# parse toml
+toml4j = "0.7.2"
 # read microsoft access point
 jackcess = "4.0.7"
 # user input hooks
@@ -45,9 +54,9 @@ commons-net = "3.11.0"
 sshj = "0.38.0"
 jsch = "0.1.55"
 # Kotlinß
-kotlin = "2.1.0-Beta2"
+kotlin = "2.0.21"
 # compiler processor for generating code during compilation
-ksp = "2.1.0-Beta2-1.0.26"
+ksp = "2.0.21-1.0.25"
 # multiplatform logging
 km-logging = "1.5.0"
 kotlinx-datetime = "0.6.1"
@@ -78,7 +87,7 @@ okio-extras = "1.1.3"
 junit = "4.13.2"
 kotest = "5.8.1"
 # Android
-agp = "8.8.0-alpha08"
+agp = "8.5.2"
 # in project version
 android-compile-sdk = "34"
 # in project version
@@ -90,12 +99,12 @@ android-version-code = "1"
 # in project version
 android-version-name = "1.0"
 androidx-appcompat = "1.7.0"
-androidx-fragment-ktx = "1.8.4"
-androidx-activity-ktx = "1.10.0-alpha02"
-androidx-constraint-layout = "2.1.4"
-androidx-core-ktx = "1.13.1"
+androidx-fragment-ktx = "1.8.5"
+androidx-activity-ktx = "1.10.0-alpha03"
+androidx-constraint-layout = "2.2.0"
+androidx-core-ktx = "1.15.0"
 androidx-espresso-core = "3.6.1"
-androidx-ui-test = "1.8.0-alpha04"
+androidx-ui-test = "1.8.0-alpha05"
 # Desktop
 # in project version
 desktop-package-version = "1.0.0"
@@ -113,8 +122,7 @@ encoding-japanese-types = "v2.0.5"
 androidx-lifecycle = "2.8.3"
 androidx-material = "1.12.0"
 androidx-test-junit = "1.2.1"
-compose-multiplatform-stable = "1.7.0"
-compose-multiplatform = "1.8.0-dev1899"
+compose-multiplatform = "1.7.0"
 androidx-activity-compose = "1.9.3"
 compose-icons = "1.1.1"
 material3-adaptive = "1.0.0"
@@ -131,7 +139,7 @@ permissions = "0.18.0"
 # SQLDelight database
 sqldelight = "2.0.2"
 # Room database
-room = "2.7.0-alpha10"
+room = "2.7.0-alpha11"
 # Store is a typed repository that returns a flow of Data /Loading /Error from local and network data sources
 store5 = "5.1.0-alpha05"
 # JDBC
@@ -181,6 +189,8 @@ logback-classic  = { module ="ch.qos.logback:logback-classic", version.ref = "lo
 reflections = { module = "org.reflections:reflections", version.ref = "reflections" }
 # parse xml
 jackson-dataformat-xml = { module = "com.fasterxml.jackson.dataformat:jackson-dataformat-xml", version.ref = "jackson-dataformat-xml" }
+# parse toml
+toml4j = { module = "com.moandjiezana.toml:toml4j", version.ref = "toml4j" }
 # read microfost sccess point
 jackcess = { module = "com.healthmarketscience.jackcess:jackcess", version.ref = "jackcess" }
 # pdf generator
@@ -325,7 +335,7 @@ compose-icons-simple-icons = { module = "br.com.devsrsouza.compose.icons:simple-
 compos-icons-tabler-icons = { module = "br.com.devsrsouza.compose.icons:tabler-icons", version.ref = "compose-icons" }
 # material3 Adaptive
 material3-window-size-clazz = { module = "org.jetbrains.compose.material3:material3-window-size-class", version.ref = "compose-multiplatform" }
-material3-adaptive-navigation-suite = { module = "org.jetbrains.compose.material3:material3-adaptive-navigation-suite", version.ref = "compose-multiplatform-stable" }
+material3-adaptive-navigation-suite = { module = "org.jetbrains.compose.material3:material3-adaptive-navigation-suite", version.ref = "compose-multiplatform" }
 material3-adaptive = { module = "org.jetbrains.compose.material3.adaptive:adaptive", version.ref = "material3-adaptive" }
 material3-adaptive-layout = { module = "org.jetbrains.compose.material3.adaptive:adaptive-layout", version.ref = "material3-adaptive" }
 material3-adaptive-navigation = { module = "org.jetbrains.compose.material3.adaptive:adaptive-navigation", version.ref = "material3-adaptive" }
