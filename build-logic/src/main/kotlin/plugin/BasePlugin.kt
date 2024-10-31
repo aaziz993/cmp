@@ -3,6 +3,7 @@ package plugin
 import com.apollographql.apollo3.gradle.api.ApolloExtension
 import com.diffplug.gradle.spotless.SpotlessApply
 import com.diffplug.gradle.spotless.SpotlessExtension
+import com.github.gmazzo.gradle.plugins.BuildConfigExtension
 import com.google.devtools.ksp.gradle.KspExtension
 import de.jensklingenberg.ktorfit.gradle.KtorfitGradleConfiguration
 import plugin.extension.id
@@ -66,7 +67,7 @@ internal class BasePlugin : Plugin<Project> {
         // Create project documentation
         configDokka()
 
-//        extensions.configure<BuildConfigExtension>(::configBuildConfigExtension)
+        extensions.configure<BuildConfigExtension>(::configBuildConfigExtension)
 
         // Compiler processor for generating code during compilation
         extensions.configure<KspExtension>(::configKspExtension)
