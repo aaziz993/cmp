@@ -10,7 +10,7 @@ import org.gradle.api.plugins.JavaPlugin
 import org.gradle.api.plugins.JavaPluginExtension
 import org.gradle.kotlin.dsl.extension
 
-internal fun Project.configJavaPluginExtension(extension: JavaPluginExtension) =
+internal fun Project.configureJavaPluginExtension(extension: JavaPluginExtension) =
     extension.apply {
         sourceCompatibility = JAVA_SOURCE_VERSION.toJavaVersion()
         targetCompatibility = JAVA_TARGET_VERSION.toJavaVersion()

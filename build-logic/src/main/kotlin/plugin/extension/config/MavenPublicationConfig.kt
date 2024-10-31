@@ -7,7 +7,7 @@ import org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi
 import plugin.extension.settings
 
 @OptIn(ExperimentalKotlinGradlePluginApi::class)
-internal fun Project.configMavenPublication(extension: MavenPublication) = extension.apply {
+internal fun Project.configureMavenPublication(extension: MavenPublication) = extension.apply {
     with(settings.extension) {
         repositories.apply {
             // SPACE PACKAGES

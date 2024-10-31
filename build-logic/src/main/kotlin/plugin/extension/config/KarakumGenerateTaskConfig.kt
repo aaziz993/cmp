@@ -12,7 +12,7 @@ internal val jsTypeImports =
         "ReadableStream" to "web.streams.ReadableStream",
     )
 
-internal fun Project.configKarakumGenerateTask(task: KarakumGenerate) =
+internal fun Project.configureKarakumGenerateTask(task: KarakumGenerate) =
     task.apply {
         doLast {
             val imports = mutableListOf<String>()

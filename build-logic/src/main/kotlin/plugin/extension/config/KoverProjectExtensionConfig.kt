@@ -4,7 +4,7 @@ import kotlinx.kover.gradle.plugin.dsl.CoverageUnit
 import kotlinx.kover.gradle.plugin.dsl.KoverProjectExtension
 import org.gradle.api.Project
 
-internal fun Project.configKoverProjectExtension(extension: KoverProjectExtension) =
+internal fun Project.configureKoverProjectExtension(extension: KoverProjectExtension) =
     extension.apply {
         reports {
             total {

@@ -7,7 +7,7 @@ import org.gradle.kotlin.dsl.extension
 import org.jetbrains.compose.desktop.DesktopExtension
 import org.jetbrains.compose.desktop.application.dsl.TargetFormat
 
-internal fun Project.configDesktopExtension(extension: DesktopExtension): DesktopExtension =
+internal fun Project.configureDesktopExtension(extension: DesktopExtension): DesktopExtension =
     extension.apply {
         application {
             mainClass = "${settings.extension.projectGroup}.MainKt"

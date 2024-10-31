@@ -6,7 +6,7 @@ import org.gradle.kotlin.dsl.extension
 import org.gradle.kotlin.dsl.support.uppercaseFirstChar
 import plugin.extension.settings
 
-internal fun Project.configMavenPublishBaseExtension(extension: MavenPublishBaseExtension) = extension.apply {
+internal fun Project.configureMavenPublishBaseExtension(extension: MavenPublishBaseExtension) = extension.apply {
     with(settings.extension) {
         coordinates(group.toString(), rootProject.name, version.toString())
 

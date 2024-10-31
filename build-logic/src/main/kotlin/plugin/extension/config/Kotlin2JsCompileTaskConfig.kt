@@ -2,7 +2,7 @@ package plugin.extension.config
 
 import org.jetbrains.kotlin.gradle.tasks.Kotlin2JsCompile
 
-internal fun configKotlin2JsCompileTask(task: Kotlin2JsCompile) =
+internal fun configureKotlin2JsCompileTask(task: Kotlin2JsCompile) =
     task.apply {
         compilerOptions {
             this.target.set("es2015")

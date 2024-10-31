@@ -17,7 +17,7 @@ import org.gradle.api.artifacts.dsl.DependencyHandler
 import org.gradle.kotlin.dsl.get
 import plugin.extension.version
 
-internal fun Project.configBaseExtension(
+internal fun Project.configureBaseExtension(
     extension: BaseExtension,
 ) = extension.apply {
     namespace = project.group.toString()
@@ -96,11 +96,11 @@ internal fun Project.configBaseExtension(
     }
 }
 
-internal fun Project.configLibraryExtension(extension: LibraryExtension) = extension.apply {
+internal fun Project.configureLibraryExtension(extension: LibraryExtension) = extension.apply {
 
 }
 
-internal fun Project.configBaseAppModuleExtension(extension: BaseAppModuleExtension) = extension.apply {
+internal fun Project.configureBaseAppModuleExtension(extension: BaseAppModuleExtension) = extension.apply {
     defaultConfig {
         applicationId = group.toString()
     }

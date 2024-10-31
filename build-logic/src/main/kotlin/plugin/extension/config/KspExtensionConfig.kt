@@ -6,7 +6,7 @@ import org.gradle.api.artifacts.dsl.DependencyHandler
 import org.gradle.kotlin.dsl.extension
 import plugin.extension.settings
 
-internal fun Project.configKspExtension(extension: KspExtension): KspExtension =
+internal fun Project.configureKspExtension(extension: KspExtension): KspExtension =
     extension.apply {
         // 0 - Turn off all Ktorfit related error checking, 1 - Check for errors, 2 - Turn errors into warnings
         arg("Ktorfit_Errors", "1")

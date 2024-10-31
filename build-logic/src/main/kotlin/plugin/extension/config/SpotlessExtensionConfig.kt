@@ -7,7 +7,7 @@ import org.gradle.kotlin.dsl.extension
 import plugin.extension.settings
 import java.io.File
 
-internal fun Project.configSpotlessExtension(extension: SpotlessExtension) =
+internal fun Project.configureSpotlessExtension(extension: SpotlessExtension) =
     extension.apply {
         with(settings.extension) {
             lineEndings = LineEnding.UNIX

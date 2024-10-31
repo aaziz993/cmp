@@ -5,7 +5,7 @@ import org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi
 import org.jetbrains.kotlin.powerassert.gradle.PowerAssertGradleExtension
 
 @OptIn(ExperimentalKotlinGradlePluginApi::class)
-internal fun Project.configPowerAssertGradleExtension(extension: PowerAssertGradleExtension): PowerAssertGradleExtension =
+internal fun Project.configurePowerAssertGradleExtension(extension: PowerAssertGradleExtension): PowerAssertGradleExtension =
     extension.apply {
         functions.addAll(
             "kotlin.assert",

@@ -9,7 +9,7 @@ import org.gradle.kotlin.dsl.getValue
 import org.gradle.kotlin.dsl.register
 import org.jetbrains.dokka.gradle.DokkaTask
 
-internal fun Project.configDokka() {
+internal fun Project.configureDokka() {
     val dokkaOutputDir = layout.buildDirectory.dir("dokka")
     tasks.withType(DokkaTask::class.java) { outputDirectory.set(file(dokkaOutputDir)) }
 

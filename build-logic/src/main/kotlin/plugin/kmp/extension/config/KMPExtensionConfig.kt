@@ -11,7 +11,7 @@ import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTarget
 import kotlin.text.set
 
 
-internal fun Project.configKMPExtension(extension: KotlinMultiplatformExtension) =
+internal fun Project.configureKMPExtension(extension: KotlinMultiplatformExtension) =
     extension.apply {
         jvm()
 

@@ -5,7 +5,7 @@ import org.gradle.kotlin.dsl.extension
 import plugin.extension.settings
 import org.jetbrains.kotlin.allopen.gradle.AllOpenExtension
 
-internal fun Project.configAllOpenExtension(extension: AllOpenExtension): AllOpenExtension =
+internal fun Project.configureAllOpenExtension(extension: AllOpenExtension): AllOpenExtension =
     extension.apply {
         annotation("javax.ws.rs.Path")
         annotation("javax.enterprise.context.ApplicationScoped")

@@ -6,7 +6,7 @@ import org.gradle.kotlin.dsl.extension
 import plugin.extension.settings
 import java.io.File
 
-internal fun Project.configKarakumExtension(extension: KarakumExtension): KarakumExtension =
+internal fun Project.configureKarakumExtension(extension: KarakumExtension): KarakumExtension =
     extension.apply {
         with(settings.extension) {
             configFile.set(File(karakumConfFile))

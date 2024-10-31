@@ -52,7 +52,7 @@ internal class KMPPlugin(
 
             tasks.withType<KarakumGenerate> { configKarakumGenerateTask(this) }
 
-            tasks.withType<Kotlin2JsCompile>().configureEach { configKotlin2JsCompileTask(this) }
+            tasks.withType<Kotlin2JsCompile>().configureEach { configureKotlin2JsCompileTask(this) }
 
             extensions.configure<SqlDelightExtension>(::configSqlDelightExtension)
 

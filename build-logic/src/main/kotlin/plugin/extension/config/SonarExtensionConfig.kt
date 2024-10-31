@@ -8,7 +8,7 @@ import org.sonarqube.gradle.SonarExtension
 // Typically, (but not necessarily) this will be the root project of the Gradle build.
 // Information pertaining to the analysis as a whole has to be configured in the sonar block of this project.
 // Any properties set on the command line also apply to this project.
-internal fun Project.configSonarExtension(extension: SonarExtension) =
+internal fun Project.configureSonarExtension(extension: SonarExtension) =
     extension.apply {
         properties {
             property("sonar.host.url", providers.gradleProperty("sonar.host.url").get())

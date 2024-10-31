@@ -6,7 +6,7 @@ import org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi
 import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinAndroidTarget
 import plugin.extension.config.toJvmTarget
 
-internal fun Project.configKotlinAndroidTarget(target: KotlinAndroidTarget) =
+internal fun Project.configureKotlinAndroidTarget(target: KotlinAndroidTarget) =
     target.apply {
         @OptIn(ExperimentalKotlinGradlePluginApi::class)
         compilerOptions {

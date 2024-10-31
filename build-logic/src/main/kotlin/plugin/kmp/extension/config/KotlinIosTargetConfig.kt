@@ -3,7 +3,7 @@ package plugin.kmp.extension.config
 import org.gradle.api.Project
 import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTarget
 
-internal fun Project.configKotlinIosTarget(target: KotlinNativeTarget) =
+internal fun Project.configureKotlinIosTarget(target: KotlinNativeTarget) =
     target.apply {
         binaries.framework {
             baseName =

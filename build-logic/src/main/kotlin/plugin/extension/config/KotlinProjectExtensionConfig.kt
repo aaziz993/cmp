@@ -7,7 +7,7 @@ import org.gradle.kotlin.dsl.extension
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import org.jetbrains.kotlin.gradle.dsl.KotlinProjectExtension
 
-internal fun Project.configKotlinProjectExtension(extension: KotlinProjectExtension): KotlinProjectExtension =
+internal fun Project.configureKotlinProjectExtension(extension: KotlinProjectExtension): KotlinProjectExtension =
     extension.apply {
         explicitApi()
 
