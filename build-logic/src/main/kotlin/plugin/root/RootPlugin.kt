@@ -48,6 +48,16 @@ public class RootPlugin : Plugin<Project> {
                         providers.gradleProperty("project.code.of.conduct.file.override").get().uppercase(),
                     ),
                 )
+
+                // Download or fallback to file and write to file contributing
+                downloadProjectFile(
+                    providers.gradleProperty("project.code.of.contributing.text.url").get(),
+                    providers.gradleProperty("project.code.of.contributing.fallback.file").get(),
+                    "CONTRIBUTING.md",
+                    ProjectFileOverrideType.valueOf(
+                        providers.gradleProperty("project.contributing.file.override").get().uppercase(),
+                    ),
+                )
             }
         }
     }
