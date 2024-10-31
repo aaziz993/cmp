@@ -2,21 +2,19 @@
 
 package plugin.extension.config
 
+import ANDROID_JAVA_SOURCE_VERSION
+import ANDROID_JAVA_TARGET_VERSION
 import com.android.build.api.dsl.CommonExtension
 import com.android.build.gradle.AppExtension
 import com.android.build.gradle.BaseExtension
-import com.android.build.gradle.internal.dsl.BaseAppModuleExtension
-import ANDROID_JAVA_SOURCE_VERSION
-import ANDROID_JAVA_TARGET_VERSION
 import com.android.build.gradle.LibraryExtension
-import plugin.extension.settings
-import plugin.extension.version
+import com.android.build.gradle.internal.dsl.BaseAppModuleExtension
+import java.util.*
 import org.gradle.api.Project
-import org.gradle.kotlin.dsl.extension
-import org.gradle.kotlin.dsl.get
 import org.gradle.api.artifacts.Dependency
-
 import org.gradle.api.artifacts.dsl.DependencyHandler
+import org.gradle.kotlin.dsl.get
+import plugin.extension.version
 
 internal fun Project.configBaseExtension(
     extension: BaseExtension,
@@ -71,8 +69,10 @@ internal fun Project.configBaseExtension(
     }
 
     compileOptions {
-        sourceCompatibility = ANDROID_JAVA_SOURCE_VERSION.toJavaVersion()
-        targetCompatibility = ANDROID_JAVA_TARGET_VERSION.toJavaVersion()
+        sourceCompatibility =
+            JavaVersion.toVersion(providers.gradleProperty("android.compile.options.source.compatibility").getOrElse(ANDROID_JAVA_SOURCE_VERSION))
+        targetCompatibility =
+            JavaVersion.toVersion(providers.gradleProperty("android.compile.options.target.compatibility").getOrElse(ANDROID_JAVA_TARGET_VERSION))
     }
 }
 
