@@ -53,7 +53,7 @@ dependencies {
 
     // Java
     // toml
-    implementation("org.tomlj:tomlj:1.1.1")
+    implementation(libs.tomlj)
 
     // Kotlin
     runtimeOnly(libs.plugins.ksp.toDep())
@@ -87,7 +87,7 @@ dependencies {
     implementation(libs.plugins.knit.toDep())
     // jvm
     runtimeOnly(libs.plugins.kotlin.jvm.toDep())
-    // data pipleline processing
+    // data pipeline processing
     runtimeOnly(libs.plugins.dataframe.toDep())
     // providing detailed failure messages with contextual information during testing.
     implementation(libs.plugins.power.assert.toDep())

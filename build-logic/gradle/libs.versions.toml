@@ -41,7 +41,7 @@ itext = "8.0.5"
 # parse xml
 jackson-dataformat-xml = "2.17.2"
 # parse toml
-toml4j = "0.7.2"
+tomlj = "1.1.1"
 # read microsoft access point
 jackcess = "4.0.7"
 # user input hooks
@@ -184,13 +184,13 @@ koin-annotations = "2.0.0-Beta1"
 kotlin-gradle-plugin = { group = "org.jetbrains.kotlin", name = "kotlin-gradle-plugin", version.ref = "kotlin" }
 # Java
 # logging
-logback-classic  = { module ="ch.qos.logback:logback-classic", version.ref = "logback-classic" }
+logback-classic = { module = "ch.qos.logback:logback-classic", version.ref = "logback-classic" }
 # reflections
 reflections = { module = "org.reflections:reflections", version.ref = "reflections" }
 # parse xml
 jackson-dataformat-xml = { module = "com.fasterxml.jackson.dataformat:jackson-dataformat-xml", version.ref = "jackson-dataformat-xml" }
 # parse toml
-toml4j = { module = "com.moandjiezana.toml:toml4j", version.ref = "toml4j" }
+tomlj = { module = "org.tomlj:tomlj", version.ref = "tomlj" }
 # read microfost sccess point
 jackcess = { module = "com.healthmarketscience.jackcess:jackcess", version.ref = "jackcess" }
 # pdf generator
@@ -266,14 +266,14 @@ colormath = { module = "com.github.ajalt.colormath:colormath", version.ref = "co
 # arrow
 arrow-core = { module = "io.arrow-kt:arrow-core", version.ref = "arrow" }
 arrow-fx-coroutines = { module = "io.arrow-kt:arrow-fx-coroutines", version.ref = "arrow" }
-arrow-optics= { module = "io.arrow-kt:arrow-optics", version.ref = "arrow" }
+arrow-optics = { module = "io.arrow-kt:arrow-optics", version.ref = "arrow" }
 arrow-optics-ksp-plugin = { module = "io.arrow-kt:arrow-optics-ksp-plugin", version.ref = "arrow" }
 # jdbc drivers
-mariadb-java-client = { module ="org.mariadb.jdbc:mariadb-java-client", version.ref = "mariadb-java-client" }
-postgresql = { module ="org.postgresql:postgresql", version.ref = "postgresql" }
-mysql-connector-j = { module ="com.mysql:mysql-connector-j", version.ref = "mysql-connector-j" }
-sqlite-jdbc = { module ="org.xerial:sqlite-jdbc", version.ref = "sqlite-jdbc" }
-mssql-jdbc = { module ="com.microsoft.sqlserver:mssql-jdbc", version.ref = "mssql-jdbc" }
+mariadb-java-client = { module = "org.mariadb.jdbc:mariadb-java-client", version.ref = "mariadb-java-client" }
+postgresql = { module = "org.postgresql:postgresql", version.ref = "postgresql" }
+mysql-connector-j = { module = "com.mysql:mysql-connector-j", version.ref = "mysql-connector-j" }
+sqlite-jdbc = { module = "org.xerial:sqlite-jdbc", version.ref = "sqlite-jdbc" }
+mssql-jdbc = { module = "com.microsoft.sqlserver:mssql-jdbc", version.ref = "mssql-jdbc" }
 # r2dbc drivers
 r2dbc-pool = { module = "io.r2dbc:r2dbc-pool", version.ref = "r2dbc-pool" }
 r2dbc-h2 = { module = "io.r2dbc:r2dbc-h2", version.ref = "r2dbc-h2" }
@@ -410,13 +410,13 @@ ktor-serialization-kotlinx-xml = { module = "io.ktor:ktor-serialization-kotlinx-
 ktor-serialization-kotlinx-cbor = { module = "io.ktor:ktor-serialization-kotlinx-cbor", version.ref = "ktor" }
 ktor-serialization-kotlinx-protobuf = { module = "io.ktor:ktor-serialization-kotlinx-protobuf", version.ref = "ktor" }
 # ktor server
-ktor-server-core   = { module ="io.ktor:ktor-server-core", version.ref = "ktor" }
-ktor-server-netty   = { module ="io.ktor:ktor-server-netty", version.ref = "ktor" }
-ktor-server-test-host  = { module ="io.ktor:ktor-server-test-host", version.ref = "ktor" }
+ktor-server-core = { module = "io.ktor:ktor-server-core", version.ref = "ktor" }
+ktor-server-netty = { module = "io.ktor:ktor-server-netty", version.ref = "ktor" }
+ktor-server-test-host = { module = "io.ktor:ktor-server-test-host", version.ref = "ktor" }
 # sse
-ktor-server-sse  = { module ="io.ktor:ktor-server-sse", version.ref = "ktor" }
+ktor-server-sse = { module = "io.ktor:ktor-server-sse", version.ref = "ktor" }
 # csrf
-ktor-server-csrf  = { module ="io.ktor:ktor-server-csrf", version.ref = "ktor" }
+ktor-server-csrf = { module = "io.ktor:ktor-server-csrf", version.ref = "ktor" }
 # content negotiation
 ktor-server-content-negotiation = { module = "io.ktor:ktor-server-content-negotiation", version.ref = "ktor" }
 # ssl/tls
@@ -621,7 +621,7 @@ r2dbc = [
 multiplatform-settings = [
     "multiplatform-settings",
     "multiplatform-settings-coroutines",
-#    "multiplatform-settings-datastore",
+    #    "multiplatform-settings-datastore",
     "multiplatform-settings-no-arg",
     "multiplatform-settings-serialization"
 ]
@@ -648,7 +648,7 @@ compose-icons = [
 ]
 material3-adaptive = [
     "material3-window-size-clazz",
-#    "material3-adaptive-navigation-suite",
+    #    "material3-adaptive-navigation-suite",
     "material3-adaptive",
     "material3-adaptive-layout",
     "material3-adaptive-navigation"
@@ -843,7 +843,7 @@ kotlin-multiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref 
 # data pipeline processing
 dataframe = { id = "org.jetbrains.kotlinx.dataframe", version.ref = "dataframe" }
 # providing detailed failure messages with contextual information during testing.
-power-assert = { id="org.jetbrains.kotlin.plugin.power-assert", version.ref = "kotlin" }
+power-assert = { id = "org.jetbrains.kotlin.plugin.power-assert", version.ref = "kotlin" }
 # testing
 kotest-multiplatform = { id = "io.kotest.multiplatform", version.ref = "kotest" }
 

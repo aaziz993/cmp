@@ -12,7 +12,11 @@ dependencyResolutionManagement {
 }
 
 buildscript {
+    repositories {
+        mavenCentral()
+    }
+
     dependencies {
-//        implementation("org.tomlj:tomlj:1.1.1")
+        classpath("org.tomlj:tomlj:1.1.1")
     }
 }

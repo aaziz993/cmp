@@ -19,6 +19,7 @@ import org.gradle.kotlin.dsl.gitHooks
 import org.gradle.kotlin.dsl.maven
 import org.slf4j.LoggerFactory
 import org.tomlj.Toml
+import org.tomlj.TomlParseResult
 
 public open class SettingsPluginExtension(
     private val target: Settings,
@@ -112,12 +113,14 @@ public open class SettingsPluginExtension(
         }/${target.rootProject.name}"
 
     public fun apply(): Unit = with(target) {
+        val versionCatalogToml = Toml.parse(target.layout.rootDirectory.file(versionCatalogFile).asFile.path)
+
         with(extension) {
             enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")
 
             with(pluginManager) {
-                apply("org.gradle.toolchains.foojay-resolver-convention")
-                apply("org.danilopianini.gradle-pre-commit-git-hooks")
+                apply(versionCatalogToml.getTable("foojay.resolver.convention")!!.getString("id")!!)
+                apply(versionCatalogToml.getTable("gradle.pre.commit.git.hooks")!!.getString("id")!!)
             }
 
             dependencyResolutionManagement {
@@ -175,18 +178,18 @@ public open class SettingsPluginExtension(
             }
         }
 
-        projectVersion = calculateProjectVersion()
+        projectVersion = calculateProjectVersion(versionCatalogToml)
 
         logger.info("Applied settings plugin extension")
     }
 
-    private fun calculateProjectVersion() = Toml.parse(target.layout.rootDirectory.file(versionCatalogFile).asFile.path).let {
+    private fun calculateProjectVersion(tomlParseResult: TomlParseResult) =
         "${
-            it.getString("project.version.major")
+            tomlParseResult.getString("project.version.major")
         }.${
-            it.getString("project.version.minor")
+            tomlParseResult.getString("project.version.minor")
         }.${
-            it.getString("project.version.patch")
+            tomlParseResult.getString("project.version.patch")
         }${
             if (providers.gradleProperty(
                     "github.actions.versioning.ref.name",
@@ -248,7 +251,6 @@ public open class SettingsPluginExtension(
         }${
             if (projectVersionIsSnapshot) "-SNAPSHOT" else ""
         }"
-    }
 
     public companion object {
 
