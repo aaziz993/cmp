@@ -10,7 +10,7 @@ attributes:
       # (Required) IDE type: Idea, WebStorm, PyCharm,
       # RubyMine, CLion, Fleet, GoLand, PhpStorm
       type: Fleet
-      version: 1.33.90 Public Preview
+      version: 1.41.101 Public Preview
       # Space uses JetBrains Toolbox App to install IDEs to a dev environment.
       # updateChannel defines IDE version release stage: Release, EAP
       updateChannel: EAP
