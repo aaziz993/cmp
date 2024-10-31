@@ -75,11 +75,14 @@ private fun downloadProjectFile(
 
     val file = File(destFile)
     if (file.exists()) {
-        if (overrideType == ProjectFileOverrideType.NEVER) {
-            return
-        }
-        if (overrideType == ProjectFileOverrideType.IF_DIFFERENCE) {
-            file.writeTextIfDifferent(text)
+        when (overrideType) {
+            ProjectFileOverrideType.NEVER -> return
+
+            ProjectFileOverrideType.IF_DIFFERENCE -> if (file.readText() != text) {
+                file.writeText(text)
+            }
+
+            else -> Unit
         }
     }
     file.writeText(text)
