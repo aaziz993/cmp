@@ -3,7 +3,6 @@ package ai.tech.core.misc.type.multiple
 import ai.tech.core.misc.type.multiple.model.AsyncIterator
 import ai.tech.core.misc.type.multiple.model.ClosableAbstractAsyncIterator
 import ai.tech.core.misc.type.multiple.model.ClosableAbstractIterator
-import ai.tech.core.misc.type.multiple.model.SliceIterator
 import okio.Buffer
 import okio.Source
 import okio.Timeout
@@ -237,56 +236,6 @@ private class IteratorFlatMap<T, R>(
 
         }
     }
-}
-
-public fun <T : Any> Iterator<T>.sliceIterator(
-    sizeOf: (T) -> Int,
-    resetInterval: Int = Int.MAX_VALUE,
-    slicer: (Int, Int, T) -> T,
-): SliceIterator<List<T>> = IteratorSliceIterator(this, sizeOf, resetInterval, slicer)
-
-private class IteratorSliceIterator<T : Any>(
-    private val iterator: Iterator<T>,
-    private val sizeOf: (T) -> Int,
-    private val resetInterval: Int = Int.MAX_VALUE,
-    private val slicer: (Int, Int, T) -> T,
-) : SliceIterator<List<T>> {
-    private var resetPos = 0
-    private var index = 0
-    private var currentSize by Delegates.notNull<Int>()
-    private lateinit var current: T
-
-    override fun hasNext(): Boolean = iterator.hasNext()
-
-    override fun next(): List<T> = next(1)
-
-    override fun next(count: Int): List<T> =
-        mutableListOf<T>().also {
-            var counter = count
-            if (index > 0) {
-                if (index + count < currentSize) {
-                    it.add(slicer(index, index + count, current))
-                    index += count
-                    return@also
-                } else {
-                    slicer(index, currentSize, current)
-                    counter -= (currentSize - index)
-                }
-            }
-
-            while (iterator.hasNext()) {
-                current = iterator.next()
-                currentSize = sizeOf(current)
-
-                if (counter < currentSize) {
-                    it.add(slicer(0, counter, current))
-                    index = counter
-                    break
-                }
-                it.add(slicer(0, currentSize, current))
-                counter -= currentSize
-            }
-        }
 }
 
 public fun <T> Iterator<T>.startsWith(vararg elements: T): Boolean =

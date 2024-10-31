@@ -5,7 +5,6 @@ import ai.tech.core.DEFAULT_BUFFER_SIZE
 public class ByteReaderClosableIterator(
     private val read: (ByteArray) -> Int,
     bufferSize: Int = DEFAULT_BUFFER_SIZE,
-    override val onClose: () -> Unit,
 ) : ClosableAbstractIterator<ByteArray>() {
     private val byteArray = ByteArray(bufferSize)
 
