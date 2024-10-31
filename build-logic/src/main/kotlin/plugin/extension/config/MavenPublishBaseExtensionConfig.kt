@@ -19,7 +19,7 @@ internal fun Project.configMavenPublishBaseExtension(extension: MavenPublishBase
             licenses {
                 license {
                     name.set(projectLicenseName)
-                    url.set(projectLicenseUrl)
+                    url.set(projectLicenseTextUrl)
                 }
             }
 

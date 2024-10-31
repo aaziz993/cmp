@@ -12,8 +12,10 @@ import org.gradle.api.publish.maven.MavenPublication
 import org.gradle.kotlin.dsl.configure
 
 internal class BaseLibPlugin : Plugin<Project> {
+
     override fun apply(target: Project): Unit = with(target) {
         with(pluginManager) {
+//            apply("maven-publish")
             apply(id("vanniktech.maven.publish"))
         }
 
@@ -22,6 +24,7 @@ internal class BaseLibPlugin : Plugin<Project> {
 
         // Publishing
 //        extensions.configure<MavenPublication>(::configMavenPublication)
+
         extensions.configure<MavenPublishBaseExtension>(::configMavenPublishBaseExtension)
     }
 }

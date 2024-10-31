@@ -69,7 +69,7 @@ public open class SettingsPluginExtension(
 
     public val projectLicenseName: String = providers.gradleProperty("project.license.name").get()
 
-    public val projectLicenseUrl: String = providers.gradleProperty("project.license.text.url").get()
+    public val projectLicenseTextUrl: String = providers.gradleProperty("project.license.text.url").get()
 
     public val spaceUsername: String? =
         if (System.getenv().containsKey("JB_SPACE_${projectVersionSuffix.uppercase()}_USERNAME")) {
