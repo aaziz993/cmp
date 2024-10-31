@@ -7,7 +7,7 @@ import org.gradle.kotlin.dsl.getByType
 import org.jetbrains.compose.ComposeExtension
 import org.jetbrains.compose.ExperimentalComposeLibrary
 import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
-import plugin.cmp.extension.config.configComposeExtension
+import plugin.cmp.extension.config.configureComposeExtension
 import plugin.extension.bundle
 import plugin.extension.config.androidTestImplementation
 import plugin.extension.config.debugImplementation
@@ -27,7 +27,7 @@ internal class CMPPlugin(
                     apply(id("compose.compiler"))
                 }
 
-                extensions.configure<ComposeExtension>(::configComposeExtension)
+                extensions.configure<ComposeExtension>(::configureComposeExtension)
 
                 val composeDeps = extensions.getByType<ComposeExtension>().dependencies
 

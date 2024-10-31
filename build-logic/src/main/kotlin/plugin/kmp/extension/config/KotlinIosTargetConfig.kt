@@ -7,7 +7,7 @@ internal fun Project.configureKotlinIosTarget(target: KotlinNativeTarget) =
     target.apply {
         binaries.framework {
             baseName =
-                this@configKotlinIosTarget
+                this@configureKotlinIosTarget
                     .path
                     .split(":")
                     .drop(1)

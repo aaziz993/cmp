@@ -1,27 +1,25 @@
 package plugin.kmp.extension.config
 
-import plugin.extension.bundle
-import plugin.extension.lib
-import plugin.extension.version
 import org.gradle.api.Project
 import org.gradle.kotlin.dsl.withType
 import org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi
 import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
 import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTarget
-import kotlin.text.set
-
+import plugin.extension.bundle
+import plugin.extension.lib
+import plugin.extension.version
 
 internal fun Project.configureKMPExtension(extension: KotlinMultiplatformExtension) =
     extension.apply {
         jvm()
 
-        androidTarget(::configKotlinAndroidTarget)
+        androidTarget(::configureKotlinAndroidTarget)
 
         listOf(
             iosX64(),
             iosArm64(),
             iosSimulatorArm64(),
-        ).forEach { configKotlinIosTarget(it) }
+        ).forEach { configureKotlinIosTarget(it) }
 
         js {
             browser {
@@ -199,5 +197,5 @@ internal fun Project.configureKMPExtension(extension: KotlinMultiplatformExtensi
         }
 
         // https://kotlinlang.org/docs/native-objc-interop.html#export-of-kdoc-comments-to-generated-objective-c-headers
-        targets.withType<KotlinNativeTarget> { configKotlinNativeTarget(this) }
+        targets.withType<KotlinNativeTarget> { configureKotlinNativeTarget(this) }
     }

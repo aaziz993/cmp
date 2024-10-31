@@ -11,5 +11,5 @@ public fun Project.configureComposeExtension(extension: ComposeExtension): Compo
 
 public fun Project.configureComposeAppExtension(extension: ComposeExtension): ComposeExtension =
     extension.apply {
-        extensions.configure<DesktopExtension>(::configDesktopExtension)
+        extensions.configure<DesktopExtension>(::configureDesktopExtension)
     }

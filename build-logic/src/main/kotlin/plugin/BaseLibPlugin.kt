@@ -2,9 +2,9 @@ package plugin
 
 import com.android.build.gradle.LibraryExtension
 import com.vanniktech.maven.publish.MavenPublishBaseExtension
-import plugin.extension.config.configLibraryExtension
-import plugin.extension.config.configMavenPublishBaseExtension
-import plugin.extension.config.configMavenPublication
+import plugin.extension.config.configureLibraryExtension
+import plugin.extension.config.configureMavenPublishBaseExtension
+import plugin.extension.config.configureMavenPublication
 import plugin.extension.id
 import org.gradle.api.Plugin
 import org.gradle.api.Project
@@ -20,11 +20,11 @@ internal class BaseLibPlugin : Plugin<Project> {
         }
 
         // Android library extension
-        extensions.configure<LibraryExtension>(::configLibraryExtension)
+        extensions.configure<LibraryExtension>(::configureLibraryExtension)
 
         // Publishing
-//        extensions.configure<MavenPublication>(::configMavenPublication)
+//        extensions.configure<MavenPublication>(::configureMavenPublication)
 
-        extensions.configure<MavenPublishBaseExtension>(::configMavenPublishBaseExtension)
+        extensions.configure<MavenPublishBaseExtension>(::configureMavenPublishBaseExtension)
     }
 }

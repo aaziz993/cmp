@@ -5,8 +5,8 @@ import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.kotlin.dsl.configure
 import org.jetbrains.compose.ComposeExtension
-import plugin.cmp.extension.config.configComposeAppExtension
-import plugin.extension.config.configBaseAppModuleExtension
+import plugin.cmp.extension.config.configureComposeAppExtension
+import plugin.extension.config.configureBaseAppModuleExtension
 import plugin.extension.id
 
 public class CMPAppPlugin : Plugin<Project> {
@@ -15,9 +15,9 @@ public class CMPAppPlugin : Plugin<Project> {
 
         with(target) {
             // Android app extension
-            extensions.configure<BaseAppModuleExtension>(::configBaseAppModuleExtension)
+            extensions.configure<BaseAppModuleExtension>(::configureBaseAppModuleExtension)
 
-            extensions.configure<ComposeExtension>(::configComposeAppExtension)
+            extensions.configure<ComposeExtension>(::configureComposeAppExtension)
         }
     }
 }

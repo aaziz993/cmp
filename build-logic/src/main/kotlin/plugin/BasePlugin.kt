@@ -21,10 +21,10 @@ import org.jetbrains.kotlin.noarg.gradle.NoArgExtension
 import org.jetbrains.kotlin.powerassert.gradle.PowerAssertGradleExtension
 import org.sonarqube.gradle.SonarExtension
 import plugin.extension.config.*
-import plugin.extension.config.configApolloExtension
-import plugin.extension.config.configKotlinCompilationTask
-import plugin.extension.config.configPowerAssertGradleExtension
-import plugin.extension.config.configSonarExtension
+import plugin.extension.config.configureApolloExtension
+import plugin.extension.config.configureKotlinCompilationTask
+import plugin.extension.config.configurePowerAssertGradleExtension
+import plugin.extension.config.configureSonarExtension
 
 internal class BasePlugin : Plugin<Project> {
     override fun apply(target: Project): Unit = with(target) {
@@ -48,48 +48,48 @@ internal class BasePlugin : Plugin<Project> {
         }
 
         // Test coverage analyze
-        extensions.configure<KoverProjectExtension>(::configKoverProjectExtension)
+        extensions.configure<KoverProjectExtension>(::configureKoverProjectExtension)
 
         tasks.create<Task>("generateKoverReport", Task::class.java) {
             dependsOn("koverHtmlReport", "koverXmlReport", "test")
         }
 
         // Code format check and fix
-        extensions.configure<SpotlessExtension>(::configSpotlessExtension)
+        extensions.configure<SpotlessExtension>(::configureSpotlessExtension)
 
         tasks.withType<SpotlessApply> {
             dependsOn("synchronizeRootFiles")
         }
 
         // Code quality check
-        extensions.configure<SonarExtension>(::configSonarExtension)
+        extensions.configure<SonarExtension>(::configureSonarExtension)
 
         // Create project documentation
-        configDokka()
+        configureDokka()
 
-        extensions.configure<BuildConfigExtension>(::configBuildConfigExtension)
+        extensions.configure<BuildConfigExtension>(::configureBuildConfigExtension)
 
         // Compiler processor for generating code during compilation
-        extensions.configure<KspExtension>(::configKspExtension)
+        extensions.configure<KspExtension>(::configureKspExtension)
 
         // Generate no arg contructor by specified annotation
-        extensions.configure<NoArgExtension>(::configNoArgExtension)
+        extensions.configure<NoArgExtension>(::configureNoArgExtension)
 
         // Make class open for inheritance by specified annotation
-        extensions.configure<AllOpenExtension>(::configAllOpenExtension)
+        extensions.configure<AllOpenExtension>(::configureAllOpenExtension)
 
         // Providing detailed failure messages with contextual information during testing.
         @OptIn(ExperimentalKotlinGradlePluginApi::class)
-        extensions.configure<PowerAssertGradleExtension>(::configPowerAssertGradleExtension)
+        extensions.configure<PowerAssertGradleExtension>(::configurePowerAssertGradleExtension)
 
         // Http client generator
-        extensions.configure<KtorfitGradleConfiguration>(::configKtorfitGradle)
+        extensions.configure<KtorfitGradleConfiguration>(::configureKtorfitGradle)
 
         // GraphQL
-        extensions.configure<ApolloExtension>(::configApolloExtension)
+        extensions.configure<ApolloExtension>(::configureApolloExtension)
 
         // Configure kotlin compilation task
-        tasks.withType<KotlinCompilationTask<*>>().configureEach { configKotlinCompilationTask(this) }
+        tasks.withType<KotlinCompilationTask<*>>().configureEach { configureKotlinCompilationTask(this) }
 
         tasks.withType<Test> {
             finalizedBy("generateKoverReport")

@@ -12,11 +12,11 @@ import org.gradle.kotlin.dsl.configure
 import org.jetbrains.kotlin.gradle.dsl.KotlinProjectExtension
 import plugin.BasePlugin
 import plugin.extension.config.*
-import plugin.extension.config.configJavaPluginExtension
+import plugin.extension.config.configureJavaPluginExtension
 import plugin.extension.config.implementation
 import plugin.extension.config.ksp
 import plugin.extension.config.testImplementation
-import plugin.java.extension.config.configJavaApp
+import plugin.java.extension.config.configureJavaApp
 
 public class JavaAppPlugin : Plugin<Project> {
     override fun apply(target: Project): Unit =
@@ -28,9 +28,9 @@ public class JavaAppPlugin : Plugin<Project> {
                     apply("application")
                 }
 
-                extensions.configure<JavaPluginExtension>(::configJavaPluginExtension)
+                extensions.configure<JavaPluginExtension>(::configureJavaPluginExtension)
 
-                extensions.configure<JavaApplication>(::configJavaApp)
+                extensions.configure<JavaApplication>(::configureJavaApp)
 
                 val osName = System.getProperty("os.name").lowercase()
                 val tcnativeClassifier = when {
@@ -96,7 +96,7 @@ public class JavaAppPlugin : Plugin<Project> {
                     }
                 }
 
-                extensions.configure<KotlinProjectExtension>(::configKotlinProjectExtension)
+                extensions.configure<KotlinProjectExtension>(::configureKotlinProjectExtension)
             }
         }
 }

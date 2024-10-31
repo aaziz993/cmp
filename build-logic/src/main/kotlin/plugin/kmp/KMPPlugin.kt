@@ -15,13 +15,13 @@ import org.jetbrains.kotlin.gradle.dsl.KotlinProjectExtension
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompilationTask
 import plugin.BasePlugin
 import plugin.extension.config.*
-import plugin.extension.config.configBaseExtension
-import plugin.extension.config.configKotlinProjectExtension
-import plugin.extension.config.configRoomExtension
-import plugin.extension.config.configSqlDelightExtension
+import plugin.extension.config.configureBaseExtension
+import plugin.extension.config.configureKotlinProjectExtension
+import plugin.extension.config.configureRoomExtension
+import plugin.extension.config.configureSqlDelightExtension
 import plugin.extension.config.kspCommonMainMetadata
-import plugin.extension.config.configKarakumExtension
-import plugin.kmp.extension.config.configKMPExtension
+import plugin.extension.config.configureKarakumExtension
+import plugin.kmp.extension.config.configureKMPExtension
 import io.github.sgrishchenko.karakum.gradle.plugin.KarakumExtension
 import io.github.sgrishchenko.karakum.gradle.plugin.tasks.KarakumGenerate
 import org.jetbrains.kotlin.gradle.tasks.Kotlin2JsCompile
@@ -40,23 +40,23 @@ internal class KMPPlugin(
                 apply(id("room"))
             }
 
-            extensions.configure<KotlinProjectExtension>(::configKotlinProjectExtension)
+            extensions.configure<KotlinProjectExtension>(::configureKotlinProjectExtension)
 
-            extensions.configure<KotlinMultiplatformExtension>(::configKMPExtension)
+            extensions.configure<KotlinMultiplatformExtension>(::configureKMPExtension)
 
             // Android base extension
-            extensions.configure<BaseExtension>(::configBaseExtension)
+            extensions.configure<BaseExtension>(::configureBaseExtension)
 
             // Generates kotlin code from typescript
-            extensions.configure<KarakumExtension>(::configKarakumExtension)
+            extensions.configure<KarakumExtension>(::configureKarakumExtension)
 
-            tasks.withType<KarakumGenerate> { configKarakumGenerateTask(this) }
+            tasks.withType<KarakumGenerate> { configureKarakumGenerateTask(this) }
 
             tasks.withType<Kotlin2JsCompile>().configureEach { configureKotlin2JsCompileTask(this) }
 
-            extensions.configure<SqlDelightExtension>(::configSqlDelightExtension)
+            extensions.configure<SqlDelightExtension>(::configureSqlDelightExtension)
 
-            extensions.configure<RoomExtension>(::configRoomExtension)
+            extensions.configure<RoomExtension>(::configureRoomExtension)
 
             dependencies.apply {
                 kspCommonMainMetadata(lib("arrow.optics.ksp.plugin"))
