@@ -9,5 +9,10 @@ import org.gradle.kotlin.dsl.extra
 internal fun Project.configJavaApp(javaApplication: JavaApplication): JavaApplication =
     javaApplication.apply {
         mainClass.set("${settings.extension.projectGroup}.ApplicationKt")
-        applicationDefaultJvmArgs = listOf("-Dio.ktor.development=${extra["io.ktor.development"] ?: "false"}")
+        applicationDefaultJvmArgs =
+            listOf(
+                "-Dio.ktor.development=${
+                    extra["io.ktor.development"] ?: providers.gradleProperty("io.ktor.development").getOrElse("false")
+                }"
+            )
     }
