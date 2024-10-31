@@ -25,9 +25,8 @@ internal fun Project.configSpotlessExtension(extension: SpotlessExtension) =
                 "**/buildSrc/**",
             )
 
-            fun getProjectLicenseHeaderText(file: String) = layout.projectDirectory.file("../${
-                providers.gradleProperty(file).get()}"
-            ).asFile.readText()
+            fun getProjectLicenseHeaderText(file: String) = layout.projectDirectory.file(
+                providers.gradleProperty(file).get()).asFile.readText()
                 .replace(
                     providers
                         .gradleProperty("project.license.header.text.file.project.inception.year.placeholder")
