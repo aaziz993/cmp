@@ -181,7 +181,7 @@ public open class SettingsPluginExtension(
         logger.info("Applied settings plugin extension")
     }
 
-    private fun calculateProjectVersion() = Toml().read(target.layout.rootDirectory.file("build-logic/gradle/test.toml").asFile).let {
+    private fun calculateProjectVersion() = Toml().read(target.layout.rootDirectory.file(versionCatalogFile).asFile).let {
         "${
             it.getString("project-version-major")
         }.${
