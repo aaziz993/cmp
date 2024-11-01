@@ -5,15 +5,7 @@ import kotlin.text.toInt
 import kotlinx.cinterop.*
 import platform.CoreGraphics.*
 import platform.Foundation.*
-
-import org.jetbrains.skia.*
-import org.jetbrains.skia.ColorAlphaType
-import org.jetbrains.skia.Image
-import org.jetbrains.skia.ColorSpace
-import org.jetbrains.skia.ImageInfo
-import androidx.compose.ui.graphics.ImageBitmap
-import androidx.compose.ui.graphics.toComposeImageBitmap
-
+import cnames.structs.CGImage
 
 // /////////////////////////////////////////////////////////ARRAY///////////////////////////////////////////////////////
 public fun CGImage.encodeRGBA(): ByteArray =
