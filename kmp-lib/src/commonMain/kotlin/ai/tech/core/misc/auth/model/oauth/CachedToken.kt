@@ -5,7 +5,7 @@ import kotlinx.serialization.Serializable
 import kotlinx.serialization.Transient
 
 @Serializable
-public data class UserToken(
+public data class CachedToken(
     val createdTime: Long,
     val username: String,
     val token: Token,

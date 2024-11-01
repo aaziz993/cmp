@@ -1,15 +1,15 @@
 package ai.tech.core.misc.auth.keycloak
 
 import ai.tech.core.misc.auth.ClientAuthProvider
-import core.auth.keycloak.model.ResetPassword
-import core.auth.keycloak.model.UserRepresentation
-import core.auth.model.User
-import core.auth.model.oauth.Token
-import core.auth.model.oauth.UserToken
-import core.io.keyvalue.KeyValue
-import core.io.keyvalue.get
-import core.io.model.http.server.HttpResponseException
-import core.type.single.flatMap
+import ai.tech.core.misc.auth.keycloak.model.ResetPassword
+import ai.tech.core.misc.auth.keycloak.model.UserRepresentation
+import ai.tech.core.misc.auth.model.identity.User
+import ai.tech.core.misc.auth.model.oauth.Token
+import ai.tech.core.misc.auth.model.oauth.CachedToken
+import ai.tech.core.misc.io.keyvalue.KeyValue
+import ai.tech.core.misc.io.keyvalue.get
+import ai.tech.core.misc.io.model.http.server.HttpResponseException
+import ai.tech.core.misc.type.single.flatMap
 import io.ktor.client.request.*
 import io.ktor.http.*
 import kotlinx.datetime.Clock
@@ -112,16 +112,16 @@ public class KeycloakAuthProvider(
             ?.let { builder.header(HttpHeaders.Authorization, "Bearer ${it.token.accessToken}") }
     }
 
-    private suspend fun requestToken(username: String, password: String): Result<UserToken> =
+    private suspend fun requestToken(username: String, password: String): Result<CachedToken> =
         client.getToken(username, password).map {
             setToken(username, it)
         }
 
-    private suspend fun getAndRequestToken(password: String): Result<UserToken> = getOrRefreshToken().flatMap {
+    private suspend fun getAndRequestToken(password: String): Result<CachedToken> = getOrRefreshToken().flatMap {
         requestToken(it.username, password)
     }
 
-    private suspend fun getOrRefreshToken(): Result<UserToken> = getToken().flatMap { token ->
+    private suspend fun getOrRefreshToken(): Result<CachedToken> = getToken().flatMap { token ->
         if (token.expiresInLeft > 0) {
             Result.success(token)
         } else {
@@ -134,12 +134,12 @@ public class KeycloakAuthProvider(
     }
 
     private suspend fun setToken(username: String, token: Token) =
-        UserToken(Clock.System.now().epochSeconds, username, token).also {
+        CachedToken(Clock.System.now().epochSeconds, username, token).also {
             keyValue.set(TOKEN_KEY, it)
             handleRefreshTokenExpire()
         }
 
-    private suspend fun getToken() = keyValue.get<UserToken>(TOKEN_KEY)
+    private suspend fun getToken() = keyValue.get<CachedToken>(TOKEN_KEY)
 
     private suspend fun removeToken() = keyValue.remove(TOKEN_KEY)
 
