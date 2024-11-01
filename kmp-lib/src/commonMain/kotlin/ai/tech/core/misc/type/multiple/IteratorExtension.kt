@@ -258,24 +258,6 @@ private class IteratorAsyncIterator<T>(
     override suspend fun next(): T = iterator.next()
 }
 
-public fun <T> ClosableAbstractIterator<T>.asyncIterator(): ClosableAbstractAsyncIterator<T> =
-    ClosableAbstractIteratorAsyncIterator(this)
-
-private class ClosableAbstractIteratorAsyncIterator<T>(
-    private val iterator: ClosableAbstractIterator<T>,
-) : ClosableAbstractAsyncIterator<T>() {
-    override suspend fun computeNext() {
-        if (iterator.hasNext()) {
-            setNext(iterator.next())
-        } else {
-            close()
-        }
-    }
-
-    override val onClose: () -> Unit
-        get() = iterator.onClose
-}
-
 // ////////////////////////////////////////////////////////SOURCE///////////////////////////////////////////////////////
 public fun Iterator<Byte>.asSource(): Source = IteratorSource(this)
 

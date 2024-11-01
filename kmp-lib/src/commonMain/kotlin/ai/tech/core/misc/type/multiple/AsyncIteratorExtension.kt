@@ -294,28 +294,6 @@ private class AsyncIteratorIterator<T>(
     }
 }
 
-public fun <T> ClosableAbstractAsyncIterator<T>.syncIterator(
-    coroutineScope: CoroutineScope = CoroutineScope(Dispatchers.Default),
-): ClosableAbstractIterator<T> = ClosableAbstractAsyncIteratorIterator(this, coroutineScope)
-
-private class ClosableAbstractAsyncIteratorIterator<T>(
-    private val iterator: ClosableAbstractAsyncIterator<T>,
-    private val coroutineScope: CoroutineScope,
-) : ClosableAbstractIterator<T>() {
-    override fun computeNext() {
-        coroutineScope.launch {
-            if (iterator.hasNext()) {
-                setNext(iterator.next())
-            } else {
-                close()
-            }
-        }
-    }
-
-    override val onClose: () -> Unit
-        get() = iterator.onClose
-}
-
 // //////////////////////////////////////////////////CHANNELITERATOR////////////////////////////////////////////////////
 public fun <T> ChannelIterator<T>.asyncIterator(): AsyncIterator<T> = ChannelIteratorAsyncIterator(this)
 
