@@ -1,14 +1,17 @@
 package ai.tech.core.misc.type.multiple
 
+import ai.tech.core.data.model.Charset
 import ai.tech.core.data.model.ImageCompression
 import ai.tech.core.data.model.imageCompressionMap
-import ai.tech.core.data.model.Charset
 import ai.tech.core.data.model.toPlatformCharset
-import ai.tech.core.misc.type.single.Object
+import ai.tech.core.misc.type.Object
 import js.core.JsLong
 import js.typedarrays.TypedArray
 import js.typedarrays.Uint8ClampedArray
 import js.typedarrays.toUint8Array
+import kotlin.coroutines.resume
+import kotlin.coroutines.resumeWithException
+import kotlin.coroutines.suspendCoroutine
 import web.canvas.CanvasRenderingContext2D
 import web.canvas.OffscreenCanvas
 import web.canvas.OffscreenCanvasRenderingContext2D
@@ -17,9 +20,6 @@ import web.encoding.btoa
 import web.events.EventHandler
 import web.html.HTMLCanvasElement
 import web.html.Image
-import kotlin.coroutines.resume
-import kotlin.coroutines.resumeWithException
-import kotlin.coroutines.suspendCoroutine
 
 public fun <S : TypedArray<S, T>, T : Comparable<T>, R> TypedArray<S, T>.fold(
     initial: R,

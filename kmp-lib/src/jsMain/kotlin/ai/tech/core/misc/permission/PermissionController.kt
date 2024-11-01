@@ -3,8 +3,8 @@ package ai.tech.core.misc.permission
 import ai.tech.core.misc.permission.exception.PermissionDeniedException
 import ai.tech.core.misc.permission.model.PermissionStateType
 import ai.tech.core.misc.permission.model.PermissionType
-import ai.tech.core.misc.type.any.Object
-import ai.tech.core.misc.type.any.toJsString
+import ai.tech.core.misc.type.Object
+import ai.tech.core.misc.type.toJsString
 import kotlinx.coroutines.await
 import web.navigator.navigator
 import web.permissions.PermissionState
