@@ -2,7 +2,7 @@
 
 package plugin.settings
 
-import ALL_WARNINGS_AS_ERRORS
+import KOTLIN_COMPILATION_ALL_WARNINGS_AS_ERRORS
 import KARAKUM_CONF_FILE
 import PROJECT_GROUP
 import PROJECT_VERSION_IS_SNAPSHOT
@@ -30,7 +30,7 @@ public open class SettingsPluginExtension(
     private val providers = target.providers
 
     public val allWarningsAsErrors: Boolean =
-        providers.gradleProperty("project.license.text.url").getOrElse(ALL_WARNINGS_AS_ERRORS.toString())
+        providers.gradleProperty("project.license.text.url").getOrElse(KOTLIN_COMPILATION_ALL_WARNINGS_AS_ERRORS.toString())
             .toBoolean()
 
     public var versionCatalogFile: String = VERSION_CATALOG_FILE

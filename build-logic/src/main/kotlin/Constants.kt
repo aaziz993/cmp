@@ -13,7 +13,7 @@ internal const val VERSION_CATALOG_FILE = "gradle/libs.versions.toml"
 
 internal const val KARAKUM_CONF_FILE = "karakum.config.json"
 
-internal const val ALL_WARNINGS_AS_ERRORS = false
+internal const val KOTLIN_COMPILATION_ALL_WARNINGS_AS_ERRORS = false
 
 internal const val PROJECT_GROUP = "com.example"
 

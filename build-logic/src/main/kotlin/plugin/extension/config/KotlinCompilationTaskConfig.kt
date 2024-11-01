@@ -1,6 +1,5 @@
 package plugin.extension.config
 
-import ALL_WARNINGS_AS_ERRORS
 import org.gradle.api.Project
 import org.gradle.kotlin.dsl.extension
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompilationTask
