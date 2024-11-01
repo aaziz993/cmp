@@ -8,8 +8,6 @@ import ai.tech.core.misc.type.multiple.LUP
 import ai.tech.core.misc.type.multiple.quotePattern
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.Transient
-import pro.respawn.kmmutils.inputforms.default.FieldLengths
-import pro.respawn.kmmutils.inputforms.default.Patterns
 
 @Serializable
 public data class ValidatorRule(
@@ -144,7 +142,7 @@ public data class ValidatorRule(
             message = message
         )
 
-        public fun numericPhoneLength(message: String): ValidatorRule = FieldLengths.NumericPhoneNumber.let {
+        public fun numericPhoneLength(message: String): ValidatorRule = ValidatorLength.NumericPhoneNumber.let {
             lengthInRange(
                 it.first,
                 it.last,
@@ -153,11 +151,11 @@ public data class ValidatorRule(
         }
 
         public fun numericPhonePattern(message: String): ValidatorRule = ValidatorRule(
-            Patterns.InternationalNumericPhoneNumber.pattern,
+            ValidatorPattern.InternationalNumericPhoneNumber.pattern,
             message = message
         )
 
-        public fun delimitedPhoneLength(message: String): ValidatorRule = FieldLengths.DelimitedPhoneNumber.let {
+        public fun delimitedPhoneLength(message: String): ValidatorRule = ValidatorLength.DelimitedPhoneNumber.let {
             lengthInRange(
                 it.first,
                 it.last, message
@@ -165,16 +163,16 @@ public data class ValidatorRule(
         }
 
         public fun delimitedPhonePattern(message: String): ValidatorRule = ValidatorRule(
-            Patterns.InternationalDelimitedPhoneNumber.pattern,
+            ValidatorPattern.InternationalDelimitedPhoneNumber.pattern,
             message = message
         )
 
-        public fun emailLength(message: String): ValidatorRule = FieldLengths.Email.let {
+        public fun emailLength(message: String): ValidatorRule = ValidatorLength.Email.let {
             lengthInRange(it.first, it.last, message)
         }
 
         public fun emailPattern(message: String): ValidatorRule = ValidatorRule(
-            Patterns.Email.pattern,
+            ValidatorPattern.Email.pattern,
             message = message
         )
     }
