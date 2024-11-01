@@ -1,6 +1,6 @@
 package ai.tech.core.misc.config.localization
 
-import ai.tech.core.data.location.weblate.model.WeblateConfig
+import ai.tech.core.misc.location.weblate.model.WeblateConfig
 import kotlinx.serialization.Serializable
 
 @Serializable

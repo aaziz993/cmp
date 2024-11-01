@@ -1,7 +1,7 @@
 package ai.tech.core.data.database.kotysa
 
 import ai.tech.core.data.database.model.CreateDatabaseTableConfig
-import core.io.database.model.config.DatabaseConfig
+import ai.tech.core.data.database.model.config.DatabaseConfig
 import core.io.database.model.config.DatabaseProviderConfig
 import io.r2dbc.spi.ConnectionFactories
 import io.r2dbc.spi.ConnectionFactory
