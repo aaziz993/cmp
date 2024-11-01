@@ -1,40 +1,42 @@
 package ai.tech.core.data.database.kotysa
 
-import ai.tech.core.data.database.kotysa.model.KotysaColumn
-import core.io.database.CRUDRepository
-import core.io.database.expression.AggregateExpression
-import core.io.database.expression.AggregateExpression.Companion.count
-import core.io.database.expression.And
-import core.io.database.expression.Avg
-import core.io.database.expression.Between
-import core.io.database.expression.BooleanValue
-import core.io.database.expression.BooleanVariable
-import core.io.database.expression.Count
-import core.io.database.expression.Equals
-import core.io.database.expression.Expression
-import core.io.database.expression.Field
-import core.io.database.expression.GreaterEqualThan
-import core.io.database.expression.GreaterThan
-import core.io.database.expression.In
-import core.io.database.expression.LessEqualThan
-import core.io.database.expression.LessThan
-import core.io.database.expression.Max
-import core.io.database.expression.Min
-import core.io.database.expression.NotEquals
-import core.io.database.expression.NotIn
-import core.io.database.expression.Or
-import core.io.database.expression.Projection
-import core.io.database.expression.Sum
-import core.io.database.expression.Value
-import core.io.database.expression.Variable
+import ai.tech.core.data.database.CRUDRepository
 import ai.tech.core.data.database.kotysa.model.KotysaTable
-import core.io.database.model.LimitOffset
-import core.io.database.model.Order
-import core.io.database.model.Page
-import core.type.copy
-import core.type.kClass
-import kotlin.collections.get
-import kotlin.invoke
+import ai.tech.core.data.database.model.LimitOffset
+import ai.tech.core.data.database.model.Order
+import ai.tech.core.data.database.model.Page
+import ai.tech.core.data.expression.AggregateExpression
+import ai.tech.core.data.expression.AggregateExpression.Companion.count
+import ai.tech.core.data.expression.And
+import ai.tech.core.data.expression.Avg
+import ai.tech.core.data.expression.Between
+import ai.tech.core.data.expression.BooleanValue
+import ai.tech.core.data.expression.BooleanVariable
+import ai.tech.core.data.expression.Count
+import ai.tech.core.data.expression.Equals
+import ai.tech.core.data.expression.Expression
+import ai.tech.core.data.expression.Field
+import ai.tech.core.data.expression.GreaterEqualThan
+import ai.tech.core.data.expression.GreaterThan
+import ai.tech.core.data.expression.In
+import ai.tech.core.data.expression.LessEqualThan
+import ai.tech.core.data.expression.LessThan
+import ai.tech.core.data.expression.Max
+import ai.tech.core.data.expression.Min
+import ai.tech.core.data.expression.NotEquals
+import ai.tech.core.data.expression.NotIn
+import ai.tech.core.data.expression.Or
+import ai.tech.core.data.expression.Projection
+import ai.tech.core.data.expression.Sum
+import ai.tech.core.data.expression.Value
+import ai.tech.core.data.expression.Variable
+import ai.tech.core.misc.type.copy
+import ai.tech.core.misc.type.kClass
+import kotlin.reflect.KClass
+import kotlin.reflect.KTypeParameter
+import kotlin.reflect.full.declaredMemberProperties
+import kotlin.reflect.full.isSubclassOf
+import kotlin.reflect.full.memberFunctions
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.toList
 import kotlinx.datetime.TimeZone
@@ -48,11 +50,6 @@ import org.ufoss.kotysa.R2dbcSqlClient
 import org.ufoss.kotysa.SqlClientQuery
 import org.ufoss.kotysa.Table
 import org.ufoss.kotysa.WholeNumberColumn
-import kotlin.reflect.KClass
-import kotlin.reflect.KTypeParameter
-import kotlin.reflect.full.declaredMemberProperties
-import kotlin.reflect.full.isSubclassOf
-import kotlin.reflect.full.memberFunctions
 
 public abstract class KotysaCRUDRepository<T : Any>(
     private val kClass: KClass<T>,
@@ -77,14 +74,14 @@ public abstract class KotysaCRUDRepository<T : Any>(
     @Suppress("UNCHECKED_CAST")
     final override suspend fun insert(entities: List<T>) {
         client.insert(*((table.createdAtColumn?.let {
-            val temporal = KotysaColumn.now!!(timeZone)
+            val temporal = it.value.now!!(timeZone)
             entities.map { Json.Default.copy(it, mapOf(createdAtProperty!! to temporal)) }
         } ?: entities).toTypedArray<Any>() as Array<T>))
     }
 
     override suspend fun updateSafe(entities: List<T>): List<Boolean> = client.transactional {
         table.updatedAtColumn?.let {
-            val temporal = KotysaColumn.now!!(timeZone)
+            val temporal = it.value.now!!(timeZone)
             entities.map { update(Json.Default.copy(it, mapOf(updatedAtProperty!! to temporal))).execute() > 0L }
         } ?: entities.map { update(it).execute() > 0L }
     }!!
@@ -127,15 +124,15 @@ public abstract class KotysaCRUDRepository<T : Any>(
     @Suppress("UNCHECKED_CAST")
     override suspend fun <T> aggregate(aggregate: AggregateExpression<T>, predicate: BooleanVariable?): T =
         when (aggregate) {
-            is Count -> aggregate.projection?.let { client.selectCount(KotysaColumn.column).from(table.table) }
+            is Count -> aggregate.projection?.let { client.selectCount(table[it.value].column).from(table.table) }
                 ?: client.selectCountFrom(table.table)
 
-            is Max -> client.selectMax(KotysaColumn.column as MinMaxColumn<*, *>).from(table.table)
-            is Min -> client.selectMin(KotysaColumn.column as MinMaxColumn<*, *>).from(table.table)
-            is Avg -> client.selectAvg(KotysaColumn.column as NumericColumn<*, *>)
+            is Max -> client.selectMax(table[aggregate.projection.value].column as MinMaxColumn<*, *>).from(table.table)
+            is Min -> client.selectMin(table[aggregate.projection.value].column as MinMaxColumn<*, *>).from(table.table)
+            is Avg -> client.selectAvg(table[aggregate.projection.value].column as NumericColumn<*, *>)
                 .from(table.table)
 
-            is Sum -> client.selectSum(KotysaColumn.column as WholeNumberColumn<*, *>)
+            is Sum -> client.selectSum(table[aggregate.projection.value].column as WholeNumberColumn<*, *>)
                 .from(table.table)
         }.let { select ->
             predicate?.let {
@@ -144,12 +141,12 @@ public abstract class KotysaCRUDRepository<T : Any>(
         }.fetchOne() as T
 
     private fun update(entity: T): CoroutinesSqlClientDeleteOrUpdate.Return = client.update(table.table).let {
-        table.columns.values.fold(it) { acc, v -> KotysaColumn.updateFromEntity(acc, entity) }
+        table.columns.values.fold(it) { acc, v -> v.updateFromEntity(acc, entity) }
     }.predicate(table.getIdPredicate(entity))
 
     private fun update(map: Map<String, Any?>): CoroutinesSqlClientDeleteOrUpdate.Update<T> =
         client.update(table.table).let {
-            map.entries.fold(it) { acc, (k, v) -> KotysaColumn.updateFromValue(acc, v) }
+            map.entries.fold(it) { acc, (k, v) -> table[k].updateFromValue(acc, v) }
         }
 
     private fun findHelper(sort: List<Order>?, predicate: BooleanVariable?, limitOffset: LimitOffset? = null): Flow<T> =
@@ -164,9 +161,9 @@ public abstract class KotysaCRUDRepository<T : Any>(
         projections.filterIsInstance<Projection>().fold(it) { acc, v ->
             table[v.value].let {
                 if (v.distinct) {
-                    acc.selectDistinct(KotysaColumn.column)
+                    acc.selectDistinct(it.column)
                 } else {
-                    acc.select(KotysaColumn.column)
+                    acc.select(it.column)
                 }.let { select ->
                     v.alias?.let { select.`as`(it) } ?: select
                 }
@@ -181,9 +178,9 @@ public abstract class KotysaCRUDRepository<T : Any>(
     ): Flow<R> = (predicate?.let { predicate(it) } ?: this).let {
         sort?.fold(it.ordersBy()) { acc, v ->
             if (v.ascending) {
-                acc.orderByAsc(KotysaColumn.column)
+                acc.orderByAsc(table[v.name].column)
             } else {
-                acc.orderByDesc(KotysaColumn.column)
+                acc.orderByDesc(table[v.name].column)
             }
         } ?: it
     }.let { select ->
@@ -225,7 +222,7 @@ public abstract class KotysaCRUDRepository<T : Any>(
     }
 
     private fun Any.compareExp(expression: Expression, logValue: StringBuilder): Any {
-        val isTemporal = KotysaColumn.isTemporal
+        val isTemporal = table[(expression.arguments[0] as Field).value].isTemporal
 
         return if (expression is Between) {
             if (isTemporal) {
@@ -308,7 +305,7 @@ public abstract class KotysaCRUDRepository<T : Any>(
         val v: Any?
 
         when (value) {
-            is Field -> KotysaColumn.column.let {
+            is Field -> table[value.value].column.let {
                 vkClass = it::class
                 v = it
             }
