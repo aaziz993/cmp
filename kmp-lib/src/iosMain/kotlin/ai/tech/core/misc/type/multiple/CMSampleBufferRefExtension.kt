@@ -3,10 +3,25 @@ package ai.tech.core.misc.type.multiple
 import kotlin.text.get
 import kotlin.text.toInt
 import kotlinx.cinterop.ByteVar
-import platform.CoreGraphics.*
+import kotlinx.cinterop.refTo
+import kotlinx.cinterop.reinterpret
+import kotlinx.cinterop.pointed
+import platform.CoreMedia.CMSampleBufferRef
+import platform.CoreMedia.CMSampleBufferGetImageBuffer
+import platform.CoreMedia.CMSampleBufferGetDataBuffer
+import platform.CoreMedia.CMBlockBufferGetDataLength
+import platform.CoreMedia.kCMBlockBufferNoErr
+import platform.CoreVideo.CVPixelBufferGetHeight
+import platform.CoreVideo.CVPixelBufferLockBaseAddress
+import platform.CoreVideo.CVPixelBufferGetBaseAddress
+import platform.CoreVideo.CVPixelBufferGetBytesPerRow
+import platform.CoreVideo.CVPixelBufferUnlockBaseAddress
+import platform.CoreVideo.kCVPixelBufferLock_ReadOnly
+import platform.CoreAudioTypes.AudioBufferList
+import platform.posix.memcpy
 
 public fun CMSampleBufferRef.encodeRGBA(): ByteArray {
-    val imageBuffer = CMSampleBufferGetImageBuffer(buffer) ?: return ByteArray(0)
+    val imageBuffer = CMSampleBufferGetImageBuffer(this) ?: return ByteArray(0)
     CVPixelBufferLockBaseAddress(imageBuffer, kCVPixelBufferLock_ReadOnly)
 
     val baseAddress = CVPixelBufferGetBaseAddress(imageBuffer)
@@ -17,11 +32,11 @@ public fun CMSampleBufferRef.encodeRGBA(): ByteArray {
 
     val byteArray = ByteArray(bytesPerRow * height)
 
-    (byteArray.indeices step 4).forEach {
-        byteArray[it] = byteBuffer[i + 2]
-        byteArray[it + 1] = byteBuffer[i + 1]
-        byteArray[it + 2] = byteBuffer[i + 0]
-        byteArray[it + 3] = byteBuffer[i + 3]
+    (byteArray.indices step 4).forEach {
+        byteArray[it] = byteBuffer[it + 2]
+        byteArray[it + 1] = byteBuffer[it + 1]
+        byteArray[it + 2] = byteBuffer[it + 0]
+        byteArray[it + 3] = byteBuffer[it + 3]
     }
 
     CVPixelBufferUnlockBaseAddress(imageBuffer, kCVPixelBufferLock_ReadOnly)

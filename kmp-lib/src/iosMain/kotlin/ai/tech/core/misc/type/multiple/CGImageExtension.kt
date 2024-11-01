@@ -1,41 +1,48 @@
 package ai.tech.core.misc.type.multiple
 
 import ai.tech.core.data.model.ImageCompression
-import kotlin.text.toInt
-import kotlinx.cinterop.*
+import kotlinx.cinterop.addressOf
+import kotlinx.cinterop.usePinned
 import platform.CoreGraphics.*
-import platform.Foundation.*
-import cnames.structs.CGImage
+import platform.CoreGraphics.CGImageRef
+import platform.UIKit.UIImage
+import platform.UIKit.UIImageJPEGRepresentation
+import platform.UIKit.UIImagePNGRepresentation
 
 // /////////////////////////////////////////////////////////ARRAY///////////////////////////////////////////////////////
-public fun CGImage.encodeRGBA(): ByteArray =
-    ByteArray(width.toInt() * height.toInt() * 4).also {
-        usePinned {
-            CGContextDrawImage(
-                CGBitmapContextCreate(
-                    data = it.addressOf(0),
-                    width = width.toInt(),
-                    height = height.toInt(),
-                    bitsPerComponent = 8,
-                    bytesPerRow = (width * 4).toULong(),
-                    space = colorSpace,
-                    bitmapInfo = CGImageAlphaInfo.kCGImageAlphaPremultipliedLast.value.toUInt(),
-                ),
-                CGRectMake(0.0, 0.0, width.toDouble(), height.toDouble()),
-                this,
+
+public fun CGImageRef.encodeRGBA(): ByteArray {
+    val width = CGImageGetWidth(this)
+    val height = CGImageGetHeight(this)
+    // Create a ByteArray to hold the RGBA data
+    return ByteArray(width.toInt() * height.toInt() * 4).also { byteArray ->
+        // Pin the ByteArray to obtain a stable memory address
+        byteArray.usePinned { pinned ->
+            // Create a bitmap context with RGBA color space
+            val context = CGBitmapContextCreate(
+                data = pinned.addressOf(0),
+                width = width,
+                height = height,
+                bitsPerComponent = 8UL,
+                bytesPerRow = width.toULong() * 4UL,
+                space = CGColorSpaceCreateDeviceRGB(),
+                bitmapInfo = CGImageAlphaInfo.kCGImageAlphaPremultipliedLast.value.toUInt(),
             )
+            context?.let {
+                // Draw the CGImage into the context
+                CGContextDrawImage(it, CGRectMake(0.0, 0.0, width.toDouble(), height.toDouble()), this)
+            }
         }
     }
+}
 
-public fun CGImage.compress(
+public fun CGImageRef.compress(
     compression: ImageCompression,
-    quality: Float = 1f,
-): ByteArray =
-    UIImage
-        .imageWithCGImage(cgImage)
-        .let {
-            when (compression) {
-                ImageCompression.PNG -> it.pngData()
-                ImageCompression.JPEG -> it.jpegData(quality)
-            } as NSData
-        }.encode()
+    quality: Double = 1.0,
+): ByteArray? =
+    UIImage.imageWithCGImage(this).let {
+        when (compression) {
+            ImageCompression.PNG -> UIImagePNGRepresentation(it)
+            ImageCompression.JPEG -> UIImageJPEGRepresentation(it, quality)
+        }?.encode()
+    }

@@ -1,17 +1,18 @@
 package ai.tech.core.misc.type.multiple
 
-import kotlin.text.toInt
+import kotlinx.cinterop.*
+import kotlinx.cinterop.addressOf
 import kotlinx.cinterop.usePinned
 import platform.Foundation.*
+import platform.Foundation.NSData
 import platform.darwin.NSUInteger
-import kotlinx.cinterop.*
 import platform.posix.memcpy
 
 // ////////////////////////////////////////////////////////ARRAY////////////////////////////////////////////////////////
 public fun NSData.encode(): ByteArray =
     ByteArray(length.toInt()).apply {
-        usePinned {
-            memcpy(it.addressOf(0), bytes, length)
+        usePinned { pinned ->
+            memcpy(pinned.addressOf(0), bytes!!, length)
         }
     }
 
