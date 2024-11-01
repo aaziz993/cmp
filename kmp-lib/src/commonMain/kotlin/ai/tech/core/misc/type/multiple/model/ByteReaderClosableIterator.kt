@@ -3,17 +3,17 @@ package ai.tech.core.misc.type.multiple.model
 import ai.tech.core.DEFAULT_BUFFER_SIZE
 
 public class ByteReaderClosableIterator(
-    private val read: (ByteArray) -> Int,
+    private val readBlock: (ByteArray) -> Int,
+    private val closeBlock: () -> Unit = {},
     bufferSize: Int = DEFAULT_BUFFER_SIZE,
-    private val onClose: () -> Unit = {},
 ) : ClosableAbstractIterator<ByteArray>() {
     private val byteArray = ByteArray(bufferSize)
 
     override fun computeNext() {
-        val read = read(byteArray)
+        val read = readBlock(byteArray)
         if (read == -1) {
             close()
-            onClose()
+            closeBlock()
         } else {
             setNext(if (read < byteArray.size) byteArray.copyOfRange(0, read) else byteArray)
         }
