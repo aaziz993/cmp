@@ -16,5 +16,6 @@ public fun NSData.encode(): ByteArray =
     }
 
 // ////////////////////////////////////////////////////////STRING///////////////////////////////////////////////////////
+@OptIn(BetaInteropApi::class)
 public fun NSData.decode(charset: NSUInteger = NSUTF8StringEncoding): String? =
     NSString.create(data = this, encoding = charset)?.toString()

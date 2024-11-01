@@ -5,8 +5,15 @@ import java.io.InputStream
 import java.io.OutputStream
 
 // /////////////////////////////////////////////////////ITERATOR////////////////////////////////////////////////////////
-public fun InputStream.iterator(bufferSize: Int = DEFAULT_BUFFER_SIZE): ByteReaderClosableIterator =
-    ByteReaderClosableIterator(::read, ::close, bufferSize)
+public fun InputStream.iterator(closeBlock: () -> Unit = {}, bufferSize: Int = DEFAULT_BUFFER_SIZE): ByteReaderClosableIterator =
+    ByteReaderClosableIterator(
+        ::read,
+        {
+            close()
+            closeBlock()
+        },
+        bufferSize,
+    )
 
 // //////////////////////////////////////////////////OUTPUTSTREAM///////////////////////////////////////////////////////
 public fun InputStream.asOutputStream(

@@ -1,7 +1,7 @@
 package ai.tech.core.misc.type.multiple
 
 import ai.tech.core.data.model.Charset
-import ai.tech.core.misc.type.multiple.model.toPlatformCharset
+import ai.tech.core.data.model.toPlatformCharset
 import ai.tech.core.misc.type.single.Object
 import js.buffer.ArrayBuffer
 import js.typedarrays.Int8Array

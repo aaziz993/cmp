@@ -26,6 +26,7 @@ public open class SFtpClient(
     host: FtpHost,
     config: FtpClientConfig,
 ) : AbstractFtpClient(host, config) {
+
     private val loggerFactory: LoggerFactory = LoggerFactory.DEFAULT
 
     private val client = SSHClient()
@@ -54,7 +55,8 @@ public open class SFtpClient(
             with(host) {
                 if (privateKey == null) {
                     client.authPassword(username, password)
-                } else {
+                }
+                else {
                     val kp = client.loadKeys(privateKey, password)
                     client.authPublickey(username, kp)
                 }
@@ -101,10 +103,12 @@ public open class SFtpClient(
             val remoteInputStream: ReadAheadRemoteFileInputStream = remoteFile.ReadAheadRemoteFileInputStream(16)
             try {
                 copied = copy(remoteInputStream, toPath)
-            } finally {
+            }
+            finally {
                 remoteInputStream.close()
             }
-        } finally {
+        }
+        finally {
             remoteFile.close()
         }
         return copied
@@ -115,12 +119,14 @@ public open class SFtpClient(
         try {
             sftp.rm(path)
             deleted = true
-        } catch (_: Throwable) {
+        }
+        catch (_: Throwable) {
         }
         try {
             sftp.rmdir(path)
             deleted = true
-        } catch (_: Throwable) {
+        }
+        catch (_: Throwable) {
         }
         return deleted
     }
@@ -131,8 +137,9 @@ public open class SFtpClient(
     ): ClosableAbstractIterator<ByteArray> {
         val rf = sftp.open(path)
         try {
-            return rf.ReadAheadRemoteFileInputStream(16).iterator(bufferSize)
-        } catch (e: Throwable) {
+            return rf.ReadAheadRemoteFileInputStream(16).iterator(bufferSize = bufferSize)
+        }
+        catch (e: Throwable) {
             rf.close()
             throw e
         }
@@ -168,19 +175,23 @@ public open class SFtpClient(
                     sftp.sftpEngine.subsystem.remoteMaxPacketSize - rf.outgoingPacketOverhead,
                 ).keepFlushing(false)
                 .copy()
-        } catch (_: Throwable) {
+        }
+        catch (_: Throwable) {
             return false
-        } finally {
+        }
+        finally {
             if (rf != null) {
                 try {
                     rf.close()
-                } catch (_: IOException) {
+                }
+                catch (_: IOException) {
                 }
             }
             if (rfos != null) {
                 try {
                     rfos.close()
-                } catch (_: IOException) {
+                }
+                catch (_: IOException) {
                 }
             }
         }
@@ -191,7 +202,8 @@ public open class SFtpClient(
 internal fun toFileModes(append: Boolean): EnumSet<OpenMode> =
     if (append) {
         EnumSet.of(OpenMode.WRITE, OpenMode.APPEND)
-    } else {
+    }
+    else {
         EnumSet.of(OpenMode.WRITE, OpenMode.CREAT, OpenMode.TRUNC)
     }
 
@@ -200,11 +212,14 @@ internal fun FileAttributes.toPathMetadata(path: String): PathMetadata =
         path,
         if (type == FileMode.Type.REGULAR) {
             PathType.REGULAR_FILE
-        } else if (type == FileMode.Type.DIRECTORY) {
+        }
+        else if (type == FileMode.Type.DIRECTORY) {
             PathType.DIRECTORY
-        } else if (type == FileMode.Type.SYMLINK) {
+        }
+        else if (type == FileMode.Type.SYMLINK) {
             PathType.SYMBOLIC_LINK
-        } else {
+        }
+        else {
             PathType.OTHER
         },
         null,

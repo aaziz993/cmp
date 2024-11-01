@@ -20,6 +20,7 @@ public class FtpClientImpl(
     host: FtpHost,
     config: FtpClientConfig,
 ) : AbstractFtpClient(host, config) {
+
     override var implicit: Boolean = false
 
     override var utf8: Boolean = false
@@ -32,7 +33,8 @@ public class FtpClientImpl(
         set(value) {
             if (value) {
                 client.enterLocalPassiveMode()
-            } else {
+            }
+            else {
                 client.enterLocalActiveMode()
             }
             field = value
@@ -67,16 +69,17 @@ public class FtpClientImpl(
     override fun pathMetadata(path: String): PathMetadata =
         if (supportsMlsCommands) {
             client.mlistFile(path).toPathMetadata()
-        } else {
+        }
+        else {
             throw IllegalStateException("Ftp server does not support MLST command.")
         }
 
     override fun pathIterator(path: String?): Iterator<PathMetadata> =
         (
-                path?.let {
-                    (if (supportsMlsCommands) client.mlistDir(it) else client.listFiles(it))
-                } ?: (if (supportsMlsCommands) client.mlistDir() else client.listFiles())
-                ).map(FTPFile::toPathMetadata).iterator()
+            path?.let {
+                (if (supportsMlsCommands) client.mlistDir(it) else client.listFiles(it))
+            } ?: (if (supportsMlsCommands) client.mlistDir() else client.listFiles())
+            ).map(FTPFile::toPathMetadata).iterator()
 
     override fun createDirectory(path: String): Boolean = client.makeDirectory(path)
 
@@ -103,13 +106,15 @@ public class FtpClientImpl(
             if (client.deleteFile(path)) {
                 return true
             }
-        } catch (_: Throwable) {
+        }
+        catch (_: Throwable) {
         }
         try {
             if (client.removeDirectory(path)) {
                 return true
             }
-        } catch (_: Throwable) {
+        }
+        catch (_: Throwable) {
         }
         return false
     }
@@ -117,9 +122,12 @@ public class FtpClientImpl(
     override fun readFile(
         path: String,
         bufferSize: Int,
-    ): ClosableAbstractIterator<ByteArray> = client.retrieveFileStream(path).iterator(bufferSize) {
-        client.completePendingCommand()
-    }
+    ): ClosableAbstractIterator<ByteArray> = client.retrieveFileStream(path).iterator(
+        {
+            client.completePendingCommand()
+        },
+        bufferSize,
+    )
 
     override fun writeFile(
         data: Iterator<ByteArray>,
@@ -129,7 +137,8 @@ public class FtpClientImpl(
         if (append) {
             client.appendFile(path, data.flatMap { it.iterator() }.asInputStream())
             true
-        } else {
+        }
+        else {
             client.storeFile(path, data.flatMap { it.iterator() }.asInputStream())
         }.also {
             client.completePendingCommand()
@@ -146,13 +155,16 @@ private fun FTPFile.toPathMetadata(): PathMetadata =
         name,
         if (isFile) {
             PathType.REGULAR_FILE
-        } else if (isDirectory) {
+        }
+        else if (isDirectory) {
             PathType.DIRECTORY
-        } else if (
+        }
+        else if (
             isSymbolicLink
         ) {
             PathType.SYMBOLIC_LINK
-        } else {
+        }
+        else {
             PathType.OTHER
         },
         null,

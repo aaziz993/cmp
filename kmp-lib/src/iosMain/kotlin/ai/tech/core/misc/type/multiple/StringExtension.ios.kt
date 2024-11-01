@@ -1,7 +1,7 @@
 package ai.tech.core.misc.type.multiple
 
 import ai.tech.core.data.model.Charset
-import ai.tech.core.misc.type.multiple.model.charsetMap
+import ai.tech.core.data.model.charsetMap
 import kotlinx.cinterop.BetaInteropApi
 import platform.Foundation.*
 
@@ -13,4 +13,4 @@ public fun String.decodeNSData(charset: Charset = Charset.UTF_8): NSData =
     } ?: throw IllegalArgumentException("Unsupported charset encoding: ${charset.name}")
 
 // ////////////////////////////////////////////////////////STRING///////////////////////////////////////////////////////
-public actual fun String.encode(charset: Charset): ByteArray = decodeNSData(charset).toByteArray()
+public actual fun String.encode(charset: Charset): ByteArray = decodeNSData(charset).encode()

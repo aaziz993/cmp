@@ -2,7 +2,7 @@ package ai.tech.core.misc.type.multiple
 
 import ai.tech.core.data.model.ImageCompression
 import ai.tech.core.data.model.Charset
-import ai.tech.core.misc.type.multiple.model.charsetMap
+import ai.tech.core.data.model.charsetMap
 import kotlinx.cinterop.*
 import kotlinx.cinterop.ExperimentalForeignApi
 import kotlinx.cinterop.allocArrayOf

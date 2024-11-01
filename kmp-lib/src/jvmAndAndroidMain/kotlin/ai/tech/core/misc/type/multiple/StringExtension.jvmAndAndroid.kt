@@ -1,7 +1,7 @@
 package ai.tech.core.misc.type.multiple
 
 import ai.tech.core.data.model.Charset
-import ai.tech.core.misc.type.multiple.model.charsetMap
+import ai.tech.core.data.model.charsetMap
 
 // /////////////////////////////////////////////////////ARRAY////////////////////////////////////////////////////////////
 public actual fun String.encode(charset: Charset): ByteArray =
