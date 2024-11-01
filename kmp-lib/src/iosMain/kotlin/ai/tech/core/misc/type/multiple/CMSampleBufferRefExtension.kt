@@ -3,6 +3,7 @@ package ai.tech.core.misc.type.multiple
 import kotlin.text.get
 import kotlin.text.toInt
 import kotlinx.cinterop.ByteVar
+import kotlinx.cinterop.get
 import kotlinx.cinterop.refTo
 import kotlinx.cinterop.reinterpret
 import kotlinx.cinterop.pointed
@@ -24,24 +25,30 @@ public fun CMSampleBufferRef.encodeRGBA(): ByteArray {
     val imageBuffer = CMSampleBufferGetImageBuffer(this) ?: return ByteArray(0)
     CVPixelBufferLockBaseAddress(imageBuffer, kCVPixelBufferLock_ReadOnly)
 
-    val baseAddress = CVPixelBufferGetBaseAddress(imageBuffer)
-    val bytesPerRow = CVPixelBufferGetBytesPerRow(imageBuffer).toInt()
-    val height = CVPixelBufferGetHeight(imageBuffer).toInt()
+    try {
+        val baseAddress = CVPixelBufferGetBaseAddress(imageBuffer) ?: return ByteArray(0)
+        val bytesPerRow = CVPixelBufferGetBytesPerRow(imageBuffer).toInt()
+        val height = CVPixelBufferGetHeight(imageBuffer).toInt()
 
-    val byteBuffer = baseAddress!!.reinterpret<ByteVar>()
+        val byteBuffer = baseAddress.reinterpret<ByteVar>()
 
-    val byteArray = ByteArray(bytesPerRow * height)
+        val byteArray = ByteArray(bytesPerRow * height)
 
-    (byteArray.indices step 4).forEach {
-        byteArray[it] = byteBuffer[it + 2]
-        byteArray[it + 1] = byteBuffer[it + 1]
-        byteArray[it + 2] = byteBuffer[it + 0]
-        byteArray[it + 3] = byteBuffer[it + 3]
+        (byteArray.indices step 4).forEach {
+            byteArray[it] = byteBuffer[it+2]
+            byteArray[it + 1] = byteBuffer[it + 1]
+            byteArray[it + 2] = byteBuffer[it + 0]
+            byteArray[it + 3] = byteBuffer[it + 3]
+        }
+
+        CVPixelBufferUnlockBaseAddress(imageBuffer, kCVPixelBufferLock_ReadOnly)
+
+        return byteArray
     }
-
-    CVPixelBufferUnlockBaseAddress(imageBuffer, kCVPixelBufferLock_ReadOnly)
-
-    return byteArray
+    finally {
+        // Unlock the base address
+        CVPixelBufferUnlockBaseAddress(imageBuffer, kCVPixelBufferLock_ReadOnly)
+    }
 }
 
 public fun CMSampleBufferRef.encodePCM(): ByteArray {
