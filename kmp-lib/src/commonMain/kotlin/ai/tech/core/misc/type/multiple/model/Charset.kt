@@ -1,6 +1,6 @@
 package ai.tech.core.misc.type.multiple.model
 
-public enum class CharsetType {
+public enum class Charset {
     UTF_8,
     UTF_16,
     UTF_32,

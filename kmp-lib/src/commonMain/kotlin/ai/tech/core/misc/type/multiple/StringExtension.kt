@@ -2,7 +2,7 @@ package ai.tech.core.misc.type.multiple
 
 import com.ionspin.kotlin.bignum.decimal.BigDecimal
 import com.ionspin.kotlin.bignum.integer.BigInteger
-import ai.tech.core.misc.type.multiple.model.CharsetType
+import ai.tech.core.misc.type.multiple.model.Charset
 import kotlinx.datetime.DatePeriod
 import kotlinx.datetime.DateTimePeriod
 import kotlinx.datetime.LocalDate
@@ -135,4 +135,4 @@ public fun matcher(
     }
 
 // ///////////////////////////////////////////////////////ARRAY//////////////////////////////////////////////////////////
-public expect fun String.encode(charset: CharsetType = CharsetType.UTF_8): ByteArray
+public expect fun String.encode(charset: Charset = Charset.UTF_8): ByteArray

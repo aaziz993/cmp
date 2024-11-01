@@ -1,10 +1,10 @@
 package ai.tech.core.misc.type.multiple
 
-import ai.tech.core.misc.type.multiple.model.CharsetType
-import ai.tech.core.misc.type.multiple.model.charsetTypeMap
+import ai.tech.core.misc.type.multiple.model.Charset
+import ai.tech.core.misc.type.multiple.model.charsetMap
 
 // ////////////////////////////////////////////////////////STRING////////////////////////////////////////////////////////
-public actual fun ByteArray.decode(charset: CharsetType): String =
+public actual fun ByteArray.decode(charset: Charset): String =
     toString(
-        charsetTypeMap[charset] ?: throw IllegalArgumentException("Not supported charset encoding \"${charset.name}\""),
+        charsetMap[charset] ?: throw IllegalArgumentException("Not supported charset encoding \"${charset.name}\""),
     )
