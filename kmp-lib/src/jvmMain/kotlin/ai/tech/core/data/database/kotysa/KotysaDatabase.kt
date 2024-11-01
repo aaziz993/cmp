@@ -1,11 +1,12 @@
 package ai.tech.core.data.database.kotysa
 
-import ai.tech.core.data.database.model.CreateDatabaseTableConfig
-import ai.tech.core.data.database.model.config.DatabaseConfig
-import core.io.database.model.config.DatabaseProviderConfig
+import ai.tech.core.data.database.model.config.CreateDatabaseTableConfig
+import ai.tech.core.data.database.model.config.DatabaseProviderConfig
 import io.r2dbc.spi.ConnectionFactories
 import io.r2dbc.spi.ConnectionFactory
 import io.r2dbc.spi.ConnectionFactoryOptions
+import java.lang.UnsupportedOperationException
+import kotlin.reflect.KClass
 import kotlinx.coroutines.runBlocking
 import org.reflections.Reflections
 import org.reflections.scanners.Scanners.SubTypes
@@ -22,54 +23,34 @@ import org.ufoss.kotysa.postgresql.IPostgresqlTable
 import org.ufoss.kotysa.postgresql.PostgresqlTable
 import org.ufoss.kotysa.r2dbc.coSqlClient
 import org.ufoss.kotysa.tables
-import kotlin.reflect.KClass
 
-public fun createKotysaDatabaseClients(database: DatabaseConfig): Map<String, R2dbcSqlClient> =
-    with(database) {
-        h2.mapValues { (_, config) ->
-            createClient(config, { getH2Tables(it) }) { connectionFactory, tables ->
-                connectionFactory.coSqlClient(tables().h2(*tables))
-            }
-        } + postgresql.mapValues { (_, config) ->
-            createClient(config, { getPostgresqlTables(it) }) { connectionFactory, tables ->
-                connectionFactory.coSqlClient(tables().postgresql(*tables))
-            }
-        } + mysql.mapValues { (_, config) ->
-            createClient(config, { getMysqlTables(it) }) { connectionFactory, tables ->
-                connectionFactory.coSqlClient(tables().mysql(*tables))
-            }
-        } + mssql.mapValues { (_, config) ->
-            createClient(config, { getMssqlTables(it) }) { connectionFactory, tables ->
-                connectionFactory.coSqlClient(tables().mssql(*tables))
-            }
-        } + mariadb.mapValues { (_, config) ->
-            createClient(config, { getMariadbTables(it) }) { connectionFactory, tables ->
-                connectionFactory.coSqlClient(tables().mariadb(*tables))
-            }
-        } + oracle.mapValues { (_, config) ->
-            createClient(config, { getOracleTables(it) }) { connectionFactory, tables ->
-                connectionFactory.coSqlClient(tables().oracle(*tables))
-            }
+public fun DatabaseProviderConfig.createKotysaR2dbcClient(): R2dbcSqlClient =
+    when (connection.driver) {
+        "h2" -> createClient(this, { getH2Tables(it) }) { connectionFactory, tables ->
+            connectionFactory.coSqlClient(tables().h2(*tables))
         }
-    }
 
-private fun createDatabaseTables(
-    client: R2dbcSqlClient,
-    tables: List<Pair<List<Table<*>>, Boolean>>,
-) =
-    runBlocking {
-        tables.forEach {
-            if (it.second) {
-                for (table in it.first) {
-                    client createTableIfNotExists table
-                }
-            } else {
-                for (table in it.first) {
-                    client deleteAllFrom table
-                    client createTable table
-                }
-            }
+        "postgresql" -> createClient(this, { getPostgresqlTables(it) }) { connectionFactory, tables ->
+            connectionFactory.coSqlClient(tables().postgresql(*tables))
         }
+
+        "mysql" -> createClient(this, { getMysqlTables(it) }) { connectionFactory, tables ->
+            connectionFactory.coSqlClient(tables().mysql(*tables))
+        }
+
+        "mssql" -> createClient(this, { getMssqlTables(it) }) { connectionFactory, tables ->
+            connectionFactory.coSqlClient(tables().mssql(*tables))
+        }
+
+        "mariadb" -> createClient(this, { getMariadbTables(it) }) { connectionFactory, tables ->
+            connectionFactory.coSqlClient(tables().mariadb(*tables))
+        }
+
+        "oracle" -> createClient(this, { getOracleTables(it) }) { connectionFactory, tables ->
+            connectionFactory.coSqlClient(tables().oracle(*tables))
+        }
+
+        else -> throw UnsupportedOperationException("Unknown database type \"${connection.driver}\"")
     }
 
 private inline fun <reified T : Table<*>> createClient(
@@ -85,50 +66,69 @@ private inline fun <reified T : Table<*>> createClient(
         }
     }
 
-
 private fun DatabaseProviderConfig.getConnectionFactory(): ConnectionFactory = with(connection) {
     ConnectionFactories.get(
         ConnectionFactoryOptions.builder()
             .option(
                 ConnectionFactoryOptions.DRIVER,
-                driver
+                driver,
             )
             .option(
                 ConnectionFactoryOptions.USER,
-                user
+                user,
             )
             .option(
                 ConnectionFactoryOptions.PASSWORD,
-                password
+                password,
             )
             .option(
                 ConnectionFactoryOptions.DATABASE,
-                this.database
+                this.database,
             ).also { connectionBuilderOptions ->
                 protocol?.let {
                     connectionBuilderOptions
                         .option(
                             ConnectionFactoryOptions.PROTOCOL,
-                            it
+                            it,
                         )
                 }
                 host.let {
                     connectionBuilderOptions
                         .option(
                             ConnectionFactoryOptions.HOST,
-                            it
+                            it,
                         )
                 }
                 port.let {
                     connectionBuilderOptions
                         .option(
                             ConnectionFactoryOptions.PORT,
-                            it
+                            it,
                         )
                 }
-            }.build()
+            }.build(),
     )
 }
+
+private fun createDatabaseTables(
+    client: R2dbcSqlClient,
+    tables: List<Pair<List<Table<*>>, Boolean>>,
+) =
+    runBlocking {
+        tables.forEach {
+            if (it.second) {
+                for (table in it.first) {
+                    client createTableIfNotExists table
+                }
+            }
+            else {
+                for (table in it.first) {
+                    client deleteAllFrom table
+                    client createTable table
+                }
+            }
+        }
+    }
 
 private fun <T : Table<*>> getTables(
     config: CreateDatabaseTableConfig,
@@ -140,7 +140,8 @@ private fun <T : Table<*>> getTables(
         }.let {
             if (config.inclusive) {
                 it.filter { it.simpleName in config.names }
-            } else {
+            }
+            else {
                 it.filter { it.simpleName !in config.names }
             }
         }.map {
@@ -151,9 +152,8 @@ private fun <T : Table<*>> getTables(
 private fun getH2Tables(config: CreateDatabaseTableConfig): List<IH2Table<*>> =
     getTables(config, IH2Table::class) + getTables(
         config,
-        GenericTable::class
+        GenericTable::class,
     )
-
 
 private fun getMariadbTables(config: CreateDatabaseTableConfig): List<MariadbTable<*>> =
     getTables(config, MariadbTable::class)
@@ -164,13 +164,13 @@ private fun getMysqlTables(config: CreateDatabaseTableConfig): List<MysqlTable<*
 private fun getMssqlTables(config: CreateDatabaseTableConfig): List<IMssqlTable<*>> =
     getTables(config, MssqlTable::class) + getTables(
         config,
-        GenericTable::class
+        GenericTable::class,
     )
 
 private fun getPostgresqlTables(config: CreateDatabaseTableConfig): List<IPostgresqlTable<*>> =
     getTables(config, PostgresqlTable::class) + getTables(
         config,
-        GenericTable::class
+        GenericTable::class,
     )
 
 private fun getOracleTables(config: CreateDatabaseTableConfig): List<OracleTable<*>> =

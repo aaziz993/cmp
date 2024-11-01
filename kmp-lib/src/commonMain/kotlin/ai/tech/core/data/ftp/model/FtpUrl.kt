@@ -12,6 +12,7 @@ public class FtpUrl(
     override fun toString(): String = "${super.toString()}$path"
 
     public companion object {
+
         public operator fun invoke(url: String): FtpUrl {
             val matchResult =
                 ftpUR.matchEntire(url)
@@ -31,7 +32,11 @@ public class FtpUrl(
     }
 }
 
-private val ftpUR = """^(ftp|ftps|sftp)://(?:(\w+)(?::(\w+))?@)?([^:/]+)(?::(\d+))?(/.*)?$""".toRegex()
+public val ftpPR: Regex = "^(ftp|ftps|sftp)://.*".toRegex(RegexOption.IGNORE_CASE)
+public val ftpUR: Regex = """^(ftp|ftps|sftp)://(?:(\w+)(?::(\w+))?@)?([^:/]+)(?::(\d+))?(/.*)?$""".toRegex(RegexOption.IGNORE_CASE)
 
 public val String.isFtpUrl: Boolean
+    get() = matches(ftpPR)
+
+public val String.isValidFtpUrl: Boolean
     get() = matches(ftpUR)

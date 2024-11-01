@@ -3,8 +3,6 @@
 package ai.tech.core.data.filesystem
 
 import ai.tech.core.data.filesystem.model.path.PathMetadata
-import ai.tech.core.misc.type.multiple.AP
-import ai.tech.core.misc.type.multiple.LBP
 import ai.tech.core.misc.type.multiple.breadthIterator
 import ai.tech.core.misc.type.multiple.depthIterator
 import ai.tech.core.misc.type.multiple.forEach
@@ -24,15 +22,15 @@ public expect suspend fun fromClipboard(): String?
 
 public const val DEFAULT_BUFFER_SIZE: Int = 4096
 
-public val stringExtensionRegexMap: Map<String, Regex> =
-    mapOf(
-        "json" to """^\s*(\{$AP*\}|\[$AP*\])\s*$""".toRegex(),
-        "xml" to """^\s*<\?xml[\s\S]*""".toRegex(),
-        "html" to """^\s*<(!DOCTYPE +)?html$AP*""".toRegex(),
-        "yaml" to """^( *((#|[^{\s]*:|-).*)?$LBP?)+$""".toRegex(),
-        "properties" to """^( *((#|[^{\s\[].*?=).*)?$LBP?)+$""".toRegex(),
-        "toml" to """^( *(([#\[\]"{}]|.*=).*)?$LBP?)+$""".toRegex(),
+public val filePR: Regex =
+    "^file://.*".toRegex(
+        RegexOption.IGNORE_CASE,
     )
+
+public val String.isFileUrl: Boolean
+    get() = matches(filePR)
+
+public expect val String.isValidFileUrl: Boolean
 
 public val String.pathNormalized: String
     get() = toPath(true).toString()
@@ -61,9 +59,6 @@ public val String.pathParent: String?
 public val String.pathExtension: String?
     get() = substringAfterLast(".", "").ifEmpty { null }
 
-public val String.extension: String?
-    get() = stringExtensionRegexMap.entries.find { (_, r) -> r.matches(this) }?.key
-
 public fun Iterator<PathMetadata>.traverser(
     depth: Int = 0,
     followSymlinks: Boolean = false,
@@ -72,14 +67,16 @@ public fun Iterator<PathMetadata>.traverser(
     val trasform: Iterator<PathMetadata>.(Int, PathMetadata) -> Iterator<PathMetadata>? = { i, v ->
         if ((depth == -1 || i < depth) && (v.isDirectory || (v.isSymbolicLink && followSymlinks))) {
             v.path.fsPathIterator()
-        } else {
+        }
+        else {
             null
         }
     }
 
     return if (depthFirst) {
         depthIterator(trasform)
-    } else {
+    }
+    else {
         breadthIterator(trasform)
     }
 }

@@ -5,6 +5,7 @@ import kotlinx.browser.window
 import kotlinx.coroutines.await
 import okio.FileSystem
 import okio.NodeJsFileSystem
+import web.url.URL
 
 public actual fun getEnv(name: String): String? = null
 
@@ -17,6 +18,15 @@ public actual suspend fun fromClipboard(): String? =
     window.navigator.clipboard
         .readText()
         .await()
+
+public actual val String.isValidFileUrl: Boolean
+    get() = try {
+        val uri = URL(this) // Use appropriate JS URI parsing method
+        uri.protocol == "file:"
+    }
+    catch (e: Exception) {
+        false
+    }
 
 internal actual val fileSystem: FileSystem
     get() = if (IS_NODE) {
