@@ -4,6 +4,7 @@ import ai.tech.core.data.filesystem.model.path.PathMetadata
 import ai.tech.core.data.filesystem.model.path.PathType
 import ai.tech.core.data.ftp.model.FtpClientConfig
 import ai.tech.core.data.ftp.model.FtpHost
+import ai.tech.core.misc.type.multiple.flatMap
 import org.apache.commons.net.ftp.FTP
 import org.apache.commons.net.ftp.FTPClient
 import org.apache.commons.net.ftp.FTPCmd

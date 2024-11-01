@@ -57,6 +57,11 @@ internal fun Project.configureKMPExtension(extension: KotlinMultiplatformExtensi
                     withWasmWasi()
                     withJs()
                 }
+
+                group("nonWeb") {
+                    group("jvmAndAndroid")
+                    group("native")
+                }
             }
         }
 
@@ -188,6 +193,7 @@ internal fun Project.configureKMPExtension(extension: KotlinMultiplatformExtensi
                     implementation(npm("encoding-japanese", version("encoding.japanese").toString()))
                     implementation(npm("@types/encoding-japanese", version("encoding.japanese.types").toString()))
                     // The synchronous sqljs-driver (pre-2.0) has been replaced with the asynchronous web-worker-driver. This requires configuring the generateAsync setting in your Gradle configuration.
+                    implementation(lib("okio.nodefilesystem"))
                     implementation(lib("sqldelight.web.worker.driver"))
                     implementation(lib("compass.geolocation.browser"))
                     implementation(lib("ktor.client.js"))
