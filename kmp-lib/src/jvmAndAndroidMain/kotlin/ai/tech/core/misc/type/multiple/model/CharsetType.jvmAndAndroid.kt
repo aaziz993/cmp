@@ -1,5 +1,7 @@
 package ai.tech.core.misc.type.multiple.model
 
+import ai.tech.core.data.model.Charset
+
 internal val charsetMap =
     mapOf(
         Charset.UTF_8 to Charsets.UTF_8,

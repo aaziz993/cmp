@@ -7,6 +7,7 @@ import ai.tech.core.data.ftp.model.FtpHost
 import ai.tech.core.misc.type.multiple.asInputStream
 import ai.tech.core.misc.type.multiple.flatMap
 import ai.tech.core.misc.type.multiple.iterator
+import ai.tech.core.misc.type.multiple.model.ClosableAbstractIterator
 import org.apache.commons.net.ftp.FTP
 import org.apache.commons.net.ftp.FTPClient
 import org.apache.commons.net.ftp.FTPCmd
@@ -116,7 +117,7 @@ public class FtpClientImpl(
     override fun readFile(
         path: String,
         bufferSize: Int,
-    ): Iterator<ByteArray> = client.retrieveFileStream(path).iterator(bufferSize) {
+    ): ClosableAbstractIterator<ByteArray> = client.retrieveFileStream(path).iterator(bufferSize) {
         client.completePendingCommand()
     }
 

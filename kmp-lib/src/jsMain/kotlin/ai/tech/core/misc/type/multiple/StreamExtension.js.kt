@@ -1,9 +1,11 @@
 package ai.tech.core.misc.type.multiple
 
+import ai.tech.core.data.model.AudioFormat
 import ai.tech.core.misc.type.multiple.model.AbstractAsyncIterator
 import ai.tech.core.misc.type.multiple.model.AsyncIterator
 import ai.tech.core.misc.type.multiple.model.ClosableAbstractAsyncIterator
 import ai.tech.core.misc.type.multiple.model.ClosableAbstractIterator
+import ai.tech.core.misc.type.single.Object
 import ai.tech.core.misc.type.single.denormalizeInt
 import ai.tech.core.misc.type.single.toByteArray
 import js.typedarrays.Float32Array
@@ -24,13 +26,15 @@ public fun <T> ReadableStream<T>.asyncIterator(): AsyncIterator<T> = ReadableStr
 private class ReadableStreamAsyncIterator<T>(
     stream: ReadableStream<T>,
 ) : AbstractAsyncIterator<T>() {
+
     private val reader = stream.getReader()
 
     override suspend fun computeNext() {
         reader.read().let {
             if (it.asDynamic().done as Boolean) {
                 done()
-            } else {
+            }
+            else {
                 setNext(it.asDynamic().value as T)
             }
         }
@@ -60,6 +64,7 @@ private class MediaStreamImageIterator(
     private val x: Double = 0.0,
     private val y: Double = 0.0,
 ) : ClosableAbstractIterator<ByteArray>() {
+
     val canvas = document.createElement("canvas") as HTMLCanvasElement
     val context = canvas.getContext(CanvasRenderingContext2D.ID) as CanvasRenderingContext2D
     val video =
@@ -72,11 +77,11 @@ private class MediaStreamImageIterator(
         setNext(context.encodeRGBA())
     }
 
-    override val onClose: () -> Unit
-        get() = {
-            mediaStream.getTracks().forEach { it.stop() }
-            video.srcObject = null
-        }
+    override fun close() {
+        super.close()
+        mediaStream.getTracks().forEach { it.stop() }
+        video.srcObject = null
+    }
 }
 
 public fun MediaStream.audioIterator(
@@ -97,6 +102,7 @@ private class MediaStreamAudioAsyncIterator(
     bufferSize: Int,
     private val audioContext: AudioContext,
 ) : ClosableAbstractAsyncIterator<ByteArray>() {
+
     private val channel = Channel<ByteArray>(1)
     private val sampleSizeInBytes = audioFormat.sampleSizeInBits / 8
     private val maxValue = 1 shl (audioFormat.sampleSizeInBits - 1)
@@ -136,10 +142,10 @@ private class MediaStreamAudioAsyncIterator(
         setNext(channel.receive())
     }
 
-    override val onClose: () -> Unit
-        get() = {
-            mediaStreamSource.disconnect()
-            audioWorkletNode.disconnect()
-            mediaStream.getTracks().forEach { it.stop() }
-        }
+    override fun close() {
+        super.close()
+        mediaStreamSource.disconnect()
+        audioWorkletNode.disconnect()
+        mediaStream.getTracks().forEach { it.stop() }
+    }
 }

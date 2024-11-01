@@ -1,5 +1,7 @@
 package ai.tech.core.misc.type.multiple.model
 
+import ai.tech.core.data.model.Charset
+
 internal fun Charset.toPlatformCharset(): String =
     when (this) {
         Charset.UTF_8 -> "UTF8"

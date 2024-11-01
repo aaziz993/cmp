@@ -2,7 +2,7 @@ package ai.tech.core.misc.type.multiple
 
 import ai.tech.core.data.model.ImageCompression
 import ai.tech.core.data.model.imageCompressionMap
-import ai.tech.core.misc.type.multiple.model.Charset
+import ai.tech.core.data.model.Charset
 import ai.tech.core.misc.type.multiple.model.toPlatformCharset
 import ai.tech.core.misc.type.single.Object
 import js.core.JsLong

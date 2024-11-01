@@ -1,5 +1,6 @@
 package ai.tech.core.misc.type.multiple.model
 
+import ai.tech.core.data.model.Charset
 import platform.Foundation.*
 
 internal val charsetMap =

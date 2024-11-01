@@ -8,6 +8,7 @@ import ai.tech.core.data.filesystem.traverser
 import ai.tech.core.data.ftp.model.FtpClientConfig
 import ai.tech.core.data.ftp.model.FtpHost
 import ai.tech.core.misc.type.multiple.flatMap
+import ai.tech.core.misc.type.multiple.model.ClosableAbstractIterator
 import ai.tech.core.misc.type.multiple.toList
 
 @OptIn(ExperimentalStdlibApi::class)
@@ -78,7 +79,7 @@ public abstract class AbstractFtpClient(
     public abstract fun readFile(
         path: String,
         bufferSize: Int = DEFAULT_BUFFER_SIZE,
-    ): Iterator<ByteArray>
+    ): ClosableAbstractIterator<ByteArray>
 
     public fun readBytes(
         path: String,

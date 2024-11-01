@@ -7,7 +7,7 @@ import com.github.ajalt.colormath.convertTo
 import com.github.ajalt.colormath.model.Ansi16
 import com.github.ajalt.colormath.model.Ansi256
 import com.github.ajalt.colormath.model.RGB
-import ai.tech.core.misc.type.multiple.model.Charset
+import ai.tech.core.data.model.Charset
 import ai.tech.core.misc.type.single.normalize
 import ai.tech.core.misc.type.single.toIntLSB
 import ai.tech.core.misc.type.single.toLongLSB

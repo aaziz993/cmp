@@ -7,6 +7,7 @@ import ai.tech.core.data.ftp.model.FtpHost
 import ai.tech.core.misc.type.multiple.asInputStream
 import ai.tech.core.misc.type.multiple.flatMap
 import ai.tech.core.misc.type.multiple.iterator
+import ai.tech.core.misc.type.multiple.model.ClosableAbstractIterator
 import net.schmizz.sshj.SSHClient
 import net.schmizz.sshj.common.LoggerFactory
 import net.schmizz.sshj.common.StreamCopier
@@ -127,7 +128,7 @@ public open class SFtpClient(
     override fun readFile(
         path: String,
         bufferSize: Int,
-    ): Iterator<ByteArray> {
+    ): ClosableAbstractIterator<ByteArray> {
         val rf = sftp.open(path)
         try {
             return rf.ReadAheadRemoteFileInputStream(16).iterator(bufferSize)
