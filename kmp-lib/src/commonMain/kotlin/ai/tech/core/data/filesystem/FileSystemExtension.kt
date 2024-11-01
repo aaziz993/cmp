@@ -71,7 +71,7 @@ public fun Iterator<PathMetadata>.traverser(
 ): Iterator<PathMetadata> {
     val trasform: Iterator<PathMetadata>.(Int, PathMetadata) -> Iterator<PathMetadata>? = { i, v ->
         if ((depth == -1 || i < depth) && (v.isDirectory || (v.isSymbolicLink && followSymlinks))) {
-            v.path.localPathIterator()
+            v.path.fsPathIterator()
         } else {
             null
         }
@@ -88,25 +88,25 @@ internal expect val fileSystem: FileSystem
 
 public val tmpDirPath: String = FileSystem.SYSTEM_TEMPORARY_DIRECTORY.toString()
 
-public val String.localPathReal: String
+public val String.fsPathReal: String
     get() = fileSystem.canonicalize(toPath()).toString()
 
-public val String.localPathExists: Boolean
+public val String.fsPathExists: Boolean
     get() = fileSystem.exists(toPath())
 
-public val String.localPathMetadata: PathMetadata
+public val String.fsPathMetadata: PathMetadata
     get() = PathMetadata(this)
 
-public val String.localPathSymlink: String?
+public val String.fsPathSymlink: String?
     get() = fileSystem.metadata(toPath()).symlinkTarget?.toString()
 
-public val String.localPathIsRelative: Boolean
+public val String.fsPathIsRelative: Boolean
     get() = toPath().isRelative
 
-public val String.localPathIsAbsolute: Boolean
+public val String.fsPathIsAbsolute: Boolean
     get() = toPath().isAbsolute
 
-public val String.localPathAbsolute: String
+public val String.fsPathAbsolute: String
     get() =
         toPath()
             .let {
@@ -119,30 +119,30 @@ public val String.localPathAbsolute: String
                 }
             }.toString()
 
-private fun String.localPathIterator(): Iterator<PathMetadata> =
+private fun String.fsPathIterator(): Iterator<PathMetadata> =
     fileSystem.list(toPath()).map { PathMetadata(it.toString()) }.iterator()
 
-public fun String.localPathTraverser(
+public fun String.fsPathTraverser(
     depth: Int = 0,
     followSymlinks: Boolean = false,
     depthFirst: Boolean = false,
-): Iterator<PathMetadata> = localPathIterator().traverser(depth, followSymlinks, depthFirst)
+): Iterator<PathMetadata> = fsPathIterator().traverser(depth, followSymlinks, depthFirst)
 
-public fun String.localPathCreateDirectory(ifNotExists: Boolean = false): Unit =
+public fun String.fsPathCreateDirectory(ifNotExists: Boolean = false): Unit =
     fileSystem.createDirectories(toPath(), ifNotExists)
 
-public fun String.localPathCreateSymlink(target: String): Unit = fileSystem.createSymlink(toPath(), target.toPath())
+public fun String.fsPathCreateSymlink(target: String): Unit = fileSystem.createSymlink(toPath(), target.toPath())
 
-public fun String.localPathMove(target: String): Unit = fileSystem.atomicMove(toPath(), target.toPath())
+public fun String.fsPathMove(target: String): Unit = fileSystem.atomicMove(toPath(), target.toPath())
 
-public fun String.localPathCopy(target: String): Unit = fileSystem.copy(toPath(), target.toPath())
+public fun String.fsPathCopy(target: String): Unit = fileSystem.copy(toPath(), target.toPath())
 
-public fun String.localPathDelete(ifExists: Boolean = false): Unit = fileSystem.deleteRecursively(toPath(), ifExists)
+public fun String.fsPathDelete(ifExists: Boolean = false): Unit = fileSystem.deleteRecursively(toPath(), ifExists)
 
-public fun String.localPathRead(bufferSize: Int = DEFAULT_BUFFER_SIZE): ClosableAbstractIterator<ByteArray> =
+public fun String.fsPathRead(bufferSize: Int = DEFAULT_BUFFER_SIZE): ClosableAbstractIterator<ByteArray> =
     fileSystem.source(toPath()).iterator(bufferSize)
 
-public fun String.localPathWrite(
+public fun String.fsPathWrite(
     data: Iterator<ByteArray>,
     ifNotExists: Boolean = false,
 ): Unit =
@@ -155,7 +155,7 @@ public fun String.localPathWrite(
         }
     }
 
-public suspend fun String.localPathWrite(
+public suspend fun String.fsPathWrite(
     data: AsyncIterator<ByteArray>,
     ifNotExists: Boolean = false,
 ): Unit =
