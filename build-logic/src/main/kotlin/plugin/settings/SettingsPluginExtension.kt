@@ -113,14 +113,14 @@ public open class SettingsPluginExtension(
         }/${target.rootProject.name}"
 
     public fun apply(): Unit = with(target) {
-        val versionCatalogToml = Toml.parse(target.layout.rootDirectory.file(versionCatalogFile).asFile.path)
+        val versionCatalogToml = Toml.parse(target.layout.rootDirectory.file(versionCatalogFile).asFile.readText())
 
         with(extension) {
             enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")
 
             with(pluginManager) {
-                apply(versionCatalogToml.getTable("foojay.resolver.convention")!!.getString("id")!!)
-                apply(versionCatalogToml.getTable("gradle.pre.commit.git.hooks")!!.getString("id")!!)
+                apply(versionCatalogToml.getTable("plugins")!!.getTable("foojay-resolver-convention")!!.getString("id")!!)
+                apply(versionCatalogToml.getTable("plugins")!!.getTable("gradle-pre-commit-git-hooks")!!.getString("id")!!)
             }
 
             dependencyResolutionManagement {
@@ -183,13 +183,13 @@ public open class SettingsPluginExtension(
         logger.info("Applied settings plugin extension")
     }
 
-    private fun calculateProjectVersion(tomlParseResult: TomlParseResult) =
+    private fun calculateProjectVersion(tomlParseResult: TomlParseResult) = tomlParseResult.getTable("versions")!!.let {
         "${
-            tomlParseResult.getString("project.version.major")
+            it.getString("project-version-major")
         }.${
-            tomlParseResult.getString("project.version.minor")
+            it.getString("project-version-minor")
         }.${
-            tomlParseResult.getString("project.version.patch")
+            it.getString("project-version-patch")
         }${
             if (providers.gradleProperty(
                     "github.actions.versioning.ref.name",
@@ -251,6 +251,7 @@ public open class SettingsPluginExtension(
         }${
             if (projectVersionIsSnapshot) "-SNAPSHOT" else ""
         }"
+    }
 
     public companion object {
 
