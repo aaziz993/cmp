@@ -20,6 +20,8 @@ public abstract class Vertex<V : Vertex<V, ID, E, EID>, ID : Comparable<ID>, E :
         },
     )
 
+    public suspend fun Graph<V, ID, E, EID>.fromEdges(predicate: BooleanVariable? = null): Flow<E> = edges.fromEdges(predicate)
+
     public suspend fun CRUDRepository<E>.toEdges(predicate: BooleanVariable? = null): Flow<E> = find(
         predicate = "toVertexId".f.eq(id).let {
             if (predicate == null) {
@@ -31,6 +33,8 @@ public abstract class Vertex<V : Vertex<V, ID, E, EID>, ID : Comparable<ID>, E :
         },
     )
 
+    public suspend fun Graph<V, ID, E, EID>.toEdges(predicate: BooleanVariable? = null): Flow<E> = edges.toEdges(predicate)
+
     public suspend fun CRUDRepository<E>.edges(predicate: BooleanVariable? = null): Flow<E> = find(
         predicate = "fromVertexId".f.eq(id).or("toVertexId".f.eq(id)).let {
             if (predicate == null) {
@@ -41,4 +45,6 @@ public abstract class Vertex<V : Vertex<V, ID, E, EID>, ID : Comparable<ID>, E :
             }
         },
     )
+
+    public suspend fun Graph<V, ID, E, EID>.edges(predicate: BooleanVariable? = null): Flow<E> = edges.edges(predicate)
 }
