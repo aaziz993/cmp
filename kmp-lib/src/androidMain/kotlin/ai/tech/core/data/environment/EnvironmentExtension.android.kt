@@ -5,6 +5,7 @@ import android.content.ClipboardManager
 import android.content.Context
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import splitties.init.appCtx
 
 private val clipboardManager: ClipboardManager
     get() = appCtx.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
