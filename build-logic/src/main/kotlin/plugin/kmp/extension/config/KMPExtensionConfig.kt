@@ -67,6 +67,10 @@ internal fun Project.configureKMPExtension(extension: KotlinMultiplatformExtensi
 
         sourceSets.apply {
             commonMain {
+                languageSettings {
+                    progressiveMode = true
+                }
+
                 kotlin.srcDir(projectDir.resolve("build/generated/ksp/metadata/commonMain/kotlin"))
 
                 dependencies {
@@ -156,6 +160,7 @@ internal fun Project.configureKMPExtension(extension: KotlinMultiplatformExtensi
             }
 
             androidMain.dependencies {
+                implementation(lib("splitties.appctx"))
                 implementation(lib("kotlinx.coroutines.android"))
                 implementation(lib("android.documentation.plugin"))
                 implementation(lib("androidx.activity.ktx"))

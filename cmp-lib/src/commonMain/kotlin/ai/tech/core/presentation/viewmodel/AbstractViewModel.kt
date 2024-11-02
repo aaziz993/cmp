@@ -7,10 +7,8 @@ import org.koin.core.component.KoinComponent
 
 public abstract class AbstractViewModel<S : Any, A : Any> : ViewModel(), KoinComponent {
     public val state: StateFlow<ViewState<S>>
-        field ms = MutableStateFlow(ViewState.Uninitialized)
-//
-//    val state: StateFlow<ViewState<S>> = _state.asStateFlow()
-//
+        field = MutableStateFlow(ViewState.Uninitialized)
+
 //    protected open fun onInitialized(): Unit = Unit
 //
 //    abstract suspend fun initialStateData(): S
@@ -25,17 +23,17 @@ public abstract class AbstractViewModel<S : Any, A : Any> : ViewModel(), KoinCom
 //        }
 //    }
 //
-//    protected fun update(block: suspend (S) -> S): Job = viewModelScope.launch {
-//        _state.update { state ->
-//            try {
-//                success(block(state.data!!))
-//            } catch (throwable: Throwable) {
-//                failure(state.data!!, handleThrowable(throwable).also {
-//                    Logger.e(throwable) { it.message.orEmpty() }
-//                })
-//            }
-//        }
-//    }
+    protected fun update(block: suspend (S) -> S): Job = viewModelScope.launch {
+        state.update { state ->
+            try {
+                success(block(state.data!!))
+            } catch (throwable: Throwable) {
+                failure(state.data!!, handleThrowable(throwable).also {
+                    Logger.e(throwable) { it.message.orEmpty() }
+                })
+            }
+        }
+    }
 //
 //    fun loading() {
 //        _state.update { ViewState.Loading(it.data!!) }

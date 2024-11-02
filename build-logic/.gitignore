@@ -7,7 +7,6 @@ xcuserdata
 local.properties
 .idea
 .fleet
-.gradle
 .DS_Store
 captures
 .externalNativeBuild

@@ -4,7 +4,6 @@ import com.android.build.gradle.LibraryExtension
 import com.vanniktech.maven.publish.MavenPublishBaseExtension
 import plugin.extension.config.configureLibraryExtension
 import plugin.extension.config.configureMavenPublishBaseExtension
-import plugin.extension.config.configureMavenPublication
 import plugin.extension.id
 import org.gradle.api.Plugin
 import org.gradle.api.Project
@@ -26,7 +25,6 @@ internal class BaseLibPlugin : Plugin<Project> {
 
         // Publishing
         extensions.configure<PublishingExtension>(::configurePublishingExtension)
-
         extensions.configure<MavenPublishBaseExtension>(::configureMavenPublishBaseExtension)
     }
 }

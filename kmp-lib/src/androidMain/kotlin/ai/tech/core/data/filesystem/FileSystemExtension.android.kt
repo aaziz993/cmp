@@ -5,10 +5,10 @@ import android.content.ClipboardManager
 import android.content.Context
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import splitties.init.appCtx
 
 private val clipboardManager: ClipboardManager
-    get() =
-        appCtx.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
+    get() = appCtx.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
 
 public actual suspend fun String.toClipboard(): Unit =
     withContext(Dispatchers.IO) {
@@ -20,7 +20,8 @@ public actual suspend fun fromClipboard(): String? =
         clipboardManager.primaryClip?.let {
             if (it.itemCount > 0) {
                 it.getItemAt(0).text.toString()
-            } else {
+            }
+            else {
                 null
             }
         }

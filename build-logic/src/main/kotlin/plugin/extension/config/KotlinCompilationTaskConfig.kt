@@ -14,7 +14,8 @@ internal fun Project.configureKotlinCompilationTask(task: KotlinCompilationTask<
                 "-opt-in=kotlin.ExperimentalStdlibApi",
                 "-opt-in=kotlin.ExperimentalUnsignedTypes",
                 "-opt-in=kotlin.contracts.ExperimentalContracts",
-                "-Xwhen-guards"
+                "-Xexport-kdoc",
+                "-Xwhen-guards",
             )
         }
     }

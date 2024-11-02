@@ -6,6 +6,15 @@ import ai.tech.core.misc.cryptography.model.PGPSignMode
 import ai.tech.core.misc.cryptography.model.PGPSubKeyType
 import ai.tech.core.misc.cryptography.model.PGPUserId
 import ai.tech.core.misc.cryptography.model.PGPVerifiedResult
+import platform.JavaScriptCore.*
+import platform.Foundation.*
+
+val jsContext = JSContext().apply {
+    // Load openpgp.min.js
+    val openPgpJsPath = NSBundle.mainBundle.pathForResource("openpgp.min", "js")!!
+    val openPgpScript = NSString.stringWithContentsOfFile(openPgpJsPath, NSUTF8StringEncoding, null) as String
+    evaluateScript(openPgpScript)
+}
 
 public actual suspend fun pgpKeyPair(
     key: PGPKey,
@@ -75,7 +84,7 @@ public actual suspend fun ByteArray.pgpSign(
     signingKeys: List<ByteArray>,
     signingKeysPasswords: List<String>?,
     mode: PGPSignMode,
-    detached:Boolean,
+    detached: Boolean,
     armored: Boolean,
 ): ByteArray {
     TODO("Not yet implemented")
@@ -87,4 +96,42 @@ public actual suspend fun ByteArray.pgpVerify(
     signatures: List<ByteArray>?
 ): PGPVerifiedResult {
     TODO("Not yet implemented")
+}
+
+public suspend fun encryptMessage(plainText: String, publicKey: String): String {
+
+    // Prepare JavaScript encryption function call
+    val encryptScript = """
+        (async function() {
+            const publicKey = await openpgp.readKey({ armoredKey: `$publicKey` });
+            const encrypted = await openpgp.encrypt({
+                message: await openpgp.createMessage({ text: `$plainText` }),
+                encryptionKeys: publicKey
+            });
+            return encrypted;
+        })();
+    """.trimIndent()
+
+    val result = jsContext.evaluateScript(encryptScript)
+    return result.toString() // Return the encrypted message
+}
+
+public suspend fun decryptMessage(cipherText: String, privateKey: String, passphrase: String): String {
+    // Prepare JavaScript decryption function call
+    val decryptScript = """
+        (async function() {
+            const privateKey = await openpgp.decryptKey({
+                privateKey: await openpgp.readPrivateKey({ armoredKey: `$privateKey` }),
+                passphrase: `$passphrase`
+            });
+            const decrypted = await openpgp.decrypt({
+                message: await openpgp.readMessage({ armoredMessage: `$cipherText` }),
+                decryptionKeys: privateKey
+            });
+            return decrypted.data;
+        })();
+    """.trimIndent()
+
+    val result = jsContext.evaluateScript(decryptScript)
+    return result.toString() // Return the decrypted message
 }

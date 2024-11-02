@@ -18,6 +18,7 @@ internal fun Project.configureKotlinProjectExtension(extension: KotlinProjectExt
                 progressiveMode = true
                 optIn("kotlinx.cinterop.ExperimentalForeignApi")
                 optIn("kotlin.experimental.ExperimentalObjCName")
+                enableLanguageFeature("ExplicitBackingFields")
             }
         }
     }
