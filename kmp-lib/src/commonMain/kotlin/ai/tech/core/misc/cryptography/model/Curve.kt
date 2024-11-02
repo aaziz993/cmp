@@ -1,6 +1,6 @@
 package ai.tech.core.misc.cryptography.model
 
-public enum class CurveType {
+public enum class Curve {
     CURVE25519,
     ED25519,
     P256,

@@ -1,7 +1,7 @@
 package ai.tech.core.misc.cryptography
 
 import ai.tech.core.data.model.Compression
-import ai.tech.core.misc.cryptography.model.CurveType
+import ai.tech.core.misc.cryptography.model.Curve
 import ai.tech.core.misc.cryptography.model.ECC
 import ai.tech.core.misc.cryptography.model.HashAlgorithm
 import ai.tech.core.misc.cryptography.model.PGPKey
@@ -39,7 +39,7 @@ public actual suspend fun pgpKeyPair(
             when (key) {
                 is ECC -> {
                     type = "ecc"
-                    curve = curveTypeMap[key.curve]!!
+                    curve = curveMap[key.curve]!!
                 }
 
                 is RSA -> {
@@ -58,7 +58,7 @@ public actual suspend fun pgpKeyPair(
                             when (it.key) {
                                 is ECC -> {
                                     type = "ecc"
-                                    curve = curveTypeMap[it.key.curve]
+                                    curve = curveMap[it.key.curve]
                                 }
 
                                 is RSA -> {
@@ -400,18 +400,18 @@ public actual suspend fun ByteArray.pgpVerify(
     }
 }
 
-private val curveTypeMap =
+private val curveMap =
     mapOf(
-        CurveType.CURVE25519 to "curve25519",
-        CurveType.ED25519 to "ed25519",
-        CurveType.P256 to "p256",
-        CurveType.P384 to "p384",
-        CurveType.P521 to "p521",
-        CurveType.P521 to "p521",
-        CurveType.BRAINPOOLP256R1 to "brainpoolP256r1",
-        CurveType.BRAINPOOLP384R1 to "brainpoolP384r1",
-        CurveType.BRAINPOOLP512R1 to "brainpoolP512r1",
-        CurveType.SECP256K1 to "secp256k1",
+        Curve.CURVE25519 to "curve25519",
+        Curve.ED25519 to "ed25519",
+        Curve.P256 to "p256",
+        Curve.P384 to "p384",
+        Curve.P521 to "p521",
+        Curve.P521 to "p521",
+        Curve.BRAINPOOLP256R1 to "brainpoolP256r1",
+        Curve.BRAINPOOLP384R1 to "brainpoolP384r1",
+        Curve.BRAINPOOLP512R1 to "brainpoolP512r1",
+        Curve.SECP256K1 to "secp256k1",
     )
 
 private val compressionTypeMap =

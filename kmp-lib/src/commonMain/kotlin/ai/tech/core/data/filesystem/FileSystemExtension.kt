@@ -2,6 +2,7 @@
 
 package ai.tech.core.data.filesystem
 
+import ai.tech.core.DEFAULT_BUFFER_SIZE
 import ai.tech.core.data.filesystem.model.path.PathMetadata
 import ai.tech.core.misc.type.multiple.breadthIterator
 import ai.tech.core.misc.type.multiple.depthIterator
@@ -13,14 +14,6 @@ import okio.Buffer
 import okio.FileSystem
 import okio.Path.Companion.toPath
 import okio.use
-
-public expect fun getEnv(name: String): String?
-
-public expect suspend fun String.toClipboard()
-
-public expect suspend fun fromClipboard(): String?
-
-public const val DEFAULT_BUFFER_SIZE: Int = 4096
 
 public val filePR: Regex =
     "^file://.*".toRegex(

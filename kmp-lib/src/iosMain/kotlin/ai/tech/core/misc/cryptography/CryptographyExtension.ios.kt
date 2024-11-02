@@ -9,7 +9,7 @@ import ai.tech.core.misc.cryptography.model.PGPVerifiedResult
 import platform.JavaScriptCore.*
 import platform.Foundation.*
 
-val jsContext = JSContext().apply {
+private val openPgpJsContext = JSContext().apply {
     // Load openpgp.min.js
     val openPgpJsPath = NSBundle.mainBundle.pathForResource("openpgp.min", "js")!!
     val openPgpScript = NSString.stringWithContentsOfFile(openPgpJsPath, NSUTF8StringEncoding, null) as String
@@ -112,7 +112,7 @@ public suspend fun encryptMessage(plainText: String, publicKey: String): String 
         })();
     """.trimIndent()
 
-    val result = jsContext.evaluateScript(encryptScript)
+    val result = openPgpJsContext.evaluateScript(encryptScript)
     return result.toString() // Return the encrypted message
 }
 
@@ -132,6 +132,6 @@ public suspend fun decryptMessage(cipherText: String, privateKey: String, passph
         })();
     """.trimIndent()
 
-    val result = jsContext.evaluateScript(decryptScript)
+    val result = openPgpJsContext.evaluateScript(decryptScript)
     return result.toString() // Return the decrypted message
 }

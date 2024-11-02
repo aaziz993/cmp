@@ -1,6 +1,6 @@
 package ai.tech.core.misc.cryptography
 
-import ai.tech.core.misc.cryptography.model.CurveType
+import ai.tech.core.misc.cryptography.model.Curve
 import ai.tech.core.misc.cryptography.model.ECC
 import ai.tech.core.misc.cryptography.model.PGPKey
 import ai.tech.core.misc.cryptography.model.PGPKeyMetadata
@@ -154,16 +154,16 @@ private fun PGPKey.toKeySpecBuilders(
 
         is ECC ->
             when (curve) {
-                CurveType.CURVE25519, CurveType.ED25519 -> {
+                Curve.CURVE25519, Curve.ED25519 -> {
                     listOf(
                         KeyType.EDDSA(EdDSACurve._Ed25519),
                         KeyType.XDH(XDHSpec._X25519),
                     )
                 }
 
-                CurveType.P256, CurveType.P384, CurveType.P521,
-                CurveType.BRAINPOOLP256R1, CurveType.BRAINPOOLP384R1, CurveType.BRAINPOOLP512R1,
-                CurveType.SECP256K1,
+                Curve.P256, Curve.P384, Curve.P521,
+                Curve.BRAINPOOLP256R1, Curve.BRAINPOOLP384R1, Curve.BRAINPOOLP512R1,
+                Curve.SECP256K1,
                     -> {
                     val curve = EllipticCurve.entries.single { it.name == curve.name }
                     listOf(

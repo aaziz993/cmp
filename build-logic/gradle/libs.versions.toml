@@ -98,7 +98,7 @@ android-target-sdk = "35"
 android-version-code = "1"
 # in project version
 android-version-name = "1.0"
-splitties-appctx = "3.0.0-beta01"
+splitties-appctx = "3.0.0"
 androidx-appcompat = "1.7.0"
 androidx-fragment-ktx = "1.8.5"
 androidx-activity-ktx = "1.10.0-alpha03"
