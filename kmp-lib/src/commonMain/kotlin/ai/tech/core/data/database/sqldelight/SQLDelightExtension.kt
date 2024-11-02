@@ -9,4 +9,9 @@ public expect suspend fun createSQLDelightDriver(
     databaseName: String
 ): SqlDriver
 
+public expect suspend fun createInMemorySQLDelightDriver(
+    schema: SqlSchema<QueryResult.AsyncValue<Unit>>,
+    databaseName: String
+): SqlDriver
+
 public suspend fun createSQLDelightKeyValueDatabase(databaseName: String = "KEY_VALUE"): KeyValue = KeyValue(createSQLDelightDriver(KeyValue.Schema, databaseName))

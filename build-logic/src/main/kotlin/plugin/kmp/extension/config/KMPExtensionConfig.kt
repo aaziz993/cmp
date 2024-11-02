@@ -53,6 +53,10 @@ internal fun Project.configureKMPExtension(extension: KotlinMultiplatformExtensi
 
                 group("nonMobile") {
                     withJvm()
+                    group("web")
+                }
+
+                group("web") {
                     withWasmJs()
                     withWasmWasi()
                     withJs()
@@ -60,17 +64,15 @@ internal fun Project.configureKMPExtension(extension: KotlinMultiplatformExtensi
 
                 group("nonWeb") {
                     group("jvmAndAndroid")
-                    group("native")
+                    group("ios") {
+                        withIos()
+                    }
                 }
             }
         }
 
         sourceSets.apply {
             commonMain {
-                languageSettings {
-                    progressiveMode = true
-                }
-
                 kotlin.srcDir(projectDir.resolve("build/generated/ksp/metadata/commonMain/kotlin"))
 
                 dependencies {
@@ -89,7 +91,6 @@ internal fun Project.configureKMPExtension(extension: KotlinMultiplatformExtensi
                     implementation(lib("okio"))
                     implementation(bundle("multiplatform.settings"))
                     implementation(bundle("sqldelight"))
-//                    implementation(lib("room.runtime"))
                     implementation(lib("store5"))
                     implementation(bundle("ktor.serialization"))
                     implementation(bundle("ktor.client"))
@@ -109,12 +110,18 @@ internal fun Project.configureKMPExtension(extension: KotlinMultiplatformExtensi
                 implementation(lib("okio.fakefilesystem"))
             }
 
+            getByName("nonWebMain").dependencies {
+                implementation(lib("androidx.room.runtime"))
+                implementation(lib("androidx.sqlite.bundled"))
+            }
+
             // Intermediate dependencies for jvm and android
             getByName("jvmAndAndroidMain").dependencies {
                 implementation(lib("itext.core"))
                 implementation(lib("cryptography.provider.jdk"))
                 implementation(bundle("pgpainless"))
                 implementation(lib("jackson.dataformat.xml"))
+                implementation(lib("sqldelight.sqlite.driver"))
                 implementation(lib("commons.net"))
                 implementation(lib("jsch"))
                 implementation(lib("sshj"))
@@ -130,7 +137,6 @@ internal fun Project.configureKMPExtension(extension: KotlinMultiplatformExtensi
                 implementation(bundle("jna"))
                 implementation(bundle("webcam.capture"))
                 implementation(lib("kotlinx.coroutines.swing"))
-                implementation(lib("sqldelight.sqlite.driver"))
                 implementation(bundle("jdbc"))
                 implementation(bundle("r2dbc"))
                 implementation(bundle("kotysa"))
@@ -153,6 +159,7 @@ internal fun Project.configureKMPExtension(extension: KotlinMultiplatformExtensi
             getByName("mobileMain").dependencies {
                 implementation(bundle("compass.mobile"))
                 implementation(lib("permissions"))
+                implementation(lib("realm"))
             }
 
             getByName("mobileTest").dependencies {
@@ -166,7 +173,8 @@ internal fun Project.configureKMPExtension(extension: KotlinMultiplatformExtensi
                 implementation(lib("androidx.activity.ktx"))
                 implementation(lib("androidx.fragment.ktx"))
                 implementation(lib("sqldelight.android.driver"))
-                implementation(lib("room.runtime.android"))
+                implementation(lib("androidx.room.runtime.android"))
+                implementation(lib("androidx.room.paging"))
                 implementation(lib("permissions"))
                 implementation(lib("worldwind"))
             }

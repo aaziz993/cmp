@@ -16,6 +16,7 @@ internal fun Project.configureKotlinCompilationTask(task: KotlinCompilationTask<
                 "-opt-in=kotlin.contracts.ExperimentalContracts",
                 "-Xexport-kdoc",
                 "-Xwhen-guards",
+                "-Xexpect-actual-classes",
             )
         }
     }

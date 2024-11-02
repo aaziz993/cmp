@@ -60,7 +60,7 @@ internal class KMPPlugin(
 
             dependencies.apply {
                 kspCommonMainMetadata(lib("arrow.optics.ksp.plugin"))
-                kspCommonMainMetadata(lib("room.compiler"))
+                kspCommonMainMetadata(lib("androidx.room.compiler"))
                 kspCommonMainMetadata(lib("ktorfit.ksp"))
                 // Use import org.koin.ksp.generated.*
                 kspCommonMainMetadata(lib("koin.ksp.compiler"))

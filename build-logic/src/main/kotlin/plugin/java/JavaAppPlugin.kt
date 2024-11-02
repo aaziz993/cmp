@@ -77,7 +77,6 @@ public class JavaAppPlugin : Plugin<Project> {
                     implementation(bundle("koin.ktor"))
                     // KSP
                     ksp(lib("arrow.optics.ksp.plugin"))
-                    ksp(lib("room.compiler"))
                     ksp(lib("ktorfit.ksp"))
                     ksp(lib("koin.ksp.compiler"))
                     // Testing
