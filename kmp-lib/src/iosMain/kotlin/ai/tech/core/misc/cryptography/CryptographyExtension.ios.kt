@@ -24,7 +24,7 @@ public actual suspend fun pgpKeyPair(
     password: String?,
     armored: Boolean,
 ): ByteArray {
-    val userIDsJsArray = JSValue.makeArray(openPgpJsContext, userIDs.map { it.toJsUserId() }.toTypedArray(), null)
+    val userIDsJsArray = JSValue .makeArray(openPgpJsContext, userIDs.map { it.toJsUserId() }.toTypedArray(), null)
     val jsScript = """
         (async function() {
             const options = {
@@ -107,10 +107,10 @@ public actual suspend fun ByteArray.pgpKeyMetadata(): PGPKeyMetadata {
     """.trimIndent()
 
     // Evaluate the script in the JSContext
-    val result = jsContext.evaluateScript(jsScript)
+    val result = openPgpJsContext.evaluateScript(jsScript)
 
     // Extract values from the JS object
-    val metadataJsValue = result.toObject()
+    val metadataJsValue = result!!.toObject()
     return PGPKeyMetadata(
         keyID = metadataJsValue?.getProperty("keyID")?.toString() ?: "",
         creationTime = metadataJsValue?.getProperty("creationTime")?.toString()?.toLongOrNull() ?: 0L,
@@ -130,7 +130,7 @@ public actual suspend fun ByteArray.pgpKeyArmor(): ByteArray {
             return key.armor();
         })();
     """.trimIndent()
-    val result = jsContext.evaluateScript(jsScript)
+    val result = openPgpJsContext.evaluateScript(jsScript)
     return result.toString().encodeToByteArray()
 }
 
@@ -141,7 +141,7 @@ public actual suspend fun ByteArray.pgpKeyDearmor(): ByteArray {
             return key.toByteArray();
         })();
     """.trimIndent()
-    val result = jsContext.evaluateScript(jsScript)
+    val result = openPgpJsContext.evaluateScript(jsScript)
     return result.toString().encodeToByteArray()
 }
 
@@ -149,7 +149,7 @@ public actual suspend fun ByteArray.pgpRevokeKey(
     vararg passwords: String,
     armored: Boolean,
 ): ByteArray {
-    val passwordsJsArray = JSValue.makeArray(jsContext, passwords.map { "'$it'" }.toTypedArray(), null)
+    val passwordsJsArray = JSValue.makeArray(openPgpJsContext, passwords.map { "'$it'" }.toTypedArray(), null)
     val jsScript = """
         (async function() {
             const privateKey = await openpgp.readPrivateKey({ armoredKey: "${decodeToString()}" });
@@ -160,7 +160,7 @@ public actual suspend fun ByteArray.pgpRevokeKey(
             return revoked.${if (armored) "armor()" else "toByteArray()"};
         })();
     """.trimIndent()
-    val result = jsContext.evaluateScript(jsScript)
+    val result = openPgpJsContext.evaluateScript(jsScript)
     return result.toString().encodeToByteArray()
 }
 
@@ -206,14 +206,14 @@ public actual suspend fun ByteArray.pgpDecrypt(
     verificationKeys: List<ByteArray>?,
     passwords: List<String>?,
 ): PGPVerifiedResult {
-    val decryptionKeysJsArray = JSValue.makeArray(jsContext, decryptionKeys.map { it.decodeToString() }.toTypedArray(), null)
+    val decryptionKeysJsArray = JSValue.makeArray(openPgpJsContext, decryptionKeys.map { it.decodeToString() }.toTypedArray(), null)
     val verificationKeysJsArray = JSValue.makeArray(
-        jsContext,
+        openPgpJsContext,
         verificationKeys?.map { it.decodeToString() }?.toTypedArray()
             ?: arrayOf(),
         null,
     )
-    val passwordsJsArray = JSValue.makeArray(jsContext, passwords?.toTypedArray() ?: arrayOf(), null)
+    val passwordsJsArray = JSValue.makeArray(openPgpJsContext, passwords?.toTypedArray() ?: arrayOf(), null)
     val jsScript = """
         (async function() {
             const message = await openpgp.readMessage({ armoredMessage: "${decodeToString()}" });
@@ -226,7 +226,7 @@ public actual suspend fun ByteArray.pgpDecrypt(
             return decrypted.data;
         })();
     """.trimIndent()
-    val result = jsContext.evaluateScript(jsScript)
+    val result = openPgpJsContext.evaluateScript(jsScript)
     return PGPVerifiedResult(result.toString().encodeToByteArray())
 }
 
@@ -237,8 +237,8 @@ public actual suspend fun ByteArray.pgpSign(
     detached: Boolean,
     armored: Boolean,
 ): ByteArray {
-    val signingKeysJsArray = JSValue.makeArray(jsContext, signingKeys.map { it.decodeToString() }.toTypedArray(), null)
-    val passwordsJsArray = JSValue.makeArray(jsContext, signingKeysPasswords?.toTypedArray() ?: arrayOf(), null)
+    val signingKeysJsArray = JSValue.makeArray(openPgpJsContext, signingKeys.map { it.decodeToString() }.toTypedArray(), null)
+    val passwordsJsArray = JSValue.makeArray(openPgpJsContext, signingKeysPasswords?.toTypedArray() ?: arrayOf(), null)
     val jsScript = """
         (async function() {
             const message = await openpgp.createMessage({ text: "${decodeToString()}" });
@@ -252,7 +252,7 @@ public actual suspend fun ByteArray.pgpSign(
             return signed;
         })();
     """.trimIndent()
-    val result = jsContext.evaluateScript(jsScript)
+    val result = openPgpJsContext.evaluateScript(jsScript)
     return result.toString().encodeToByteArray()
 }
 
@@ -261,9 +261,9 @@ public actual suspend fun ByteArray.pgpVerify(
     mode: PGPSignMode,
     signatures: List<ByteArray>?
 ): PGPVerifiedResult {
-    val verificationKeysJsArray = JSValue.makeArray(jsContext, verificationKeys.map { it.decodeToString() }.toTypedArray(), null)
+    val verificationKeysJsArray = JSValue.makeArray(openPgpJsContext, verificationKeys.map { it.decodeToString() }.toTypedArray(), null)
     val signaturesJsArray = JSValue.makeArray(
-        jsContext,
+        openPgpJsContext,
         signatures?.map { it.decodeToString() }?.toTypedArray()
             ?: arrayOf(),
         null,
@@ -279,6 +279,6 @@ public actual suspend fun ByteArray.pgpVerify(
             return verified.data;
         })();
     """.trimIndent()
-    val result = jsContext.evaluateScript(jsScript)
+    val result = openPgpJsContext.evaluateScript(jsScript)
     return PGPVerifiedResult(result.toString().encodeToByteArray())
 }
