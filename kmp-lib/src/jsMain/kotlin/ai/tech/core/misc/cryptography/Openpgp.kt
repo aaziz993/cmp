@@ -112,8 +112,8 @@ internal external interface Message
 
 @JsPlainObject
 internal external interface CreateMessageOptions {
-    var text: Any
-    var binary: Any
+    var text: Any?
+    var binary: Any?
 }
 
 internal external fun createMessage(options: CreateMessageOptions): Promise<Message>

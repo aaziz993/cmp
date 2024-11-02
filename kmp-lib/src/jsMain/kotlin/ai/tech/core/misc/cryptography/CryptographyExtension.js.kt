@@ -34,48 +34,60 @@ public actual suspend fun pgpKeyPair(
         "UserIDs are required for key generation"
     }
 
+    val keyType: String
+    var curve: String? = null
+    var rsaBits: Double? = null
+
+    when (key) {
+        is ECC -> {
+            keyType = "ecc"
+            curve = curveMap[key.curve]!!
+        }
+
+        is RSA -> {
+            require(key.size >= MIN_RSA_KEY_SIZE) {
+                "RSA size should be at least $MIN_RSA_KEY_SIZE, got: ${key.size}"
+            }
+
+            keyType = "rsa"
+            rsaBits = key.size.toDouble()
+        }
+    }
+
     return generateKey(
         Object {
-            when (key) {
-                is ECC -> {
-                    type = "ecc"
-                    curve = curveMap[key.curve]!!
-                }
-
-                is RSA -> {
-                    require(key.size >= MIN_RSA_KEY_SIZE) {
-                        "RSA size should be at least $MIN_RSA_KEY_SIZE, got: ${key.size}"
-                    }
-
-                    type = "rsa"
-                    rsaBits = key.size.toDouble()
-                }
-            }
+            type = keyType
+            curve?.let { this.curve = it }
+            rsaBits?.let { rsaBits = it }
             subkeys = subKeys.map {
-                    Object<SubkeyOptions> {
-                        when (it.key) {
-                            is ECC -> {
-                                type = "ecc"
-                                curve = curveMap[it.key.curve]
-                            }
-
-                            is RSA -> {
-                                type = "rsa"
-                                rsaBits = it.key.size.toDouble()
-                            }
-
-                            null -> {}
+                Object<SubkeyOptions> {
+                    when (it.key) {
+                        is ECC -> {
+                            type = "ecc"
+                            curve = curveMap[it.key.curve]
                         }
-                        sign = it.sign
+
+                        is RSA -> {
+                            type = "rsa"
+                            rsaBits = it.key.size.toDouble()
+                        }
+
+                        null -> {
+                            type = keyType
+                            this.curve = curve
+                            this.rsaBits = rsaBits
+                        }
                     }
-                }.toTypedArray().ifEmpty { null }
+                    sign = it.sign
+                }
+            }.toTypedArray().ifEmpty { null }
             this.userIDs = userIDs.map { uid ->
-                    Object<UserID> {
-                        name = uid.name
-                        comment = uid.comment
-                        email = uid.email
-                    }
-                }.toTypedArray()
+                Object<UserID> {
+                    name = uid.name
+                    comment = uid.comment
+                    email = uid.email
+                }
+            }.toTypedArray()
             keyExpirationTime = expireDate.toDouble()
             passphrase = password
             config = Object<Config> {
@@ -125,8 +137,6 @@ private fun ByteArray.readPrivateKey(): Promise<PrivateKey> = readPrivateKey(
     },
 )
 
-public actual suspend fun ByteArray.pgpPublicKey(armored: Boolean): ByteArray = readKey().then { it.toPublic() }.then { if (armored) it.armor().encode() else it.write().toByteArray() }.await()
-
 public actual suspend fun ByteArray.pgpChangeKeyPassword(
     oldPasswords: List<String>,
     password: String?,
@@ -137,28 +147,30 @@ public actual suspend fun ByteArray.pgpChangeKeyPassword(
     }
 
     return readPrivateKey().flatThen { k ->
-            decryptKey(
+        decryptKey(
+            Object {
+                privateKey = k
+                passphrase = oldPasswords.toTypedArray()
+            },
+        )
+    }.flatThen { dk ->
+        if (password == null) {
+            Promise.resolve(dk)
+        }
+        else {
+            encryptKey(
                 Object {
-                    privateKey = k
-                    passphrase = oldPasswords.toTypedArray()
+                    privateKey = dk
+                    passphrase = arrayOf(password)
                 },
             )
-        }.flatThen { dk ->
-            if (password == null) {
-                Promise.resolve(dk)
-            }
-            else {
-                encryptKey(
-                    Object {
-                        privateKey = dk
-                        passphrase = arrayOf(password)
-                    },
-                )
-            }
-        }.then {
-            if (armored) it.armor().encode() else it.write().toByteArray()
-        }.await()
+        }
+    }.then {
+        if (armored) it.armor().encode() else it.write().toByteArray()
+    }.await()
 }
+
+public actual suspend fun ByteArray.pgpPublicKey(armored: Boolean): ByteArray = readKey().then { it.toPublic() }.then { if (armored) it.armor().encode() else it.write().toByteArray() }.await()
 
 public actual suspend fun ByteArray.pgpPrivateKeys(armored: Boolean): List<ByteArray> = readPrivateKeys(
     Object {
@@ -183,15 +195,15 @@ public actual suspend fun ByteArray.pgpPublicKeys(armored: Boolean): List<ByteAr
 ).then { it.map { if (armored) it.armor().encode() else it.write().toByteArray() } }.await()
 
 public actual suspend fun ByteArray.pgpKeyMetadata(): PGPKeyMetadata = readKey().flatThen { k ->
-        k.getExpirationTime().then {
-            PGPKeyMetadata(
-                fingerprint = k.getFingerprint(),
-                userIDs = k.getUserIDs().map(PGPUserId::parse),
-                createDate = k.getCreationTime().getTime().toLong(),
-                expireDate = it?.let { if (it is Date) it.getTime().toLong() else -1 } ?: 0,
-            )
-        }
-    }.await()
+    k.getExpirationTime().then {
+        PGPKeyMetadata(
+            fingerprint = k.getFingerprint(),
+            userIDs = k.getUserIDs().map(PGPUserId::parse),
+            createDate = k.getCreationTime().getTime().toLong(),
+            expireDate = it?.let { if (it is Date) it.getTime().toLong() else -1 } ?: 0,
+        )
+    }
+}.await()
 
 public actual suspend fun ByteArray.pgpKeyArmor(): ByteArray = readKey().then { it.armor().encode() }.await()
 
@@ -211,18 +223,18 @@ private suspend fun List<ByteArray>.readDecrytedKeys(passwords: List<String>?): 
 
     map {
         it.readPrivateKey().flatThen {
-                if (it.isDecrypted()) {
-                    Promise.resolve(it)
-                }
-                else {
-                    decryptKey(
-                        Object {
-                            privateKey = it
-                            passphrase = passwords?.toTypedArray() ?: emptyArray<String>()
-                        },
-                    )
-                }
-            }.await()
+            if (it.isDecrypted()) {
+                Promise.resolve(it)
+            }
+            else {
+                decryptKey(
+                    Object {
+                        privateKey = it
+                        passphrase = passwords?.toTypedArray() ?: emptyArray<String>()
+                    },
+                )
+            }
+        }.await()
     }.toTypedArray()
 
 public actual suspend fun ByteArray.pgpEncrypt(
@@ -233,25 +245,25 @@ public actual suspend fun ByteArray.pgpEncrypt(
     armored: Boolean,
     isText: Boolean,
 ): ByteArray = ai.tech.core.misc.cryptography.encrypt(
-        Object {
-            message = createMessage(
-                Object {
-                    if (isText) {
-                        text = this@pgpEncrypt.decode()
-                    }
-                    else {
-                        binary = this@pgpEncrypt
-                    }
-                },
-            ).await()
-            this.encryptionKeys = encryptionKeys.map { it.readKey().await() }.toTypedArray()
-            signingKeys?.let { this.signingKeys = signingKeys.readDecrytedKeys(signingKeysPasswords) }
-            passwords?.let {
-                this.passwords = it.toTypedArray()
-            }
-            format = if (armored) "armored" else "binary"
-        },
-    ).then { if (armored) (it as String).encode() else (it as Uint8Array).toByteArray() }.await()
+    Object {
+        message = createMessage(
+            Object {
+                if (isText) {
+                    text = this@pgpEncrypt.decode()
+                }
+                else {
+                    binary = this@pgpEncrypt
+                }
+            },
+        ).await()
+        this.encryptionKeys = encryptionKeys.map { it.readKey().await() }.toTypedArray()
+        signingKeys?.let { this.signingKeys = signingKeys.readDecrytedKeys(signingKeysPasswords) }
+        passwords?.let {
+            this.passwords = it.toTypedArray()
+        }
+        format = if (armored) "armored" else "binary"
+    },
+).then { if (armored) (it as String).encode() else (it as Uint8Array).toByteArray() }.await()
 
 public actual suspend fun ByteArray.pgpDecrypt(
     decryptionKeys: List<ByteArray>,
@@ -269,21 +281,21 @@ public actual suspend fun ByteArray.pgpDecrypt(
     },
 ).await().let {
     ai.tech.core.misc.cryptography.decrypt(
-            Object {
-                this.decryptionKeys = decryptionKeys.readDecrytedKeys(decryptionKeysPasswords)
-                verificationKeys?.let {
-                    this.verificationKeys = verificationKeys.map { it.readKey().await() }.toTypedArray()
-                }
-                passwords?.let { this.passwords = it.toTypedArray() }
-            },
-        ).await().let { dr ->
-            dr.signatures.map { PGPVerification(it.keyID.toHex(), it.verified.catch { false }.await()) }.let {
-                PGPVerifiedResult(
-                    (dr.data as String).encode(),
-                    { it },
-                )
+        Object {
+            this.decryptionKeys = decryptionKeys.readDecrytedKeys(decryptionKeysPasswords)
+            verificationKeys?.let {
+                this.verificationKeys = verificationKeys.map { it.readKey().await() }.toTypedArray()
             }
+            passwords?.let { this.passwords = it.toTypedArray() }
+        },
+    ).await().let { dr ->
+        dr.signatures.map { PGPVerification(it.keyID.toHex(), it.verified.catch { false }.await()) }.let {
+            PGPVerifiedResult(
+                (dr.data as String).encode(),
+                { it },
+            )
         }
+    }
 }
 
 public actual suspend fun ByteArray.pgpSign(
