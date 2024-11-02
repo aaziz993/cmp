@@ -1,5 +1,5 @@
 #!/bin/bash
 
-Spotless code format check
+echo Spotless code format check
 
 ./gradlew spotlessCheck --no-configuration-cache
