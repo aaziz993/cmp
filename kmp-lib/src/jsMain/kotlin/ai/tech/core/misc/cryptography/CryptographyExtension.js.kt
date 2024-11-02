@@ -83,19 +83,19 @@ public actual suspend fun pgpKeyPair(
                     require(it.size == 1) {
                         "Only one compression algorithm allowed"
                     }
-                    preferredCompressionAlgorithm = compressionTypeMap[it.single()]!!
+                    preferredCompressionAlgorithm = compressionMap[it.single()]!!
                 }
                 key.hashAlgorithms?.let {
                     require(it.size == 1) {
                         "Only one symmetric algorithm allowed"
                     }
-                    preferredHashAlgorithm = hashAlgorithmTypeMap[it.single()]!!
+                    preferredHashAlgorithm = hashAlgorithmMap[it.single()]!!
                 }
                 key.symmetricKeyAlgorithms?.let {
                     require(it.size == 1) {
                         "Only one symmetric algorithm allowed"
                     }
-                    preferredSymmetricAlgorithm = symmetricAlgorithmTypeMap[it.single()]!!
+                    preferredSymmetricAlgorithm = symmetricAlgorithmMap[it.single()]!!
                 }
             }
             format = if (armored) "armored" else "binary"
@@ -386,14 +386,14 @@ private val curveMap = mapOf(
     Curve.SECP256K1 to "secp256k1",
 )
 
-private val compressionTypeMap = mapOf(
+private val compressionMap = mapOf(
     Compression.UNCOMPRESSED to 0,
     Compression.ZIP to 1,
     Compression.ZLIB to 2,
     Compression.BZIP2 to 3,
 )
 
-private val hashAlgorithmTypeMap = mapOf(
+private val hashAlgorithmMap = mapOf(
     HashAlgorithm.MD5 to 1,
     HashAlgorithm.SHA1 to 2,
     HashAlgorithm.RIPEMD to 3,
@@ -403,7 +403,7 @@ private val hashAlgorithmTypeMap = mapOf(
     HashAlgorithm.SHA224 to 11,
 )
 
-private val symmetricAlgorithmTypeMap = mapOf(
+private val symmetricAlgorithmMap = mapOf(
     SymmetricAlgorithm.PLAINTEXT to 0,
     SymmetricAlgorithm.TRIPLEDES to 2,
     SymmetricAlgorithm.CAST_5 to 3,
