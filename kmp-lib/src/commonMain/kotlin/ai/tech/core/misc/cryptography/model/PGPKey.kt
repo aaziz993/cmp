@@ -9,7 +9,7 @@ public sealed class PGPKey(
 )
 
 public class ECC(
-    public val curve: CurveType = CurveType.CURVE25519,
+    public val curve: Curve = Curve.CURVE25519,
     compressionAlgorithms: List<Compression>? = null,
     hashAlgorithms: List<HashAlgorithm>? = null,
     symmetricKeyAlgorithms: List<SymmetricAlgorithm>? = null,

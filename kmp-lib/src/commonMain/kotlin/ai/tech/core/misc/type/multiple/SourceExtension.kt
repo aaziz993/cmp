@@ -8,12 +8,13 @@ import okio.Source
 // /////////////////////////////////////////////////////ITERATOR////////////////////////////////////////////////////////
 public fun Source.iterator(bufferSize: Int = DEFAULT_BUFFER_SIZE): ByteReaderClosableIterator =
     Buffer().let { buffer ->
-        ByteReaderClosableIterator({ array ->
-            read(buffer, array.size.toLong())
-                .also {
-                    buffer.readByteArray(it).copyInto(array)
-                }.toInt()
-        }, bufferSize) {
-            close()
-        }
+        ByteReaderClosableIterator(
+            { array ->
+                read(buffer, array.size.toLong())
+                    .also {
+                        buffer.readByteArray(it).copyInto(array)
+                    }.toInt()
+            },
+            ::close, bufferSize,
+        )
     }

@@ -6,6 +6,4 @@ import io.ktor.utils.io.*
 
 // ///////////////////////////////////////////////////ASYNCITERATOR//////////////////////////////////////////////////////
 public fun ByteReadChannel.asyncIterator(bufferSize: Int = DEFAULT_BUFFER_SIZE): ByteReaderClosableAsyncIterator =
-    ByteReaderClosableAsyncIterator({ readAvailable(it) }, bufferSize) {
-        cancel()
-    }
+    ByteReaderClosableAsyncIterator(::readAvailable, ::cancel, bufferSize)
