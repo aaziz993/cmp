@@ -9,7 +9,7 @@ public object ColorJsonSerializer :
     PrimitiveLongSerializer<Color>(
         Color::class,
         { it.value.toLong() },
-        ::Color,
+        { Color(it.toULong()) },
     )
 
 public typealias ColorSerial = @Serializable(with = ColorJsonSerializer::class) Color
