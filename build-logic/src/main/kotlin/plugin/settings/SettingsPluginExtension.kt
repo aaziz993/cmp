@@ -113,9 +113,9 @@ public open class SettingsPluginExtension(
 
             buildCache {
                 remote(HttpBuildCache::class.java) {
-                    isEnabled = providers.gradleProperty("jetbrains.space.gradle.build.enable").get().toBoolean()
+                    isEnabled = providers.gradleProperty("jetbrains.space.gradle.build.cache.enable").get().toBoolean()
                     // better make it a variable and set it to true only for CI builds
-                    isPush = providers.gradleProperty("jetbrains.space.gradle.build.push").get().toBoolean()
+                    isPush = providers.gradleProperty("jetbrains.space.gradle.build.cache.push").get().toBoolean()
 
                     url = URI(
                         "${
