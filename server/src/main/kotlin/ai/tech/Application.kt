@@ -1,9 +1,9 @@
 package ai.tech
 
+import ai.tech.core.misc.plugin.di.configureKoin
 import io.ktor.network.tls.certificates.*
 import io.ktor.server.application.*
 import io.ktor.server.netty.*
-import ai.tech.plugin.di.configKoin
 import java.io.File
 
 public fun main(args: Array<String>) {
@@ -13,7 +13,7 @@ public fun main(args: Array<String>) {
 
 @Suppress("unused")
 public fun Application.module() {
-    configKoin()
+//    configureKoin()
 }
 
 private fun createKeystore() {
