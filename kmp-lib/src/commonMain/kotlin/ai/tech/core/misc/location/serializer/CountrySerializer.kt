@@ -1,4 +1,4 @@
-package ai.tech.core.misc.type.serializer
+package ai.tech.core.misc.location.serializer
 
 import ai.tech.core.misc.location.model.Country
 import ai.tech.core.misc.location.model.countries

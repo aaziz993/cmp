@@ -1,7 +1,7 @@
 package ai.tech.core.misc.location.model
 
-import ai.tech.core.misc.type.serializer.LanguageSerializer
 import kotlinx.serialization.Serializable
+import ai.tech.core.misc.location.serializer.LanguageSerializer
 
 @Serializable(with = LanguageSerializer::class)
 public data class Language(
