@@ -1,4 +1,4 @@
-package ai.tech.core.misc.config.auth
+package ai.tech.core.misc.auth.model
 
 import ai.tech.core.misc.auth.model.oauth.OAuthClientConfig
 import kotlinx.serialization.Serializable

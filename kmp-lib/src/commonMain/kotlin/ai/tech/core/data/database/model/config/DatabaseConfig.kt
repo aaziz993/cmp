@@ -1,6 +1,5 @@
-package ai.tech.core.misc.config.database
+package ai.tech.core.data.database.model.config
 
-import ai.tech.core.data.database.model.config.DatabaseProviderConfig
 import kotlinx.serialization.Serializable
 
 @Serializable

@@ -1,6 +1,6 @@
 package ai.tech.core.misc.auth.model.oauth
 
-import core.config.model.EnablableConfig
+import ai.tech.core.misc.config.EnablableConfig
 
 public interface OAuthConfig : EnablableConfig {
     public val address: String
