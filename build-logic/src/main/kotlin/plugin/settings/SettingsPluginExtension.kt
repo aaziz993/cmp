@@ -213,13 +213,11 @@ public open class SettingsPluginExtension(
                 ""
             }
         }${
-            providers.gradleProperty("project.version.suffix").get().let {
-                if (it.isEmpty()) {
-                    ""
-                }
-                else {
-                    "-$it"
-                }
+            if (projectVersionSuffix.isEmpty()) {
+                ""
+            }
+            else {
+                "-$projectVersionSuffix"
             }
         }${
             if (projectVersionName == "snapshot") {
