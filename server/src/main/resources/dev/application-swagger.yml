@@ -1,0 +1,18 @@
+swagger:
+  enable: true
+  swagger-url: swagger
+  forward-root: false
+  info:
+    title: Ktor API REST
+    version: latest
+    description: Ktor API REST using Kotlin and Ktor
+    contact:
+      name: Atoev Aziz
+      url: https://github.com/a-aziz93
+    license:
+  security-scheme:
+    keycloak:
+      type: http
+      scheme: bearer
+      bearer-format: oauth2
+

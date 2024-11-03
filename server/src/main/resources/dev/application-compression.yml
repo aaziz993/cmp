@@ -1,0 +1,4 @@
+compression:
+  enable: true
+  gzip:
+    minimum-size: 200

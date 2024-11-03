@@ -1,0 +1,4 @@
+free-marker:
+  enable: true
+  class-paths:
+    - templates

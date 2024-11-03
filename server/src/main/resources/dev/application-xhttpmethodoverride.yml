@@ -1,0 +1,3 @@
+xhttp-method-override:
+  enable: true
+  header-name: X-Http-Method-Override

@@ -1,0 +1,20 @@
+security:
+  enable: true
+  oauth:
+    - name: keycloak
+      server:
+        name: "keycloak"
+        authorize-url: ""
+        accessToken-url: ""
+        client-id: "ktor"
+        client-secret: ""
+        access-token-requires-basic-auth: false
+        request-method: "POST"
+        default-scopes: [ "roles" ]
+  jwt-rs256:
+    - name: keycloak
+      private-key:
+      issuer:
+      audience:
+      realm:
+      expiration:

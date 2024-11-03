@@ -1,0 +1,16 @@
+cors:
+  enable: true
+  hosts:
+    - host: *
+      schemes:
+        - http
+        - https
+  headers:
+    - Content-Type
+    - Authorization
+  methods:
+    - GET
+    - POST
+    - PUT
+    - PATCH
+    - DELETE

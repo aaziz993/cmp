@@ -1,0 +1,7 @@
+cache:
+  - name: role
+    maximumCacheSize: 1000
+    expireAfterAccess: 86400
+  - name: user
+    maximumCacheSize: 1000
+    expireAfterAccess: 86400

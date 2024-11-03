@@ -1,0 +1,14 @@
+dropwizard-metrics:
+  enable: true
+  register-jvm-metric-sets: false
+  slf4j-reporter:
+    convertRatesTo: SECONDS
+    convertDurationsTo: MILLISECONDS
+    start:
+      perdiod: 10
+      unit: SECONDS
+  jmx-reporter:
+    convertRatesTo: SECONDS
+    convertDurationsTo: MILLISECONDS
+
+

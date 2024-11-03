@@ -1,0 +1,4 @@
+shutdown:
+  enable: true
+  shut-down-url: /shutdown
+  exitCodeSupplier: 0

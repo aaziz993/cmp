@@ -1,0 +1,3 @@
+storage:
+  uploadDir: uploads
+  endpoint: api/storage

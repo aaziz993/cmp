@@ -1,0 +1,21 @@
+routing:
+  enable: true
+  static-files:
+    remote-path: /static
+    path-name: files
+    pre-compressed:
+      - extension: br
+        encoding:
+      - extension: gz
+        encoding: gzip
+    enable-auto-head-response: true
+  static-resources:
+    remote-path: /static
+    path-name: assets
+    pre-compressed:
+      - extension: br
+        encoding:
+      - extension: gz
+        encoding: gzip
+    enable-auto-head-response: true
+
