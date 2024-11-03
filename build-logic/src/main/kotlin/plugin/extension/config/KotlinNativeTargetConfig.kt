@@ -1,4 +1,4 @@
-package plugin.kmp.extension.config
+package plugin.extension.config
 
 import org.gradle.api.Project
 import org.gradle.kotlin.dsl.get

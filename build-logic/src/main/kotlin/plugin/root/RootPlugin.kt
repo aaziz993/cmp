@@ -1,11 +1,9 @@
 package plugin.root
 
-import com.android.build.gradle.internal.cxx.io.writeTextIfDifferent
 import com.android.build.gradle.internal.cxx.logging.warnln
 import java.io.File
 import java.io.IOException
 import java.net.URI
-import java.net.URL
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.Task

@@ -6,6 +6,9 @@ import org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi
 import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
 import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTarget
 import plugin.extension.bundle
+import plugin.extension.config.configureKotlinAndroidTarget
+import plugin.extension.config.configureKotlinIosTarget
+import plugin.extension.config.configureKotlinNativeTarget
 import plugin.extension.lib
 import plugin.extension.version
 
