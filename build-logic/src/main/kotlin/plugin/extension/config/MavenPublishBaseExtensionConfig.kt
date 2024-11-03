@@ -50,12 +50,12 @@ internal fun Project.configureMavenPublishBaseExtension(extension: MavenPublishB
         }
 
         publishToMavenCentral(
-            when (providers.gradleProperty("sonatype.$projectVersionSuffix.url").get()) {
+            when (providers.gradleProperty("sonatype.${projectVersionSuffix}s.url").get()) {
                 "https://oss.sonatype.org" -> "DEFAULT"
                 "https://s01.oss.sonatype.org" -> "S01"
                 else -> "CENTRAL_PORTAL"
             },
-            providers.gradleProperty("sonatype.$projectVersionSuffix.autopush").get().toBoolean(),
+            providers.gradleProperty("sonatype.${projectVersionSuffix}s.autopush").get().toBoolean(),
         )
 
         // Enable GPG signing for all publications

@@ -60,6 +60,8 @@ public open class SettingsPluginExtension(
 
     public val projectGroup: String = providers.gradleProperty("project.group").getOrElse(PROJECT_GROUP)
 
+    public lateinit var projectVersionName: String
+
     public lateinit var projectVersionSuffix: String
 
     public lateinit var projectVersion: String
@@ -70,45 +72,7 @@ public open class SettingsPluginExtension(
 
     public val projectLicenseTextUrl: String = providers.gradleProperty("project.license.text.url").get()
 
-    public val spaceUsername: String? =
-        if (System.getenv().containsKey("JB_SPACE_${projectVersionSuffix.uppercase()}_USERNAME")) {
-            System.getenv("JB_SPACE_${projectVersionSuffix.uppercase()}_USERNAME")
-        }
-        else {
-            providers.gradleProperty("jetbrains.space.$projectVersionSuffix.username").get()
-        }
-
-    public val spacePassword: String? =
-        if (System.getenv().containsKey("JB_SPACE_${projectVersionSuffix.uppercase()}_PASSWORD")) {
-            System.getenv("JB_SPACE_${projectVersionSuffix.uppercase()}_PASSWORD")
-        }
-        else {
-            localProperties.getProperty("jetbrains.space.$projectVersionSuffix.password")
-        }
-
-    public val spacePackagesUrl: String =
-        providers.gradleProperty("jetbrains.space.packages.$projectVersionSuffix.url").get()
-
-    public val githubUsername: String =
-        if (System.getenv().containsKey("GITHUB_${projectVersionSuffix.uppercase()}_USERNAME")) {
-            System.getenv("GITHUB_${projectVersionSuffix.uppercase()}_USERNAME")
-        }
-        else {
-            providers.gradleProperty("github.$projectVersionSuffix.username").get()
-        }
-
-    public val githubPassword: String =
-        if (System.getenv().containsKey("GITHUB_${projectVersionSuffix.uppercase()}_PASSWORD")) {
-            System.getenv("GITHUB_${projectVersionSuffix.uppercase()}_PASSWORD")
-        }
-        else {
-            localProperties.getProperty("github.$projectVersionSuffix.password")
-        }
-
-    public val githubPackagesUrl: String =
-        "${
-            providers.gradleProperty("github.packages.$projectVersionSuffix.url").get()
-        }/${target.rootProject.name}"
+    public lateinit var githubUsername: String
 
     public fun apply(): Unit = with(target) {
         val versionCatalogToml = Toml.parse(target.layout.rootDirectory.file(versionCatalogFile).asFile.readText())
@@ -177,8 +141,16 @@ public open class SettingsPluginExtension(
         }
 
         versionCatalogToml.getTable("versions")!!.let {
+            projectVersionName = it.getString("project-version-name") ?: PROJECT_VERSION_NAME
             projectVersionSuffix = it.getString("project-version-suffix") ?: PROJECT_VERSION_SUFFIX
             projectVersion = calculateProjectVersion(it)
+        }
+
+        githubUsername = if (System.getenv().containsKey("GITHUB_${projectVersionName.uppercase()}S_USERNAME")) {
+            System.getenv("GITHUB_${projectVersionName.uppercase()}S_USERNAME")
+        }
+        else {
+            providers.gradleProperty("github.${projectVersionName}s.username").get()
         }
 
         logger.info("Applied settings plugin extension")
@@ -250,7 +222,7 @@ public open class SettingsPluginExtension(
                 }
             }
         }${
-            if ((versionsToml.getString("project-version-name") ?: PROJECT_VERSION_NAME) == "snapshot") {
+            if (projectVersionName == "snapshot") {
                 "-SNAPSHOT"
             }
             else {

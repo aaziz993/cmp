@@ -11,7 +11,6 @@ project-version-major = "1"
 project-version-minor = "0"
 project-version-patch = "0"
 project-version-name = "release"
-project-version-suffix = ""
 # Gradle
 # provides a repository for downloading JVMs
 foojay-resolver-convention = "0.8.0"
