@@ -9,7 +9,7 @@ public abstract class Edge<E : Edge<E, ID, V, VID>, ID : Comparable<ID>, V : Ver
     id: ID?,
     public val fromVertexId: VID,
     public val toVertexId: VID,
-) : GraphObject<E, ID>(id) {
+) : GraphEntity<E, ID>(id) {
 
     public suspend fun CRUDRepository<V>.fromVertex(predicate: BooleanVariable? = null): V? = find(
         predicate = "id".f.eq(fromVertexId).let {
@@ -22,7 +22,7 @@ public abstract class Edge<E : Edge<E, ID, V, VID>, ID : Comparable<ID>, V : Ver
         },
     ).firstOrNull()
 
-    public suspend fun Graph<V, VID, E, ID>.fromVertex(predicate: BooleanVariable? = null): V? = vertices.fromVertex(predicate)
+    public suspend fun Graph<V, VID, E, ID>.fromVertex(predicate: BooleanVariable? = null): V? = verticesRepository.fromVertex(predicate)
 
     public suspend fun CRUDRepository<V>.toVertex(predicate: BooleanVariable? = null): V? = find(
         predicate = "id".f.eq(toVertexId).let {
@@ -35,5 +35,5 @@ public abstract class Edge<E : Edge<E, ID, V, VID>, ID : Comparable<ID>, V : Ver
         },
     ).firstOrNull()
 
-    public suspend fun Graph<V, VID, E, ID>.toVertex(predicate: BooleanVariable? = null): V? = vertices.toVertex(predicate)
+    public suspend fun Graph<V, VID, E, ID>.toVertex(predicate: BooleanVariable? = null): V? = verticesRepository.toVertex(predicate)
 }

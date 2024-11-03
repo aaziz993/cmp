@@ -7,7 +7,7 @@ import kotlinx.coroutines.flow.Flow
 
 public abstract class Vertex<V : Vertex<V, ID, E, EID>, ID : Comparable<ID>, E : Edge<E, EID, V, ID>, EID : Comparable<EID>>(
     id: ID? = null,
-) : GraphObject<V, ID>(id) {
+) : GraphEntity<V, ID>(id) {
 
     public suspend fun CRUDRepository<E>.fromEdges(predicate: BooleanVariable? = null): Flow<E> = find(
         predicate = "fromVertexId".f.eq(id).let {
@@ -20,7 +20,7 @@ public abstract class Vertex<V : Vertex<V, ID, E, EID>, ID : Comparable<ID>, E :
         },
     )
 
-    public suspend fun Graph<V, ID, E, EID>.fromEdges(predicate: BooleanVariable? = null): Flow<E> = edges.fromEdges(predicate)
+    public suspend fun Graph<V, ID, E, EID>.fromEdges(predicate: BooleanVariable? = null): Flow<E> = edgesRepository.fromEdges(predicate)
 
     public suspend fun CRUDRepository<E>.toEdges(predicate: BooleanVariable? = null): Flow<E> = find(
         predicate = "toVertexId".f.eq(id).let {
@@ -33,7 +33,7 @@ public abstract class Vertex<V : Vertex<V, ID, E, EID>, ID : Comparable<ID>, E :
         },
     )
 
-    public suspend fun Graph<V, ID, E, EID>.toEdges(predicate: BooleanVariable? = null): Flow<E> = edges.toEdges(predicate)
+    public suspend fun Graph<V, ID, E, EID>.toEdges(predicate: BooleanVariable? = null): Flow<E> = edgesRepository.toEdges(predicate)
 
     public suspend fun CRUDRepository<E>.edges(predicate: BooleanVariable? = null): Flow<E> = find(
         predicate = "fromVertexId".f.eq(id).or("toVertexId".f.eq(id)).let {
@@ -46,5 +46,5 @@ public abstract class Vertex<V : Vertex<V, ID, E, EID>, ID : Comparable<ID>, E :
         },
     )
 
-    public suspend fun Graph<V, ID, E, EID>.edges(predicate: BooleanVariable? = null): Flow<E> = edges.edges(predicate)
+    public suspend fun Graph<V, ID, E, EID>.edges(predicate: BooleanVariable? = null): Flow<E> = edgesRepository.edges(predicate)
 }
