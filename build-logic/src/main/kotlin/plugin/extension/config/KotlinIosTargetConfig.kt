@@ -13,7 +13,7 @@ internal fun Project.configureKotlinIosTarget(target: KotlinNativeTarget) =
                     .drop(1)
                     .joinToString("-")
             isStatic = true
-            // Add it to avoid sqllite3 issues in iOS
+            // Add it to avoid sqllite3 issues in iOS. Required when using NativeSQLiteDriver
             linkerOpts.add("-lsqlite3")
         }
     }

@@ -1,5 +1,6 @@
 package ai.tech.core.data.database.room
 
+import ai.tech.core.data.database.room.keyvalue.KeyValueDatabase
 import ai.tech.core.data.database.room.keyvalue.model.KeyValue
 import androidx.room.RoomDatabase
 
@@ -7,4 +8,6 @@ public expect inline fun <reified T : RoomDatabase> createRoomDatabaseBuilder(da
 
 public expect inline fun <reified T : RoomDatabase> createInMemoryRoomDatabaseBuilder(): RoomDatabase.Builder<T>
 
-public fun createRoomKeyValueDatabaseBuilder(databaseName: String): RoomDatabase.Builder<AppD> = createRoomDatabaseBuilder(databaseName)
+public fun createRoomKeyValueDatabaseBuilder(databaseName: String): RoomDatabase.Builder<KeyValueDatabase> = createRoomDatabaseBuilder(databaseName)
+
+public fun createInMemoryRoomKeyValueDatabaseBuilder(): RoomDatabase.Builder<KeyValueDatabase> = createInMemoryRoomDatabaseBuilder()

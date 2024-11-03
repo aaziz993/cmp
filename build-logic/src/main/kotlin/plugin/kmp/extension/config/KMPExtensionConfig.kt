@@ -116,6 +116,7 @@ internal fun Project.configureKMPExtension(extension: KotlinMultiplatformExtensi
 
             getByName("nonWebMain").dependencies {
                 implementation(lib("androidx.room.runtime"))
+                implementation(lib("sqlite"))
                 implementation(lib("androidx.sqlite.bundled"))
             }
 
