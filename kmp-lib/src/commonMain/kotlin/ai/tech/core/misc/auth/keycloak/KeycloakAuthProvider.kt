@@ -3,7 +3,7 @@ package ai.tech.core.misc.auth.keycloak
 import ai.tech.core.misc.auth.ClientAuthProvider
 import ai.tech.core.misc.auth.keycloak.model.ResetPassword
 import ai.tech.core.misc.auth.keycloak.model.UserRepresentation
-import ai.tech.core.misc.auth.model.identity.User
+import ai.tech.core.misc.auth.model.User
 import ai.tech.core.misc.auth.model.oauth.Token
 import ai.tech.core.misc.auth.model.oauth.CachedToken
 import ai.tech.core.misc.io.keyvalue.KeyValue

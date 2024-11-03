@@ -5,21 +5,28 @@ package plugin.settings
 import KOTLIN_COMPILATION_ALL_WARNINGS_AS_ERRORS
 import KARAKUM_CONF_FILE
 import PROJECT_GROUP
-import PROJECT_VERSION_IS_SNAPSHOT
+import PROJECT_VERSION_MAJOR
+import PROJECT_VERSION_MINOR
+import PROJECT_VERSION_NAME
+import PROJECT_VERSION_PATCH
+import PROJECT_VERSION_SUFFIX
 import VERSION_CATALOG_FILE
 import VERSION_CATALOG_NAME
 import java.io.Serializable
 import java.net.URI
 import java.util.*
+import kotlin.properties.Delegates
 import org.gradle.api.initialization.Settings
 import org.gradle.caching.http.HttpBuildCache
 import org.gradle.internal.os.OperatingSystem
+import org.gradle.internal.snapshot.Snapshot
 import org.gradle.kotlin.dsl.extension
 import org.gradle.kotlin.dsl.gitHooks
 import org.gradle.kotlin.dsl.maven
 import org.slf4j.LoggerFactory
 import org.tomlj.Toml
 import org.tomlj.TomlParseResult
+import org.tomlj.TomlTable
 
 public open class SettingsPluginExtension(
     private val target: Settings,
@@ -53,16 +60,7 @@ public open class SettingsPluginExtension(
 
     public val projectGroup: String = providers.gradleProperty("project.group").getOrElse(PROJECT_GROUP)
 
-    public val projectVersionIsSnapshot: Boolean =
-        providers.gradleProperty("project.version.issnapshot").getOrElse(PROJECT_VERSION_IS_SNAPSHOT.toString())
-            .toBoolean()
-
-    public val projectVersionSuffix: String = if (projectVersionIsSnapshot) {
-        "snapshots"
-    }
-    else {
-        "releases"
-    }
+    public lateinit var projectVersionSuffix: String
 
     public lateinit var projectVersion: String
 
@@ -178,18 +176,21 @@ public open class SettingsPluginExtension(
             }
         }
 
-        projectVersion = calculateProjectVersion(versionCatalogToml)
+        versionCatalogToml.getTable("versions")!!.let {
+            projectVersionSuffix = it.getString("project-version-suffix") ?: PROJECT_VERSION_SUFFIX
+            projectVersion = calculateProjectVersion(it)
+        }
 
         logger.info("Applied settings plugin extension")
     }
 
-    private fun calculateProjectVersion(tomlParseResult: TomlParseResult) = tomlParseResult.getTable("versions")!!.let {
+    private fun calculateProjectVersion(versionsToml: TomlTable) =
         "${
-            it.getString("project-version-major")
+            versionsToml.getString("project-version-major") ?: PROJECT_VERSION_MAJOR
         }.${
-            it.getString("project-version-minor")
+            versionsToml.getString("project-version-minor") ?: PROJECT_VERSION_MINOR
         }.${
-            it.getString("project-version-patch")
+            versionsToml.getString("project-version-patch") ?: PROJECT_VERSION_PATCH
         }${
             if (providers.gradleProperty(
                     "github.actions.versioning.ref.name",
@@ -249,9 +250,13 @@ public open class SettingsPluginExtension(
                 }
             }
         }${
-            if (projectVersionIsSnapshot) "-SNAPSHOT" else ""
+            if ((versionsToml.getString("project-version-name") ?: PROJECT_VERSION_NAME) == "snapshot") {
+                "-SNAPSHOT"
+            }
+            else {
+                ""
+            }
         }"
-    }
 
     public companion object {
 

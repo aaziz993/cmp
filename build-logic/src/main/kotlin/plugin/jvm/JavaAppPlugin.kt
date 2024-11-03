@@ -1,4 +1,4 @@
-package plugin.java
+package plugin.jvm
 
 import plugin.extension.bundle
 import plugin.extension.id
@@ -16,7 +16,7 @@ import plugin.extension.config.configureJavaPluginExtension
 import plugin.extension.config.implementation
 import plugin.extension.config.ksp
 import plugin.extension.config.testImplementation
-import plugin.java.extension.config.configureJavaApp
+import plugin.jvm.extension.config.configureJavaApp
 
 public class JavaAppPlugin : Plugin<Project> {
     override fun apply(target: Project): Unit =
@@ -56,6 +56,7 @@ public class JavaAppPlugin : Plugin<Project> {
                     implementation(lib("sshj"))
                     implementation(lib("jsch"))
                     implementation(bundle("kotlinx.serialization"))
+                    implementation(lib("kotlinx.serialization.xml"))
                     implementation(bundle("serialization"))
                     implementation(lib("kotlinx.coroutines.swing"))
                     implementation(lib("cryptography.provider.jdk"))

@@ -159,7 +159,7 @@ gradlePlugin {
                 libs.plugins.java.app.convention
                     .get()
                     .pluginId
-            implementationClass = "plugin.java.JavaAppPlugin"
+            implementationClass = "plugin.jvm.JavaAppPlugin"
         }
 
         register("KMPLibPlugin") {

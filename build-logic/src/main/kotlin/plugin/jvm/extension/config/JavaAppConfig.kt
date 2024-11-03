@@ -1,4 +1,4 @@
-package plugin.java.extension.config
+package plugin.jvm.extension.config
 
 import plugin.extension.settings
 import org.gradle.api.Project
