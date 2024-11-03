@@ -4,7 +4,7 @@ import ai.tech.core.misc.plugin.cors.model.config.CORSConfig
 import io.ktor.server.application.*
 import io.ktor.server.plugins.cors.routing.*
 
-public fun Application.configureureCors(config: CORSConfig?) = config?.takeIf { it.enable != false }?.let {
+public fun Application.configureCORS(config: CORSConfig?) = config?.takeIf { it.enable != false }?.let {
     install(CORS) {
         it.hosts?.let { it.forEach { allowHost(it.host, it.schemes, it.subDomains) } }
         it.headers?.let { it.forEach { allowHeader(it) } }

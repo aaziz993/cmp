@@ -5,7 +5,7 @@ import io.ktor.http.content.*
 import io.ktor.server.application.*
 import io.ktor.server.plugins.cachingheaders.*
 
-public fun Application.configureureCachingHeaders(config: CachingHeadersConfig?) = config?.takeIf { it.enable != false }?.let {
+public fun Application.configureCachingHeaders(config: CachingHeadersConfig?) = config?.takeIf { it.enable != false }?.let {
     install(CachingHeaders) {
         options { call, outgoingContent ->
             it.rootOption?.let { CachingOptions(it.cacheControl()) }
