@@ -36,6 +36,6 @@ public val String.decodedHttpUrl: String
             }.buildString()
 
 public expect fun createHttpClient(
-    pins: List<Pin>,
+    pins: List<Pin> = emptyList(),
     block: HttpClientConfig<*>.() -> Unit = {}
 ): HttpClient

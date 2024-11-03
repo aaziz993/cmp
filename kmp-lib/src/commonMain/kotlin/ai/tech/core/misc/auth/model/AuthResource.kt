@@ -1,6 +1,7 @@
 package ai.tech.core.misc.auth.model
 
-import ai.tech.core.misc.auth.model.role.RoleAuth
+import ai.tech.core.misc.auth.model.identity.RoleAuth
+import ai.tech.core.misc.auth.model.identity.User
 import kotlinx.serialization.Serializable
 
 @Serializable

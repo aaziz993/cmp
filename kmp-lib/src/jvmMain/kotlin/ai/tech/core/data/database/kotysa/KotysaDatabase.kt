@@ -24,33 +24,33 @@ import org.ufoss.kotysa.postgresql.PostgresqlTable
 import org.ufoss.kotysa.r2dbc.coSqlClient
 import org.ufoss.kotysa.tables
 
-public fun DatabaseProviderConfig.createKotysaR2dbcClient(): R2dbcSqlClient =
-    when (connection.driver) {
-        "h2" -> createClient(this, { getH2Tables(it) }) { connectionFactory, tables ->
+public fun createKotysaR2dbcClient(config: DatabaseProviderConfig): R2dbcSqlClient =
+    when (config.connection.driver) {
+        "h2" -> createClient(config, { getH2Tables(it) }) { connectionFactory, tables ->
             connectionFactory.coSqlClient(tables().h2(*tables))
         }
 
-        "postgresql" -> createClient(this, { getPostgresqlTables(it) }) { connectionFactory, tables ->
+        "postgresql" -> createClient(config, { getPostgresqlTables(it) }) { connectionFactory, tables ->
             connectionFactory.coSqlClient(tables().postgresql(*tables))
         }
 
-        "mysql" -> createClient(this, { getMysqlTables(it) }) { connectionFactory, tables ->
+        "mysql" -> createClient(config, { getMysqlTables(it) }) { connectionFactory, tables ->
             connectionFactory.coSqlClient(tables().mysql(*tables))
         }
 
-        "mssql" -> createClient(this, { getMssqlTables(it) }) { connectionFactory, tables ->
+        "mssql" -> createClient(config, { getMssqlTables(it) }) { connectionFactory, tables ->
             connectionFactory.coSqlClient(tables().mssql(*tables))
         }
 
-        "mariadb" -> createClient(this, { getMariadbTables(it) }) { connectionFactory, tables ->
+        "mariadb" -> createClient(config, { getMariadbTables(it) }) { connectionFactory, tables ->
             connectionFactory.coSqlClient(tables().mariadb(*tables))
         }
 
-        "oracle" -> createClient(this, { getOracleTables(it) }) { connectionFactory, tables ->
+        "oracle" -> createClient(config, { getOracleTables(it) }) { connectionFactory, tables ->
             connectionFactory.coSqlClient(tables().oracle(*tables))
         }
 
-        else -> throw UnsupportedOperationException("Unknown database type \"${connection.driver}\"")
+        else -> throw UnsupportedOperationException("Unknown database type \"${config.connection.driver}\"")
     }
 
 private inline fun <reified T : Table<*>> createClient(

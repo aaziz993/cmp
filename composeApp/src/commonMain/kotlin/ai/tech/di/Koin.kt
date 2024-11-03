@@ -1,5 +1,6 @@
 package ai.tech.di
 
+import ai.tech.di.module.CommonModule
 import org.koin.core.KoinApplication
 import org.koin.dsl.koinApplication
 import org.koin.ksp.generated.*

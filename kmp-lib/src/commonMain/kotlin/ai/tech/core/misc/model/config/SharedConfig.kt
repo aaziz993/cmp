@@ -1,6 +1,5 @@
 package ai.tech.core.misc.model.config
 
-import ai.tech.core.data.database.model.config.DatabaseConfig
 import ai.tech.core.data.validator.model.UserValidatorConfig
 import ai.tech.core.misc.model.config.server.KtorServerConfig
 import ai.tech.core.misc.location.model.Language

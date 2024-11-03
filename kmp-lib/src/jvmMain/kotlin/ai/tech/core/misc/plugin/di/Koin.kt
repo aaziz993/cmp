@@ -1,6 +1,7 @@
 package ai.tech.core.misc.plugin.di
 
-import core.plugin.di.module.databaseModule
+import ai.tech.core.misc.model.config.server.ServerConfig
+import ai.tech.core.misc.plugin.di.module.kotysaDatabaseModule
 import io.ktor.server.application.*
 import org.koin.core.KoinApplication
 import org.koin.core.logger.Level
@@ -8,7 +9,7 @@ import org.koin.dsl.module
 import org.koin.ktor.plugin.Koin
 import org.koin.logger.slf4jLogger
 
-public inline fun <reified T:ServerConfig> Application.configKoin(
+public inline fun <reified T : ServerConfig> Application.configureKoin(
     config: T,
     crossinline application: KoinApplication.() -> Unit = {}
 ) {
@@ -21,7 +22,7 @@ public inline fun <reified T:ServerConfig> Application.configKoin(
 
         modules(
             module { single { config } },
-            databaseModule(config.database)
+            kotysaDatabaseModule(config.database),
         )
     }
 }
