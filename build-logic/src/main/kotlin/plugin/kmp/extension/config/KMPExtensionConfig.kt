@@ -162,7 +162,6 @@ internal fun Project.configureKMPExtension(extension: KotlinMultiplatformExtensi
             getByName("mobileMain").dependencies {
                 implementation(bundle("compass.mobile"))
                 implementation(lib("permissions"))
-                implementation(lib("realm"))
             }
 
             getByName("mobileTest").dependencies {
