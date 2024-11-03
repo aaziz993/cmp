@@ -9,6 +9,7 @@ import plugin.extension.bundle
 import plugin.extension.config.configureKotlinAndroidTarget
 import plugin.extension.config.configureKotlinIosTarget
 import plugin.extension.config.configureKotlinNativeTarget
+import plugin.extension.config.implementation
 import plugin.extension.lib
 import plugin.extension.version
 
@@ -145,6 +146,7 @@ internal fun Project.configureKMPExtension(extension: KotlinMultiplatformExtensi
                 implementation(bundle("kotysa"))
                 implementation(lib("dataframe"))
                 implementation(lib("kandy"))
+                implementation(lib("ktor.serialization.kotlinx.xml"))
                 implementation(bundle("ktor.server"))
                 implementation(bundle("kotlinx.rpc.server"))
                 implementation(bundle("kgraphql"))

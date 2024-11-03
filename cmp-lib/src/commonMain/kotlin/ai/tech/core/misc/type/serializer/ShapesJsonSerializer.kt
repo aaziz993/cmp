@@ -6,7 +6,7 @@ import kotlinx.serialization.descriptors.PrimitiveKind
 import kotlinx.serialization.descriptors.PrimitiveSerialDescriptor
 import kotlinx.serialization.descriptors.SerialDescriptor
 
-public class ShapesJsonSerializer : PrimitiveSerializer<Shapes>(Shapes::class, { Shapes() }, { "" }) {
+public object ShapesJsonSerializer : PrimitiveSerializer<Shapes>(Shapes::class, { Shapes() }, { "" }) {
     override val descriptor: SerialDescriptor
         get() = PrimitiveSerialDescriptor("Shapes", PrimitiveKind.STRING)
 }

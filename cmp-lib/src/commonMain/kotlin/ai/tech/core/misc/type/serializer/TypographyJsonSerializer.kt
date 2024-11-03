@@ -6,7 +6,7 @@ import kotlinx.serialization.descriptors.PrimitiveKind
 import kotlinx.serialization.descriptors.PrimitiveSerialDescriptor
 import kotlinx.serialization.descriptors.SerialDescriptor
 
-public class TypographyJsonSerializer : PrimitiveSerializer<Typography>(Typography::class, { Typography() }, { "" }) {
+public object TypographyJsonSerializer : PrimitiveSerializer<Typography>(Typography::class, { Typography() }, { "" }) {
     override val descriptor: SerialDescriptor
         get() = PrimitiveSerialDescriptor("Typography", PrimitiveKind.STRING)
 }
