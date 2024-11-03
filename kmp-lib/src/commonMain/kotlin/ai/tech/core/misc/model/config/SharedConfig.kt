@@ -1,5 +1,6 @@
 package ai.tech.core.misc.model.config
 
+import ai.tech.core.data.database.model.config.DatabaseProviderConfig
 import ai.tech.core.data.validator.model.UserValidatorConfig
 import ai.tech.core.misc.model.config.server.KtorServerConfig
 import ai.tech.core.misc.location.model.Language
@@ -19,7 +20,7 @@ public interface SharedConfig {
 
     public val userValidator: UserValidatorConfig
 
-    public val database: DatabaseConfig?
+    public val database: Map<String, DatabaseProviderConfig>?
 
     public val ktor: KtorServerConfig
 }
