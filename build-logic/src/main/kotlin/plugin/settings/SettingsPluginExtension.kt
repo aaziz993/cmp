@@ -112,28 +112,29 @@ public open class SettingsPluginExtension(
             }
 
             buildCache {
-                if (providers.gradleProperty("jetbrains.space.gradle.build.enable").get().toBoolean()) {
-                    remote<HttpBuildCache>(HttpBuildCache::class.java) {
-                        url = URI(
-                            "${
-                                providers.gradleProperty("jetbrains.space.gradle.build.cache.url").get()
-                            }/${rootProject.name}",
-                        )
-                        // better make it a variable and set it to true only for CI builds
-                        isPush = true
-                        credentials {
-                            username = if (System.getenv().containsKey("JB_SPACE_GRADLE_BUILD_CACHE_USERNAME")) {
-                                System.getenv("JB_SPACE_GRADLE_BUILD_CACHE_USERNAME")
-                            }
-                            else {
-                                localProperties.getProperty("jetbrains.space.gradle.build.cache.username")
-                            }
-                            password = if (System.getenv().containsKey("")) {
-                                System.getenv("JB_SPACE_GRADLE_BUILD_CACHE_PASSWORD")
-                            }
-                            else {
-                                localProperties.getProperty("jetbrains.space.gradle.build.cache.password")
-                            }
+                remote(HttpBuildCache::class.java) {
+                    isEnabled = providers.gradleProperty("jetbrains.space.gradle.build.enable").get().toBoolean()
+                    // better make it a variable and set it to true only for CI builds
+                    isPush = providers.gradleProperty("jetbrains.space.gradle.build.push").get().toBoolean()
+
+                    url = URI(
+                        "${
+                            providers.gradleProperty("jetbrains.space.gradle.build.cache.url").get()
+                        }/${rootProject.name}",
+                    )
+
+                    credentials {
+                        username = if (System.getenv().containsKey("JB_SPACE_GRADLE_BUILD_CACHE_USERNAME")) {
+                            System.getenv("JB_SPACE_GRADLE_BUILD_CACHE_USERNAME")
+                        }
+                        else {
+                            localProperties.getProperty("jetbrains.space.gradle.build.cache.username")
+                        }
+                        password = if (System.getenv().containsKey("")) {
+                            System.getenv("JB_SPACE_GRADLE_BUILD_CACHE_PASSWORD")
+                        }
+                        else {
+                            localProperties.getProperty("jetbrains.space.gradle.build.cache.password")
                         }
                     }
                 }
