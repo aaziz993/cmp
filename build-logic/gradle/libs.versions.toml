@@ -125,6 +125,7 @@ androidx-lifecycle = "2.8.3"
 androidx-material = "1.12.0"
 androidx-test-junit = "1.2.1"
 compose-multiplatform = "1.7.0"
+colorpicker = "1.1.2"
 compose-icons = "1.1.1"
 material3-adaptive = "1.0.0"
 compose-settings = "2.4.0"
@@ -328,6 +329,8 @@ seskar = { module = "io.github.turansky.seskar:seskar-core", version.ref = "sesk
 kotlin-browser = { module = "org.jetbrains.kotlin-wrappers:kotlin-browser", version.ref = "kotlin-browser" }
 kotlin-node = { module = "org.jetbrains.kotlin-wrappers:kotlin-node", version.ref = "kotlin-node" }
 # Compose multiplatform
+# color picker
+compose-colorpicker = { module = "com.github.skydoves:colorpicker-compose", version.ref = "colorpicker" }
 # icons
 compose-icons-css-gg = { module = "br.com.devsrsouza.compose.icons:css-gg", version.ref = "compose-icons" }
 compose-icons-weather-icons = { module = "br.com.devsrsouza.compose.icons:erikflowers-weather-icons", version.ref = "compose-icons" }

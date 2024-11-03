@@ -42,6 +42,7 @@ internal class CMPPlugin(
                             implementation(composeDeps.components.uiToolingPreview)
                             implementation(composeDeps.material3AdaptiveNavigationSuite)
                             implementation(composeDeps.materialIconsExtended)
+                            implementation(lib("compose.colorpicker"))
                             implementation(bundle("compose.icons"))
                             implementation(bundle("material3.adaptive"))
                             implementation(bundle("compose.settings.ui"))
