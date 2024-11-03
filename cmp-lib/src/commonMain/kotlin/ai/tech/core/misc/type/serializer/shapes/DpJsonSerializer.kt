@@ -1,4 +1,4 @@
-package ai.tech.core.misc.type.serializer
+package ai.tech.core.misc.type.serializer.shapes
 
 import ai.tech.core.misc.type.serializer.primitive.PrimitiveFloatSerializer
 import ai.tech.core.misc.type.serializer.primitive.PrimitiveStringSerializer

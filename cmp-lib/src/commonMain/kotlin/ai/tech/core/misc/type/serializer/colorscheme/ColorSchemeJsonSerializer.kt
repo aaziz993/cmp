@@ -1,4 +1,4 @@
-package ai.tech.core.misc.type.serializer
+package ai.tech.core.misc.type.serializer.colorscheme
 
 import ai.tech.core.ui.theme.lightColorScheme
 import androidx.compose.material3.ColorScheme
@@ -56,21 +56,21 @@ private val defaultColors = listOf(
 public object ColorSchemeJsonSerializer : KSerializer<ColorScheme> {
 
     override val descriptor: SerialDescriptor = buildClassSerialDescriptor("ColorScheme") {
-        element("primary", ColorJsonSerializer.descriptor)
-        element("onPrimary", ColorJsonSerializer.descriptor)
-        element("primaryContainer", ColorJsonSerializer.descriptor)
-        element("onPrimaryContainer", ColorJsonSerializer.descriptor)
-        element("inversePrimary", ColorJsonSerializer.descriptor)
-        element("secondary", ColorJsonSerializer.descriptor)
-        element("onSecondary", ColorJsonSerializer.descriptor)
-        element("secondaryContainer", ColorJsonSerializer.descriptor)
-        element("onSecondaryContainer", ColorJsonSerializer.descriptor)
-        element("tertiary", ColorJsonSerializer.descriptor)
-        element("onTertiary", ColorJsonSerializer.descriptor)
-        element("tertiaryContainer", ColorJsonSerializer.descriptor)
-        element("onTertiaryContainer", ColorJsonSerializer.descriptor)
-        element("background", ColorJsonSerializer.descriptor)
-        element("onBackground", ColorJsonSerializer.descriptor)
+        element("primary", ai.tech.core.misc.type.serializer.colorscheme.ColorJsonSerializer.descriptor)
+        element("onPrimary", ai.tech.core.misc.type.serializer.colorscheme.ColorJsonSerializer.descriptor)
+        element("primaryContainer", ai.tech.core.misc.type.serializer.colorscheme.ColorJsonSerializer.descriptor)
+        element("onPrimaryContainer", ai.tech.core.misc.type.serializer.colorscheme.ColorJsonSerializer.descriptor)
+        element("inversePrimary", ai.tech.core.misc.type.serializer.colorscheme.ColorJsonSerializer.descriptor)
+        element("secondary", ai.tech.core.misc.type.serializer.colorscheme.ColorJsonSerializer.descriptor)
+        element("onSecondary", ai.tech.core.misc.type.serializer.colorscheme.ColorJsonSerializer.descriptor)
+        element("secondaryContainer", ai.tech.core.misc.type.serializer.colorscheme.ColorJsonSerializer.descriptor)
+        element("onSecondaryContainer", ai.tech.core.misc.type.serializer.colorscheme.ColorJsonSerializer.descriptor)
+        element("tertiary", ai.tech.core.misc.type.serializer.colorscheme.ColorJsonSerializer.descriptor)
+        element("onTertiary", ai.tech.core.misc.type.serializer.colorscheme.ColorJsonSerializer.descriptor)
+        element("tertiaryContainer", ai.tech.core.misc.type.serializer.colorscheme.ColorJsonSerializer.descriptor)
+        element("onTertiaryContainer", ai.tech.core.misc.type.serializer.colorscheme.ColorJsonSerializer.descriptor)
+        element("background", ai.tech.core.misc.type.serializer.colorscheme.ColorJsonSerializer.descriptor)
+        element("onBackground", ai.tech.core.misc.type.serializer.colorscheme.ColorJsonSerializer.descriptor)
         element("surface", ColorJsonSerializer.descriptor)
         element("onSurface", ColorJsonSerializer.descriptor)
         element("surfaceVariant", ColorJsonSerializer.descriptor)

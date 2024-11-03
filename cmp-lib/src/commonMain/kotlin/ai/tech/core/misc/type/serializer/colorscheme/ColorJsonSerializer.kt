@@ -1,4 +1,4 @@
-package ai.tech.core.misc.type.serializer
+package ai.tech.core.misc.type.serializer.colorscheme
 
 import ai.tech.core.misc.type.serializer.primitive.PrimitiveLongSerializer
 import ai.tech.core.misc.type.serializer.primitive.PrimitiveStringSerializer
