@@ -1,4 +1,4 @@
-package ai.tech.core.misc.config.server
+package ai.tech.core.misc.model.config.server
 
 import kotlinx.serialization.Serializable
 
