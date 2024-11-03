@@ -14,13 +14,14 @@ public abstract class PrimitiveSerializer<T : Any>(
     public val serializer: (Encoder, T) -> Unit,
     public val deserializer: (Decoder) -> T,
 ) : KSerializer<T> {
+
     override val descriptor: SerialDescriptor = PrimitiveSerialDescriptor(kClass.simpleName!!, kind)
 
     override fun serialize(
         encoder: Encoder,
         value: T,
     ) {
-        serializer(encoder)
+        serializer(encoder, value)
     }
 
     override fun deserialize(decoder: Decoder): T = deserializer(decoder)
