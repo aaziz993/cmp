@@ -1,5 +1,6 @@
 package ai.tech.core.misc.type.serializer
 
+import ai.tech.core.ui.theme.lightColorScheme
 import androidx.compose.material3.ColorScheme
 import androidx.compose.ui.graphics.Color
 import kotlinx.serialization.ExperimentalSerializationApi
@@ -12,6 +13,45 @@ import kotlinx.serialization.encoding.Decoder
 import kotlinx.serialization.encoding.Encoder
 import kotlinx.serialization.encoding.decodeStructure
 import kotlinx.serialization.encoding.encodeStructure
+
+private val defaultColors = listOf(
+    lightColorScheme.primary,
+    lightColorScheme.onPrimary,
+    lightColorScheme.primaryContainer,
+    lightColorScheme.onPrimaryContainer,
+    lightColorScheme.inversePrimary,
+    lightColorScheme.secondary,
+    lightColorScheme.onSecondary,
+    lightColorScheme.secondaryContainer,
+    lightColorScheme.onSecondaryContainer,
+    lightColorScheme.tertiary,
+    lightColorScheme.onTertiary,
+    lightColorScheme.tertiaryContainer,
+    lightColorScheme.onTertiaryContainer,
+    lightColorScheme.background,
+    lightColorScheme.onBackground,
+    lightColorScheme.surface,
+    lightColorScheme.onSurface,
+    lightColorScheme.surfaceVariant,
+    lightColorScheme.onSurfaceVariant,
+    lightColorScheme.surfaceTint,
+    lightColorScheme.inverseSurface,
+    lightColorScheme.inverseOnSurface,
+    lightColorScheme.error,
+    lightColorScheme.onError,
+    lightColorScheme.errorContainer,
+    lightColorScheme.onErrorContainer,
+    lightColorScheme.outline,
+    lightColorScheme.outlineVariant,
+    lightColorScheme.scrim,
+    lightColorScheme.surfaceBright,
+    lightColorScheme.surfaceDim,
+    lightColorScheme.surfaceContainer,
+    lightColorScheme.surfaceContainerHigh,
+    lightColorScheme.surfaceContainerHighest,
+    lightColorScheme.surfaceContainerLow,
+    lightColorScheme.surfaceContainerLowest,
+)
 
 public object ColorSchemeJsonSerializer : KSerializer<ColorScheme> {
 
@@ -98,48 +138,14 @@ public object ColorSchemeJsonSerializer : KSerializer<ColorScheme> {
     @OptIn(ExperimentalSerializationApi::class)
     override fun deserialize(decoder: Decoder): ColorScheme {
         return decoder.decodeStructure(descriptor) {
+            val colors = defaultColors.toMutableList()
+
             if (decodeSequentially()) {
-                ColorScheme(
-                    decodeSerializableElement(descriptor, 0, ColorJsonSerializer),
-                    decodeSerializableElement(descriptor, 1, ColorJsonSerializer),
-                    decodeSerializableElement(descriptor, 2, ColorJsonSerializer),
-                    decodeSerializableElement(descriptor, 3, ColorJsonSerializer),
-                    decodeSerializableElement(descriptor, 4, ColorJsonSerializer),
-                    decodeSerializableElement(descriptor, 5, ColorJsonSerializer),
-                    decodeSerializableElement(descriptor, 6, ColorJsonSerializer),
-                    decodeSerializableElement(descriptor, 7, ColorJsonSerializer),
-                    decodeSerializableElement(descriptor, 8, ColorJsonSerializer),
-                    decodeSerializableElement(descriptor, 9, ColorJsonSerializer),
-                    decodeSerializableElement(descriptor, 10, ColorJsonSerializer),
-                    decodeSerializableElement(descriptor, 11, ColorJsonSerializer),
-                    decodeSerializableElement(descriptor, 12, ColorJsonSerializer),
-                    decodeSerializableElement(descriptor, 13, ColorJsonSerializer),
-                    decodeSerializableElement(descriptor, 14, ColorJsonSerializer),
-                    decodeSerializableElement(descriptor, 15, ColorJsonSerializer),
-                    decodeSerializableElement(descriptor, 16, ColorJsonSerializer),
-                    decodeSerializableElement(descriptor, 17, ColorJsonSerializer),
-                    decodeSerializableElement(descriptor, 18, ColorJsonSerializer),
-                    decodeSerializableElement(descriptor, 19, ColorJsonSerializer),
-                    decodeSerializableElement(descriptor, 20, ColorJsonSerializer),
-                    decodeSerializableElement(descriptor, 21, ColorJsonSerializer),
-                    decodeSerializableElement(descriptor, 22, ColorJsonSerializer),
-                    decodeSerializableElement(descriptor, 23, ColorJsonSerializer),
-                    decodeSerializableElement(descriptor, 24, ColorJsonSerializer),
-                    decodeSerializableElement(descriptor, 25, ColorJsonSerializer),
-                    decodeSerializableElement(descriptor, 26, ColorJsonSerializer),
-                    decodeSerializableElement(descriptor, 27, ColorJsonSerializer),
-                    decodeSerializableElement(descriptor, 28, ColorJsonSerializer),
-                    decodeSerializableElement(descriptor, 29, ColorJsonSerializer),
-                    decodeSerializableElement(descriptor, 30, ColorJsonSerializer),
-                    decodeSerializableElement(descriptor, 31, ColorJsonSerializer),
-                    decodeSerializableElement(descriptor, 32, ColorJsonSerializer),
-                    decodeSerializableElement(descriptor, 33, ColorJsonSerializer),
-                    decodeSerializableElement(descriptor, 34, ColorJsonSerializer),
-                    decodeSerializableElement(descriptor, 35, ColorJsonSerializer),
-                )
+                (0 until 36).forEach { index ->
+                    decodeNullableSerializableElement(descriptor, index, ColorJsonSerializer)?.let { colors[index] = it }
+                }
             }
             else {
-                val colors = MutableList<Color?>(36) { null }
                 do {
                     val index = decodeElementIndex(descriptor)
 
@@ -147,48 +153,48 @@ public object ColorSchemeJsonSerializer : KSerializer<ColorScheme> {
                         break
                     }
 
-                    colors[index] = decodeSerializableElement(descriptor, index, ColorJsonSerializer)
+                    decodeNullableSerializableElement(descriptor, index, ColorJsonSerializer)?.let { colors[index] = it }
                 } while (true)
-
-                ColorScheme(
-                    colors[0]!!,
-                    colors[1]!!,
-                    colors[2]!!,
-                    colors[3]!!,
-                    colors[4]!!,
-                    colors[5]!!,
-                    colors[6]!!,
-                    colors[7]!!,
-                    colors[8]!!,
-                    colors[9]!!,
-                    colors[10]!!,
-                    colors[11]!!,
-                    colors[12]!!,
-                    colors[13]!!,
-                    colors[14]!!,
-                    colors[15]!!,
-                    colors[16]!!,
-                    colors[17]!!,
-                    colors[18]!!,
-                    colors[19]!!,
-                    colors[20]!!,
-                    colors[21]!!,
-                    colors[22]!!,
-                    colors[23]!!,
-                    colors[24]!!,
-                    colors[25]!!,
-                    colors[26]!!,
-                    colors[27]!!,
-                    colors[28]!!,
-                    colors[29]!!,
-                    colors[30]!!,
-                    colors[31]!!,
-                    colors[32]!!,
-                    colors[33]!!,
-                    colors[34]!!,
-                    colors[35]!!,
-                )
             }
+
+            ColorScheme(
+                colors[0],
+                colors[1],
+                colors[2],
+                colors[3],
+                colors[4],
+                colors[5],
+                colors[6],
+                colors[7],
+                colors[8],
+                colors[9],
+                colors[10],
+                colors[11],
+                colors[12],
+                colors[13],
+                colors[14],
+                colors[15],
+                colors[16],
+                colors[17],
+                colors[18],
+                colors[19],
+                colors[20],
+                colors[21],
+                colors[22],
+                colors[23],
+                colors[24],
+                colors[25],
+                colors[26],
+                colors[27],
+                colors[28],
+                colors[29],
+                colors[30],
+                colors[31],
+                colors[32],
+                colors[33],
+                colors[34],
+                colors[35],
+            )
         }
     }
 }
