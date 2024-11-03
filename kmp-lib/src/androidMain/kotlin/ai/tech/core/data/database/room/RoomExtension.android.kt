@@ -6,11 +6,10 @@ import splitties.init.appCtx
 
 public actual inline fun <reified T : RoomDatabase> createRoomDatabaseBuilder(databaseName: String): RoomDatabase.Builder<T> = Room.databaseBuilder(
     appCtx,
-    T::class.java,
-    databaseName,
+    appCtx.getDatabasePath(databaseName).absolutePath,
 )
 
 public actual inline fun <reified T : RoomDatabase> createInMemoryRoomDatabaseBuilder(): RoomDatabase.Builder<T> = Room.inMemoryDatabaseBuilder(
     appCtx,
-    T::class.java
+    T::class.java,
 )
