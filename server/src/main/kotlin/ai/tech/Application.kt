@@ -17,7 +17,7 @@ public fun Application.module() {
 }
 
 private fun createKeystore() {
-    val keyStoreFile = File("server/src/main/resources/keystore.p12")
+    val keyStoreFile = File("server/src/main/resources/cert/keystore.p12")
 
     if (keyStoreFile.exists()) return
 

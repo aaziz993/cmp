@@ -25,7 +25,44 @@ ktor:
   ## To enable SSL, you need to generate a certificate and configure it here
   security:
     ssl:
-      keyStore: server/src/main/resources/keystore.p12
+      keyStore: server/src/main/resources/cert/keystore.p12
       keyStorePassword: "AITech"
       keyAlias: "applicationTLS"
       privateKeyPassword: "AITech"
+
+profiles:
+  - cache
+  - storage
+  - database
+  - di
+  - serialization
+  - httpsredirect
+  - routing
+  - websockets
+  - graphql
+  - calllogging
+  - callid
+  - ratelimit
+  - cors
+  - compression
+  - partialcontent
+  - dataconversion
+  - validation
+  - resources
+  - locations
+  - statuspages
+  - defaultheaders
+  - cachingheaders
+  - conditionalheaders
+  - forwardedheaders
+  - hsts
+  - autoheadresponse
+  - xhttpmethodoverride
+  - session
+  - security
+  - templating
+  - swagger
+  - applicationmonitoring
+  - micrometermetrics
+  - dropwizardmetrics
+  - shutdown
