@@ -1,6 +1,6 @@
 package ai.tech.core.misc.auth.client.model.config
 
-import ai.tech.core.misc.auth.model.oauth.OAuthClientConfig
+import ai.tech.core.misc.auth.client.model.config.oauth.OAuthClientConfig
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.Transient
 

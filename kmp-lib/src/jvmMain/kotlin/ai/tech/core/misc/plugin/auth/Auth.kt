@@ -1,12 +1,12 @@
 package ai.tech.core.misc.plugin.auth
 
-import core.auth.jwt.JWTHS256Auth
-import core.auth.jwt.JWTRS256Auth
-import core.auth.jwt.model.JWTConfig
-import core.auth.model.ServerAuthConfig
-import core.auth.oauth.OAuth
-import core.auth.oauth.model.OAuthServerConfig
-import core.auth.rbac.rbac
+import ai.tech.core.misc.auth.server.jwt.ServerJWTHS256Auth
+import ai.tech.core.misc.auth.server.jwt.ServerJWTRS256Auth
+import ai.tech.core.misc.auth.server.jwt.model.ServerJWTConfig
+import ai.tech.core.misc.auth.server.model.config.ServerAuthConfig
+import ai.tech.core.misc.auth.server.oauth.ServerOAuth
+import ai.tech.core.misc.auth.server.oauth.model.config.ServerOAuthConfig
+import ai.tech.core.misc.auth.server.rbac.rbac
 import io.ktor.client.*
 import io.ktor.http.auth.*
 import io.ktor.http.parsing.*
@@ -27,7 +27,7 @@ public fun Application.configureAuth(
         val redirects = mutableMapOf<String, String>()
         authentication {
             it.jwtHs256.forEach { (name, config) ->
-                val jwtHS256Auth = JWTHS256Auth(name, config)
+                val jwtHS256Auth = ServerJWTHS256Auth(name, config)
                 configJWT(name, config) {
                     // Load the token verification config
                     verifier {
@@ -49,12 +49,12 @@ public fun Application.configureAuth(
 
                 }
                 rbac(name) {
-                    roleExtractor = jwtHS256Auth::roles
+                    roleExtractor = { jwtHS256Auth.roles(it as JWTPrincipal) }
                 }
             }
 
             it.jwtRs256.forEach { (name, config) ->
-                val jwtRS256Auth = JWTRS256Auth(name, config)
+                val jwtRS256Auth = ServerJWTRS256Auth(name, config)
                 configJWT(name, config) {
                     // Load the token verification config
                     verifier(jwtRS256Auth.jwkProvider, config.issuer) {
@@ -77,7 +77,7 @@ public fun Application.configureAuth(
                     }
                 }
                 rbac(name) {
-                    roleExtractor = jwtRS256Auth::roles
+                    roleExtractor = { jwtRS256Auth.roles(it as JWTPrincipal) }
                 }
             }
             it.keycloak.forEach { (name, config) ->
@@ -87,7 +87,7 @@ public fun Application.configureAuth(
                     address,
                     config,
                     httpClient,
-                    redirects
+                    redirects,
                 )
             }
 
@@ -102,7 +102,7 @@ public fun Application.configureAuth(
                     address,
                     config,
                     httpClient,
-                    redirects
+                    redirects,
                 )
             }
         }
@@ -111,7 +111,7 @@ public fun Application.configureAuth(
 
 private fun AuthenticationConfig.configJWT(
     name: String,
-    config: JWTConfig,
+    config: ServerJWTConfig,
     configure: JWTAuthenticationProvider.Config.() -> Unit
 ) {
     jwt(name) {
@@ -127,7 +127,7 @@ private fun AuthenticationConfig.configJWT(
         config.authSchemes?.let {
             authSchemes(
                 it.defaultScheme,
-                *it.additionalSchemes.toTypedArray()
+                *it.additionalSchemes.toTypedArray(),
             )
         }
 
@@ -139,11 +139,11 @@ private fun AuthenticationConfig.configOAuth(
     name: String,
     provider: String,
     redirectUrl: String,
-    config: OAuthServerConfig,
+    config: ServerOAuthConfig,
     httpClient: HttpClient,
     redirects: MutableMap<String, String>
 ) = with(config) {
-    val oauth = OAuth(name, config)
+    val oauth = ServerOAuth(name, config)
     oauth(name) {
         urlProvider = { "$redirectUrl/callback" }
         providerLookup = {
@@ -163,7 +163,7 @@ private fun AuthenticationConfig.configOAuth(
                     call.request.queryParameters["redirectUrl"]?.let {
                         redirects[state] = it
                     }
-                }
+                },
             )
         }
         client = httpClient
@@ -181,7 +181,8 @@ private fun AuthenticationConfig.configOAuth(
 private fun ApplicationCall.authHeader(header: String) = request.headers[header]?.let {
     try {
         parseAuthorizationHeader(it)
-    } catch (cause: ParseException) {
+    }
+    catch (cause: ParseException) {
         throw BadRequestException("Invalid auth header", cause)
     }
 }

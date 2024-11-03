@@ -1,7 +1,6 @@
 package ai.tech.core.misc.plugin.session
 
 import ai.tech.core.misc.plugin.session.model.UserSession
-import core.auth.model.ServerAuthConfig
 import ai.tech.core.misc.plugin.session.model.config.CookieConfig
 import io.ktor.server.application.*
 import io.ktor.server.sessions.*
