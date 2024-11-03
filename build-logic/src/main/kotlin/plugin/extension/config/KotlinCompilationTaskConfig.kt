@@ -17,6 +17,7 @@ internal fun Project.configureKotlinCompilationTask(task: KotlinCompilationTask<
                 "-Xexport-kdoc",
                 "-Xwhen-guards",
                 "-Xexpect-actual-classes",
+                "-Xcontext-receivers"
             )
         }
     }
