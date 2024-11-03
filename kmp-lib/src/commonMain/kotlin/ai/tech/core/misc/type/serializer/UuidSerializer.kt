@@ -1,14 +1,15 @@
 package ai.tech.core.misc.type.serializer
 
+import ai.tech.core.misc.type.serializer.primitive.PrimitiveStringSerializer
 import com.benasher44.uuid.Uuid
 import com.benasher44.uuid.uuidFrom
 import kotlinx.serialization.Serializable
 
 public object UuidSerializer :
-    PrimitiveSerializer<Uuid>(
+    PrimitiveStringSerializer<Uuid>(
         Uuid::class,
-        { uuidFrom(it) },
-        { it.toString() }
+        Uuid::toString,
+        ::uuidFrom,
     )
 
 public typealias UuidSerial = @Serializable(with = UuidSerializer::class) Uuid

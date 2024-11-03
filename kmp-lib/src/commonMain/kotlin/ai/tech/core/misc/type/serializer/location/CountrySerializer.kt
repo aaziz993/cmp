@@ -1,16 +1,15 @@
 package ai.tech.core.misc.type.serializer
 
 import ai.tech.core.misc.location.model.Country
-import ai.tech.core.misc.location.model.Language
 import ai.tech.core.misc.location.model.countries
-import ai.tech.core.misc.location.model.languages
+import ai.tech.core.misc.type.serializer.primitive.PrimitiveStringSerializer
 import kotlinx.serialization.Serializable
 
 public object CountrySerializer :
-    PrimitiveSerializer<Country>(
+    PrimitiveStringSerializer<Country>(
         Country::class,
+        Country::alpha2,
         { countries[it]!!() },
-        { it.alpha2 },
     )
 
 public typealias CountrySerial = @Serializable(with = CountrySerializer::class) Country

@@ -1,5 +1,6 @@
 package ai.tech.core.misc.type.serializer
 
+import ai.tech.core.misc.type.serializer.primitive.PrimitiveStringSerializer
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.TopAppBarColors
 import kotlinx.serialization.Serializable
@@ -9,7 +10,7 @@ import kotlinx.serialization.descriptors.SerialDescriptor
 
 @OptIn(ExperimentalMaterial3Api::class)
 public class TopAppBarColorsJsonSerializer :
-    PrimitiveSerializer<TopAppBarColors>(TopAppBarColors::class, { null as TopAppBarColors }, { "" }) {
+    PrimitiveStringSerializer<TopAppBarColors>(TopAppBarColors::class, { null as TopAppBarColors }, { "" }) {
     override val descriptor: SerialDescriptor
         get() = PrimitiveSerialDescriptor("TopAppBarDefaults", PrimitiveKind.STRING)
 }

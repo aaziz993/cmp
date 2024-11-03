@@ -3,7 +3,7 @@ package ai.tech.core.misc.auth.server.oauth.model.config
 import ai.tech.core.misc.auth.model.oauth.config.OAuthConfig
 import ai.tech.core.misc.auth.server.ServerAuthProviderConfig
 import ai.tech.core.misc.plugin.session.model.config.CookieConfig
-import ai.tech.core.misc.type.serializer.HttpMethodSerial
+import ai.tech.core.misc.type.serializer.http.HttpMethodSerial
 import io.ktor.http.*
 import kotlinx.serialization.Serializable
 

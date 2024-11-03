@@ -1,13 +1,15 @@
 package ai.tech.core.misc.type.serializer
 
+import ai.tech.core.misc.type.serializer.primitive.PrimitiveLongSerializer
+import ai.tech.core.misc.type.serializer.primitive.PrimitiveStringSerializer
 import kotlinx.serialization.Serializable
 import androidx.compose.ui.graphics.Color
 
 public object ColorJsonSerializer :
-    PrimitiveSerializer<Color>(
+    PrimitiveLongSerializer<Color>(
         Color::class,
-        { Color(it.toULong()) },
-        { it.value.toString() },
+        { it.value.toLong() },
+        ::Color,
     )
 
 public typealias ColorSerial = @Serializable(with = ColorJsonSerializer::class) Color

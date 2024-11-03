@@ -11,7 +11,7 @@ public data class Language(
     val numeric: String?,
     val countryAlpha2: String?,
 ) {
-    override fun toString(): String = officialName
+    override fun toString(): String = "$alpha3-$countryAlpha2"
 }
 
 public val languages: Map<String, () -> Language> =

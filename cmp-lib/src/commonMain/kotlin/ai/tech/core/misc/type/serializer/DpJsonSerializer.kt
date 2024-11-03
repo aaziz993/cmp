@@ -1,13 +1,14 @@
 package ai.tech.core.misc.type.serializer
 
+import ai.tech.core.misc.type.serializer.primitive.PrimitiveStringSerializer
 import androidx.compose.ui.unit.Dp
 import kotlinx.serialization.Serializable
 
 public object DpJsonSerializer :
-    PrimitiveSerializer<Dp>(
+    PrimitiveStringSerializer<Dp>(
         Dp::class,
-        { Dp(it.toFloat()) },
-        { it.value.toString() }
+        Dp::value,
+        ::Dp,
     )
 
 

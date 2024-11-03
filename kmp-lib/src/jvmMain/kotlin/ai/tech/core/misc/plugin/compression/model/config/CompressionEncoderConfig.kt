@@ -1,7 +1,7 @@
 package ai.tech.core.misc.plugin.compression.model.config
 
 import ai.tech.core.misc.model.config.EnabledConfig
-import ai.tech.core.misc.type.serializer.ContentTypeSerial
+import ai.tech.core.misc.type.serializer.http.ContentTypeSerial
 import kotlinx.serialization.Serializable
 
 @Serializable

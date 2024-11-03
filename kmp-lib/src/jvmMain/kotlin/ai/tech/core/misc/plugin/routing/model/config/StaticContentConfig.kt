@@ -3,7 +3,7 @@ package ai.tech.core.misc.plugin.routing.model.config
 import ai.tech.core.data.model.Compression
 import ai.tech.core.misc.model.config.EnabledConfig
 import ai.tech.core.misc.plugin.cachingheaders.model.config.CacheControlConfig
-import ai.tech.core.misc.type.serializer.ContentTypeSerial
+import ai.tech.core.misc.type.serializer.http.ContentTypeSerial
 import kotlinx.serialization.Serializable
 
 @Serializable
