@@ -1,6 +1,6 @@
 package ai.tech.core.misc.auth.server.jwt
 
-import ai.tech.core.misc.type.acc
+import ai.tech.core.misc.type.accessor
 import ai.tech.core.misc.type.callOrNull
 import com.auth0.jwt.interfaces.Claim
 import com.auth0.jwt.interfaces.Payload
@@ -14,7 +14,7 @@ public fun <T> Payload.getClaim(
         }
         else {
             it[keys.first()]?.callOrNull(keys.drop(1)) { _, _, v ->
-                (v as Claim?)?.asMap()?.acc()
+                (v as Claim?)?.asMap()?.accessor()
             }
         }
     } as T
