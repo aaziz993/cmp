@@ -1,6 +1,6 @@
 package ai.tech.core.misc.type.multiple
 
-import ai.tech.core.misc.type.accessor
+import ai.tech.core.misc.type.acc
 import ai.tech.core.misc.type.callOrNull
 
 //////////////////////////////////////////////////////////MAP///////////////////////////////////////////////////////////
@@ -13,7 +13,7 @@ public inline fun Map<String, *>.toDeepMap(
 ): Map<String, Any?> =
     mutableMapOf<String, Any?>().apply {
         this@toDeepMap.forEach { (k, v) ->
-            callOrNull(keySplit(k), v, false) { _, _, _ -> mutableMapOf<String, Any?>().accessor() }
+            callOrNull(keySplit(k), v, false) { _, _, _ -> mutableMapOf<String, Any?>().acc() }
         }
     }
 

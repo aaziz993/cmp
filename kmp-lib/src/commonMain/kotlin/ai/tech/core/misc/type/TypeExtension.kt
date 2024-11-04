@@ -375,7 +375,7 @@ public inline fun <T : R, R> T.letIf(
 }
 
 // ///////////////////////////////////////////////////////ACCESSOR///////////////////////////////////////////////////////
-public fun Any.accessor(
+public fun Any.acc(
     json: Json = Json.Default,
     yaml: Yaml = Yaml.Default,
     stringTransform: (String) -> Any = {
@@ -405,9 +405,9 @@ public fun Any.accessor(
         else -> MapLikeAccessor(value, json.toGeneric<Map<*, *>>(value), keyTransform, parentKey)
     }
 
-public inline fun <T : Any> T.accessorOrNull(
+public inline fun <T : Any> T.accOrNull(
     keys: List<Any?>,
-    accessor: (List<Accessor>, key: Any?, value: Any?) -> Accessor? = { _, key, value -> value?.accessor(parentKey = key) },
+    accessor: (List<Accessor>, key: Any?, value: Any?) -> Accessor? = { _, key, value -> value?.acc(parentKey = key) },
 ): Accessor? = accessor(emptyList(), null, this)?.let {
     keys.fold(listOf(it)) { acc, key ->
         acc + listOf(acc.last().let { lastAccessor ->
@@ -424,20 +424,20 @@ public inline fun <T : Any> T.accessorOrNull(
 
 public inline fun <T : Any> T.containsOrNull(
     keys: List<Any?>,
-    accessor: (List<Accessor>, key: Any?, value: Any?) -> Accessor? = { _, key, value -> value?.accessor(parentKey = key) },
-): Boolean? = accessorOrNull(keys.dropLast(1), accessor)?.contains(keys.last())
+    accessor: (List<Accessor>, key: Any?, value: Any?) -> Accessor? = { _, key, value -> value?.acc(parentKey = key) },
+): Boolean? = accOrNull(keys.dropLast(1), accessor)?.contains(keys.last())
 
 public inline fun <T : Any> T.callOrNull(
     keys: List<Any?>,
     value: Any? = null,
     spread: Boolean = true,
-    accessor: (List<Accessor>, key: Any?, value: Any?) -> Accessor? = { _, key, value -> value?.accessor(parentKey = key) },
-): Any? = accessorOrNull(keys.dropLast(1), accessor)?.call(keys.last(), value, spread)
+    accessor: (List<Accessor>, key: Any?, value: Any?) -> Accessor? = { _, key, value -> value?.acc(parentKey = key) },
+): Any? = accOrNull(keys.dropLast(1), accessor)?.call(keys.last(), value, spread)
 
 public inline fun <T : Any> T.removeOrNull(
     keys: List<Any?>,
-    accessor: (List<Accessor>, key: Any?, value: Any?) -> Accessor? = { _, key, value -> value?.accessor(parentKey = key) },
-): Any? = accessorOrNull(keys.dropLast(1), accessor)?.remove(keys.last())
+    accessor: (List<Accessor>, key: Any?, value: Any?) -> Accessor? = { _, key, value -> value?.acc(parentKey = key) },
+): Any? = accOrNull(keys.dropLast(1), accessor)?.remove(keys.last())
 
 // //////////////////////////////////////////////////////TRAVERSER///////////////////////////////////////////////////////
 public fun Any.assign(
@@ -463,7 +463,7 @@ public fun Any.assign(
         if (keys.isNotEmpty() && v is List<*>) {
             null
         } else {
-            v?.accessor()
+            v?.acc()
         }
     }
 ) {
