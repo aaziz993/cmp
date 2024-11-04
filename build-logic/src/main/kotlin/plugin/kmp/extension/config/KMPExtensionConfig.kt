@@ -153,6 +153,7 @@ internal fun Project.configureKMPExtension(extension: KotlinMultiplatformExtensi
                 implementation(bundle("kgraphql"))
                 implementation(bundle("metrics"))
                 implementation(lib("worldwind"))
+                implementation(lib("jxmapviewer2"))
                 implementation(bundle("koin.ktor"))
             }
 

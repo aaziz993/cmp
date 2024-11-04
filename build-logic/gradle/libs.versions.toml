@@ -135,7 +135,10 @@ filekit-compose = "0.8.1"
 # Multiplatform settings
 multiplatform-settings = "1.1.1"
 compass = "1.2.4"
+# jvm, android and js map
 worldwind = "1.5.19"
+# jvm
+jxmapviewer2 = "2.8"
 # Permissions
 permissions = "0.18.0"
 # SQLDelight database
@@ -399,6 +402,9 @@ store5 = { group = "org.mobilenativefoundation.store", name = "store5", version.
 
 # Map for Js, Jvm and Android
 worldwind = { module = "earth.worldwind:worldwind", version.ref = "worldwind" }
+
+# JVM map
+jxmapviewer2 = { module = "org.jxmapviewer:jxmapviewer2", version.ref = "jxmapviewer2" }
 
 # Compass Geolocation
 compass-autocomplete = { module = "dev.jordond.compass:autocomplete", version.ref = "compass" }
