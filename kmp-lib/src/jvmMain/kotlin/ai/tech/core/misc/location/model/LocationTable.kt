@@ -1,13 +1,14 @@
-package ai.tech.map.location.model
+package ai.tech.core.misc.location.model
 
-import ai.tech.core.misc.location.model.LocationEntity
 import org.ufoss.kotysa.GenericTable
 import org.ufoss.kotysa.columns.DoubleDbDoublePrecisionColumnNotNull
 import org.ufoss.kotysa.columns.KotlinxLocalDateTimeDbTimestampColumnNullable
 import org.ufoss.kotysa.columns.LongDbIdentityColumnNotNull
 import org.ufoss.kotysa.columns.StringDbVarcharColumnNullable
+import org.ufoss.kotysa.timestamp
 
 public object LocationTable : GenericTable<LocationEntity>("location") {
+
     // Primary key
     public val id: LongDbIdentityColumnNotNull<LocationEntity> = bigInt(LocationEntity::id)
         .identity()

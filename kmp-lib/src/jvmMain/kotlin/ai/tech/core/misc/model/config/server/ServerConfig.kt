@@ -3,6 +3,7 @@ package ai.tech.core.misc.model.config.server
 import ai.tech.core.misc.auth.server.model.config.ServerAuthConfig
 import ai.tech.core.misc.model.config.SharedConfig
 import ai.tech.core.misc.model.config.di.KoinConfig
+import ai.tech.core.misc.model.config.server.keystore.GenerateServerSSLConfig
 import ai.tech.core.misc.plugin.applicationmonitoring.model.config.ApplicationMonitoringConfig
 import ai.tech.core.misc.plugin.authheadresponse.model.config.AutoHeadResponseConfig
 import ai.tech.core.misc.plugin.cachingheaders.model.config.CachingHeadersConfig

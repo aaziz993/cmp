@@ -1,4 +1,4 @@
-package ai.tech.map.location
+package ai.tech.core.misc.location.http
 
 import ai.tech.core.misc.model.config.server.ServerConfig
 import io.ktor.server.routing.*
