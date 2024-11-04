@@ -1,4 +1,4 @@
-package ai.tech.core.misc.plugin.dropwizardmetrics.mode.config
+package ai.tech.core.misc.plugin.dropwizardmetrics.model.config
 
 import ai.tech.core.misc.model.config.LogConfig
 import com.codahale.metrics.MetricAttribute

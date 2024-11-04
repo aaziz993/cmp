@@ -4,5 +4,6 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 public data class KtorServerConfig(
-    val deployment: KtorServerDeploymentConfig
+    val deployment: KtorServerDeploymentConfig,
+    val environment: String
 )

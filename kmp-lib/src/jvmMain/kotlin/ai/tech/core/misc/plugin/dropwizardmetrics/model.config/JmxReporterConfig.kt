@@ -1,4 +1,4 @@
-package ai.tech.core.misc.plugin.dropwizardmetrics.mode.config
+package ai.tech.core.misc.plugin.dropwizardmetrics.model.config
 
 import java.util.concurrent.TimeUnit
 import kotlinx.serialization.Serializable

@@ -2,7 +2,7 @@ package ai.tech.core.misc.plugin.dropwizardmetrics
 
 import com.codahale.metrics.Slf4jReporter
 import com.codahale.metrics.jmx.JmxReporter
-import ai.tech.core.misc.plugin.dropwizardmetrics.mode.config.DropwizardMetricsConfig
+import ai.tech.core.misc.plugin.dropwizardmetrics.model.config.DropwizardMetricsConfig
 import io.ktor.server.application.*
 import io.ktor.server.metrics.dropwizard.*
 

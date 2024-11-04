@@ -1,6 +1,5 @@
 package ai.tech
 
-import ai.tech.core.data.filesystem.readResourceText
 import ai.tech.core.misc.model.config.server.ServerConfig
 import ai.tech.core.misc.plugin.applicationmonitoring.configureApplicationMonitoring
 import ai.tech.core.misc.plugin.auth.configureAuth
@@ -13,7 +12,6 @@ import ai.tech.core.misc.plugin.conditionalheaders.configureConditionalHeaders
 import ai.tech.core.misc.plugin.cors.configureCORS
 import ai.tech.core.misc.plugin.dataconversion.configureDataConversion
 import ai.tech.core.misc.plugin.defaultheaders.configureDefaultHeaders
-import ai.tech.core.misc.plugin.di.configureKoin
 import ai.tech.core.misc.plugin.dropwizardmetrics.configureDropwizardMetrics
 import ai.tech.core.misc.plugin.forwardedheaders.configureForwardedHeaders
 import ai.tech.core.misc.plugin.forwardedheaders.configureXForwardedHeaders
@@ -34,10 +32,10 @@ import ai.tech.core.misc.plugin.templating.configureFreeMarker
 import ai.tech.core.misc.plugin.validation.configureRequestValidation
 import ai.tech.core.misc.plugin.websockets.configureWebSockets
 import ai.tech.core.misc.plugin.xhttpmethodoverride.configureXHttpMethodOverride
+import ai.tech.plugin.routing
 import io.ktor.network.tls.certificates.*
 import io.ktor.server.application.Application
 import io.ktor.server.netty.EngineMain
-import io.ktor.server.routing.routing
 import java.io.File
 import org.koin.ksp.generated.*
 import org.koin.ktor.ext.get
@@ -64,13 +62,13 @@ public fun Application.module() {
     // Configure the Routing plugin
     configureRouting(config.routing) {
         // Add other feature routes here
-
+        routing(config)
     }
 
     // Configure the Websockets plugin
     configureWebSockets(
         config.websockets,
-        if (config.ktor.deployment.esslPort == null) "ws://${appConfig.baseConfig.host}:${appConfig.baseConfig.port}" else "wss://${appConfig.baseConfig.host}:${appConfig.sslPort}",
+        if (config.ktor.deployment.esslPort == null) "ws://${config.ktor.deployment.host}:${config.ktor.deployment.eport}" else "wss://${config.ktor.deployment.host}:${config.ktor.deployment.esslPort}",
     )
 
     // Configure the Graphql plugin

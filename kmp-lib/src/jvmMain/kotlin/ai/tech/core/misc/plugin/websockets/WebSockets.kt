@@ -11,6 +11,7 @@ import kotlinx.serialization.json.Json
 
 public fun Application.configureWebSockets(
     config: WebSocketsConfig?,
+    destinationURL: String,
     block: (WebSockets.WebSocketOptions.() -> Unit)? = null
 ) {
     var configBlock: (WebSockets.WebSocketOptions.() -> Unit)? = null
@@ -24,7 +25,7 @@ public fun Application.configureWebSockets(
                         FreeMarkerContent(
                             it.filePath ?: "websocket/index.ftl",
                             mapOf(
-                                "baseAddress" to it.destinationURL,
+                                "baseAddress" to destinationURL,
                             ),
                         ),
                     )

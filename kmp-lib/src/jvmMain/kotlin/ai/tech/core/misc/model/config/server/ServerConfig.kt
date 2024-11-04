@@ -32,8 +32,8 @@ import ai.tech.core.misc.plugin.websockets.model.config.WebSocketsConfig
 import ai.tech.core.misc.plugin.xhttpmethodoverride.model.config.XHttpMethodOverrideConfig
 import ai.tech.core.misc.type.decode
 import io.ktor.server.config.*
-import io.ktor.server.metrics.dropwizard.DropwizardMetricsConfig
-import io.ktor.server.metrics.micrometer.MicrometerMetricsConfig
+import ai.tech.core.misc.plugin.dropwizardmetrics.model.config.DropwizardMetricsConfig
+import ai.tech.core.misc.plugin.micrometermetrics.model.config.MicrometerMetricsConfig
 import ai.tech.core.misc.plugin.defaultheaders.model.config.DefaultHeadersConfig
 import kotlinx.serialization.json.Json
 

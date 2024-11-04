@@ -7,9 +7,7 @@ import ai.tech.core.misc.model.config.server.KtorServerConfig
 
 public interface SharedConfig {
 
-    public val projectName: String
-
-    public val environmentName: String?
+    public val project: String
 
     public val localization: LocalizationConfig
 
