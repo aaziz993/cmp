@@ -2,14 +2,38 @@ package ai.tech
 
 import ai.tech.core.data.filesystem.readResourceText
 import ai.tech.core.misc.model.config.server.ServerConfig
+import ai.tech.core.misc.plugin.applicationmonitoring.configureApplicationMonitoring
 import ai.tech.core.misc.plugin.auth.configureAuth
+import ai.tech.core.misc.plugin.authheadresponse.configureAutoHeadResponse
+import ai.tech.core.misc.plugin.cachingheaders.configureCachingHeaders
+import ai.tech.core.misc.plugin.callid.configureCallId
 import ai.tech.core.misc.plugin.calllogging.configureCallLogging
 import ai.tech.core.misc.plugin.compression.configureCompression
+import ai.tech.core.misc.plugin.conditionalheaders.configureConditionalHeaders
+import ai.tech.core.misc.plugin.cors.configureCORS
+import ai.tech.core.misc.plugin.dataconversion.configureDataConversion
+import ai.tech.core.misc.plugin.defaultheaders.configureDefaultHeaders
 import ai.tech.core.misc.plugin.di.configureKoin
+import ai.tech.core.misc.plugin.dropwizardmetrics.configureDropwizardMetrics
+import ai.tech.core.misc.plugin.forwardedheaders.configureForwardedHeaders
+import ai.tech.core.misc.plugin.forwardedheaders.configureXForwardedHeaders
+import ai.tech.core.misc.plugin.graphql.configureGraphQL
+import ai.tech.core.misc.plugin.hsts.configureHSTS
+import ai.tech.core.misc.plugin.httpsredirect.configureHttpsRedirect
+import ai.tech.core.misc.plugin.micrometermetrics.configureMicrometerMetrics
+import ai.tech.core.misc.plugin.partialcontent.configurePartialContent
+import ai.tech.core.misc.plugin.ratelimit.configureRateLimit
+import ai.tech.core.misc.plugin.resources.configureResources
 import ai.tech.core.misc.plugin.routing.configureRouting
 import ai.tech.core.misc.plugin.serialization.configureSerialization
 import ai.tech.core.misc.plugin.session.configureSession
+import ai.tech.core.misc.plugin.shutdown.configureShutdown
 import ai.tech.core.misc.plugin.statuspages.configureStatusPages
+import ai.tech.core.misc.plugin.swagger.configureSwagger
+import ai.tech.core.misc.plugin.templating.configureFreeMarker
+import ai.tech.core.misc.plugin.validation.configureRequestValidation
+import ai.tech.core.misc.plugin.websockets.configureWebSockets
+import ai.tech.core.misc.plugin.xhttpmethodoverride.configureXHttpMethodOverride
 import io.ktor.network.tls.certificates.*
 import io.ktor.server.application.Application
 import io.ktor.server.netty.EngineMain
@@ -25,128 +49,110 @@ public fun main(args: Array<String>) {
 
 @Suppress("unused")
 public fun Application.module() {
-    configureKoin(AppConfig.read<ServerConfig> { readResourceText(it) }) {
-        defaultModule()
-    }
+//    configureKoin(AppConfig.read<ServerConfig> { readResourceText(it) }) {
+//        defaultModule()
+//    }
 
     val config = get<ServerConfig>()
 
-    configureCallLogging(config.callLogging)
-
+    // Configure the Serialization plugin
     configureSerialization(config.serialization)
 
-    configureCompression(config.compression)
-
-    configureSession(config.auth)
-
-    configureStatusPages(config.statusPages)
-
-    configureAuth(config.ktor.deployment.address, get(), config.auth)
-
-    configureRouting(config.routing) {  }
-
-    // Configure the Serialization plugin
-    appConfig.config.serialization?.let { configureSerialization(it) }
-
     // Configure the HttpsRedirect plugin
-    appConfig.config.httpsRedirect?.let { configureHttpsRedirect(it, appConfig.sslPort) }
+    configureHttpsRedirect(config.httpsRedirect, config.ktor.deployment.esslPort)
 
     // Configure the Routing plugin
-    appConfig.config.routing?.let { configureRouting(it) }
+    configureRouting(config.routing) {
+        // Add other feature routes here
+
+    }
 
     // Configure the Websockets plugin
-    appConfig.config.websockets?.let {
-        configureWebSockets(
-            it,
-            if (appConfig.sslPort == null) "ws://${appConfig.baseConfig.host}:${appConfig.baseConfig.port}" else "wss://${appConfig.baseConfig.host}:${appConfig.sslPort}"
-        )
-    }
+    configureWebSockets(
+        config.websockets,
+        if (config.ktor.deployment.esslPort == null) "ws://${appConfig.baseConfig.host}:${appConfig.baseConfig.port}" else "wss://${appConfig.baseConfig.host}:${appConfig.sslPort}",
+    )
 
     // Configure the Graphql plugin
-    appConfig.config.graphql?.let { configureGraphQL(it) }
+    configureGraphQL(config.graphql)
 
     // Configure the CallLogging plugin
-    appConfig.config.callLogging?.let { configureCallLogging(it) }
+    configureCallLogging(config.callLogging)
 
     // Configure the CallLogging plugin
-    appConfig.config.callId?.let { configureCallId(it) }
+    configureCallId(config.callId)
 
     // Configure the RateLimit plugin
-    appConfig.config.rateLimit?.let { configureRateLimit(it) }
+    configureRateLimit(config.rateLimit)
 
     // Configure the CORS plugin
-    appConfig.config.cors?.let { configureCors(it) }
+    configureCORS(config.cors)
 
     // Configure the compression plugin
-    appConfig.config.compression?.let { configureCompression(it) }
+    configureCompression(config.compression)
 
     // Configure the PartialContent plugin
-    appConfig.config.partialContent?.let { configurePartialContent(it) }
+    configurePartialContent(config.partialContent)
 
     // Configure the HttpsRedirect plugin
-    appConfig.config.dataConversion?.let { configureDataConversion(it) }
+    configureDataConversion(config.dataConversion)
 
     // Configure the validation plugin
-    appConfig.config.validation?.let { configureValidation(it) }
+    configureRequestValidation(config.validation)
 
     // Configure the Resources plugin
-    appConfig.config.resources?.let { configureResources(it) }
-
-    // Configure the Locations plugin
-    appConfig.config.locations?.let { configureLocations(it) }
+    configureResources(config.resources)
 
     // Configure the status pages plugin
-    appConfig.config.statusPages?.let { configureStatusPages(it) }
+    configureStatusPages(config.statusPages)
 
     // Configure the DefaultHeaders plugin
-    appConfig.config.defaultHeaders?.let { configureDefaultHeaders(it) }
+    configureDefaultHeaders(config.defaultHeaders)
 
     // Configure the CachingHeaders plugin
-    appConfig.config.cachingHeaders?.let { configureCachingHeaders(it) }
+    configureCachingHeaders(config.cachingHeaders)
 
     // Configure the ConditionalHeaders plugin
-    appConfig.config.conditionalHeaders?.let { configureConditionalHeaders(it) }
+    configureConditionalHeaders(config.conditionalHeaders)
 
     // Configure the ForwardedHeaders plugin
-    appConfig.config.forwardedHeaders?.let { configureForwardedHeaders(it) }
+    configureForwardedHeaders(config.forwardedHeaders)
+
+    // Configure the XForwardedHeaders plugin
+    configureXForwardedHeaders(config.xForwardedHeaders)
 
     // Configure the HSTS plugin
-    appConfig.config.hsts?.let { configureHSTS(it) }
+    configureHSTS(config.hsts)
 
     // Configure the AutoHeadResponse plugin
-    appConfig.config.autoHeadResponse?.let { configureAutoHeadResponse(it) }
+    configureAutoHeadResponse(config.autoHeadResponse)
 
     // Configure the XHttpMethodOverride plugin
-    appConfig.config.xHttpMethodOverride?.let { configureXHttpMethodOverride(it) }
+    configureXHttpMethodOverride(config.xHttpMethodOverride)
 
     // Configure session with cookies
-    appConfig.config.session?.let { configureSession(it, appConfig.config.security) }
+    configureSession(config.auth)
 
     // Configure the security plugin with JWT
-    appConfig.config.security?.let {
-        configureSecurity(
-            it,
-            if (appConfig.sslPort == null) "http://${appConfig.baseConfig.host}:${appConfig.baseConfig.port}" else "https://${appConfig.baseConfig.host}:${appConfig.sslPort}"
-        )
-    }
+    configureAuth(config.ktor.deployment.address, get(), config.auth)
 
     // Configure the FreeMarker plugin for templating .ftl files
-    appConfig.config.freeMarker?.let { configureFreeMarker(it) }
+    configureFreeMarker(config.freeMarker)
 
     // Configure the Swagger plugin
-    appConfig.config.swagger?.let { configureSwagger(it) }
+    configureSwagger(config.swagger)
 
     // Configure the Application monitoring plugin
-    appConfig.config.applicationMonitoring?.let { configureApplicationMonitoring(it) }
+    configureApplicationMonitoring(config.applicationMonitoring)
 
     // Configure the MicrometerMetrics plugin
-    appConfig.config.micrometerMetrics?.let { configureMicrometerMetrics(it) }
+    configureMicrometerMetrics(config.micrometerMetrics)
 
     // Configure the DropwizardMetrics plugin
-    appConfig.config.dropwizardMetrics?.let { configureDropwizardMetrics(it) }
+    configureDropwizardMetrics(config.dropwizardMetrics)
 
     // Configure the Shutdown plugin
-    appConfig.config.shutdown?.let { configureShutdown(it) }
+    configureShutdown(config.shutdown)
 }
 
 private fun createKeystore() {
