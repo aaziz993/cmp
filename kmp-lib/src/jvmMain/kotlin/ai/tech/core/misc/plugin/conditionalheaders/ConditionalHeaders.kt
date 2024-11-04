@@ -8,20 +8,32 @@ import io.ktor.server.plugins.conditionalheaders.*
 import java.io.File
 import java.util.*
 
-public fun Application.configureConditionalHeaders(config: ConditionalHeadersConfig?) = config?.takeIf { it.enable != false }?.let {
-    install(ConditionalHeaders) {
-        it.versionHeadersPath?.let {
-            val file = File(it)
-            version { call, outgoingContent ->
-                when (outgoingContent.contentType?.withoutParameters()) {
-                    ContentType.Text.CSS -> listOf(
-                        EntityTagVersion(file.lastModified().hashCode().toString()),
-                        LastModifiedVersion(Date(file.lastModified())),
-                    )
+public fun Application.configureConditionalHeaders(config: ConditionalHeadersConfig?, block: (io.ktor.server.plugins.conditionalheaders.ConditionalHeadersConfig.() -> Unit)? = null) {
+    val configBlock: (io.ktor.server.plugins.conditionalheaders.ConditionalHeadersConfig.() -> Unit)? = config?.takeIf { it.enable != false }?.let {
+        {
+            it.versionHeadersPath?.let {
+                val file = File(it)
+                version { call, outgoingContent ->
+                    when (outgoingContent.contentType?.withoutParameters()) {
+                        ContentType.Text.CSS -> listOf(
+                            EntityTagVersion(file.lastModified().hashCode().toString()),
+                            LastModifiedVersion(Date(file.lastModified())),
+                        )
 
-                    else -> emptyList()
+                        else -> emptyList()
+                    }
                 }
             }
         }
+    }
+
+    if (configBlock == null && block == null) {
+        return
+    }
+
+    install(ConditionalHeaders) {
+        configBlock?.invoke(this)
+
+        block?.invoke(this)
     }
 }

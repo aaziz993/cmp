@@ -55,6 +55,7 @@ profiles:
   - cachingheaders
   - conditionalheaders
   - forwardedheaders
+  - xforwardedheaders
   - hsts
   - autoheadresponse
   - xhttpmethodoverride

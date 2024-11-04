@@ -4,7 +4,12 @@ import ai.tech.core.misc.model.config.EnabledConfig
 import kotlinx.serialization.Serializable
 
 @Serializable
-public data class ForwardedHeadersConfig(
+public data class XForwardedHeadersConfig(
+    val hostHeaders: List<String>? = null,
+    val protoHeaders: List<String>? = null,
+    val forHeaders: List<String>? = null,
+    val httpsFlagHeaders: List<String>? = null,
+    val portHeaders: List<String>? = null,
     override val useFirst: Boolean? = null,
     override val useLast: Boolean? = null,
     override val skipLastProxies: Int? = null,

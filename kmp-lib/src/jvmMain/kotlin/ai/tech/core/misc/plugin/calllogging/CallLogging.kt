@@ -5,9 +5,9 @@ import io.ktor.server.application.*
 import io.ktor.server.plugins.calllogging.CallLogging
 import org.slf4j.event.Level
 
-public fun Application.configureCallLogging(config: CallLoggingConfig?) {
-    config?.takeIf { it.enable != false }?.let {
-        install(CallLogging) {
+public fun Application.configureCallLogging(config: CallLoggingConfig?, block: (io.ktor.server.plugins.calllogging.CallLoggingConfig.() -> Unit)? = null) {
+    val configBlock: (io.ktor.server.plugins.calllogging.CallLoggingConfig.() -> Unit)? = config?.takeIf { it.enable != false }?.let {
+        {
             it.logging?.let {
                 it.level?.let { level = Level.valueOf(it) }
             }
@@ -22,5 +22,15 @@ public fun Application.configureCallLogging(config: CallLoggingConfig?) {
                 }
             }
         }
+    }
+
+    if (configBlock == null && block == null) {
+        return
+    }
+
+    install(CallLogging) {
+        configBlock?.invoke(this)
+
+        block?.invoke(this)
     }
 }

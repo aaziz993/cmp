@@ -6,8 +6,9 @@ import ai.tech.core.misc.plugin.dropwizardmetrics.mode.config.DropwizardMetricsC
 import io.ktor.server.application.*
 import io.ktor.server.metrics.dropwizard.*
 
-public fun Application.configureDropwizardMetrics(config: DropwizardMetricsConfig?)=config?.takeIf { it.enable != false }?.let {
-        install(DropwizardMetrics) {
+public fun Application.configureDropwizardMetrics(config: DropwizardMetricsConfig?, block: (io.ktor.server.metrics.dropwizard.DropwizardMetricsConfig.() -> Unit)? = null) {
+    val configBlock: (io.ktor.server.metrics.dropwizard.DropwizardMetricsConfig.() -> Unit)? = config?.takeIf { it.enable != false }?.let {
+        {
             it.baseName?.let { baseName = it }
             it.registerJvmMetricSets?.let { registerJvmMetricSets = it }
 
@@ -45,3 +46,14 @@ public fun Application.configureDropwizardMetrics(config: DropwizardMetricsConfi
             }
         }
     }
+
+    if (configBlock == null && block == null) {
+        return
+    }
+
+    install(DropwizardMetrics) {
+        configBlock?.invoke(this)
+
+        block?.invoke(this)
+    }
+}

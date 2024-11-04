@@ -4,49 +4,38 @@ import ai.tech.core.misc.plugin.forwardedheaders.mode.config.ForwardedHeadersCon
 import io.ktor.server.application.*
 import io.ktor.server.plugins.forwardedheaders.*
 
-public fun Application.configureForwardedHeaders(config: ForwardedHeadersConfig?) = config?.takeIf { it.enable != false }?.let {
-    // WARNING: for security, do not include this if not behind a reverse proxy
-    install(ForwardedHeaders) {
-        it.useFirst?.let {
-            if (it) {
-                useFirstValue()
+public fun Application.configureForwardedHeaders(
+    config: ForwardedHeadersConfig?,
+    block: (io.ktor.server.plugins.forwardedheaders.ForwardedHeadersConfig.() -> Unit)? = null,
+) {
+    var configBlock: (io.ktor.server.plugins.forwardedheaders.ForwardedHeadersConfig.() -> Unit)? = config?.takeIf { it.enable != false }?.let {
+        {
+            it.useFirst?.let {
+                if (it) {
+                    useFirstValue()
+                }
             }
-        }
 
-        it.useLast?.let {
-            if (it) {
-                useLastValue()
+            it.useLast?.let {
+                if (it) {
+                    useLastValue()
+                }
             }
+
+            it.skipLastProxies?.let { skipLastProxies(it) }
+
+            it.skipKnownProxies?.let { skipKnownProxies(it) }
         }
+    }
 
-        it.skipLastProxies?.let { skipLastProxies(it) }
-
-        it.skipKnownProxies?.let { skipKnownProxies(it) }
+    if (configBlock == null && block == null) {
+        return
     }
 
     // WARNING: for security, do not include this if not behind a reverse proxy
-    install(XForwardedHeaders) {
+    install(ForwardedHeaders) {
+        configBlock?.invoke(this)
 
-        it.xForwardedHostHeaders?.let { hostHeaders + it }
-        it.xForwardedProtoHeaders?.let { protoHeaders + it }
-        it.xForwardedForHeaders?.let { forHeaders + it }
-        it.xForwardedHttpsFlagHeaders?.let { httpsFlagHeaders + it }
-        it.xForwardedPortHeaders?.let { portHeaders + it }
-
-        it.useFirst?.let {
-            if (it) {
-                useFirstProxy()
-            }
-        }
-
-        it.useFirst?.let {
-            if (it) {
-                useLastProxy()
-            }
-        }
-
-        it.skipLastProxies?.let { skipLastProxies(it) }
-
-        it.skipKnownProxies?.let { skipKnownProxies(it) }
+        block?.invoke(this)
     }
 }

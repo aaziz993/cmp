@@ -4,9 +4,9 @@ import ai.tech.core.misc.plugin.ratelimit.model.config.RateLimitsConfig
 import io.ktor.server.application.*
 import io.ktor.server.plugins.ratelimit.*
 
-public fun Application.configureRateLimit(config: RateLimitsConfig?) =
-    config?.takeIf { it.enable != false }?.let {
-        install(RateLimit) {
+public fun Application.configureRateLimit(config: RateLimitsConfig?, block: (RateLimitConfig.() -> Unit)? = null) {
+    val configBlock: (io.ktor.server.plugins.ratelimit.RateLimitConfig.() -> Unit)? = config?.takeIf { it.enable != false }?.let {
+        {
             it.global?.let {
                 global {
                     rateLimiter(it.limit, it.refillPeriod, it.initialSize)
@@ -26,3 +26,14 @@ public fun Application.configureRateLimit(config: RateLimitsConfig?) =
             }
         }
     }
+
+    if (configBlock == null && block == null) {
+        return
+    }
+
+    install(RateLimit) {
+        configBlock?.invoke(this)
+
+        block?.invoke(this)
+    }
+}

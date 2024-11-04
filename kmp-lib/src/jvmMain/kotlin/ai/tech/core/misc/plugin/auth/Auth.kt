@@ -22,91 +22,94 @@ public fun Application.configureAuth(
     address: String,
     httpClient: HttpClient,
     config: ServerAuthConfig?,
-) {
+    block: (AuthenticationConfig.() -> Unit)? = null
+) = authentication {
     config?.let {
         val redirects = mutableMapOf<String, String>()
-        authentication {
-            it.jwtHs256.forEach { (name, config) ->
-                val jwtHS256Auth = ServerJWTHS256Auth(name, config)
-                configJWT(name, config) {
-                    // Load the token verification config
-                    verifier {
-                        jwtHS256Auth.jwtVerifier(it)
-                    }
-
-                    validate {
-                        // If the token is valid, it also has the indicated audience,
-                        // and has the user's field to compare it with the one we want
-                        // return the JWTPrincipal, otherwise return null
-                        jwtHS256Auth.validate(this, it)
-                    }
-
-                    challenge { defaultScheme, realm ->
-                        jwtHS256Auth.challenge(call, defaultScheme, realm)
-                    }
-
-                    skipWhen { jwtHS256Auth.skip(it) }
-
+        it.jwtHs256.forEach { (name, config) ->
+            val jwtHS256Auth = ServerJWTHS256Auth(name, config)
+            configJWT(name, config) {
+                // Load the token verification config
+                verifier {
+                    jwtHS256Auth.jwtVerifier(it)
                 }
-                rbac(name) {
-                    roleExtractor = { jwtHS256Auth.roles(it as JWTPrincipal) }
+
+                validate {
+                    // If the token is valid, it also has the indicated audience,
+                    // and has the user's field to compare it with the one we want
+                    // return the JWTPrincipal, otherwise return null
+                    jwtHS256Auth.validate(this, it)
                 }
+
+                challenge { defaultScheme, realm ->
+                    jwtHS256Auth.challenge(call, defaultScheme, realm)
+                }
+
+                skipWhen { jwtHS256Auth.skip(it) }
+
             }
-
-            it.jwtRs256.forEach { (name, config) ->
-                val jwtRS256Auth = ServerJWTRS256Auth(name, config)
-                configJWT(name, config) {
-                    // Load the token verification config
-                    verifier(jwtRS256Auth.jwkProvider, config.issuer) {
-                        acceptLeeway(3)
-                    }
-
-                    validate {
-                        // If the token is valid, it also has the indicated audience,
-                        // and has the user's field to compare it with the one we want
-                        // return the JWTPrincipal, otherwise return null
-                        jwtRS256Auth.validate(this, it)
-                    }
-
-                    challenge { defaultScheme, realm ->
-                        jwtRS256Auth.challenge(call, defaultScheme, realm)
-                    }
-
-                    skipWhen {
-                        jwtRS256Auth.skip(it)
-                    }
-                }
-                rbac(name) {
-                    roleExtractor = { jwtRS256Auth.roles(it as JWTPrincipal) }
-                }
-            }
-            it.keycloak.forEach { (name, config) ->
-                configOAuth(
-                    name,
-                    "keycloak",
-                    address,
-                    config,
-                    httpClient,
-                    redirects,
-                )
-            }
-
-            it.github.forEach { (name, config) -> configOAuth(name, "github", address, config, httpClient, redirects) }
-
-            it.google.forEach { (name, config) -> configOAuth(name, "google", address, config, httpClient, redirects) }
-
-            it.facebook.forEach { (name, config) ->
-                configOAuth(
-                    name,
-                    "facebook",
-                    address,
-                    config,
-                    httpClient,
-                    redirects,
-                )
+            rbac(name) {
+                roleExtractor = { jwtHS256Auth.roles(it as JWTPrincipal) }
             }
         }
+
+        it.jwtRs256.forEach { (name, config) ->
+            val jwtRS256Auth = ServerJWTRS256Auth(name, config)
+            configJWT(name, config) {
+                // Load the token verification config
+                verifier(jwtRS256Auth.jwkProvider, config.issuer) {
+                    acceptLeeway(3)
+                }
+
+                validate {
+                    // If the token is valid, it also has the indicated audience,
+                    // and has the user's field to compare it with the one we want
+                    // return the JWTPrincipal, otherwise return null
+                    jwtRS256Auth.validate(this, it)
+                }
+
+                challenge { defaultScheme, realm ->
+                    jwtRS256Auth.challenge(call, defaultScheme, realm)
+                }
+
+                skipWhen {
+                    jwtRS256Auth.skip(it)
+                }
+            }
+            rbac(name) {
+                roleExtractor = { jwtRS256Auth.roles(it as JWTPrincipal) }
+            }
+        }
+
+        it.keycloak.forEach { (name, config) ->
+            configOAuth(
+                name,
+                "keycloak",
+                address,
+                config,
+                httpClient,
+                redirects,
+            )
+        }
+
+        it.github.forEach { (name, config) -> configOAuth(name, "github", address, config, httpClient, redirects) }
+
+        it.google.forEach { (name, config) -> configOAuth(name, "google", address, config, httpClient, redirects) }
+
+        it.facebook.forEach { (name, config) ->
+            configOAuth(
+                name,
+                "facebook",
+                address,
+                config,
+                httpClient,
+                redirects,
+            )
+        }
+
     }
+
+    block?.invoke(this)
 }
 
 private fun AuthenticationConfig.configJWT(

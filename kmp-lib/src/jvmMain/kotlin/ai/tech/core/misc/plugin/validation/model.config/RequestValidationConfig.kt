@@ -4,6 +4,6 @@ import ai.tech.core.misc.model.config.EnabledConfig
 import kotlinx.serialization.Serializable
 
 @Serializable
-public data class ValidationConfig(
+public data class RequestValidationConfig(
     override val enable: Boolean? = null,
 ) : EnabledConfig

@@ -4,9 +4,21 @@ import ai.tech.core.misc.plugin.xhttpmethodoverride.model.config.XHttpMethodOver
 import io.ktor.server.application.*
 import io.ktor.server.plugins.methodoverride.*
 
-public fun Application.configureXHttpMethodOverride(config: XHttpMethodOverrideConfig?) =
-    config?.takeIf { it.enable != false }?.let {
-        install(XHttpMethodOverride) {
+public fun Application.configureXHttpMethodOverride(config: XHttpMethodOverrideConfig?, block: (io.ktor.server.plugins.methodoverride.XHttpMethodOverrideConfig.() -> Unit)? = null) {
+
+    val configBlock: (io.ktor.server.plugins.methodoverride.XHttpMethodOverrideConfig.() -> Unit)? = config?.takeIf { it.enable != false }?.let {
+        {
             config.headerName?.let { headerName = it }
         }
     }
+
+    if (configBlock == null && block == null) {
+        return
+    }
+
+    install(XHttpMethodOverride) {
+        configBlock?.invoke(this)
+
+        block?.invoke(this)
+    }
+}

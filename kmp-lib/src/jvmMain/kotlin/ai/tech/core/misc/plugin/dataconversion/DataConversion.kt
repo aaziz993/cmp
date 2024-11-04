@@ -5,7 +5,5 @@ import io.ktor.server.application.*
 import io.ktor.server.plugins.dataconversion.*
 
 public fun Application.configureDataConversion(config: DataConversionConfig?) = config?.takeIf { it.enable != false }?.let {
-    install(DataConversion) {
-
-    }
+    install(DataConversion)
 }

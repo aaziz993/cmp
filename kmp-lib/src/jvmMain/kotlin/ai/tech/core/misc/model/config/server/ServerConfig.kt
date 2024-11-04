@@ -1,14 +1,16 @@
 package ai.tech.core.misc.model.config.server
 
+import ai.tech.core.misc.auth.server.model.config.ServerAuthConfig
 import ai.tech.core.misc.model.config.SharedConfig
 import ai.tech.core.misc.model.config.di.KoinConfig
+import ai.tech.core.misc.plugin.calllogging.model.config.CallLoggingConfig
+import ai.tech.core.misc.plugin.compression.model.config.CompressionConfig
+import ai.tech.core.misc.plugin.cors.model.config.CORSConfig
+import ai.tech.core.misc.plugin.routing.model.config.RoutingConfig
+import ai.tech.core.misc.plugin.serialization.model.config.SerializationConfig
+import ai.tech.core.misc.plugin.statuspages.model.config.StatusPagesConfig
 import ai.tech.core.misc.type.decode
-import com.fasterxml.jackson.databind.SerializationConfig
 import io.ktor.server.config.*
-import io.ktor.server.plugins.calllogging.CallLoggingConfig
-import io.ktor.server.plugins.compression.CompressionConfig
-import io.ktor.server.plugins.cors.CORSConfig
-import io.ktor.server.plugins.statuspages.StatusPagesConfig
 import kotlinx.serialization.json.Json
 
 public val appConfigJson: Json = Json {

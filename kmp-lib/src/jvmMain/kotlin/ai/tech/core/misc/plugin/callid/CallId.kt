@@ -4,13 +4,25 @@ import ai.tech.core.misc.plugin.callid.model.config.CallIdConfig
 import io.ktor.server.application.*
 import io.ktor.server.plugins.callid.*
 
-public fun Application.configureCallId(config: CallIdConfig?) = config?.takeIf { it.enable != false }?.let {
-    install(CallId) {
-        it.verify?.let { verify(it.dictionary, it.reject) }
+public fun Application.configureCallId(config: CallIdConfig?, block: (io.ktor.server.plugins.callid.CallIdConfig.() -> Unit)? = null) {
+    val configBlock: (io.ktor.server.plugins.callid.CallIdConfig.() -> Unit)? = config?.takeIf { it.enable != false }?.let {
+        {
+            it.verify?.let { verify(it.dictionary, it.reject) }
 
-        if (it.header?.let { header(it) } == null) {
-            it.retrieveFromHeader?.let { retrieveFromHeader(it) }
-            it.replyToHeader?.let { replyToHeader(it) }
+            if (it.header?.let { header(it) } == null) {
+                it.retrieveFromHeader?.let { retrieveFromHeader(it) }
+                it.replyToHeader?.let { replyToHeader(it) }
+            }
         }
+    }
+
+    if (configBlock == null && block == null) {
+        return
+    }
+
+    install(CallId) {
+        configBlock?.invoke(this)
+
+        block?.invoke(this)
     }
 }

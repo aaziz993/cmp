@@ -7,9 +7,9 @@ import io.ktor.server.application.*
 import io.ktor.server.sessions.*
 import java.io.File
 
-public fun Application.configureSession(config: ServerAuthConfig?) {
-    config?.let {
-        install(Sessions) {
+public fun Application.configureSession(config: ServerAuthConfig?, block: (io.ktor.server.sessions.SessionsConfig.() -> Unit)? = null) {
+    val configBlock: (SessionsConfig.() -> Unit)? = config?.let {
+        {
             it.jwtHs256.forEach { (name, config) ->
                 cookie<UserSession>(name, config.cookie)
             }
@@ -23,6 +23,16 @@ public fun Application.configureSession(config: ServerAuthConfig?) {
             }
         }
     }
+
+    if (configBlock == null && block == null) {
+        return
+    }
+
+    install(Sessions) {
+        configBlock?.invoke(this)
+
+        block?.invoke(this)
+    }
 }
 
 private inline fun <reified S : Any> SessionsConfig.cookie(
@@ -30,7 +40,8 @@ private inline fun <reified S : Any> SessionsConfig.cookie(
     config: CookieConfig?,
 ) = if (config == null) {
     cookie<S>(name)
-} else {
+}
+else {
     val cookieBuilder: CookieSessionBuilder<S>.() -> Unit = {
         config.maxAgeInSeconds?.let { cookie.maxAgeInSeconds = it }
         config.encoding?.let { cookie.encoding = it }
@@ -40,17 +51,19 @@ private inline fun <reified S : Any> SessionsConfig.cookie(
         config.httpOnly?.let { cookie.httpOnly = it }
         config.extensions?.let { cookie.extensions + it }
         config.encryption?.let { encryption ->
-            transform(encryption.encryptionKey?.let {
-                SessionTransportTransformerEncrypt(
-                    encryptionKey = it.toByteArray(),
-                    signKey = encryption.signKey.toByteArray(),
-                    encryptAlgorithm = encryption.encryptAlgorithm,
-                    signAlgorithm = encryption.signAlgorithm,
-                )
-            } ?: SessionTransportTransformerMessageAuthentication(
-                encryption.signKey.toByteArray(),
-                encryption.signAlgorithm
-            ))
+            transform(
+                encryption.encryptionKey?.let {
+                    SessionTransportTransformerEncrypt(
+                        encryptionKey = it.toByteArray(),
+                        signKey = encryption.signKey.toByteArray(),
+                        encryptAlgorithm = encryption.encryptAlgorithm,
+                        signAlgorithm = encryption.signAlgorithm,
+                    )
+                } ?: SessionTransportTransformerMessageAuthentication(
+                    encryption.signKey.toByteArray(),
+                    encryption.signAlgorithm,
+                ),
+            )
         }
     }
     (config.filePath?.let {
@@ -59,10 +72,10 @@ private inline fun <reified S : Any> SessionsConfig.cookie(
         cookie<S>(
             name,
             SessionStorageMemory(),
-            cookieBuilder
+            cookieBuilder,
         )
     } ?: cookie<S>(
         name,
-        cookieBuilder
+        cookieBuilder,
     ))
 }

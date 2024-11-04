@@ -4,11 +4,9 @@ import ai.tech.core.misc.plugin.compression.model.config.CompressionConfig
 import io.ktor.server.application.*
 import io.ktor.server.plugins.compression.*
 
-
-public fun Application.configureCompression(config: CompressionConfig?) {
-    config?.takeIf { it.enable != false }?.let {
-        // We can configure compression here
-        install(Compression) {
+public fun Application.configureCompression(config: CompressionConfig?, block: (io.ktor.server.plugins.compression.CompressionConfig.() -> Unit)? = null) {
+    val configBlock: (io.ktor.server.plugins.compression.CompressionConfig.() -> Unit)? = config?.takeIf { it.enable != false }?.let {
+        {
             //GZIP
             it.gzip?.takeIf { it.enable != false }?.let {
                 gzip {
@@ -20,12 +18,12 @@ public fun Application.configureCompression(config: CompressionConfig?) {
                     }
                     it.matchContentType?.let {
                         matchContentType(
-                            *it.toTypedArray()
+                            *it.toTypedArray(),
                         )
                     }
                     it.excludeContentType?.let {
                         excludeContentType(
-                            *it.toTypedArray()
+                            *it.toTypedArray(),
                         )
                     }
                 }
@@ -42,12 +40,12 @@ public fun Application.configureCompression(config: CompressionConfig?) {
                     }
                     it.matchContentType?.let {
                         matchContentType(
-                            *it.toTypedArray()
+                            *it.toTypedArray(),
                         )
                     }
                     it.excludeContentType?.let {
                         excludeContentType(
-                            *it.toTypedArray()
+                            *it.toTypedArray(),
                         )
                     }
                 }
@@ -65,16 +63,27 @@ public fun Application.configureCompression(config: CompressionConfig?) {
                     }
                     it.matchContentType?.let {
                         matchContentType(
-                            *it.toTypedArray()
+                            *it.toTypedArray(),
                         )
                     }
                     it.excludeContentType?.let {
                         excludeContentType(
-                            *it.toTypedArray()
+                            *it.toTypedArray(),
                         )
                     }
                 }
             }
         }
+    }
+
+    if (configBlock == null && block == null) {
+        return
+    }
+
+    // We can configure compression here
+    install(Compression) {
+        configBlock?.invoke(this)
+
+        block?.invoke(this)
     }
 }

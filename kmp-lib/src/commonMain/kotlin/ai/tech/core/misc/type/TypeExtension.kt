@@ -380,7 +380,7 @@ public fun Any.accessor(
     yaml: Yaml = Yaml.Default,
     stringTransform: (String) -> Any = {
         when (it.extension) {
-            "json" -> json.decode<Map<*, *>>(it)
+            "json" -> json.decode(it)
             "xml" -> throw NotImplementedError()
             "html" -> throw NotImplementedError()
             "yaml" -> yaml.decodeMapFromString(it)

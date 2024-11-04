@@ -9,9 +9,9 @@ import io.ktor.server.plugins.requestvalidation.*
 import io.ktor.server.plugins.statuspages.*
 import io.ktor.server.response.*
 
-public fun Application.configureStatusPages(config: StatusPagesConfig?) {
-    config?.takeIf { it.enable != false }?.let {
-        install(StatusPages) {
+public fun Application.configureStatusPages(config: StatusPagesConfig?, block: (io.ktor.server.plugins.statuspages.StatusPagesConfig.() -> Unit)? = null) {
+    val configBlock: (io.ktor.server.plugins.statuspages.StatusPagesConfig.() -> Unit)? = config?.takeIf { it.enable != false }?.let {
+        {
             exception<RequestValidationException> { call, cause ->
                 call.respond(HttpStatusCode.BadRequest, cause.reasons.joinToString())
             }
@@ -42,5 +42,15 @@ public fun Application.configureStatusPages(config: StatusPagesConfig?) {
                 statusFile(*it.codes.toTypedArray(), filePattern = it.filePattern)
             }
         }
+    }
+
+    if (configBlock == null && block == null) {
+        return
+    }
+
+    install(StatusPages) {
+        configBlock?.invoke(this)
+
+        block?.invoke(this)
     }
 }
