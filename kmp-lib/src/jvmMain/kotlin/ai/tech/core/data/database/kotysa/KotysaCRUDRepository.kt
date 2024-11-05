@@ -1,10 +1,10 @@
 package ai.tech.core.data.database.kotysa
 
-import ai.tech.core.data.database.CRUDRepository
+import ai.tech.core.data.database.crud.CRUDRepository
 import ai.tech.core.data.database.kotysa.model.KotysaTable
-import ai.tech.core.data.database.model.LimitOffset
-import ai.tech.core.data.database.model.Order
-import ai.tech.core.data.database.model.Page
+import ai.tech.core.data.database.crud.model.LimitOffset
+import ai.tech.core.data.database.crud.model.Order
+import ai.tech.core.data.database.crud.model.Page
 import ai.tech.core.data.expression.AggregateExpression
 import ai.tech.core.data.expression.AggregateExpression.Companion.count
 import ai.tech.core.data.expression.And

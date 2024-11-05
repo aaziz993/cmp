@@ -1,7 +1,7 @@
 package ai.tech.core.data.database.graph
 
-import ai.tech.core.data.database.CRUDRepository
-import ai.tech.core.data.database.model.Entity
+import ai.tech.core.data.database.crud.CRUDRepository
+import ai.tech.core.data.database.crud.model.Entity
 import ai.tech.core.data.expression.f
 
 public abstract class GraphEntity<T : GraphEntity<T, ID>, ID : Comparable<ID>>(

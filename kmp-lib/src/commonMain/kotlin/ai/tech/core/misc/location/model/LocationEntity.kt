@@ -1,6 +1,6 @@
 package ai.tech.core.misc.location.model
 
-import ai.tech.core.data.database.model.Entity
+import ai.tech.core.data.database.crud.model.Entity
 import kotlinx.datetime.LocalDateTime
 import kotlinx.serialization.Serializable
 

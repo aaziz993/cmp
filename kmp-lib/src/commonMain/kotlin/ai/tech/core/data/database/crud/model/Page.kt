@@ -1,4 +1,4 @@
-package ai.tech.core.data.database.model
+package ai.tech.core.data.database.crud.model
 
 import kotlinx.serialization.Serializable
 

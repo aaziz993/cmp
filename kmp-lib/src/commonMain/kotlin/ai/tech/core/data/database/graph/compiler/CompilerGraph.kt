@@ -1,6 +1,6 @@
 package ai.tech.core.data.database.graph.compiler
 
-import ai.tech.core.data.database.CRUDRepository
+import ai.tech.core.data.database.crud.CRUDRepository
 import ai.tech.core.data.database.graph.Graph
 
 public class CompilerGraph<VID : Comparable<VID>, EID : Comparable<EID>>(
