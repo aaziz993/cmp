@@ -22,7 +22,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.window.core.layout.WindowWidthSizeClass
-import ai.tech.core.presentation.component.dialog.alertdialog.AlertDialog
+import ai.tech.core.presentation.component.dialog.alert.AlertDialog
 import ai.tech.core.presentation.event.alert.GlobalAlertEventController
 import ai.tech.core.presentation.event.alert.model.AlertEvent
 import ai.tech.core.presentation.event.snackbar.GlobalSnackbarEventController

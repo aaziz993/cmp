@@ -15,7 +15,7 @@ public val TimePickerState.localTime: LocalTime
 public val DatePickerState.localDate: LocalDate?
     get() = selectedDateMillis?.let { LocalDate.fromEpochDays((it / 86400000).toInt()) }
 
-public fun toLocalDateTime(
+public fun temporalPickerStateToLocalDateTime(
     datePickerState: DatePickerState,
     timePickerState: TimePickerState
 ): LocalDateTime = LocalDateTime(
@@ -23,7 +23,7 @@ public fun toLocalDateTime(
     timePickerState.localTime
 )
 
-public fun toTemporal(
+public fun temporalPickerStateToTemporal(
     datePickerState: DatePickerState? = null,
     timePickerState: TimePickerState? = null
 ): Any? = when {
