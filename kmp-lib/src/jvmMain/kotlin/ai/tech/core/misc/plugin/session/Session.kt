@@ -7,7 +7,7 @@ import io.ktor.server.application.*
 import io.ktor.server.sessions.*
 import java.io.File
 
-public fun Application.configureSession(config: ServerAuthConfig?, block: (io.ktor.server.sessions.SessionsConfig.() -> Unit)? = null) {
+public fun Application.configureSession(config: ServerAuthConfig?, block: (SessionsConfig.() -> Unit)? = null) {
     val configBlock: (SessionsConfig.() -> Unit)? = config?.let {
         {
             it.jwtHs256.forEach { (name, config) ->

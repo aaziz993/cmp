@@ -5,6 +5,6 @@ import arrow.fx.coroutines.onCancel
 import io.ktor.server.application.*
 import io.ktor.server.plugins.autohead.*
 
-public fun Application.configureAutoHeadResponse(config: AutoHeadResponseConfig?, enable: Boolean = false) = config?.takeIf { it.enable != false }?.let {
+public fun Application.configureAutoHeadResponse(config: AutoHeadResponseConfig?) = config?.takeIf { it.enable != false }?.let {
     install(AutoHeadResponse)
 }

@@ -14,7 +14,7 @@ import kotlinx.serialization.protobuf.ProtoBuf
 import nl.adaptivity.xmlutil.serialization.XML
 
 @OptIn(ExperimentalSerializationApi::class)
-public fun Application.configureSerialization(config: SerializationConfig?, block: (io.ktor.server.plugins.contentnegotiation.ContentNegotiationConfig.() -> Unit)? = null) {
+public fun Application.configureSerialization(config: SerializationConfig?, block: (ContentNegotiationConfig.() -> Unit)? = null) {
     val configBlock: (ContentNegotiationConfig.() -> Unit)? = config?.takeIf { it.enable != false }?.let {
         {
 
