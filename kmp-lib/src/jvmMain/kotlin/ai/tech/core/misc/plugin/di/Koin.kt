@@ -9,9 +9,9 @@ import org.koin.dsl.module
 import org.koin.ktor.plugin.Koin
 import org.koin.logger.slf4jLogger
 
-public inline fun <reified T : ServerConfig> Application.configureKoin(
-    config: T,
-    crossinline application: KoinApplication.() -> Unit = {}
+public fun Application.configureKoin(
+    config: ServerConfig,
+    application: KoinApplication.() -> Unit = {}
 ) {
     install(Koin) {
         config.koin?.let {

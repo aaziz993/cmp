@@ -10,6 +10,6 @@ import map.location.model.LocationConfig
 public data class MapScreenConfig(
     override val route: String,
     override val auth: AuthResource? = null,
-    val location: LocationConfig,
-    val view: MapViewConfig
+    val view: MapViewConfig,
+    val location: LocationConfig
 ) : DestinationConfig

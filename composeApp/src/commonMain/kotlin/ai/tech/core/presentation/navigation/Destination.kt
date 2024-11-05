@@ -156,71 +156,6 @@ public sealed interface Destination {
         }
     }
 
-    @Serializable
-    public data object CustomsGraph : Destination {
-        public val deepLinks: List<String>
-            get() = Destination.deepLinks.map { "${it}customs/" }
-
-        @Serializable
-        public data class Camera(val customsCode: String? = null) : Destination {
-            public companion object {
-                public val deepLinks: List<NavDeepLink> =
-                    CustomsGraph.deepLinks.map { navDeepLink<Camera>("${it}camera") }
-
-                public fun navigationItem(label: String): NavigationItem<Destination> = NavigationItem(
-                    text = { Text(label) },
-                    icon = { Icon(Icons.Outlined.CameraOutdoor, label) },
-                    selectedIcon = { Icon(Icons.Filled.CameraOutdoor, label) },
-                    route = Camera(),
-                )
-            }
-        }
-
-        @Serializable
-        public data class Xray(val customsCode: String? = null) : Destination {
-            public companion object {
-                public val deepLinks: List<NavDeepLink> =
-                    CustomsGraph.deepLinks.map { navDeepLink<Xray>("${it}xray") }
-
-                public fun navigationItem(label: String): NavigationItem<Destination> = NavigationItem(
-                    text = { Text(label) },
-                    icon = { Icon(Icons.Outlined.Monitor, label) },
-                    selectedIcon = { Icon(Icons.Filled.Monitor, label) },
-                    route = Xray(),
-                )
-            }
-        }
-
-        @Serializable
-        public data class Scales(val customsCode: String? = null) : Destination {
-            public companion object {
-                public val deepLinks: List<NavDeepLink> =
-                    CustomsGraph.deepLinks.map { navDeepLink<Scales>("${it}scales") }
-
-                public fun navigationItem(label: String): NavigationItem<Destination> = NavigationItem(
-                    text = { Text(label) },
-                    icon = { Icon(Icons.Outlined.MonitorWeight, label) },
-                    selectedIcon = { Icon(Icons.Filled.MonitorWeight, label) },
-                    route = Scales(),
-                )
-            }
-        }
-
-        @Serializable
-        public data object Document : Destination {
-            public val deepLinks: List<NavDeepLink>
-                get() = CustomsGraph.deepLinks.map { navDeepLink<Document>("${it}document") }
-
-            public fun navigationItem(label: String): NavigationItem<Destination> = NavigationItem(
-                text = { Text(label) },
-                icon = { Icon(Icons.Outlined.Book, label) },
-                selectedIcon = { Icon(Icons.Filled.Book, label) },
-                route = Document,
-            )
-        }
-    }
-
-
     public companion object {
         public val deepLinks: List<String> = listOf("https://", "http://")
 
@@ -234,10 +169,6 @@ public sealed interface Destination {
             walletBalanceLabel: String,
             walletCryptoLabel: String,
             walletStockLabel: String,
-            customsCMSCameraLabel: String,
-            customsCMSXrayLabel: String,
-            customsCMSScalesLabel: String,
-            customsCDoxDocumentLabel: String,
         ): List<NavigationItem<Destination>> = listOf(
             HomeGraph.Main.navigationItem(homeMainLabel),
             HomeGraph.Map.navigationItem(homeMapLabel),
@@ -248,10 +179,6 @@ public sealed interface Destination {
             WalletGraph.Balance.navigationItem(walletBalanceLabel),
             WalletGraph.Crypto.navigationItem(walletCryptoLabel),
             WalletGraph.Stock.navigationItem(walletStockLabel),
-            CustomsGraph.Camera.navigationItem(customsCMSCameraLabel),
-            CustomsGraph.Xray.navigationItem(customsCMSXrayLabel),
-            CustomsGraph.Scales.navigationItem(customsCMSScalesLabel),
-            CustomsGraph.Document.navigationItem(customsCDoxDocumentLabel),
         )
     }
 }

@@ -19,7 +19,7 @@ public fun rbac(name: String? = null, config: ServerRBACPluginConfig.() -> Unit)
 public class RBACConfiguration {
 
     public lateinit var configurations: Set<String?>
-    public lateinit var roleAuth: RoleAuth
+    public lateinit var role: RoleAuth
 }
 
 public val RBACPlugin: RouteScopedPlugin<RBACConfiguration> =
@@ -37,11 +37,11 @@ public val RBACPlugin: RouteScopedPlugin<RBACConfiguration> =
 
                     val roles = globalPluginConfigs.flatMap { it.roleExtractor(principal) }.toSet()
 
-                    if (!roleAuth.validate(roles)) {
+                    if (!role.validate(roles)) {
                         val message =
-                            "Authorization failed for ${call.request.path()} should be ${roleAuth.type.name.lowercase()} of the roles [${
+                            "Authorization failed for ${call.request.path()} should be ${role.type.name.lowercase()} of the roles [${
                                 roles.joinToString(", ")
-                            }] in [${roleAuth.roles.joinToString(", ")}]"
+                            }] in [${role.roles.joinToString(", ")}]"
                         if (application.developmentMode) {
                             application.log.warn(message)
                         }

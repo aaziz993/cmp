@@ -4,11 +4,11 @@ public interface PresentationConfig {
 
     public val routeBase: String?
 
-    public val route: String
+    public val startDestination: String
 
-    public val signInRedirectRoute: String
+    public val signInRedirectDestination: String
 
-    public val signOutRedirectRoute: String
+    public val signOutRedirectDestination: String
 
     public val destination: DestinationsConfig
 }

@@ -1,0 +1,12 @@
+ssl:
+  keyStore: server/src/main/resources/cert/keystore.p12
+  keyStorePassword: AITech
+  keyAlias: applicationTLS
+  privateKeyPassword: AITech
+  daysValid: 365
+  keySizeInBits: 4096
+  domains:
+    - localhost
+    - 127.0.0.1
+    - 0.0.0.0
+  rewrite: false

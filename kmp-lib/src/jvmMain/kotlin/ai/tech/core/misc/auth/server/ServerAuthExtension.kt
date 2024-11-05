@@ -16,12 +16,12 @@ public fun Route.auth(
             this
         }
     } else {
-        authenticate(*auth.authProviders.toTypedArray(), optional = optional) {
-            auth.roleAuth?.let {
-                createChild(AuthorizedRouteSelector(*auth.authProviders.toTypedArray())).apply {
+        authenticate(*auth.providers.toTypedArray(), optional = optional) {
+            auth.role?.let {
+                createChild(AuthorizedRouteSelector(*auth.providers.toTypedArray())).apply {
                     install(RBACPlugin) {
-                        this.configurations = auth.authProviders.toSet()
-                        this.roleAuth = it
+                        this.configurations = auth.providers.toSet()
+                        this.role = it
                     }
                     build()
                 }

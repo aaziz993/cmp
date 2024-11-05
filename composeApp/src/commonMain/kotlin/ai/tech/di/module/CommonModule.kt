@@ -56,11 +56,11 @@ public class CommonModule(private val enableNetworkLogs: Boolean) {
         httpClient: HttpClient,
     ): LocalizationProvider =
         WeblateLocalizationProvider(
-                WeblateClient(
-                        httpClient,
-                        config.localization.weblate[config.localizationProvider]!!,
-                ),
-                config.project,
+            WeblateClient(
+                httpClient,
+                config.localization.weblate[config.localizationProvider]!!,
+            ),
+            config.project,
         )
 
     @Single
@@ -69,7 +69,7 @@ public class CommonModule(private val enableNetworkLogs: Boolean) {
         httpClient: HttpClient,
         keyValue: SettingsKeyValue
     ): ClientAuthProvider = KeycloakAuthProvider(
-        KeycloakClient(httpClient, config.auth.keycloak[config.authProvider]!!),
+        KeycloakClient(httpClient, config.auth.oauth.entries.first { (_, config) -> config.provider == "keycloak" }.value),
         keyValue,
         config.authProvider,
     )

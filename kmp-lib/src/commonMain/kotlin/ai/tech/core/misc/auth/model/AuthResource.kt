@@ -6,10 +6,10 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 public data class AuthResource(
-    val authProviders: List<String?> = listOf(null),
-    val roleAuth: RoleAuth? = null
+    val providers: List<String?> = listOf(null),
+    val role: RoleAuth? = null
 ) {
-    public constructor(authProvider: String?, roleAuth: RoleAuth? = null) : this(listOf(authProvider), roleAuth)
+    public constructor(authProvider: String?, role: RoleAuth? = null) : this(listOf(authProvider), role)
 
-    public fun validate(user: User?): Boolean = user?.validate(roleAuth) == true
+    public fun validate(user: User?): Boolean = user?.validate(role) == true
 }

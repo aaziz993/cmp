@@ -46,9 +46,10 @@ public fun NavScreen(
         val customNavSuiteType = with(adaptiveInfo) {
             if (windowSizeClass.windowWidthSizeClass == WindowWidthSizeClass.EXPANDED) {
                 NavigationSuiteType.NavigationDrawer
-            } else {
+            }
+            else {
                 NavigationSuiteScaffoldDefaults.calculateFromAdaptiveInfo(
-                    currentWindowAdaptiveInfo()
+                    currentWindowAdaptiveInfo(),
                 )
             }
         }
@@ -65,10 +66,6 @@ public fun NavScreen(
                 "wallet_balance",
                 "wallet_crypto",
                 "wallet_stock",
-                "customs_camera",
-                "customs_xray",
-                "customs_scales",
-                "customs_document",
             ),
             modifier.fillMaxSize(),
             customNavSuiteType,
@@ -78,7 +75,7 @@ public fun NavScreen(
             val snackbarHostState = remember { SnackbarHostState() }
             val scope = rememberCoroutineScope()
             GlobalSnackbarEventController.events.toLaunchedEffect(
-                snackbarHostState
+                snackbarHostState,
             ) { event ->
                 scope.launch {
                     snackbarHostState.currentSnackbarData?.dismiss()
@@ -96,7 +93,7 @@ public fun NavScreen(
 
             Scaffold(
                 modifier.fillMaxSize(),
-                snackbarHost = { SnackbarHost(snackbarHostState) }
+                snackbarHost = { SnackbarHost(snackbarHostState) },
             ) { innerPadding ->
                 // Global AlertDialog by GlobalAlertEventController
                 var alertDialogState by remember { mutableStateOf<AlertEvent?>(null) }
@@ -109,7 +106,8 @@ public fun NavScreen(
                         it.message,
                         isError = it.isError,
                         onConfirm = it.action,
-                        onCancel = { scope.launch { GlobalAlertEventController.sendEvent(null) } })
+                        onCancel = { scope.launch { GlobalAlertEventController.sendEvent(null) } },
+                    )
                 }
 
                 val navigator = koinInject<Navigator<ai.tech.core.presentation.navigation.Destination>>()
@@ -120,7 +118,7 @@ public fun NavScreen(
                     navController,
                     ai.tech.core.presentation.navigation.Destination.HomeGraph.Main,
                     modifier.padding(innerPadding),
-                    route = ai.tech.core.presentation.navigation.Destination.HomeGraph::class
+                    route = ai.tech.core.presentation.navigation.Destination.HomeGraph::class,
                 )
             }
         }

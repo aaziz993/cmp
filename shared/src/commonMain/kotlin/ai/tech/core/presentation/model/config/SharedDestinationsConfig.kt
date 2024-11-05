@@ -17,7 +17,7 @@ import profile.model.ProfileScreenConfig
 
 @Serializable
 public data class SharedDestinationsConfig(
-    val main: MainScreenConfig = MainScreenConfig("home"),
+    val main: MainScreenConfig = MainScreenConfig("main"),
     val map: MapScreenConfig,
     val settings: SettingsScreenConfig = SettingsScreenConfig("settings"),
     val about: AboutScreenConfig = AboutScreenConfig("about"),

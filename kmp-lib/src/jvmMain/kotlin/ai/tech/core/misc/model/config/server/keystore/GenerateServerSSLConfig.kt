@@ -1,5 +1,6 @@
 package ai.tech.core.misc.model.config.server.keystore
 
+import ai.tech.core.misc.model.config.EnabledConfig
 import ai.tech.core.misc.model.config.server.ServerSSLConfig
 import io.ktor.network.tls.certificates.buildKeyStore
 import io.ktor.network.tls.certificates.saveToFile
@@ -16,9 +17,14 @@ public data class GenerateServerSSLConfig(
     val keySizeInBits: Int? = null,
     val domains: List<String>? = null,
     val rewrite: Boolean? = null,
-) : ServerSSLConfig {
+    override val enable: Boolean? = null
+) : ServerSSLConfig, EnabledConfig {
 
     public fun generate() {
+        if (enable == false) {
+            return
+        }
+
         val keyStoreFile = File(keyStore)
 
         if (keyStoreFile.exists() && rewrite == true) {

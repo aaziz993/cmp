@@ -18,14 +18,10 @@ import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.navigation
-import androidx.navigation.toRoute
 import ai.tech.auth.forgotpassword.presentation.ForgotPasswordScreen
 import ai.tech.auth.login.presentation.LoginScreen
 import ai.tech.auth.profile.presentation.ProfileScreen
 import ai.tech.core.presentation.navigation.Destination
-import ai.tech.customs.cms.camera.presentation.CameraScreen
-import ai.tech.customs.cms.scales.presentation.ScalesScreen
-import ai.tech.customs.cms.xray.presentation.XrayScreen
 import ai.tech.home.main.MainScreen
 import ai.tech.home.map.MapScreen
 import ai.tech.home.settings.SettingsScreen
@@ -223,59 +219,6 @@ public fun NavScreenNavHost(
                 }) {
 
                 }
-            }
-        }
-
-        navigation<Destination.CustomsGraph>(Destination.CustomsGraph.Document) {
-            composable<Destination.CustomsGraph.Camera>(
-                deepLinks = Destination.CustomsGraph.Camera.deepLinks
-            ) {
-                val destination = it.toRoute<Destination.CustomsGraph.Camera>()
-
-//                val navViewModel =
-//                    koinViewModel<Destination, NavViewModel>(navController = navController, backStackEntry = it)
-
-                CameraScreen({
-
-                }) {
-
-                }
-            }
-
-            composable<Destination.CustomsGraph.Xray>(
-                deepLinks = Destination.CustomsGraph.Xray.deepLinks
-            ) {
-                val destination = it.toRoute<Destination.CustomsGraph.Xray>()
-
-//                val navViewModel =
-//                    koinViewModel<Destination, NavViewModel>(navController = navController, backStackEntry = it)
-
-                XrayScreen({
-
-                }) {
-
-                }
-            }
-
-            composable<Destination.CustomsGraph.Scales>(
-                deepLinks = Destination.CustomsGraph.Scales.deepLinks
-            ) {
-                val destination = it.toRoute<Destination.CustomsGraph.Scales>()
-
-//                val navViewModel =
-//                    koinViewModel<Destination, NavViewModel>(navController = navController, backStackEntry = it)
-
-                ScalesScreen({
-
-                }) {
-
-                }
-            }
-
-            composable<Destination.CustomsGraph.Document>(
-                deepLinks = Destination.CustomsGraph.Document.deepLinks
-            ) {
-
             }
         }
     }

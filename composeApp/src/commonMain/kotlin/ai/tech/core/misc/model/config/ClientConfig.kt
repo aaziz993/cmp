@@ -19,7 +19,7 @@ public data class ClientConfig(
     override val ktor: KtorServerConfig,
     override val localization: LocalizationConfig,
     override val localizationProvider: String? = null,
-    override val language: Language = languages["eng-US"]!!(),
+    override val language: String = "eng-US",
     override val validator: ValidatorConfig = ValidatorConfig(),
     override val auth: ClientAuthConfig,
     override val authProvider: String? = null,

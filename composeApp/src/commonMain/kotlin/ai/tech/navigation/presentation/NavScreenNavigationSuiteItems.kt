@@ -22,10 +22,6 @@ public fun NavScreenNavigationSuiteItems(
     walletBalanceLabel: String,
     walletCryptoLabel: String,
     walletStockLabel: String,
-    customsCMSCameraLabel: String,
-    customsCMSXrayLabel: String,
-    customsCMSScalesLabel: String,
-    customsCDoxDocumentLabel: String,
 ): NavigationSuiteScope.() -> Unit = {
     Destination.Companion.navigationItems(
         homeMainLabel,
@@ -37,10 +33,6 @@ public fun NavScreenNavigationSuiteItems(
         walletBalanceLabel,
         walletCryptoLabel,
         walletStockLabel,
-        customsCMSCameraLabel,
-        customsCMSXrayLabel,
-        customsCMSScalesLabel,
-        customsCDoxDocumentLabel,
     ).forEach { navItem ->
         val selected = currentDestination?.hierarchy?.any { it.hasRoute(navItem.route::class) } == true
         item(

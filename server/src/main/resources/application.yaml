@@ -3,7 +3,6 @@ ktor:
   ## Development mode
   # Enable development mode. Recommended to set it via -Dktor.deployment.environment=development
   # development = true
-
   deployment:
     host: 0.0.0.0
     port: '$PORT:8080'
@@ -26,11 +25,12 @@ ktor:
   security:
     ssl:
       keyStore: server/src/main/resources/cert/keystore.p12
-      keyStorePassword: "AITech"
-      keyAlias: "applicationTLS"
-      privateKeyPassword: "AITech"
+      keyStorePassword: AITech
+      keyAlias: applicationTLS
+      privateKeyPassword: AITech
 
-profiles:
+configurations:
+  - ssl
   - cache
   - storage
   - database
@@ -49,7 +49,6 @@ profiles:
   - dataconversion
   - validation
   - resources
-  - locations
   - statuspages
   - defaultheaders
   - cachingheaders
