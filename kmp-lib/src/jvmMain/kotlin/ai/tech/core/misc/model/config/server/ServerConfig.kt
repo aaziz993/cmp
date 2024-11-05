@@ -38,10 +38,6 @@ import ai.tech.core.misc.plugin.micrometermetrics.model.config.MicrometerMetrics
 import ai.tech.core.misc.plugin.defaultheaders.model.config.DefaultHeadersConfig
 import kotlinx.serialization.json.Json
 
-public val appConfigJson: Json = Json {
-    ignoreUnknownKeys = true
-}
-
 public interface ServerConfig : SharedConfig {
 
     public val koin: KoinConfig?
@@ -77,11 +73,3 @@ public interface ServerConfig : SharedConfig {
     public val dropwizardMetrics: DropwizardMetricsConfig?
     public val shutdown: ShutDownConfig?
 }
-
-public inline fun <reified T : Any> ApplicationConfig.decodeConfig(key: String): T? =
-    if (keys().any { it.startsWith("$key.") }) {
-        appConfigJson.decode(config(key).toMap())
-    }
-    else {
-        null
-    }

@@ -1,6 +1,6 @@
 package ai.tech.navigation.presentation
 
-import ai.tech.home.presentation.about.AboutScreen
+import ai.tech.home.about.AboutScreen
 import androidx.compose.animation.AnimatedContentTransitionScope
 import androidx.compose.animation.EnterTransition
 import androidx.compose.animation.ExitTransition
@@ -19,18 +19,18 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.navigation
 import androidx.navigation.toRoute
-import ai.tech.auth.presentation.forgotpassword.ForgotPasswordScreen
-import ai.tech.auth.presentation.login.LoginScreen
-import ai.tech.auth.presentation.profile.ProfileScreen
-import ai.tech.auth.presentation.register.RegisterScreen
-import ai.tech.customs.cms.presentation.camera.CameraScreen
-import ai.tech.customs.cms.presentation.scales.ScalesScreen
-import ai.tech.customs.cms.presentation.xray.XrayScreen
-import ai.tech.home.presentation.main.MainScreen
-import ai.tech.home.presentation.map.MapScreen
-import ai.tech.home.presentation.settings.SettingsScreen
-import ai.tech.wallet.presentation.balance.BalanceScreen
-import ai.tech.wallet.presentation.crypto.CryptoScreen
+import ai.tech.auth.forgotpassword.presentation.ForgotPasswordScreen
+import ai.tech.auth.login.presentation.LoginScreen
+import ai.tech.auth.profile.presentation.ProfileScreen
+import ai.tech.auth.register.presentation.RegisterScreen
+import ai.tech.customs.cms.camera.presentation.CameraScreen
+import ai.tech.customs.cms.scales.presentation.ScalesScreen
+import ai.tech.customs.cms.xray.presentation.XrayScreen
+import ai.tech.home.main.MainScreen
+import ai.tech.home.map.MapScreen
+import ai.tech.home.settings.SettingsScreen
+import ai.tech.wallet.balance.BalanceScreen
+import ai.tech.wallet.crypto.CryptoScreen
 import kotlin.jvm.JvmSuppressWildcards
 import kotlin.reflect.KClass
 import kotlin.reflect.KType
@@ -152,19 +152,6 @@ public fun NavScreenNavHost(
                 }
 
                 LoginScreen({
-
-                }) {
-
-                }
-            }
-
-            composable<Destination.Register>(
-                deepLinks = Destination.Register.deepLinks
-            ) {
-//                val navViewModel =
-//                    koinViewModel<Destination, NavViewModel>(navController = navController, backStackEntry = it)
-
-                RegisterScreen({
 
                 }) {
 

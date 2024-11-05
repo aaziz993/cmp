@@ -91,12 +91,6 @@ public sealed interface Destination {
     }
 
     @Serializable
-    public data object Register : Destination {
-        val deepLinks: List<NavDeepLink>
-            get() = Destination.AuthGraph.deepLinks.map { navDeepLink<Register>("${it}register") }
-    }
-
-    @Serializable
     public data class ForgotPassword(val username: String) : Destination {
         public companion object {
             public val deepLinks: List<NavDeepLink> =
