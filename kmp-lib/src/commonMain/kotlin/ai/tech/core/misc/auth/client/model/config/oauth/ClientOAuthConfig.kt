@@ -4,10 +4,10 @@ import ai.tech.core.misc.auth.model.oauth.config.OAuthConfig
 import kotlinx.serialization.Serializable
 
 @Serializable
-public data class OAuthClientConfig(
+public data class ClientOAuthConfig(
+    override val provider: String,
     override val address: String,
     override val realm: String,
     override val clientId: String,
     override val clientSecret: String? = null,
-    override val enable: Boolean? = null,
 ) : OAuthConfig

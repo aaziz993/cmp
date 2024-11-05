@@ -5,7 +5,7 @@ import ai.tech.core.misc.auth.client.keycloak.model.ResetPassword
 import ai.tech.core.misc.auth.client.keycloak.model.RoleRepresentation
 import ai.tech.core.misc.auth.client.keycloak.model.UserInfo
 import ai.tech.core.misc.auth.client.keycloak.model.UserRepresentation
-import ai.tech.core.misc.auth.client.model.config.oauth.OAuthClientConfig
+import ai.tech.core.misc.auth.client.model.config.oauth.ClientOAuthConfig
 import ai.tech.core.misc.type.encode
 import ai.tech.core.misc.type.toGeneric
 import com.apollographql.apollo3.api.json.JsonReader.Token
@@ -22,7 +22,7 @@ import kotlinx.serialization.json.Json
 
 public class KeycloakClient(
     httpClient: HttpClient,
-    public val config: OAuthClientConfig,
+    public val config: ClientOAuthConfig,
 ) {
 
     @OptIn(ExperimentalSerializationApi::class)

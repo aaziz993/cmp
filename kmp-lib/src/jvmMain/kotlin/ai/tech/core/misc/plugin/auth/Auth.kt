@@ -19,7 +19,7 @@ import kotlin.collections.component2
 import kotlin.collections.set
 
 public fun Application.configureAuth(
-    address: String,
+    serverURL: String,
     httpClient: HttpClient,
     config: ServerAuthConfig?,
     block: (AuthenticationConfig.() -> Unit)? = null
@@ -81,32 +81,15 @@ public fun Application.configureAuth(
             }
         }
 
-        it.keycloak.forEach { (name, config) ->
+        it.oauth.forEach { (name, config) ->
             configOAuth(
-                name,
-                "keycloak",
-                address,
-                config,
+                serverURL,
                 httpClient,
+                name,
+                config,
                 redirects,
             )
         }
-
-        it.github.forEach { (name, config) -> configOAuth(name, "github", address, config, httpClient, redirects) }
-
-        it.google.forEach { (name, config) -> configOAuth(name, "google", address, config, httpClient, redirects) }
-
-        it.facebook.forEach { (name, config) ->
-            configOAuth(
-                name,
-                "facebook",
-                address,
-                config,
-                httpClient,
-                redirects,
-            )
-        }
-
     }
 
     block?.invoke(this)
@@ -139,11 +122,10 @@ private fun AuthenticationConfig.configJWT(
 }
 
 private fun AuthenticationConfig.configOAuth(
-    name: String,
-    provider: String,
     redirectUrl: String,
-    config: ServerOAuthConfig,
     httpClient: HttpClient,
+    name: String,
+    config: ServerOAuthConfig,
     redirects: MutableMap<String, String>
 ) = with(config) {
     val oauth = ServerOAuth(name, config)

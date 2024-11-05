@@ -19,5 +19,4 @@ public data class ServerJWTHS256Config(
     override val usernameClaimKeys: List<String> = listOf("preferred_username"),
     override val rolesClaimKeys: List<String> = listOf("realm_access", "roles"),
     override val throwException: Boolean? = null,
-    override val enable: Boolean? = null,
 ) : ServerJWTConfig

@@ -197,7 +197,7 @@
     <div>
         <input type="button" id="connect" value="Connect"/>
         <input type="button" id="disconnect" value="Disconnect" disabled/>
-        <input type="text" id="wsURL" value="${baseAddress}" placeholder="ws 'or' wss://ip:port/" size="64">
+        <input type="text" id="wsURL" value="${wsURL}" placeholder="ws 'or' wss://ip:port/" size="64">
         <span id="status" style="color: red"></span>
     </div>
 </fieldset>

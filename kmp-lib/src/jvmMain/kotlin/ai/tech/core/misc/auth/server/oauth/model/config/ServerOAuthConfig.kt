@@ -10,6 +10,7 @@ import kotlinx.serialization.Serializable
 @Serializable
 //For Keycloak you can find information about authorizeUrl, accessTokenUrl, clientId and clientSecret in Keycloak Clients page and https:/<your-keycloak-url>/realms/<your-realm-name>/.well-known/openid-configuration
 public data class ServerOAuthConfig(
+    override val provider: String,
     override val address: String,
     override val realm: String,
     override val clientId: String,
@@ -23,5 +24,4 @@ public data class ServerOAuthConfig(
     val extraAuthParameters: List<Pair<String, String>> = emptyList(),
     val extraTokenParameters: List<Pair<String, String>> = emptyList(),
     override val cookie: CookieConfig? = null,
-    override val enable: Boolean? = null,
 ) : OAuthConfig, ServerAuthProviderConfig

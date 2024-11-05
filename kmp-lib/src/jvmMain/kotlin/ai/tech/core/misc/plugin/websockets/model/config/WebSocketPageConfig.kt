@@ -4,6 +4,6 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 public data class WebSocketPageConfig(
-    val uri: String? = null,
-    val filePath: String? = null,
+    val uri: String,
+    val wsURL: String,
 )
