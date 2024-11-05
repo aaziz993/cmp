@@ -4,7 +4,6 @@ import ai.tech.core.data.database.keyvalue.room.model.KeyValue
 import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.Query
-import de.jensklingenberg.ktorfit.http.Query
 
 @Dao
 public interface KeyValueDao {
