@@ -6,8 +6,6 @@ import ai.tech.core.misc.type.TypeResolver
 import ai.tech.core.misc.type.decode
 import ai.tech.core.misc.type.encode
 import ai.tech.core.misc.type.model.Entry
-import kotlinx.atomicfu.locks.ReentrantLock
-import kotlinx.atomicfu.locks.reentrantLock
 import kotlinx.atomicfu.locks.withLock
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -15,32 +13,26 @@ import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.update
 import kotlinx.serialization.InternalSerializationApi
-import kotlinx.serialization.json.Json
 
 @Suppress("UNCHECKED_CAST")
-public class SqlDelightKeyValue(database: KeyValue) : ai.tech.core.data.keyvalue.KeyValue {
-
-    private val lock: ReentrantLock = reentrantLock()
+public class SqlDelightKeyValue(database: KeyValue) : ai.tech.core.data.keyvalue.AbstractKeyValue() {
+    private val queries: KeyValueQueries = database.keyValueQueries
 
     private val stateFlow = MutableStateFlow<Entry<String, Any?>>(Entry("", null))
 
-    private val databaseQuery: KeyValueQueries = database.keyValueQueries
+    override suspend fun <T> transactional(block: suspend ai.tech.core.data.keyvalue.AbstractKeyValue.() -> T): T =
+        super.transactional {
+            queries.transactionWithResult(false) {
+                block()
+            }
+        }
 
-    private val json = Json {
-        encodeDefaults = false
-        ignoreUnknownKeys = true
-    }
-
-    override suspend fun <T> transactional(block: suspend ai.tech.core.data.keyvalue.KeyValue.() -> T): T = databaseQuery.transactionWithResult(false) {
-        block()
-    }
-
-    override suspend fun contains(keys: List<String>): Boolean = databaseQuery.exists(keys.toKey()).executeAsOne()
+    override suspend fun contains(keys: List<String>): Boolean = queries.exists(keys.toKey()).executeAsOne()
 
     @OptIn(InternalSerializationApi::class)
     override suspend fun <T> set(keys: List<String>, value: T): Unit = lock.withLock {
         keys.toKey().let { key ->
-            databaseQuery.insert(key, value?.let { json.encode(it, TypeResolver(it::class)) })
+            queries.insert(key, value?.let { json.encode(it, TypeResolver(it::class)) })
             stateFlow.update { Entry(key, value) }
         }
     }
@@ -50,7 +42,7 @@ public class SqlDelightKeyValue(database: KeyValue) : ai.tech.core.data.keyvalue
         type: TypeResolver,
         defaultValue: T?
     ): T = keys.toKey().let {
-        (databaseQuery.select(it).executeAsOne().value_?.let {
+        (queries.select(it).executeAsOne().value_?.let {
             json.decode(it, type)
         } ?: defaultValue) as T
     }
@@ -62,11 +54,10 @@ public class SqlDelightKeyValue(database: KeyValue) : ai.tech.core.data.keyvalue
 
     override suspend fun remove(keys: List<String>): Unit =
         keys.toKey().let {
-            databaseQuery.deleteLike("$it$KEY_DELIMITER%")
+            queries.deleteLike("$it$KEY_DELIMITER%")
         }
 
-    override suspend fun clear(): Unit = databaseQuery.deleteAll()
-
+    override suspend fun clear(): Unit = queries.deleteAll()
 
     override suspend fun flush(): Unit = Unit
 

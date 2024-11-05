@@ -144,7 +144,7 @@ permissions = "0.18.0"
 # SQLDelight database
 sqldelight = "2.0.2"
 # Room database
-room = "2.7.0-alpha11"
+room = "2.6.1"
 # Realm database
 realm = "10.19.0"
 # SQLite
@@ -385,7 +385,7 @@ sqldelight-sqlite-driver = { module = "app.cash.sqldelight:sqlite-driver", versi
 sqldelight-web-worker-driver = { module = "app.cash.sqldelight:web-worker-driver", version.ref = "sqldelight" }
 
 # Room dataabase
-androidx-room-runtime = { group = "androidx.room", name = "room-runtime", version.ref = "room" }
+androidx-room-runtime-ktx = { group = "androidx.room", name = "room-runtime-ktx", version.ref = "room" }
 androidx-room-runtime-android = { group = "androidx.room", name = "room-runtime-android", version.ref = "room" }
 androidx-room-paging = { group = "androidx.room", name = "room-paging", version.ref = "room" }
 androidx-room-compiler = { group = "androidx.room", name = "room-compiler", version.ref = "room" }

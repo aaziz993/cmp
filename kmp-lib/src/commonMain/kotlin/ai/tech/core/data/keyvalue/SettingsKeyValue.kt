@@ -22,22 +22,11 @@ import kotlinx.serialization.json.Json
 
 @Suppress("UNCHECKED_CAST")
 @OptIn(ExperimentalSettingsApi::class)
-public class SettingsKeyValue : KeyValue {
-
-    private val lock: ReentrantLock = reentrantLock()
+public class SettingsKeyValue : AbstractKeyValue() {
 
     private val settings: Settings by lazy { Settings() }
 
     private val observableSettings: ObservableSettings by lazy { settings as ObservableSettings }
-
-    private val json = Json {
-        encodeDefaults = false
-        ignoreUnknownKeys = true
-    }
-
-    override suspend fun <T> transactional(block: suspend KeyValue.() -> T): T = lock.withLock {
-        block()
-    }
 
     override suspend fun contains(keys: List<String>): Boolean = settings.contains(keys.toKey())
 

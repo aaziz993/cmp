@@ -1,6 +1,7 @@
 package ai.tech.core.data.database.keyvalue.room
 
 import ai.tech.core.data.database.keyvalue.room.model.KeyValue
+import ai.tech.core.data.keyvalue.AbstractKeyValue
 import ai.tech.core.misc.type.TypeResolver
 import ai.tech.core.misc.type.decode
 import ai.tech.core.misc.type.encode
@@ -17,30 +18,18 @@ import kotlinx.serialization.InternalSerializationApi
 import kotlinx.serialization.json.Json
 
 @Suppress("UNCHECKED_CAST")
-public class RoomKeyValue(private val database: KeyValueDatabase) : ai.tech.core.data.keyvalue.KeyValue {
-
-    private val lock: ReentrantLock = reentrantLock()
-
-    private val stateFlow = MutableStateFlow<Entry<String, Any?>>(Entry("", null))
-
-    private val json = Json {
-        encodeDefaults = false
-        ignoreUnknownKeys = true
-    }
+public class RoomKeyValue(private val database: KeyValueDatabase) : AbstractKeyValue() {
 
     private val dao = database.getDao()
 
-    override suspend fun <T> transactional(block: suspend ai.tech.core.data.keyvalue.KeyValue.() -> T): T {
-        roomDb.beginTransaction()
+    private val stateFlow = MutableStateFlow<Entry<String, Any?>>(Entry("", null))
 
-        try {
-            // bunch of DAO operations here
-            roomDb.setTransactionSuccessful()
+    override suspend fun <T> transactional(block: suspend AbstractKeyValue.() -> T): T =
+        super.transactional {
+//            database.withTransaction {
+            block()
+//            }
         }
-        finally {
-            roomDb.endTransaction()
-        }
-    }
 
     override suspend fun contains(keys: List<String>): Boolean = dao.exists(keys.toKey())
 

@@ -19,20 +19,9 @@ import kotlinx.serialization.json.Json
 @Suppress("UNCHECKED_CAST")
 public open class MapKeyValue(
     private val map: MutableMap<String, Any?> = mutableMapOf(),
-) : KeyValue {
-
-    private val lock: ReentrantLock = reentrantLock()
+) : AbstractKeyValue() {
 
     private val stateFlow = MutableStateFlow<Entry<List<String>, Any?>>(Entry(emptyList(), null))
-
-    private val json = Json {
-        encodeDefaults = false
-        ignoreUnknownKeys = true
-    }
-
-    override suspend fun <T> transactional(block: suspend KeyValue.() -> T): T = lock.withLock {
-        block()
-    }
 
     override suspend fun contains(keys: List<String>): Boolean = map.containsOrNull(keys)!!
 
