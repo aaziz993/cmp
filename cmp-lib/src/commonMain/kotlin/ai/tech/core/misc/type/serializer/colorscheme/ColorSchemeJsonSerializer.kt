@@ -2,7 +2,6 @@ package ai.tech.core.misc.type.serializer.colorscheme
 
 import ai.tech.core.ui.theme.lightColorScheme
 import androidx.compose.material3.ColorScheme
-import androidx.compose.ui.graphics.Color
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.Serializable
@@ -141,13 +140,15 @@ public object ColorSchemeJsonSerializer : KSerializer<ColorScheme> {
             val colors = defaultColors.toMutableList()
 
             if (decodeSequentially()) {
-                (0 until 36).forEach { index ->
+                for (index in 0..35) {
                     decodeNullableSerializableElement(descriptor, index, ColorJsonSerializer)?.let { colors[index] = it }
                 }
             }
             else {
                 do {
                     val index = decodeElementIndex(descriptor)
+
+                    if (index !in 0..35) error("Unexpected index: $index")
 
                     if (index == CompositeDecoder.DECODE_DONE) {
                         break
