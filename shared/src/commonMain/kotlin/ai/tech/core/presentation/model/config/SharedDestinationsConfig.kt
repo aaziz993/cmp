@@ -1,22 +1,22 @@
 package ai.tech.core.presentation.model.config
 
-import auth.model.AuthScreenConfig
+import ai.tech.auth.login.model.LoginScreenConfig
 import core.auth.model.AuthResource
 import customs.cms.model.CMSScreenConfig
-import home.model.HomeScreenConfig
+import ai.tech.home.main.model.config.MainScreenConfig
 import kotlinx.serialization.Serializable
-import map.model.MapScreenConfig
+import ai.tech.home.map.model.config.MapScreenConfig
 import profile.model.ProfileScreenConfig
 import settings.SettingsScreenConfig
 
 @Serializable
 public data class SharedDestinationsConfig(
-    val home: HomeScreenConfig = HomeScreenConfig("home"),
+    val home: MainScreenConfig = MainScreenConfig("home"),
     val camera: CMSScreenConfig,
     val xray: CMSScreenConfig,
     val scales: CMSScreenConfig,
     val map: MapScreenConfig,
-    val auth: AuthScreenConfig,
+    val auth: LoginScreenConfig,
     val profile: ProfileScreenConfig = ProfileScreenConfig("profile", AuthResource()),
     val settings: SettingsScreenConfig = SettingsScreenConfig("settings")
 ) : DestinationsConfig

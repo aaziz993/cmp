@@ -1,0 +1,18 @@
+package customs.cms.scales.model
+
+import kotlinx.datetime.LocalDateTime
+import kotlinx.serialization.Serializable
+
+@Serializable
+public data class ScalesEntity(
+    val id: Long? = null,
+    val customsOffice: String,
+    val customsCode: String,
+    val at: LocalDateTime,
+    val vehicleLicensePlate: String? = null,
+    val totalWeight: Double,
+    val createdBy: String? = null,
+    val createdAt: LocalDateTime? = null,
+    val updatedBy: String? = null,
+    val updatedAt: LocalDateTime? = null,
+)
