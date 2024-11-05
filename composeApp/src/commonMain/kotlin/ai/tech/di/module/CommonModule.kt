@@ -1,6 +1,6 @@
 package ai.tech.di.module
 
-import ai.tech.core.data.http.client.createHttpClient
+import ai.tech.core.misc.network.http.client.createHttpClient
 import ai.tech.core.misc.auth.client.ClientAuthProvider
 import ai.tech.core.misc.auth.client.keycloak.KeycloakAuthProvider
 import ai.tech.core.misc.auth.client.keycloak.KeycloakClient

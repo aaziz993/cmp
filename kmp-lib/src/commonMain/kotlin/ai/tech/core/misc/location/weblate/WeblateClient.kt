@@ -1,6 +1,6 @@
 package ai.tech.core.misc.location.weblate
 
-import ai.tech.core.data.http.server.model.exception.HttpResponseException
+import ai.tech.core.misc.network.http.server.model.exception.HttpResponseException
 import ai.tech.core.misc.location.weblate.model.WeblateConfig
 import ai.tech.core.misc.location.weblate.model.WeblateTranslationsResponse
 import ai.tech.core.misc.location.weblate.model.WeblateUnitsResponse

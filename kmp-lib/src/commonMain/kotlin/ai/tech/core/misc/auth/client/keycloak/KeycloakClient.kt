@@ -1,6 +1,6 @@
 package ai.tech.core.misc.auth.client.keycloak
 
-import ai.tech.core.data.http.server.model.exception.HttpResponseException
+import ai.tech.core.misc.network.http.server.model.exception.HttpResponseException
 import ai.tech.core.misc.auth.client.keycloak.model.ResetPassword
 import ai.tech.core.misc.auth.client.keycloak.model.RoleRepresentation
 import ai.tech.core.misc.auth.client.keycloak.model.UserInfo

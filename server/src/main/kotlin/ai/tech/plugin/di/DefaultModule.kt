@@ -1,6 +1,6 @@
 package ai.tech.plugin.di
 
-import ai.tech.core.data.http.client.createHttpClient
+import ai.tech.core.misc.network.http.client.createHttpClient
 import io.ktor.client.*
 import io.ktor.client.plugins.*
 import io.ktor.client.plugins.contentnegotiation.*
