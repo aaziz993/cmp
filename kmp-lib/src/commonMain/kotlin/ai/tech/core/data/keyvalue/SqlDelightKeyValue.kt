@@ -61,6 +61,8 @@ public class SqlDelightKeyValue(database: KeyValue) : ai.tech.core.data.keyvalue
 
     override suspend fun flush(): Unit = Unit
 
+    override suspend fun size(): Int  = queries.count()
+
     private fun List<String>.toKey() = reduce { acc, v -> "$acc$KEY_DELIMITER$v}" }
 
     public companion object {

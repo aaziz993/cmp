@@ -4,7 +4,8 @@ import ai.tech.core.misc.type.TypeResolver
 import kotlinx.coroutines.flow.Flow
 
 public interface KeyValues {
-    public val sources: List<KeyValue>
+
+    public val sources: List<AbstractKeyValue>
     public val keys: List<String>
 
     @Suppress("UNCHECKED_CAST")
@@ -29,7 +30,6 @@ public interface KeyValues {
         sources.map {
             it.getFlow<T>(keys, type)
         }.find { it.isSuccess }!!.getOrThrow()
-
 
     public suspend fun <T> getFlow(key: String, type: TypeResolver): Flow<T> =
         getFlow(keys + key, type)

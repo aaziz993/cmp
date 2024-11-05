@@ -90,6 +90,8 @@ public class SettingsKeyValue : AbstractKeyValue() {
 
     override suspend fun flush(): Unit = Unit
 
+    override suspend fun size(): Int = settings.size
+
     private fun List<String>.toKey() = reduce { acc, v -> "$acc$KEY_DELIMITER$v" }
 
     public companion object {

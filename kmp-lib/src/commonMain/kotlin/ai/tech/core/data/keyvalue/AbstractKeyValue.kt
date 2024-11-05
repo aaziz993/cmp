@@ -43,6 +43,8 @@ public abstract class AbstractKeyValue {
     public abstract suspend fun clear()
 
     public abstract suspend fun flush()
+
+    public abstract suspend fun size(): Int
 }
 
 public suspend inline fun <reified T> AbstractKeyValue.get(

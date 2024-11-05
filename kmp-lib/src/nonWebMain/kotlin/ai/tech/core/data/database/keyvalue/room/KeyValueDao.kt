@@ -4,6 +4,7 @@ import ai.tech.core.data.database.keyvalue.room.model.KeyValue
 import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.Query
+import de.jensklingenberg.ktorfit.http.Query
 
 @Dao
 public interface KeyValueDao {
@@ -15,13 +16,13 @@ public interface KeyValueDao {
     public suspend fun select(key: String): KeyValue?
 
     @Query("SELECT * FROM key_values")
-    public suspend fun getAll(): List<KeyValue>
+    public suspend fun selectAll(): List<KeyValue>
 
     @Query("DELETE FROM key_values WHERE key = :key")
-    public suspend fun deleteByKey(key: String)
+    public suspend fun delete(key: String)
 
     @Query("DELETE FROM key_values WHERE key LIKE :key")
-    public suspend fun deleteByKeyLike(key: String)
+    public suspend fun deleteLike(key: String)
 
     @Query("DELETE FROM key_values")
     public suspend fun deleteAll()

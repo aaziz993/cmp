@@ -56,12 +56,14 @@ public class RoomKeyValue(private val database: KeyValueDatabase) : AbstractKeyV
 
     override suspend fun remove(keys: List<String>): Unit =
         keys.toKey().let {
-            dao.deleteByKeyLike("$it$KEY_DELIMITER%")
+            dao.deleteLike("$it$KEY_DELIMITER%")
         }
 
     override suspend fun clear(): Unit = dao.deleteAll()
 
     override suspend fun flush(): Unit = Unit
+
+    override suspend fun size(): Int  = dao.count()
 
     private fun List<String>.toKey() = reduce { acc, v -> "$acc$KEY_DELIMITER$v}" }
 
