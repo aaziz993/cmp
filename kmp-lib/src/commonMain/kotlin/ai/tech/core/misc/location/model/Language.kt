@@ -1,9 +1,8 @@
 package ai.tech.core.misc.location.model
 
 import kotlinx.serialization.Serializable
-import ai.tech.core.misc.location.serializer.LanguageSerializer
 
-@Serializable(with = LanguageSerializer::class)
+@Serializable
 public data class Language(
     val officialName: String,
     val alpha2: String?,
@@ -11,7 +10,7 @@ public data class Language(
     val numeric: String?,
     val countryAlpha2: String?,
 ) {
-    override fun toString(): String = "$alpha3-$countryAlpha2"
+    override fun toString(): String = officialName
 }
 
 public val languages: Map<String, () -> Language> =
@@ -73,7 +72,7 @@ public val languages: Map<String, () -> Language> =
                 null,
                 "arc",
                 "null",
-                null
+                null,
             )
         },
         "arg" to { Language("Aragonese", "an", "arg", "null", null) },
@@ -161,7 +160,7 @@ public val languages: Map<String, () -> Language> =
                 "cu",
                 "chu",
                 "null",
-                null
+                null,
             )
         },
         "chv-RU" to { Language("Chuvash", "cv", "chv", "4096", "RU") },
@@ -504,7 +503,7 @@ public val languages: Map<String, () -> Language> =
                 "ia",
                 "ina",
                 "4096",
-                "001"
+                "001",
             )
         },
         "inc" to { Language("Indic languages", null, "inc", "null", null) },

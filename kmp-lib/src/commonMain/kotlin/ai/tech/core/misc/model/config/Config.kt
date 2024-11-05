@@ -13,7 +13,8 @@ public interface Config {
 
     public val localizationProvider: String?
 
-    public val language: Language
+    // "alpha3-countryAlpha2"
+    public val language: String
 
     public val validator: ValidatorConfig
 

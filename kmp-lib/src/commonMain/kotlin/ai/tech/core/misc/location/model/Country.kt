@@ -1,16 +1,18 @@
 package ai.tech.core.misc.location.model
 
-import ai.tech.core.misc.location.serializer.CountrySerializer
 import kotlinx.serialization.Serializable
 
-@Serializable(with= CountrySerializer::class)
+@Serializable
 public data class Country(
     public val officialName: String,
     public val alpha2: String,
     public val alpha3: String,
     public val numeric: String,
     public val phoneCode: String,
-)
+) {
+
+    override fun toString(): String = officialName
+}
 
 public val countries: Map<String, () -> Country> =
     mapOf(
