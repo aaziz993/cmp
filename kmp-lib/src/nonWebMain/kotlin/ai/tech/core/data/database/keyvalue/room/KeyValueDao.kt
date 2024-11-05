@@ -1,6 +1,6 @@
-package ai.tech.core.data.database.room.keyvalue
+package ai.tech.core.data.database.keyvalue.room
 
-import ai.tech.core.data.database.room.keyvalue.model.KeyValue
+import ai.tech.core.data.database.keyvalue.room.model.KeyValue
 import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.Query
@@ -12,7 +12,7 @@ public interface KeyValueDao {
     public suspend fun insert(keyValue: KeyValue)
 
     @Query("SELECT * FROM key_values WHERE key = :key")
-    public suspend fun getByKey(key: String): KeyValue
+    public suspend fun select(key: String): KeyValue?
 
     @Query("SELECT * FROM key_values")
     public suspend fun getAll(): List<KeyValue>

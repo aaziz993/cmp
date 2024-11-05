@@ -1,4 +1,4 @@
-package ai.tech.core.data.database.room.keyvalue.model
+package ai.tech.core.data.database.keyvalue.room.model
 
 import androidx.room.ColumnInfo
 import androidx.room.Entity
@@ -10,10 +10,7 @@ import androidx.room.PrimaryKey
 @Entity(tableName = "key_values", indices = [Index(value = ["key"], unique = true)])
 public class KeyValue(
     @PrimaryKey(autoGenerate = true)
-    @ColumnInfo(name = "id")
     public val id: Long = 0,
-    @ColumnInfo(name = "key")
     public val key: String,
-    @ColumnInfo(name = "value")
-    public val value: String,
+    public val value: String?,
 )

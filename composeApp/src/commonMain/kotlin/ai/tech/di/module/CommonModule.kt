@@ -18,6 +18,7 @@ import io.ktor.serialization.kotlinx.json.*
 import kotlinx.serialization.json.Json
 import org.koin.core.annotation.Module
 import org.koin.core.annotation.Single
+import ai.tech.core.data.keyvalue.SettingsKeyValue
 
 @Module
 public class CommonModule(private val enableNetworkLogs: Boolean) {

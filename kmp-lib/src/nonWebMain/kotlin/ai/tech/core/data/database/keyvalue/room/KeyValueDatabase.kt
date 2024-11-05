@@ -1,6 +1,6 @@
-package ai.tech.core.data.database.room.keyvalue
+package ai.tech.core.data.database.keyvalue.room
 
-import ai.tech.core.data.database.room.keyvalue.model.KeyValue
+import ai.tech.core.data.database.keyvalue.room.model.KeyValue
 import androidx.room.ConstructedBy
 import androidx.room.Database
 import androidx.room.RoomDatabase
