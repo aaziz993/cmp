@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Tabs -->
+    <string name="home">Главная</string>
+    <string name="cms">СТМ</string>
+    <string name="map">Карта</string>
+    <string name="profile">Профиль</string>
+    <string name="settings">Настройки</string>
+    <!-- Labels -->
+    <string name="username">Имя пользователя</string>
+    <string name="password">Пароль</string>
+    <!-- Placeholders -->
+ 
+
+    <!-- Buttons -->
+ 
+
+    <!-- Toast messages -->
+<string name="dark_mode">Темная тема</string>
+    <string name="language">Язык</string>
+    <string name="user_interface">Интерфейс пользователя</string>
+    <string name="remember_me">Запомнить меня?</string>
+    <string name="first_name">Имя</string>
+    <string name="email">Электронная почта</string>
+    <string name="actions">Действия</string>
+    <string name="user_info">Информация пользователя</string>
+    <string name="reset_password">Сброс пароля</string>
+    <string name="last_name">Фамилия</string>
+    <string name="roles">Роли</string>
+    <string name="submit">Завершить</string>
+    <string name="Russian">Русский</string>
+    <string name="select_tile">Выбор карты</string>
+    <string name="English">Английский</string>
+    <string name="new_password">Новый пароль</string>
+    <string name="Tajik">Таджикский</string>
+    <string name="sign_in">Войти</string>
+    <string name="sign_out">Выйти</string>
+    <string name="network_401">Не авторизирован</string>
+    <string name="repeat_password">Повторить пароль</string>
+    <string name="retry">Повторить</string>
+    <string name="value_is_empty">Пустое поле</string>
+    <string name="value_length_is_invalid">Неправильная длина значения</string>
+    <string name="value_is_invalid">Неправильное значение</string>
+    <string name="passwords_mismatch">Пароли не совпадают</string>
+    <string name="value_has_whitespace">Значение содержит пробел</string>
+    <string name="phone_prefix_is_invalid">Должно начинаться с +</string>
+    <string name="value_has_not_digits">Значение не содержит цифры</string>
+    <string name="value_has_letters">Значение содержит буквы</string>
+    <string name="cancel">Отменить</string>
+    <string name="confirm">Подтвердить</string>
+    <string name="phone">Телефон</string>
+    <string name="about_the_system">О системе</string>
+    <string name="system_description">"       Система электронного обмена данными для Ситуационного центра Таможенной службы при Правительстве Республики Таджикистан разработана в 2024 году при технической поддержке Программы USAID по торговле в Центральной Азии в рамках Среднесрочной программы развития таможенных органов Республики Таджикистан на 2020-2024 гг. 
+\n       Основной целью системы является повышение эффективности, надежности и прозрачности таможенного контроля с помощью технического оборудования. Система обеспечивает автоматизированное получение данных с таможенных постов для их оперативной обработки и анализа в Ситуационном центре, улучшая координацию, управление и принятие решений в деятельности таможенных органов Республики Таджикистан."</string>
+    <string name="search">Поиск</string>
+    <string name="virtual_earth_map">Виртуальная карта Земли</string>
+    <string name="pagination">Страницы</string>
+    <string name="select">Выбор</string>
+    <string name="markers">Маркеры</string>
+    <string name="options">Опции</string>
+    <string name="header">Заголовок</string>
+    <string name="live_search">Живой поиск</string>
+    <string name="confirm_alert">Вы уверены?</string>
+    <string name="open_street_map">Опенстрит карта</string>
+    <string name="google_map">Гугл карта</string>
+    <string name="value_is_negative">Отрицательное значение</string>
+    <string name="customs_762515">Дусти</string>
+    <string name="scans">Сканы</string>
+    <string name="scan_sources">Источники сканов</string>
+    <string name="scan_mappers">Преобразователи сканов</string>
+    <string name="customs_popup_762515">&lt;p style=\"margin : 0; padding-top:0;\"&gt;&lt;b&gt;Код:&lt;/b&gt; 762515&lt;/p&gt;&lt;p style=\"margin : 0; padding-top:0;\"&gt;&lt;b&gt;Адрес:&lt;/b&gt; Турсунзода, Навобод&lt;/p&gt;&lt;p style=\"margin : 0; padding-top:0;\"&gt;&lt;b&gt;Время работы:&lt;/b&gt; 8:00-17:00&lt;/p&gt;&lt;a href=\"https://camera/{customsCode}/762515\"&gt;Камера&lt;/a&gt;&amp;nbsp&lt;a href=\"https://xray/{customsCode}/762515\"&gt;Рентген&lt;/a&gt;&amp;nbsp&lt;a href=\"https://scales/{customsCode}/762515\"&gt;Весы&lt;/a&gt;</string>
+    <string name="Longitude">Долгота</string>
+    <string name="customs_code">Код таможни</string>
+    <string name="description">Описание</string>
+    <string name="customs_office">Таможня</string>
+    <string name="vehicle_license_plate">Номер транспорта</string>
+    <string name="driver_name">Водитель</string>
+    <string name="total_weight">Вес</string>
+    <string name="document_number">Документ</string>
+    <string name="latitude">Широта</string>
+    <string name="identifier">Идентификатор</string>
+    <string name="longitude">Долгота</string>
+    <string name="value_prefix_is_not_plus">Значение начинается не с +</string>
+    <string name="country_of_dispatch">Страна отправления</string>
+    <string name="scan_popup_title">Единая форма таможенного контроля</string>
+    <string name="driver_license">Права водителя</string>
+    <string name="customs_762117">Терминал Душанбе</string>
+    <string name="scan_xray_driver_name_title">Имя водителя</string>
+    <string name="scan_document_id_title">№ Документа</string>
+    <string name="scan_camera_vehicle_license_plate_title">Номер авто</string>
+    <string name="scan_customs_office_title">Таможня</string>
+    <string name="scan_scales_date_time_title">Дата взвешивания</string>
+    <string name="scan_customs_code_title">Код таможни</string>
+    <string name="scan_xray_date_time_title">Дата ИДК</string>
+    <string name="scan_camera_date_time_title">Дата камеры</string>
+    <string name="scan_scales_total_weight_title">Общий вес</string>
+    <string name="camera">Камера</string>
+    <string name="scales">Весы</string>
+    <string name="xray">Рентген</string>
+    <string name="path">Путь</string>
+    <string name="id">ID</string>
+    <string name="at">Время</string>
+    <string name="officer_name">Имя инспектора</string>
+    <string name="source">Источник</string>
+    <string name="is_file">Файл</string>
+    <string name="mapper_id">ID Маппера</string>
+    <string name="goods_description">Описание товара</string>
+    <string name="image">Изображение</string>
+    <string name="content">Содержание</string>
+    <string name="data_path">Путь к данным</string>
+    <string name="at_format">Формат даты</string>
+    <string name="mapper">Маппер</string>
+    <string name="customs_popup_762317">Пост 732317</string>
+    <string name="customs_762317">Пост 762317</string>
+    <string name="customs_762225">Пост 762225</string>
+    <string name="customs_popup_762215">Пост 762215</string>
+    <string name="customs_popup_762225">Пост 762225</string>
+    <string name="customs_762215">Пост 762215</string>
+    <string name="map_location_latitude">Широта</string>
+    <string name="vehicle_license_plate_image">Фото номера авто</string>
+    <string name="map_location_longitude">Долгота</string>
+    <string name="map_location_identifier">Код поста</string>
+    <string name="map_location_description">Описание</string>
+    <string name="customs_popup_762117"><p style="margin : 0; padding-top:0;"><b>Code:</b> 762117</p><p style="margin : 0; padding-top:0;"><b>Address:</b> г. Душанбе</p><p style="margin : 0; padding-top:0;"><b>Рабочее время:</b> 8:00-17:00</p><a href="https://762117">Мониторинг</a></string>
+</resources>

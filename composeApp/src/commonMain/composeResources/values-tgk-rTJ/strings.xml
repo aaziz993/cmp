@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Tabs -->
+    <string name="home">Асосӣ</string>
+    <string name="cms">ННГ</string>
+    <string name="map">Харита</string>
+    <string name="profile">Ҳуҷра</string>
+    <string name="settings">Танзим</string>
+    <!-- Labels -->
+    <string name="username">Номи истифодабаранда</string>
+    <string name="password">Рамз</string>
+    <!-- Placeholders -->
+ 
+
+    <!-- Buttons -->
+ 
+
+    <!-- Toast messages -->
+<string name="dark_mode">Намуди торик</string>
+    <string name="language">Забон</string>
+    <string name="user_interface">Намои барнома</string>
+    <string name="remember_me">Cабт шавад?</string>
+    <string name="first_name">Ном</string>
+    <string name="actions">Амалҳо</string>
+    <string name="email">Почтаи эл.</string>
+    <string name="user_info">Маълумоти истифодабаранда</string>
+    <string name="reset_password">Ивази рамз</string>
+    <string name="last_name">Насаб</string>
+    <string name="roles">Нақшҳо</string>
+    <string name="submit">Сабт</string>
+    <string name="Russian">Русӣ</string>
+    <string name="select_tile">Интихоби харита</string>
+    <string name="English">Англисӣ</string>
+    <string name="new_password">Рамзи нав</string>
+    <string name="Tajik">Тоҷикӣ</string>
+    <string name="sign_in">Даромад</string>
+    <string name="sign_out">Баромад</string>
+    <string name="network_401">Иҷозат нест</string>
+    <string name="repeat_password">Такрори рамз</string>
+    <string name="retry">Аз нав</string>
+    <string name="value_is_empty">Сутуни холӣ</string>
+    <string name="value_length_is_invalid">Дарозии маълумот нодуруст аст</string>
+    <string name="value_is_invalid">Маълумоти нодуруст</string>
+    <string name="passwords_mismatch">Рамзҳо гуногунанд</string>
+    <string name="value_has_whitespace">Маълумот фосила дорад</string>
+    <string name="phone_prefix_is_invalid">Бояд бо + сар шавад</string>
+    <string name="value_has_not_digits">Маълумот рақам надорад</string>
+    <string name="value_has_letters">Маълумот ҳарф дорад</string>
+    <string name="cancel">Бекоркунӣ</string>
+    <string name="confirm">Тасдиқ</string>
+    <string name="phone">Телефон</string>
+    <string name="about_the_system">Дар бораи система</string>
+    <string name="system_description">"       Системаи табодули электронии маълумот барои Маркази вокуниши Хадамоти гумруки назди Ҳукумати Ҷумҳурии Тоҷикистон дар соли 2024 бо дастгирии техникии Барномаи Агентии рушди байналмилалии ИМА оид ба савдо дар Осиёи Марказӣ дар доираи Барномаи миёнамуҳлати рушди мақомоти гумруки Ҷумҳурии Тоҷикистон барои солҳои 2020-2024 таҳия шудааст. 
+\n       Мақсади асосии система баланд бардоштани самаранокӣ, эътимоднокӣ ва шаффофияти назорати гумрукӣ тавассути таҷҳизоти техникӣ мебошад. Система дастрас намудани маълумотро аз дидбонгоҳҳои гумрукӣ ба таври худкор ҷиҳати коркард ва таҳлили саривақтии онҳо дар Маркази вокуниш таъмин намуда, ба такмили ҳамоҳангсозӣ, идоракунӣ ва қабули қарорҳо дар фаъолияти мақомоти гумруки Ҷумҳурии Тоҷикистон мусоидат менамояд."</string>
+    <string name="search">Ҷустуҷӯ</string>
+    <string name="virtual_earth_map">Харитаи мавҳуми Замин</string>
+    <string name="pagination">Саҳифабандӣ</string>
+    <string name="select">Интихоб</string>
+    <string name="markers">Нишонаҳо</string>
+    <string name="options">Имкониятҳо</string>
+    <string name="header">Сарлавҳа</string>
+    <string name="live_search">Ҷустуҷӯи воқеӣ</string>
+    <string name="confirm_alert">Боварӣ доред?</string>
+    <string name="open_street_map">Харитаи OpenStreet</string>
+    <string name="google_map">Харитаи Гугл</string>
+    <string name="value_is_negative">Маълумоти манфӣ</string>
+    <string name="customs_762515">Дӯстӣ</string>
+    <string name="scans">Аксҳо</string>
+    <string name="scan_sources">Манбаҳои акс</string>
+    <string name="scan_mappers">Табдилдиҳандаҳои акс</string>
+    <string name="customs_popup_762515">&lt;p style=\"margin : 0; padding-top:0;\"&gt;&lt;b&gt;Рамз:&lt;/b&gt; 762515&lt;/p&gt;&lt;p style=\"margin : 0; padding-top:0;\"&gt;&lt;b&gt;Суроға:&lt;/b&gt; Турсунзода, Навобод&lt;/p&gt;&lt;p style=\"margin : 0; padding-top:0;\"&gt;&lt;b&gt;Вақти корӣ:&lt;/b&gt; 8:00-17:00&lt;/p&gt;&lt;a href=\"https://camera/{customsCode}/762515\"&gt;Камера&lt;/a&gt;&amp;nbsp&lt;a href=\"https://xray/{customsCode}/762515\"&gt;Рентген&lt;/a&gt;&amp;nbsp&lt;a href=\"https://scales/{customsCode}/762515\"&gt;Тарозу&lt;/a&gt;</string>
+    <string name="Longitude">Тӯли географӣ</string>
+    <string name="description">Тавсиф</string>
+    <string name="customs_code">Рамзи гумрук</string>
+    <string name="customs_office">Гумрук</string>
+    <string name="vehicle_license_plate">Раками нақлиёт</string>
+    <string name="driver_name">Ронанда</string>
+    <string name="total_weight">Вазн</string>
+    <string name="document_number">Ҳуҷҷат</string>
+    <string name="latitude">Арзи географӣ</string>
+    <string name="identifier">Мушаххаскунанда</string>
+    <string name="longitude">Тӯли географӣ</string>
+    <string name="value_prefix_is_not_plus">Бо + сар нашудааст</string>
+    <string name="country_of_dispatch">Кишвари равонкунанда</string>
+    <string name="scan_popup_title">Ҳуҷҷати ягонаи назорати гумрукӣ</string>
+    <string name="driver_license">Шаҳодатномаи ронандагӣ</string>
+    <string name="scan_xray_driver_name_title">Номи ронанда</string>
+    <string name="scan_document_id_title">№ Ҳуҷҷат</string>
+    <string name="scan_camera_vehicle_license_plate_title">Рақами авто</string>
+    <string name="scan_customs_office_title">Гумрук</string>
+    <string name="scan_scales_date_time_title">Санаи вазнкашӣ</string>
+    <string name="scan_customs_code_title">Рамзи гумрук</string>
+    <string name="scan_xray_date_time_title">Санаи рентген</string>
+    <string name="scan_camera_date_time_title">Санаи камера</string>
+    <string name="scan_scales_total_weight_title">Вазни умумӣ</string>
+    <string name="camera">Камера</string>
+    <string name="scales">Тарозу</string>
+    <string name="xray">Рентген</string>
+    <string name="customs_popup_762117"><p style="margin : 0; padding-top:0;"><b>Рамз:</b> 762117</p><p style="margin : 0; padding-top:0;"><b>Суроға:</b> Шаҳри Душанбе</p><p style="margin : 0; padding-top:0;"><b>Вақти корӣ:</b> 8:00-17:00</p><a href="https://762117">Назорат</a></string>
+    <string name="customs_762117">Терминали Душанбе</string>
+    <string name="path">Макон</string>
+    <string name="id">ID</string>
+    <string name="at">Вақт</string>
+    <string name="officer_name">Номи нозир</string>
+    <string name="source">Манбаъ</string>
+    <string name="is_file">Файл</string>
+    <string name="goods_description">Тавсифи бор</string>
+    <string name="image">Тасвир</string>
+    <string name="data_path">Макони маълумот</string>
+    <string name="content">Таркиб</string>
+    <string name="mapper_id">ID Табдилдиҳанда</string>
+    <string name="at_format">Қолаби вақт</string>
+    <string name="mapper">Табдилдиҳанда</string>
+    <string name="customs_popup_762317">Дидбонгоҳи 762317</string>
+    <string name="customs_762317">Дидбонгоҳи 762317</string>
+    <string name="customs_762225">Дидбонгоҳи 762225</string>
+    <string name="customs_popup_762215">Дидбонгоҳи 762215</string>
+    <string name="customs_popup_762225">Дидбонгоҳи 762225</string>
+    <string name="map_location_latitude">Арзи географӣ</string>
+    <string name="customs_762215">Дидбонгоҳи 762215</string>
+    <string name="vehicle_license_plate_image">Тасвири рақами давлатии автомобил</string>
+    <string name="map_location_longitude">Тӯли географӣ</string>
+    <string name="map_location_identifier">Рамзи дидбонгоҳ</string>
+    <string name="map_location_description">Маълумот</string>
+</resources>
