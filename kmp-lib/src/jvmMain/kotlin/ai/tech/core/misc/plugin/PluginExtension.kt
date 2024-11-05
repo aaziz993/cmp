@@ -62,7 +62,7 @@ import io.ktor.server.sessions.SessionsConfig
 import io.ktor.server.websocket.WebSockets
 import org.koin.ktor.ext.get
 
-public fun Application.configureApplication(
+public fun Application.configure(
     config: ServerConfig,
     serializationBlock: (ContentNegotiationConfig.() -> Unit)? = null,
     httpsRedirectBlock: (HttpsRedirectConfig.() -> Unit)? = null,
