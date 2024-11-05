@@ -4,6 +4,7 @@ import ai.tech.core.data.filesystem.readResourceText
 import ai.tech.core.misc.model.config.ServerConfig
 import ai.tech.core.misc.plugin.configure
 import ai.tech.core.misc.plugin.di.configureKoin
+import ai.tech.map.mapRouting
 import ai.tech.plugin.di.DefaultModule
 import ai.tech.plugin.routing
 import io.ktor.network.tls.certificates.*
@@ -29,7 +30,10 @@ public fun Application.module() {
 
     configure(
         config,
-        routingBlock = { routing(config) },
+        routingBlock = {
+            // Add all other routes here
+            mapRouting(config)
+        },
     )
 }
 
