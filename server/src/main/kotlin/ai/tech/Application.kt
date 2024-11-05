@@ -38,16 +38,16 @@ import ai.tech.plugin.di.DefaultModule
 import ai.tech.plugin.routing
 import io.ktor.network.tls.certificates.*
 import io.ktor.server.application.Application
+import io.ktor.server.engine.CommandLineConfig
 import io.ktor.server.netty.EngineMain
-import java.io.File
-import net.mamoe.yamlkt.Yaml
 import org.koin.ksp.generated.*
 import org.koin.ktor.ext.get
 
 public fun main(args: Array<String>) {
+    val config = CommandLineConfig(args)
+    config.rootConfig.environment.config.
     // Configure ssl certificate generation
 //    ssl?.generate()
-
     EngineMain.main(args)
 }
 
