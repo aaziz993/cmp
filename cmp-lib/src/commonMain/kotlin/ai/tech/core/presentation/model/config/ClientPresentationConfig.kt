@@ -1,12 +1,12 @@
 package ai.tech.core.presentation.model.config
 
-import ai.tech.core.misc.type.serializer.ColorSchemeJson
-import ai.tech.core.misc.type.serializer.ShapesJson
-import ai.tech.core.misc.type.serializer.TypographyJson
+import ai.tech.core.misc.model.config.presentation.PresentationConfig
+import ai.tech.core.misc.type.serializer.colorscheme.ColorSchemeJson
+import ai.tech.core.misc.type.serializer.shapes.ShapesJson
+import ai.tech.core.misc.type.serializer.typography.TypographyJson
 
-public interface ClientPresentationConfig<T : Any> : SharedPresentationConfig {
+public interface ClientPresentationConfig : PresentationConfig {
     public val colorScheme: ColorSchemeJson?
     public val shapes: ShapesJson
     public val typography: TypographyJson
-    public val screen: DestinationsConfig
 }

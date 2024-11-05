@@ -1,7 +1,7 @@
 package ai.tech.auth.profile.presentation
 
 import androidx.compose.runtime.Composable
-import ai.tech.navigation.presentation.Destination
+import ai.tech.core.presentation.navigation.Destination
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
 

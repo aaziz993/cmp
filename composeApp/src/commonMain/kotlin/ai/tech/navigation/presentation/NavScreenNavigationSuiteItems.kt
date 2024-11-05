@@ -1,5 +1,6 @@
 package ai.tech.navigation.presentation
 
+import ai.tech.core.presentation.navigation.Destination
 import androidx.compose.material3.adaptive.navigationsuite.NavigationSuiteScope
 import androidx.compose.runtime.Composable
 import androidx.navigation.NavDestination
@@ -26,7 +27,7 @@ public fun NavScreenNavigationSuiteItems(
     customsCMSScalesLabel: String,
     customsCDoxDocumentLabel: String,
 ): NavigationSuiteScope.() -> Unit = {
-    Destination.navigationItems(
+    Destination.Companion.navigationItems(
         homeMainLabel,
         homeMapLabel,
         homeSettingsLabel,

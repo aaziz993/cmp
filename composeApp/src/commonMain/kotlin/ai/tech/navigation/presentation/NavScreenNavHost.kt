@@ -22,7 +22,7 @@ import androidx.navigation.toRoute
 import ai.tech.auth.forgotpassword.presentation.ForgotPasswordScreen
 import ai.tech.auth.login.presentation.LoginScreen
 import ai.tech.auth.profile.presentation.ProfileScreen
-import ai.tech.auth.register.presentation.RegisterScreen
+import ai.tech.core.presentation.navigation.Destination
 import ai.tech.customs.cms.camera.presentation.CameraScreen
 import ai.tech.customs.cms.scales.presentation.ScalesScreen
 import ai.tech.customs.cms.xray.presentation.XrayScreen

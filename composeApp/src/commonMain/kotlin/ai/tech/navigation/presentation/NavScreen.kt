@@ -112,15 +112,15 @@ public fun NavScreen(
                         onCancel = { scope.launch { GlobalAlertEventController.sendEvent(null) } })
                 }
 
-                val navigator = koinInject<Navigator<Destination>>()
+                val navigator = koinInject<Navigator<ai.tech.core.presentation.navigation.Destination>>()
 
                 navigator.handleAction(navController)
 
                 NavScreenNavHost(
                     navController,
-                    Destination.HomeGraph.Main,
+                    ai.tech.core.presentation.navigation.Destination.HomeGraph.Main,
                     modifier.padding(innerPadding),
-                    route = Destination.HomeGraph::class
+                    route = ai.tech.core.presentation.navigation.Destination.HomeGraph::class
                 )
             }
         }

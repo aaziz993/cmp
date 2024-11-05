@@ -1,4 +1,4 @@
-package ai.tech.navigation.presentation
+package ai.tech.core.presentation.navigation
 
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.Login
@@ -21,7 +21,7 @@ public sealed interface Destination {
         @Serializable
         public data object Main : Destination {
             public val deepLinks: List<NavDeepLink>
-                get() = Destination.HomeGraph.deepLinks.map { navDeepLink<Main>("${it}main") }
+                get() = HomeGraph.deepLinks.map { navDeepLink<Main>("${it}main") }
 
             public fun navigationItem(label: String): NavigationItem<Destination> = NavigationItem(
                 text = { Text(label) },
@@ -34,7 +34,7 @@ public sealed interface Destination {
         @Serializable
         public data object Map : Destination {
             public val deepLinks: List<NavDeepLink>
-                get() = Destination.HomeGraph.deepLinks.map { navDeepLink<Map>("${it}map") }
+                get() = HomeGraph.deepLinks.map { navDeepLink<Map>("${it}map") }
 
             public fun navigationItem(label: String): NavigationItem<Destination> = NavigationItem(
                 text = { Text(label) },
@@ -47,7 +47,7 @@ public sealed interface Destination {
         @Serializable
         public data object Settings : Destination {
             public val deepLinks: List<NavDeepLink>
-                get() = Destination.HomeGraph.deepLinks.map { navDeepLink<Settings>("${it}settings") }
+                get() = HomeGraph.deepLinks.map { navDeepLink<Settings>("${it}settings") }
 
             public fun navigationItem(label: String): NavigationItem<Destination> = NavigationItem(
                 text = { Text(label) },
@@ -60,7 +60,7 @@ public sealed interface Destination {
         @Serializable
         public data object About : Destination {
             public val deepLinks: List<NavDeepLink>
-                get() = Destination.HomeGraph.deepLinks.map { navDeepLink<About>("${it}about") }
+                get() = HomeGraph.deepLinks.map { navDeepLink<About>("${it}about") }
 
             public fun navigationItem(label: String): NavigationItem<Destination> = NavigationItem(
                 text = { Text(label) },
@@ -80,7 +80,7 @@ public sealed interface Destination {
     @Serializable
     public data object Login : Destination {
         public val deepLinks: List<NavDeepLink>
-            get() = Destination.AuthGraph.deepLinks.map { navDeepLink<Login>("${it}login") }
+            get() = AuthGraph.deepLinks.map { navDeepLink<Login>("${it}login") }
 
         public fun navigationItem(label: String): NavigationItem<Destination> = NavigationItem(
             text = { Text(label) },
@@ -94,14 +94,14 @@ public sealed interface Destination {
     public data class ForgotPassword(val username: String) : Destination {
         public companion object {
             public val deepLinks: List<NavDeepLink> =
-                Destination.AuthGraph.deepLinks.map { navDeepLink<ForgotPassword>("${it}forgotpassword") }
+                AuthGraph.deepLinks.map { navDeepLink<ForgotPassword>("${it}forgotpassword") }
         }
     }
 
     @Serializable
     public data object Profile : Destination {
         public val deepLinks: List<NavDeepLink>
-            get() = Destination.AuthGraph.deepLinks.map { navDeepLink<Profile>("${it}profile") }
+            get() = AuthGraph.deepLinks.map { navDeepLink<Profile>("${it}profile") }
 
         public fun navigationItem(label: String): NavigationItem<Destination> = NavigationItem(
             text = { Text(label) },
@@ -119,7 +119,7 @@ public sealed interface Destination {
         @Serializable
         public data object Balance : Destination {
             public val deepLinks: List<NavDeepLink>
-                get() = Destination.WalletGraph.deepLinks.map { navDeepLink<Balance>("${it}balance") }
+                get() = WalletGraph.deepLinks.map { navDeepLink<Balance>("${it}balance") }
 
             public fun navigationItem(label: String): NavigationItem<Destination> = NavigationItem(
                 text = { Text(label) },
@@ -132,7 +132,7 @@ public sealed interface Destination {
         @Serializable
         public data object Crypto : Destination {
             public val deepLinks: List<NavDeepLink>
-                get() = Destination.WalletGraph.deepLinks.map { navDeepLink<Crypto>("${it}crypto") }
+                get() = WalletGraph.deepLinks.map { navDeepLink<Crypto>("${it}crypto") }
 
             public fun navigationItem(label: String): NavigationItem<Destination> = NavigationItem(
                 text = { Text(label) },
@@ -145,7 +145,7 @@ public sealed interface Destination {
         @Serializable
         public data object Stock : Destination {
             public val deepLinks: List<NavDeepLink>
-                get() = Destination.WalletGraph.deepLinks.map { navDeepLink<Stock>("${it}stock") }
+                get() = WalletGraph.deepLinks.map { navDeepLink<Stock>("${it}stock") }
 
             public fun navigationItem(label: String): NavigationItem<Destination> = NavigationItem(
                 text = { Text(label) },
@@ -165,7 +165,7 @@ public sealed interface Destination {
         public data class Camera(val customsCode: String? = null) : Destination {
             public companion object {
                 public val deepLinks: List<NavDeepLink> =
-                    Destination.CustomsGraph.deepLinks.map { navDeepLink<Camera>("${it}camera") }
+                    CustomsGraph.deepLinks.map { navDeepLink<Camera>("${it}camera") }
 
                 public fun navigationItem(label: String): NavigationItem<Destination> = NavigationItem(
                     text = { Text(label) },
@@ -180,7 +180,7 @@ public sealed interface Destination {
         public data class Xray(val customsCode: String? = null) : Destination {
             public companion object {
                 public val deepLinks: List<NavDeepLink> =
-                    Destination.CustomsGraph.deepLinks.map { navDeepLink<Xray>("${it}xray") }
+                    CustomsGraph.deepLinks.map { navDeepLink<Xray>("${it}xray") }
 
                 public fun navigationItem(label: String): NavigationItem<Destination> = NavigationItem(
                     text = { Text(label) },
@@ -195,7 +195,7 @@ public sealed interface Destination {
         public data class Scales(val customsCode: String? = null) : Destination {
             public companion object {
                 public val deepLinks: List<NavDeepLink> =
-                    Destination.CustomsGraph.deepLinks.map { navDeepLink<Scales>("${it}scales") }
+                    CustomsGraph.deepLinks.map { navDeepLink<Scales>("${it}scales") }
 
                 public fun navigationItem(label: String): NavigationItem<Destination> = NavigationItem(
                     text = { Text(label) },
@@ -209,7 +209,7 @@ public sealed interface Destination {
         @Serializable
         public data object Document : Destination {
             public val deepLinks: List<NavDeepLink>
-                get() = Destination.CustomsGraph.deepLinks.map { navDeepLink<Document>("${it}document") }
+                get() = CustomsGraph.deepLinks.map { navDeepLink<Document>("${it}document") }
 
             public fun navigationItem(label: String): NavigationItem<Destination> = NavigationItem(
                 text = { Text(label) },

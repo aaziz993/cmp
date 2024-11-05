@@ -10,7 +10,7 @@ import ai.tech.core.misc.location.weblate.WeblateLocalizationProvider
 import ai.tech.core.misc.model.config.client.ClientConfig
 import ai.tech.core.presentation.event.navigator.DefaultNavigator
 import ai.tech.core.presentation.event.navigator.Navigator
-import ai.tech.navigation.presentation.Destination
+import ai.tech.core.presentation.navigation.Destination
 import io.ktor.client.*
 import io.ktor.client.plugins.contentnegotiation.*
 import io.ktor.client.plugins.logging.*

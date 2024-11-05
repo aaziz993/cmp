@@ -1,7 +1,7 @@
 package ai.tech.auth.login.model
 
 import ai.tech.core.misc.auth.model.AuthResource
-import ai.tech.core.presentation.model.config.DestinationConfig
+import ai.tech.core.misc.model.config.presentation.DestinationConfig
 import kotlinx.serialization.Serializable
 
 @Serializable

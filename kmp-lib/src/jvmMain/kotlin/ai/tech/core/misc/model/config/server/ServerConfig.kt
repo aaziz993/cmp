@@ -1,9 +1,8 @@
 package ai.tech.core.misc.model.config.server
 
 import ai.tech.core.misc.auth.server.model.config.ServerAuthConfig
-import ai.tech.core.misc.model.config.SharedConfig
+import ai.tech.core.misc.model.config.Config
 import ai.tech.core.misc.model.config.di.KoinConfig
-import ai.tech.core.misc.model.config.server.keystore.GenerateServerSSLConfig
 import ai.tech.core.misc.plugin.applicationmonitoring.model.config.ApplicationMonitoringConfig
 import ai.tech.core.misc.plugin.authheadresponse.model.config.AutoHeadResponseConfig
 import ai.tech.core.misc.plugin.cachingheaders.model.config.CachingHeadersConfig
@@ -31,14 +30,11 @@ import ai.tech.core.misc.plugin.templating.model.config.FreeMarkerConfig
 import ai.tech.core.misc.plugin.validation.model.config.RequestValidationConfig
 import ai.tech.core.misc.plugin.websockets.model.config.WebSocketsConfig
 import ai.tech.core.misc.plugin.xhttpmethodoverride.model.config.XHttpMethodOverrideConfig
-import ai.tech.core.misc.type.decode
-import io.ktor.server.config.*
 import ai.tech.core.misc.plugin.dropwizardmetrics.model.config.DropwizardMetricsConfig
 import ai.tech.core.misc.plugin.micrometermetrics.model.config.MicrometerMetricsConfig
 import ai.tech.core.misc.plugin.defaultheaders.model.config.DefaultHeadersConfig
-import kotlinx.serialization.json.Json
 
-public interface ServerConfig : SharedConfig {
+public interface ServerConfig : Config {
 
     public val koin: KoinConfig?
     public val serialization: SerializationConfig?

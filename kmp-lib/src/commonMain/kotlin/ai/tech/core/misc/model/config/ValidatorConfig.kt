@@ -5,5 +5,5 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 public data class ValidatorConfig(
-    val user: UserValidatorConfig
+    val user: UserValidatorConfig = UserValidatorConfig(),
 )

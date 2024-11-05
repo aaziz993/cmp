@@ -1,6 +1,7 @@
-package ai.tech.core.presentation.model.config
+package ai.tech.core.misc.model.config.presentation
 
-public interface SharedPresentationConfig {
+public interface PresentationConfig {
+
     public val routeBase: String?
 
     public val route: String
@@ -8,4 +9,6 @@ public interface SharedPresentationConfig {
     public val signInRedirectRoute: String
 
     public val signOutRedirectRoute: String
+
+    public val destination: DestinationsConfig
 }
