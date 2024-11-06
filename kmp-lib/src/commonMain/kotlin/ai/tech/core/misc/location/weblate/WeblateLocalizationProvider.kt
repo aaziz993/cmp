@@ -2,6 +2,7 @@ package ai.tech.core.misc.location.weblate
 
 import ai.tech.core.misc.location.LocalizationProvider
 import ai.tech.core.misc.location.model.Language
+import ai.tech.core.misc.location.model.languages
 import ai.tech.core.misc.location.weblate.model.WeblateTranslationsResponse
 import ai.tech.core.misc.location.weblate.model.WeblateUnitsResponse
 
@@ -11,10 +12,10 @@ public class WeblateLocalizationProvider(
 ) : LocalizationProvider {
 
     override suspend fun getLanguages(): List<Language> =
-        ai.tech.core.misc.location.model.languages.entries.partition { it.key.contains("-") }
+        languages.entries.partition { it.key.contains("-") }
             .let { (regionLanguageCodes, languageCodes) ->
                 mutableListOf<Language>().apply {
-                    var translations = client.getTranslations().getOrThrow()
+                    var translations = client.getTranslations()
 
                     while (true) {
                         addAll(
@@ -39,7 +40,6 @@ public class WeblateLocalizationProvider(
 
                         translations.nextPath?.let {
                             translations = client.request<WeblateTranslationsResponse>(it)
-                                .getOrThrow()
                         } ?: break
                     }
                 }
@@ -48,7 +48,7 @@ public class WeblateLocalizationProvider(
     override suspend fun getTranslations(language: Language): Map<String, String> =
         mutableMapOf<String, String>().apply {
 
-            var units = client.getUnits().getOrThrow()
+            var units = client.getUnits()
 
             while (true) {
                 putAll(
@@ -64,7 +64,7 @@ public class WeblateLocalizationProvider(
                 )
 
                 units.nextPath?.let {
-                    units = client.request<WeblateUnitsResponse>(it).getOrThrow()
+                    units = client.request<WeblateUnitsResponse>(it)
                 } ?: break
             }
         }

@@ -18,34 +18,39 @@ public class WeblateClient(
     httpClient: HttpClient,
     public val config: WeblateConfig,
 ) {
+
     @OptIn(ExperimentalSerializationApi::class)
     public val httpClient: HttpClient = httpClient.config {
         install(ContentNegotiation) {
-            json(Json {
-                prettyPrint = true
-                isLenient = true
-                ignoreUnknownKeys = true
-                explicitNulls = false
-            })
+            json(
+                Json {
+                    prettyPrint = true
+                    isLenient = true
+                    ignoreUnknownKeys = true
+                    explicitNulls = false
+                },
+            )
         }
     }
 
+    @Throws(HttpResponseException::class)
     public suspend inline fun <reified T> request(
         path: String,
-    ): Result<T> =
+    ): T =
         httpClient.get("${config.address}$path") {
             header(HttpHeaders.Authorization, "Token  ${config.apiKey}")
         }.let {
             if (it.status == HttpStatusCode.OK) {
-                Result.success(it.body<T>())
-            } else {
-                Result.failure(HttpResponseException(it.status, it.bodyAsText()))
+                it.body<T>()
+            }
+            else {
+                throw HttpResponseException(it.status, it.bodyAsText())
             }
         }
 
-    public suspend fun getTranslations(page: Int? = null): Result<WeblateTranslationsResponse> =
+    public suspend fun getTranslations(page: Int? = null): WeblateTranslationsResponse =
         request("/api/translations/?format=json${page?.let { "&page=$it" } ?: ""}")
 
-    public suspend fun getUnits(page: Int? = null): Result<WeblateUnitsResponse> =
+    public suspend fun getUnits(page: Int? = null): WeblateUnitsResponse =
         request("/api/units/?format=json${page?.let { "&page=$it" } ?: ""}")
 }

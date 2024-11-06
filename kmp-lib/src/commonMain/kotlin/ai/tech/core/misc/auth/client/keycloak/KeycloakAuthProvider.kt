@@ -1,5 +1,6 @@
 package ai.tech.core.misc.auth.client.keycloak
 
+import ai.tech.core.data.keyvalue.AbstractKeyValue
 import ai.tech.core.misc.auth.client.ClientAuthProvider
 import ai.tech.core.misc.auth.client.keycloak.model.ResetPassword
 import ai.tech.core.misc.auth.client.keycloak.model.UserRepresentation
@@ -14,14 +15,14 @@ import kotlinx.datetime.Clock
 
 public class KeycloakAuthProvider(
     public val client: KeycloakClient,
-    public val keyValue: KeyValue,
+    public val keyValue: AbstractKeyValue,
     public override val name: String?,
 ) : ClientAuthProvider {
 
     private var onSignInExpireBlock: (() -> Unit)? = null
 
     override suspend fun signIn(username: String, password: String) {
-        requestToken(username, password).getOrThrow()
+        requestToken(username, password)
     }
 
     override suspend fun signOut() {
@@ -29,18 +30,21 @@ public class KeycloakAuthProvider(
     }
 
     override suspend fun getUser(): User? = getOrRefreshToken().map { it.token.accessToken }.flatMap { accessToken ->
-        client.getUserInfo(accessToken).flatMap({ userInfo ->
-            client.getUsers(UserRepresentation(username = userInfo.preferredUsername), true, accessToken)
-                .flatMap { users ->
-                    client.getUserRealmRoles(userInfo.sub, accessToken).map {
-                        users.single().copy(realmRoles = it.map { it.name!! }.toSet()).toUser()
-                    }
-                }
-        }) {
+        client.getUserInfo(accessToken).flatMap(
+                { userInfo ->
+                    client.getUsers(UserRepresentation(username = userInfo.preferredUsername), true, accessToken)
+                            .flatMap { users ->
+                                client.getUserRealmRoles(userInfo.sub, accessToken).map {
+                                    users.single().copy(realmRoles = it.map { it.name!! }.toSet()).toUser()
+                                }
+                            }
+                },
+        ) {
             if (it.isUnauthorized) {
                 signOut()
                 Result.success(null)
-            } else {
+            }
+            else {
                 Result.failure(it)
             }
         }
@@ -122,7 +126,8 @@ public class KeycloakAuthProvider(
     private suspend fun getOrRefreshToken(): Result<CachedToken> = getToken().flatMap { token ->
         if (token.expiresInLeft > 0) {
             Result.success(token)
-        } else {
+        }
+        else {
             client.getToken(token.token.refreshToken).map {
                 setToken(token.username, it)
             }.onFailure {
@@ -184,12 +189,14 @@ public class KeycloakAuthProvider(
                     phone?.let { this[USER_PHONE_ATTRIBUTE_KEY] = listOf(it) }
                     image?.let { this[USER_IMAGE_ATTRIBUTE_KEY] = listOf(it) }
                 }
-            } else {
+            }
+            else {
                 attributes
             },
         )
 
     private companion object {
+
         private const val TOKEN_KEY = "TOKEN"
         private const val USER_PHONE_ATTRIBUTE_KEY = "phone"
         private const val USER_IMAGE_ATTRIBUTE_KEY = "image"

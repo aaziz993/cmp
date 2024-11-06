@@ -4,7 +4,7 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 public data class Validator(
-    public val type: ValidationType = ValidationType.FAIL_FAST,
+    public val type: Validation = Validation.FAIL_FAST,
     public val rules: List<ValidatorRule>,
     public val required: Boolean = true,
 ) {
@@ -12,10 +12,10 @@ public data class Validator(
         if (input.isEmpty() && !required) {
             emptyList()
         } else when (type) {
-            ValidationType.FAIL_FAST -> rules.firstNotNullOfOrNull { it.validate(input) }?.let { listOf(it) }
+            Validation.FAIL_FAST -> rules.firstNotNullOfOrNull { it.validate(input) }?.let { listOf(it) }
                 .orEmpty()
 
-            ValidationType.LAZY_EVAL -> rules.mapNotNull { it.validate(input) }
+            Validation.LAZY_EVAL -> rules.mapNotNull { it.validate(input) }
         }
 
     public companion object {
