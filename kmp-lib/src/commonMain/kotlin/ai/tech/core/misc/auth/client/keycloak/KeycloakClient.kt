@@ -1,6 +1,5 @@
 package ai.tech.core.misc.auth.client.keycloak
 
-import ai.tech.core.misc.network.http.server.model.exception.HttpResponseException
 import ai.tech.core.misc.auth.client.keycloak.model.ResetPassword
 import ai.tech.core.misc.auth.client.keycloak.model.RoleRepresentation
 import ai.tech.core.misc.auth.client.keycloak.model.TokenResponse
@@ -10,14 +9,12 @@ import ai.tech.core.misc.auth.client.keycloak.model.UserRepresentation
 import ai.tech.core.misc.auth.client.model.config.oauth.ClientOAuthConfig
 import ai.tech.core.misc.type.encode
 import ai.tech.core.misc.type.toGeneric
-import com.apollographql.apollo3.api.json.JsonReader.Token
 import io.ktor.client.*
 import io.ktor.client.call.*
 import io.ktor.client.plugins.contentnegotiation.*
 import io.ktor.client.plugins.defaultRequest
 import io.ktor.client.request.*
 import io.ktor.client.request.forms.*
-import io.ktor.client.statement.*
 import io.ktor.http.*
 import io.ktor.serialization.kotlinx.json.*
 import kotlinx.serialization.ExperimentalSerializationApi
@@ -101,23 +98,16 @@ public class KeycloakClient(
         httpClient.get("/admin/realms/${config.realm}/users") {
             header(HttpHeaders.Authorization, "Bearer $accessToken")
 
-            user?.let { json.toGeneric<UserRepresentation, Map<*, *>>(it) }?.let {
-                it.filter { (k, v) -> k !== "attributes" && v != null }.forEach { (k, v) ->
+            user?.let {
+                (it.attributes as Map<*, *>?)?.let {
+                    parameter("q", it.entries.joinToString(" ") { (k, v) -> "$k:${json.encode(v)}" })
+                }
+                json.toGeneric<UserRepresentation, Map<*, *>>(it).filter { (k, v) -> k !== "attributes" && v != null }.forEach { (k, v) ->
                     parameter(k.toString(), v)
                 }
-
-                (it["attributes"] as Map<*, *>?)?.let {
-                    parameter(
-                        "q",
-                        it.entries.joinToString(" ") { (k, v) -> "$k:${json.encode(v)}" },
-                    )
-                }
             }
 
-            if (exact != null) {
-                parameter("exact", exact)
-            }
-
+            exact?.let { parameter("exact", exact) }
         }.body<Set<UserRepresentation>>()
 
     public suspend fun updateUser(
