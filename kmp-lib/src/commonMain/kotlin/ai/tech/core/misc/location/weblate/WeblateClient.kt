@@ -1,6 +1,5 @@
 package ai.tech.core.misc.location.weblate
 
-import ai.tech.core.misc.network.http.server.model.exception.HttpResponseException
 import ai.tech.core.misc.location.weblate.model.WeblateConfig
 import ai.tech.core.misc.location.weblate.model.WeblateTranslationsResponse
 import ai.tech.core.misc.location.weblate.model.WeblateUnitsResponse
@@ -41,7 +40,6 @@ public class WeblateClient(
         }
     }
 
-    @Throws(HttpResponseException::class)
     private suspend inline fun <reified T> request(
         path: String,
     ): T = httpClient.get(path).body<T>()
