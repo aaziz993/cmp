@@ -21,7 +21,7 @@ public class WeblateClient(
 ) {
 
     @OptIn(ExperimentalSerializationApi::class)
-    public val httpClient: HttpClient = httpClient.config {
+    private val httpClient: HttpClient = httpClient.config {
         defaultRequest {
             url(config.address)
             header(HttpHeaders.ContentType, ContentType.Application.Json)
@@ -42,7 +42,7 @@ public class WeblateClient(
     }
 
     @Throws(HttpResponseException::class)
-    public suspend inline fun <reified T> request(
+    private suspend inline fun <reified T> request(
         path: String,
     ): T = httpClient.get(path).body<T>()
 

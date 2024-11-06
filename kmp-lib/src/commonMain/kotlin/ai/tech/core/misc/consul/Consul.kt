@@ -17,7 +17,7 @@ public class Consul(
 ) {
 
     @OptIn(ExperimentalSerializationApi::class)
-    public val httpClient: HttpClient = httpClient.config {
+    private val httpClient: HttpClient = httpClient.config {
         defaultRequest {
             url(consulConfig.address)
             header(HttpHeaders.ContentType, ContentType.Application.Json)
@@ -35,11 +35,11 @@ public class Consul(
         }
     }
 
-    public val agent: AgentClient = AgentClient(httpClient)
-    public val catalog: CatalogClient = CatalogClient(httpClient)
-    public val config: ConfigClient = ConfigClient(httpClient)
-    public val session: SessionClient = SessionClient(httpClient)
-    public val kv: KVClient = KVClient(httpClient)
+    public val agent: AgentClient = AgentClient(this.httpClient)
+    public val catalog: CatalogClient = CatalogClient(this.httpClient)
+    public val config: ConfigClient = ConfigClient(this.httpClient)
+    public val session: SessionClient = SessionClient(this.httpClient)
+    public val kv: KVClient = KVClient(this.httpClient)
 }
 
 

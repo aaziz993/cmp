@@ -26,7 +26,7 @@ public class KeycloakClient(
 ) {
 
     @OptIn(ExperimentalSerializationApi::class)
-    public val httpClient: HttpClient = httpClient.config {
+    private val httpClient: HttpClient = httpClient.config {
         defaultRequest {
             url(config.address)
         }
