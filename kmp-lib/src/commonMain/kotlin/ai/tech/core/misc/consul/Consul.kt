@@ -19,10 +19,8 @@ public class Consul(
     @OptIn(ExperimentalSerializationApi::class)
     public val httpClient: HttpClient = httpClient.config {
         defaultRequest {
-            with(consulConfig) {
-                url(consulConfig.address)  // Specify the base URL here
-                header(HttpHeaders.ContentType, ContentType.Application.Json)
-            }
+            url(consulConfig.address)
+            header(HttpHeaders.ContentType, ContentType.Application.Json)
         }
 
         install(ContentNegotiation) {

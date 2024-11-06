@@ -19,6 +19,7 @@ import kotlinx.serialization.json.Json
 import org.koin.core.annotation.Module
 import org.koin.core.annotation.Single
 import ai.tech.core.data.keyvalue.SettingsKeyValue
+import ai.tech.core.misc.consul.Consul
 
 @Module
 public class CommonModule(private val enableNetworkLogs: Boolean) {
@@ -50,6 +51,12 @@ public class CommonModule(private val enableNetworkLogs: Boolean) {
     @Single
     public fun provideNavigator(): Navigator<Destination> = DefaultNavigator(Destination.HomeGraph.Main)
 
+    @Single
+    public fun provideConsul(
+        config: ClientConfig,
+        httpClient: HttpClient,
+    ): Consul = Consul(httpClient, config.consul)
+    
     @Single
     public fun provideLocalizationProvider(
         config: ClientConfig,

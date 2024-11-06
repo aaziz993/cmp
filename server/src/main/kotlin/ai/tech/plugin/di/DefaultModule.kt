@@ -1,11 +1,17 @@
 package ai.tech.plugin.di
 
+import ai.tech.core.misc.consul.Consul
+import ai.tech.core.misc.location.LocalizationProvider
+import ai.tech.core.misc.location.weblate.WeblateClient
+import ai.tech.core.misc.location.weblate.WeblateLocalizationProvider
+import ai.tech.core.misc.model.config.server.ServerConfig
 import ai.tech.core.misc.network.http.client.createHttpClient
 import io.ktor.client.*
 import io.ktor.client.plugins.*
 import io.ktor.client.plugins.contentnegotiation.*
 import io.ktor.client.plugins.logging.*
 import io.ktor.serialization.kotlinx.json.*
+import kotlin.collections.get
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.json.Json
 import org.koin.core.annotation.Module
@@ -38,4 +44,23 @@ public class DefaultModule {
                 level = LogLevel.INFO
             }
         }
+
+    @Single
+    public fun provideConsul(
+        config: ServerConfig,
+        httpClient: HttpClient,
+    ): Consul = Consul(httpClient, config.consul)
+
+    @Single
+    public fun provideLocalizationProvider(
+        config: ServerConfig,
+        httpClient: HttpClient,
+    ): LocalizationProvider =
+        WeblateLocalizationProvider(
+            WeblateClient(
+                httpClient,
+                config.localization.weblate[config.localizationProvider]!!,
+            ),
+            config.project,
+        )
 }

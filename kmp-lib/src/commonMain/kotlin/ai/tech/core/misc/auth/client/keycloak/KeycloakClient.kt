@@ -3,6 +3,7 @@ package ai.tech.core.misc.auth.client.keycloak
 import ai.tech.core.misc.network.http.server.model.exception.HttpResponseException
 import ai.tech.core.misc.auth.client.keycloak.model.ResetPassword
 import ai.tech.core.misc.auth.client.keycloak.model.RoleRepresentation
+import ai.tech.core.misc.auth.client.keycloak.model.UpdatePassword
 import ai.tech.core.misc.auth.client.keycloak.model.UserInfo
 import ai.tech.core.misc.auth.client.keycloak.model.UserRepresentation
 import ai.tech.core.misc.auth.client.model.config.oauth.ClientOAuthConfig
@@ -12,6 +13,7 @@ import com.apollographql.apollo3.api.json.JsonReader.Token
 import io.ktor.client.*
 import io.ktor.client.call.*
 import io.ktor.client.plugins.contentnegotiation.*
+import io.ktor.client.plugins.defaultRequest
 import io.ktor.client.request.*
 import io.ktor.client.request.forms.*
 import io.ktor.client.statement.*
@@ -27,6 +29,11 @@ public class KeycloakClient(
 
     @OptIn(ExperimentalSerializationApi::class)
     public val httpClient: HttpClient = httpClient.config {
+        defaultRequest {
+            url(config.address)
+            header(HttpHeaders.ContentType, ContentType.Application.Json)
+        }
+
         install(ContentNegotiation) {
             json(
                 Json {
@@ -47,7 +54,7 @@ public class KeycloakClient(
 
     public suspend fun getToken(username: String, password: String): Token =
         httpClient.submitForm(
-            "${config.address}/realms/${config.realm}/protocol/openid-connect/token",
+            "/realms/${config.realm}/protocol/openid-connect/token",
             parameters {
                 append("username", username)
                 append("password", password)
@@ -65,7 +72,7 @@ public class KeycloakClient(
 
     public suspend fun getToken(refreshToken: String): Token =
         httpClient.submitForm(
-            "${config.address}/realms/${config.realm}/protocol/openid-connect/token",
+            "/realms/${config.realm}/protocol/openid-connect/token",
             parameters {
                 append("refresh_token", refreshToken)
                 append("client_id", config.clientId)
@@ -82,7 +89,7 @@ public class KeycloakClient(
 
     public suspend fun getToken(): Token =
         httpClient.submitForm(
-            "${config.address}/realms/${config.realm}/protocol/openid-connect/token",
+            "/realms/${config.realm}/protocol/openid-connect/token",
             parameters {
                 append("client_secret", config.clientSecret!!)
                 append("client_id", config.clientId)
@@ -101,7 +108,7 @@ public class KeycloakClient(
         user: UserRepresentation,
         accessToken: String? = null,
     ): Unit =
-        httpClient.post("${config.address}/admin/realms/${config.realm}/users") {
+        httpClient.post("/admin/realms/${config.realm}/users") {
             accessToken?.let { header(HttpHeaders.Authorization, "Bearer $it") }
             setBody(user)
         }.let {
@@ -115,7 +122,7 @@ public class KeycloakClient(
         exact: Boolean? = null,
         accessToken: String,
     ): Set<UserRepresentation> =
-        httpClient.get("${config.address}/admin/realms/${config.realm}/users") {
+        httpClient.get("/admin/realms/${config.realm}/users") {
             header(HttpHeaders.Authorization, "Bearer $accessToken")
 
             user?.let { json.toGeneric<UserRepresentation, Map<*, *>>(it) }?.let {
@@ -148,7 +155,7 @@ public class KeycloakClient(
         user: UserRepresentation,
         accessToken: String
     ): Unit =
-        httpClient.put("${config.address}/admin/realms/${config.realm}/users/${user.id}") {
+        httpClient.put("/admin/realms/${config.realm}/users/${user.id}") {
             header(HttpHeaders.Authorization, "Bearer $accessToken")
             contentType(ContentType.Application.Json)
             setBody(user)
@@ -162,7 +169,7 @@ public class KeycloakClient(
         userId: String,
         accessToken: String,
     ): Unit =
-        httpClient.delete("${config.address}/admin/realms/${config.realm}/users/$userId") {
+        httpClient.delete("/admin/realms/${config.realm}/users/$userId") {
             header(HttpHeaders.Authorization, "Bearer $accessToken")
         }.let {
             if (it.status == HttpStatusCode.NoContent) {
@@ -171,7 +178,7 @@ public class KeycloakClient(
         }
 
     public suspend fun getUserInfo(accessToken: String): UserInfo =
-        httpClient.get("${config.address}/realms/${config.realm}/protocol/openid-connect/userinfo") {
+        httpClient.get("/realms/${config.realm}/protocol/openid-connect/userinfo") {
             header(HttpHeaders.Authorization, "Bearer $accessToken")
         }.let {
             if (it.status == HttpStatusCode.OK) {
@@ -186,7 +193,7 @@ public class KeycloakClient(
         userId: String,
         accessToken: String,
     ): Set<RoleRepresentation> =
-        httpClient.get("${config.address}/admin/realms/${config.realm}/users/$userId/role-mappings/realm") {
+        httpClient.get("/admin/realms/${config.realm}/users/$userId/role-mappings/realm") {
             header(HttpHeaders.Authorization, "Bearer $accessToken")
         }.let {
             if (it.status == HttpStatusCode.OK) {
@@ -202,7 +209,7 @@ public class KeycloakClient(
         resetPassword: ResetPassword,
         accessToken: String
     ): Unit =
-        httpClient.put("${config.address}/admin/realms/${config.realm}/users/$userId/reset-password") {
+        httpClient.put("/admin/realms/${config.realm}/users/$userId/reset-password") {
             header(HttpHeaders.Authorization, "Bearer $accessToken")
             contentType(ContentType.Application.Json)
             setBody(resetPassword)
@@ -212,7 +219,11 @@ public class KeycloakClient(
             }
         }
 
-    public suspend fun forgetPassword(email: String): Unit {
-        TODO()
+    public suspend fun updatePassword(userId: String, accessToken: String): Unit {
+        httpClient.post("/admin/realms/${config.realm}/users/$userId/execute-actions-email") {
+            header(HttpHeaders.Authorization, "Bearer $accessToken")
+            contentType(ContentType.Application.Json)
+            setBody(UpdatePassword(listOf("UPDATE_PASSWORD")))
+        }
     }
 }

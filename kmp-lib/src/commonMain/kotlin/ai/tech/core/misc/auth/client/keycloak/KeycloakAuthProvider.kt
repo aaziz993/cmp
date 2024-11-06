@@ -5,9 +5,6 @@ import ai.tech.core.misc.auth.client.ClientAuthProvider
 import ai.tech.core.misc.auth.client.keycloak.model.ResetPassword
 import ai.tech.core.misc.auth.client.keycloak.model.UserRepresentation
 import ai.tech.core.misc.auth.model.identity.User
-import ai.tech.core.misc.io.keyvalue.KeyValue
-import ai.tech.core.misc.io.keyvalue.get
-import ai.tech.core.misc.io.model.http.server.HttpResponseException
 import ai.tech.core.misc.type.single.flatMap
 import io.ktor.client.request.*
 import io.ktor.http.*
