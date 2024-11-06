@@ -1,10 +1,10 @@
-package ai.tech.core.misc.auth.model.oauth
+package ai.tech.core.misc.auth.client.keycloak.model
 
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 @Serializable
-public data class Token(
+public data class TokenResponse(
     @SerialName("access_token") val accessToken: String,
     @SerialName("expires_in") val expiresIn: Int,
     @SerialName("refresh_expires_in") val refreshExpiresIn: Int?,

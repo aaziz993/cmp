@@ -3,6 +3,7 @@ package ai.tech.core.misc.auth.client.keycloak
 import ai.tech.core.misc.network.http.server.model.exception.HttpResponseException
 import ai.tech.core.misc.auth.client.keycloak.model.ResetPassword
 import ai.tech.core.misc.auth.client.keycloak.model.RoleRepresentation
+import ai.tech.core.misc.auth.client.keycloak.model.TokenResponse
 import ai.tech.core.misc.auth.client.keycloak.model.UpdatePassword
 import ai.tech.core.misc.auth.client.keycloak.model.UserInfo
 import ai.tech.core.misc.auth.client.keycloak.model.UserRepresentation
@@ -51,7 +52,7 @@ public class KeycloakClient(
         ignoreUnknownKeys = true
     }
 
-    public suspend fun getToken(username: String, password: String): Token =
+    public suspend fun getToken(username: String, password: String): TokenResponse =
         httpClient.submitForm(
             "/realms/${config.realm}/protocol/openid-connect/token",
             parameters {
@@ -60,16 +61,9 @@ public class KeycloakClient(
                 append("client_id", config.clientId)
                 append("grant_type", "password")
             },
-        ).let {
-            if (it.status == HttpStatusCode.OK) {
-                it.body<Token>()
-            }
-            else {
-                throw HttpResponseException(it.status, it.bodyAsText())
-            }
-        }
+        ).body<TokenResponse>()
 
-    public suspend fun getToken(refreshToken: String): Token =
+    public suspend fun getToken(refreshToken: String): TokenResponse =
         httpClient.submitForm(
             "/realms/${config.realm}/protocol/openid-connect/token",
             parameters {
@@ -77,16 +71,9 @@ public class KeycloakClient(
                 append("client_id", config.clientId)
                 append("grant_type", "refresh_token")
             },
-        ).let {
-            if (it.status == HttpStatusCode.OK) {
-                it.body<Token>()
-            }
-            else {
-                throw HttpResponseException(it.status, it.bodyAsText())
-            }
-        }
+        ).body<TokenResponse>()
 
-    public suspend fun getToken(): Token =
+    public suspend fun getToken(): TokenResponse =
         httpClient.submitForm(
             "/realms/${config.realm}/protocol/openid-connect/token",
             parameters {
@@ -94,27 +81,17 @@ public class KeycloakClient(
                 append("client_id", config.clientId)
                 append("grant_type", "client_credentials")
             },
-        ).let {
-            if (it.status == HttpStatusCode.OK) {
-                it.body<Token>()
-            }
-            else {
-                throw HttpResponseException(it.status, it.bodyAsText())
-            }
-        }
+        ).body<TokenResponse>()
 
     public suspend fun createUser(
         user: UserRepresentation,
         accessToken: String? = null,
-    ): Unit =
+    ) {
         httpClient.post("/admin/realms/${config.realm}/users") {
             accessToken?.let { header(HttpHeaders.Authorization, "Bearer $it") }
             setBody(user)
-        }.let {
-            if (it.status != HttpStatusCode.Created) {
-                throw HttpResponseException(it.status, it.bodyAsText())
-            }
         }
+    }
 
     public suspend fun getUsers(
         user: UserRepresentation? = null,
@@ -141,52 +118,32 @@ public class KeycloakClient(
                 parameter("exact", exact)
             }
 
-        }.let {
-            if (it.status == HttpStatusCode.OK) {
-                it.body<Set<UserRepresentation>>()
-            }
-            else {
-                throw HttpResponseException(it.status, it.bodyAsText())
-            }
-        }
+        }.body<Set<UserRepresentation>>()
 
     public suspend fun updateUser(
         user: UserRepresentation,
         accessToken: String
-    ): Unit =
+    ) {
         httpClient.put("/admin/realms/${config.realm}/users/${user.id}") {
             header(HttpHeaders.Authorization, "Bearer $accessToken")
             contentType(ContentType.Application.Json)
             setBody(user)
-        }.let {
-            if (it.status == HttpStatusCode.NoContent) {
-                throw HttpResponseException(it.status, it.bodyAsText())
-            }
         }
+    }
 
     public suspend fun deleteUser(
         userId: String,
         accessToken: String,
-    ): Unit =
+    ) {
         httpClient.delete("/admin/realms/${config.realm}/users/$userId") {
             header(HttpHeaders.Authorization, "Bearer $accessToken")
-        }.let {
-            if (it.status == HttpStatusCode.NoContent) {
-                throw HttpResponseException(it.status, it.bodyAsText())
-            }
         }
+    }
 
     public suspend fun getUserInfo(accessToken: String): UserInfo =
         httpClient.get("/realms/${config.realm}/protocol/openid-connect/userinfo") {
             header(HttpHeaders.Authorization, "Bearer $accessToken")
-        }.let {
-            if (it.status == HttpStatusCode.OK) {
-                it.body<UserInfo>()
-            }
-            else {
-                throw HttpResponseException(it.status, it.bodyAsText())
-            }
-        }
+        }.body<UserInfo>()
 
     public suspend fun getUserRealmRoles(
         userId: String,
@@ -194,31 +151,21 @@ public class KeycloakClient(
     ): Set<RoleRepresentation> =
         httpClient.get("/admin/realms/${config.realm}/users/$userId/role-mappings/realm") {
             header(HttpHeaders.Authorization, "Bearer $accessToken")
-        }.let {
-            if (it.status == HttpStatusCode.OK) {
-                it.body<Set<RoleRepresentation>>()
-            }
-            else {
-                throw HttpResponseException(it.status, it.bodyAsText())
-            }
-        }
+        }.body<Set<RoleRepresentation>>()
 
     public suspend fun resetPassword(
         userId: String,
         resetPassword: ResetPassword,
         accessToken: String
-    ): Unit =
+    ) {
         httpClient.put("/admin/realms/${config.realm}/users/$userId/reset-password") {
             header(HttpHeaders.Authorization, "Bearer $accessToken")
             contentType(ContentType.Application.Json)
             setBody(resetPassword)
-        }.let {
-            if (it.status == HttpStatusCode.NoContent) {
-                throw HttpResponseException(it.status, it.bodyAsText())
-            }
         }
+    }
 
-    public suspend fun updatePassword(userId: String, accessToken: String): Unit {
+    public suspend fun updatePassword(userId: String, accessToken: String) {
         httpClient.post("/admin/realms/${config.realm}/users/$userId/execute-actions-email") {
             header(HttpHeaders.Authorization, "Bearer $accessToken")
             contentType(ContentType.Application.Json)

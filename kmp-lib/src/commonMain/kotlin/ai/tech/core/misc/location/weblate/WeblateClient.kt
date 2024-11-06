@@ -24,6 +24,7 @@ public class WeblateClient(
     public val httpClient: HttpClient = httpClient.config {
         defaultRequest {
             url(config.address)
+            header(HttpHeaders.ContentType, ContentType.Application.Json)
             header(HttpHeaders.Authorization, "Token  ${config.apiKey}")
         }
 
@@ -43,19 +44,14 @@ public class WeblateClient(
     @Throws(HttpResponseException::class)
     public suspend inline fun <reified T> request(
         path: String,
-    ): T =
-        httpClient.get(path).let {
-            if (it.status == HttpStatusCode.OK) {
-                it.body<T>()
-            }
-            else {
-                throw HttpResponseException(it.status, it.bodyAsText())
-            }
-        }
+    ): T = httpClient.get(path).body<T>()
 
-    public suspend fun getTranslations(page: Int? = null): WeblateTranslationsResponse =
-        request("/api/translations/?format=json${page?.let { "&page=$it" } ?: ""}")
+    public suspend fun getTranslations(page: Int? = null): WeblateTranslationsResponse = request("${PATH}translations/?format=json${page?.let { "&page=$it" } ?: ""}")
 
-    public suspend fun getUnits(page: Int? = null): WeblateUnitsResponse =
-        request("/api/units/?format=json${page?.let { "&page=$it" } ?: ""}")
+    public suspend fun getUnits(page: Int? = null): WeblateUnitsResponse = request("${PATH}units/?format=json${page?.let { "&page=$it" } ?: ""}")
+
+    public companion object {
+
+        public const val PATH: String = "/api/"
+    }
 }
