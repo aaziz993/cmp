@@ -31,7 +31,6 @@ public class KeycloakClient(
     public val httpClient: HttpClient = httpClient.config {
         defaultRequest {
             url(config.address)
-            header(HttpHeaders.ContentType, ContentType.Application.Json)
         }
 
         install(ContentNegotiation) {
