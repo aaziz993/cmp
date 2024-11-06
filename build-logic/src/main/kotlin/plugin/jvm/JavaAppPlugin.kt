@@ -28,6 +28,8 @@ public class JavaAppPlugin : Plugin<Project> {
                     apply("application")
                 }
 
+                extensions.configure<KotlinProjectExtension>(::configureKotlinProjectExtension)
+
                 extensions.configure<JavaPluginExtension>(::configureJavaPluginExtension)
 
                 extensions.configure<JavaApplication>(::configureJavaApp)
@@ -96,8 +98,7 @@ public class JavaAppPlugin : Plugin<Project> {
                     }
                 }
 
-                extensions.configure<KotlinProjectExtension>(::configureKotlinProjectExtension)
-            }
+             }
         }
 }
 

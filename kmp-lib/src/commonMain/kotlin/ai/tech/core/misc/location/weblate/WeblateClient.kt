@@ -7,6 +7,7 @@ import ai.tech.core.misc.location.weblate.model.WeblateUnitsResponse
 import io.ktor.client.*
 import io.ktor.client.call.*
 import io.ktor.client.plugins.contentnegotiation.*
+import io.ktor.client.plugins.defaultRequest
 import io.ktor.client.request.*
 import io.ktor.client.statement.*
 import io.ktor.http.*
@@ -21,7 +22,13 @@ public class WeblateClient(
 
     @OptIn(ExperimentalSerializationApi::class)
     public val httpClient: HttpClient = httpClient.config {
+        defaultRequest {
+            url(config.address)
+            header(HttpHeaders.Authorization, "Token  ${config.apiKey}")
+        }
+
         install(ContentNegotiation) {
+
             json(
                 Json {
                     prettyPrint = true
@@ -37,9 +44,7 @@ public class WeblateClient(
     public suspend inline fun <reified T> request(
         path: String,
     ): T =
-        httpClient.get("${config.address}$path") {
-            header(HttpHeaders.Authorization, "Token  ${config.apiKey}")
-        }.let {
+        httpClient.get(path).let {
             if (it.status == HttpStatusCode.OK) {
                 it.body<T>()
             }

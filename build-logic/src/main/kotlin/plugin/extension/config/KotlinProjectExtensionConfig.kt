@@ -13,7 +13,7 @@ internal fun Project.configureKotlinProjectExtension(extension: KotlinProjectExt
 
         jvmToolchain(KOTLIN_JVM_TOOLCHAIN_VERSION)
 
-        sourceSets.configureEach {
+        sourceSets.all {
             languageSettings {
                 progressiveMode = true
                 optIn("kotlinx.cinterop.ExperimentalForeignApi")
