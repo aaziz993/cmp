@@ -11,8 +11,6 @@ public class WeblateService(
     public val projectName: String,
 ) : AbstractLocalizationService() {
 
-    private lateinit var translations: Map<String, String>
-
     override suspend fun localize(language: Language) {
         super.localize(language)
 
@@ -40,7 +38,7 @@ public class WeblateService(
             it.results.mapNotNull {
                 val segments = Url(it.translation).segments
                 if (segments[2] == projectName) {
-                    "${segments[3]}_${it.context}" to it.target.first()
+                    "${segments[3]}_${it.context}" to listOf(it.target.first())
                 }
                 else {
                     null
@@ -48,6 +46,4 @@ public class WeblateService(
             }
         }.toMap()
     }
-
-    override fun translate(key: String): String = translations[key] ?: key
 }

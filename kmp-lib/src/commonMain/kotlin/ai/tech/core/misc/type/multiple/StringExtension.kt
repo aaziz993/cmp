@@ -65,6 +65,12 @@ private val stringExtensionRegexMap: Map<String, Regex> =
 public val String.extension: String?
     get() = stringExtensionRegexMap.entries.find { (_, r) -> r.matches(this) }?.key
 
+public val stringFormatRegex: Regex = Regex("""%(\d)\$[ds]""")
+
+public fun String.replaceWithArgs(args: List<String>) = stringFormatRegex.replace(this) { matchResult ->
+    args[matchResult.groupValues[1].toInt() - 1]
+}
+
 public fun randomString(length: Int, charPool: List<Char> = ('a'..'z') + ('A'..'Z')): String = (1..length)
     .map { Random.nextInt(0, charPool.size).let { charPool[it] } }
     .joinToString("")
@@ -112,12 +118,14 @@ public fun matcher(
             val regexMatcher: (String) -> Regex =
                 if (caseMatch) {
                     { pattern -> Regex(pattern) }
-                } else {
+                }
+                else {
                     { pattern -> Regex(pattern, RegexOption.IGNORE_CASE) }
                 }
             if (wordMatch) {
                 { str, pattern -> regexMatcher(pattern).matches(str) }
-            } else {
+            }
+            else {
                 { str, pattern -> regexMatcher(pattern).containsMatchIn(str) }
             }
         }

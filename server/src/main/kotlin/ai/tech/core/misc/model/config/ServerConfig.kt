@@ -45,6 +45,7 @@ import kotlinx.serialization.Serializable
 public data class ServerConfig(
     override val koin: KoinConfig? = null,
     override val consul: ConsulConfig,
+    override val database: Map<String, DatabaseProviderConfig>? = null,
     override val serialization: SerializationConfig? = null,
     override val httpsRedirect: HTTPSRedirectConfig? = null,
     override val routing: RoutingConfig? = null,
@@ -78,10 +79,7 @@ public data class ServerConfig(
     override val shutdown: ShutDownConfig? = null,
     override val project: String,
     override val localization: LocalizationConfig,
-    override val localizationProvider: String? = null,
-    override val language: String = "eng-US",
     override val validator: ValidatorConfig,
-    override val database: Map<String, DatabaseProviderConfig>? = null,
     override val ktor: KtorServerConfig,
     val presentation: ServerPresentationConfig?
 ) : ServerConfig

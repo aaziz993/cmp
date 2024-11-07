@@ -65,7 +65,7 @@ public class CommonModule(private val enableNetworkLogs: Boolean) {
         WeblateService(
             WeblateClient(
                 httpClient,
-                config.localization.weblate[config.localizationProvider]!!,
+                config.localization.weblate[config.localization.provider]!!,
             ),
             config.project,
         )
@@ -78,6 +78,6 @@ public class CommonModule(private val enableNetworkLogs: Boolean) {
     ): ClientAuthService = KeycloakService(
         KeycloakClient(httpClient, config.auth.oauth.entries.first { (_, config) -> config.provider == "keycloak" }.value),
         keyValue,
-        config.authProvider,
+        config.auth.provider,
     )
 }

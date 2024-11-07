@@ -59,7 +59,7 @@ public class DefaultModule {
         WeblateService(
             WeblateClient(
                 httpClient,
-                config.localization.weblate[config.localizationProvider]!!,
+                config.localization.weblate[config.localization.provider]!!,
             ),
             config.project,
         )

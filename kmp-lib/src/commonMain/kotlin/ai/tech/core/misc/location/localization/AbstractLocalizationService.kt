@@ -1,6 +1,8 @@
 package ai.tech.core.misc.location.localization
 
 import ai.tech.core.misc.location.model.Language
+import ai.tech.core.misc.type.multiple.replaceWithArgs
+import kotlin.toString
 
 public abstract class AbstractLocalizationService {
 
@@ -10,9 +12,16 @@ public abstract class AbstractLocalizationService {
     public lateinit var language: Language
         private set
 
+    public open lateinit var translations: Map<String, List<String>>
+        protected set
+
     public open suspend fun localize(language: Language) {
         this.language = language
     }
 
-    public abstract fun translate(key: String): String
+    public fun translate(key: String, quantity: Int = 0, vararg formatArgs: Any): String = translations[key]?.let {
+        it[quantity].replaceWithArgs(formatArgs.map { it.toString() })
+    } ?: key
 }
+
+

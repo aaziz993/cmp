@@ -14,14 +14,7 @@ public interface Config {
 
     public val localization: LocalizationConfig
 
-    public val localizationProvider: String?
-
-    // "alpha3-countryAlpha2"
-    public val language: String
-
     public val validator: ValidatorConfig
-
-    public val database: Map<String, DatabaseProviderConfig>?
 
     public val ktor: KtorServerConfig
 }

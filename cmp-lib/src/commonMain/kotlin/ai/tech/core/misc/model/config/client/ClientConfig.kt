@@ -7,7 +7,6 @@ import ai.tech.core.misc.model.config.presentation.PresentationConfig
 public interface ClientConfig : Config {
 
     public val auth: ClientAuthConfig
-    public val authProvider: String?
-    public val databaseProvider: String?
+    public val databaseProvider: String
     public val presentation: PresentationConfig
 }

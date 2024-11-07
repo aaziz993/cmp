@@ -5,5 +5,6 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 public data class ClientAuthConfig(
+    val provider: String,
     val oauth: Map<String, ClientOAuthConfig> = emptyMap(),
 )
