@@ -60,7 +60,7 @@ public class KeycloakClient(
             },
         ).body<TokenResponse>()
 
-    public suspend fun getToken(refreshToken: String): TokenResponse =
+    public suspend fun getTokenByRefreshToken(refreshToken: String): TokenResponse =
         httpClient.submitForm(
             "/realms/${config.realm}/protocol/openid-connect/token",
             parameters {
@@ -70,11 +70,11 @@ public class KeycloakClient(
             },
         ).body<TokenResponse>()
 
-    public suspend fun getToken(): TokenResponse =
+    public suspend fun getTokenByClientSecret(clientSecret: String): TokenResponse =
         httpClient.submitForm(
             "/realms/${config.realm}/protocol/openid-connect/token",
             parameters {
-                append("client_secret", config.clientSecret!!)
+                append("client_secret", clientSecret)
                 append("client_id", config.clientId)
                 append("grant_type", "client_credentials")
             },

@@ -1,13 +1,21 @@
 package ai.tech.core.misc.auth.client.keycloak
 
 import ai.tech.core.data.keyvalue.AbstractKeyValue
+import ai.tech.core.data.keyvalue.get
 import ai.tech.core.misc.auth.client.ClientAuthService
 import ai.tech.core.misc.auth.client.keycloak.model.ResetPassword
+import ai.tech.core.misc.auth.client.keycloak.model.TokenResponse
+import ai.tech.core.misc.auth.client.keycloak.model.UserInfo
 import ai.tech.core.misc.auth.client.keycloak.model.UserRepresentation
 import ai.tech.core.misc.auth.model.User
-import ai.tech.core.misc.type.single.flatMap
 import io.ktor.client.request.*
 import io.ktor.http.*
+import kotlinx.atomicfu.locks.reentrantLock
+import kotlinx.atomicfu.locks.withLock
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.SharedFlow
+import kotlinx.coroutines.flow.onStart
 import kotlinx.datetime.Clock
 
 public class KeycloakService(
@@ -15,152 +23,111 @@ public class KeycloakService(
     public val keyValue: AbstractKeyValue,
 ) : ClientAuthService {
 
-    private var onSignInExpireBlock: (() -> Unit)? = null
+    private val lock = reentrantLock()
 
-    override suspend fun signIn(username: String, password: String) {
-        requestToken(username, password)
+    override suspend fun signIn(username: String, password: String): Unit = setToken(client.getToken(username, password))
+
+    override suspend fun signOut(): Unit = removeToken()
+
+    override suspend fun getUser(): User? = getOrRefreshToken()?.let(TokenResponse::accessToken)?.let { accessToken ->
+
+        val userId = client.getUserInfo(accessToken).let(UserInfo::sub)
+
+        return client.getUsers(UserRepresentation(id = userId), true, accessToken).singleOrNull()?.let {
+
+            val roles = client.getUserRealmRoles(userId, accessToken)
+
+            it.copy(realmRoles = roles.map { it.name!! }.toSet()).toUser()
+        }
     }
 
-    override suspend fun signOut() {
-        removeToken()
+    override suspend fun getUsers(): Set<User> = getOrRefreshToken()!!.let(TokenResponse::accessToken).let {
+        client.getUsers(accessToken = it).map(UserRepresentation::toUser).toSet()
     }
 
-    override suspend fun getUser(): User? = getOrRefreshToken().map { it.token.accessToken }.flatMap { accessToken ->
-        client.getUserInfo(accessToken).flatMap(
-                { userInfo ->
-                    client.getUsers(UserRepresentation(username = userInfo.preferredUsername), true, accessToken)
-                            .flatMap { users ->
-                                client.getUserRealmRoles(userInfo.sub, accessToken).map {
-                                    users.single().copy(realmRoles = it.map { it.name!! }.toSet()).toUser()
-                                }
-                            }
-                },
-        ) {
-            if (it.isUnauthorized) {
-                signOut()
-                Result.success(null)
-            }
-            else {
-                Result.failure(it)
-            }
+    override suspend fun createUsers(users: Set<User>, password: String): Unit = getOrRefreshToken()!!.let(TokenResponse::accessToken).let { accessToken ->
+        users.forEach {
+            client.createUser(UserRepresentation(it), accessToken)
         }
-    }.getOrNull()
+    }
 
-    override suspend fun getUsers(): Set<User> = getOrRefreshToken().flatMap {
-        client.getUsers(accessToken = it.token.accessToken).map({ it.map { it.toUser() }.toSet() }).onFailure {
-            if (it.isUnauthorized) {
-                signOut()
-            }
+    override suspend fun updateUsers(users: Set<User>, password: String): Unit = getOrRefreshToken()!!.let(TokenResponse::accessToken).let { accessToken ->
+        users.forEach { user ->
+            val userId = client.getUsers(UserRepresentation(username = user.username), true, accessToken).single().let(UserRepresentation::id)
+
+            client.updateUser(UserRepresentation(user, userId), accessToken)
         }
-    }.getOrThrow()
+    }
 
-    override suspend fun createUsers(users: Set<User>, password: String) {
-        getAndRequestToken(password).flatMap { token ->
-            kotlin.runCatching {
-                users.forEach {
-                    client.createUser(it.toUserRepresentation(), token.token.accessToken).getOrThrow()
+    override suspend fun deleteUsers(usernames: Set<String>, password: String): Unit = getOrRefreshToken()!!.let(TokenResponse::accessToken).let { accessToken ->
+        usernames.forEach {
+            val userId = client.getUsers(UserRepresentation(username = it), true, accessToken).single().let(UserRepresentation::id)!!
+
+            client.deleteUser(userId, accessToken)
+        }
+    }
+
+    override suspend fun resetPassword(password: String, newPassword: String): Unit = getOrRefreshToken()!!.let(TokenResponse::accessToken).let { accessToken ->
+        val userId = client.getUserInfo(accessToken).let(UserInfo::sub)
+
+        client.resetPassword(userId, ResetPassword(newPassword), accessToken)
+    }
+
+    public override suspend fun forgotPassword(username: String): Unit = getOrRefreshToken()!!.let(TokenResponse::accessToken).let { accessToken ->
+        val userId = client.getUserInfo(accessToken).let(UserInfo::sub)
+
+        client.updatePassword(userId, accessToken)
+    }
+
+    override suspend fun isValidToken(): Boolean = getToken()?.let {
+        val passedEpochSeconds: Long = Clock.System.now().epochSeconds - keyValue.get<Long>(TOKEN_EPOCH_SECONDS_KEY)
+
+        it.refreshExpiresIn == null || passedEpochSeconds <= it.refreshExpiresIn
+    } == true
+
+    override suspend fun HttpRequestBuilder.auth() {
+        getOrRefreshToken()?.let {
+            header(HttpHeaders.Authorization, "Bearer ${it.accessToken}")
+        }
+    }
+
+    private suspend fun getOrRefreshToken(): TokenResponse? = lock.withLock {
+        getToken()?.let {
+            val passedEpochSeconds: Long = Clock.System.now().epochSeconds - keyValue.get<Long>(TOKEN_EPOCH_SECONDS_KEY)
+
+            if (passedEpochSeconds > it.expiresIn) {
+                if (it.refreshExpiresIn != null && passedEpochSeconds > it.refreshExpiresIn) {
+                    removeToken()
+                    return@withLock null
+                }
+
+                return client.getTokenByRefreshToken(it.refreshToken).also {
+                    setToken(it)
                 }
             }
-        }.getOrThrow()
-    }
 
-    override suspend fun updateUsers(users: Set<User>, password: String): Unit =
-        getAndRequestToken(password).flatMap { token ->
-            runCatching {
-                users.forEach { user ->
-                    client.getUsers(UserRepresentation(username = user.username), true, token.token.accessToken)
-                        .map { it.single() }
-                        .flatMap {
-                            client.updateUser(user.toUserRepresentation().copy(id = it.id), token.token.accessToken)
-                        }.getOrThrow()
-                }
-            }
-        }.getOrThrow()
-
-    override suspend fun deleteUsers(usernames: Set<String>, password: String): Unit =
-        getAndRequestToken(password).map { it.token.accessToken }.flatMap { accessToken ->
-            runCatching {
-                usernames.forEach {
-                    client.getUsers(UserRepresentation(username = it), true, accessToken).map { it.single() }.flatMap {
-                        client.deleteUser(it.id!!, accessToken)
-                    }
-                }
-            }
-        }.getOrThrow()
-
-    override suspend fun resetPassword(password: String, newPassword: String) {
-        getAndRequestToken(password).flatMap { token ->
-            client.getUserInfo(token.token.accessToken).flatMap {
-                client.resetPassword(it.sub, ResetPassword(newPassword), token.token.accessToken).flatMap {
-                    requestToken(token.username, newPassword)
-                }
-            }
-        }.getOrThrow()
-    }
-
-    public override suspend fun forgetPassword(username: String): Unit = client.forgetPassword(username).getOrThrow()
-
-    override suspend fun onExpired(block: () -> Unit) {
-        onSignInExpireBlock = block
-        handleRefreshTokenExpire()
-    }
-
-    override suspend fun configHttpRequest(builder: HttpRequestBuilder) {
-        getOrRefreshToken().getOrNull()
-            ?.let { builder.header(HttpHeaders.Authorization, "Bearer ${it.token.accessToken}") }
-    }
-
-    private suspend fun requestToken(username: String, password: String): Result<CachedToken> =
-        client.getToken(username, password).map {
-            setToken(username, it)
-        }
-
-    private suspend fun getAndRequestToken(password: String): Result<CachedToken> = getOrRefreshToken().flatMap {
-        requestToken(it.username, password)
-    }
-
-    private suspend fun getOrRefreshToken(): Result<CachedToken> = getToken().flatMap { token ->
-        if (token.expiresInLeft > 0) {
-            Result.success(token)
-        }
-        else {
-            client.getToken(token.token.refreshToken).map {
-                setToken(token.username, it)
-            }.onFailure {
-                removeToken()
-            }
+            it
         }
     }
 
-    private suspend fun setToken(username: String, token: Token) =
-        CachedToken(Clock.System.now().epochSeconds, username, token).also {
-            keyValue.set(TOKEN_KEY, it)
-            handleRefreshTokenExpire()
-        }
+    private suspend fun setToken(token: TokenResponse) = lock.withLock {
+        keyValue.set(TOKEN_KEY, token)
 
-    private suspend fun getToken() = keyValue.get<CachedToken>(TOKEN_KEY)
+        val epochSeconds = Clock.System.now().epochSeconds
 
-    private suspend fun removeToken() = keyValue.remove(TOKEN_KEY)
-
-    private suspend fun handleRefreshTokenExpire() {
-//        supervisorScope {
-//            launch {
-//                getToken().map {
-//                    it.refreshExpiresInLeft?.let {
-//                        delay(it * 1000)
-//                        signOut()
-//                        onSignInExpireBlock?.invoke()
-//                    }
-//                }
-//            }
-//        }
+        keyValue.set(TOKEN_EPOCH_SECONDS_KEY, epochSeconds)
     }
 
-    private val Throwable.isUnauthorized: Boolean
-        get() = this is HttpResponseException && this.status == HttpStatusCode.Unauthorized
+    private suspend fun getToken() = keyValue.get<TokenResponse?>(TOKEN_KEY)
+
+    private suspend fun removeToken() = lock.withLock {
+        keyValue.remove(TOKEN_KEY)
+    }
 
     public companion object {
-        
+
         public const val TOKEN_KEY: String = "KEYCLOAK_TOKEN"
+        public const val TOKEN_EPOCH_SECONDS_KEY: String = "${TOKEN_KEY}_KEY_EPOCH_SECONDS_KEY"
+        public const val REFRESH_TOKEN_EPOCH_SECONDS_KEY: String = "${TOKEN_KEY}_EPOCH_SECONDS_KEY"
     }
 }

@@ -29,8 +29,27 @@ public data class UserRepresentation(
     val serviceAccountClientId: String? = null,
     val username: String? = null,
     val totp: Boolean? = null,
-){
-    private fun UserRepresentation.toUser(): User = User(
+) {
+
+    public constructor(user: User, id: String? = null) : this(
+        username = user.username,
+        firstName = user.firstName,
+        lastName = user.lastName,
+        email = user.email,
+        realmRoles = user.roles,
+        attributes = if (!(user.phone == null && user.image == null)) {
+            (user.attributes ?: emptyMap()) + mutableMapOf<String, List<String>>().apply {
+                user.phone?.let { this[USER_PHONE_ATTRIBUTE_KEY] = listOf(it) }
+                user.image?.let { this[USER_IMAGE_ATTRIBUTE_KEY] = listOf(it) }
+            }
+        }
+        else {
+            user.attributes
+        },
+        id = id,
+    )
+
+    public fun toUser(): User = User(
         username,
         firstName,
         lastName,
@@ -43,24 +62,6 @@ public data class UserRepresentation(
             remove(USER_IMAGE_ATTRIBUTE_KEY)
         },
     )
-
-    private fun User.toUserRepresentation(): UserRepresentation =
-        UserRepresentation(
-            username = username,
-            firstName = firstName,
-            lastName = lastName,
-            email = email,
-            realmRoles = roles,
-            attributes = if (!(phone == null && image == null)) {
-                (attributes ?: emptyMap()) + mutableMapOf<String, List<String>>().apply {
-                    phone?.let { this[USER_PHONE_ATTRIBUTE_KEY] = listOf(it) }
-                    image?.let { this[USER_IMAGE_ATTRIBUTE_KEY] = listOf(it) }
-                }
-            }
-            else {
-                attributes
-            },
-        )
 
     public companion object {
 

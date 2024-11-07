@@ -51,13 +51,13 @@ public suspend inline fun <reified T> AbstractKeyValue.get(
     keys: List<String>,
     typeParameters: List<TypeResolver> = emptyList(),
     defaultValue: T? = null
-): T? = get(keys, TypeResolver(T::class, * typeParameters.toTypedArray()), defaultValue)
+): T = get(keys, TypeResolver(T::class, * typeParameters.toTypedArray()), defaultValue)
 
 public suspend inline fun <reified T> AbstractKeyValue.get(
     key: String,
     typeParameters: List<TypeResolver> = emptyList(),
     defaultValue: T? = null
-): T? = get(key, TypeResolver(T::class, * typeParameters.toTypedArray()), defaultValue)
+): T = get(key, TypeResolver(T::class, * typeParameters.toTypedArray()), defaultValue)
 
 public suspend inline fun <reified T> AbstractKeyValue.getFlow(
     keys: List<String>,

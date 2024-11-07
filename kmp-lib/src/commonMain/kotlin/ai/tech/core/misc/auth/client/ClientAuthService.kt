@@ -21,9 +21,9 @@ public interface ClientAuthService {
 
     public suspend fun resetPassword(password: String, newPassword: String)
 
-    public suspend fun forgetPassword(username: String)
+    public suspend fun forgotPassword(username: String)
 
-    public suspend fun onExpired(block: () -> Unit)
+    public suspend fun isValidToken(): Boolean
 
     public suspend fun HttpRequestBuilder.auth()
 }
