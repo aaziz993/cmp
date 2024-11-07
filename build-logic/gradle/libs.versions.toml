@@ -174,7 +174,7 @@ ktor-swagger-ui = "2.9.0"
 # RPC
 kotlinx-rpc = "0.3.0"
 # generates http client
-ktorfit = "1.11.1"
+ktorfit = "2.1.0"
 # http2
 tcnative = "2.0.62.Final"
 # GraphQL

@@ -1,4 +1,4 @@
-package ai.tech.core.misc.location.weblate.model
+package ai.tech.core.misc.location.localization.weblate.model
 
 import kotlinx.serialization.Serializable
 

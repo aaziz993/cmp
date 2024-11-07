@@ -4,9 +4,9 @@ import ai.tech.core.misc.network.http.client.createHttpClient
 import ai.tech.core.misc.auth.client.ClientAuthProvider
 import ai.tech.core.misc.auth.client.keycloak.KeycloakAuthProvider
 import ai.tech.core.misc.auth.client.keycloak.KeycloakClient
-import ai.tech.core.misc.location.LocalizationProvider
-import ai.tech.core.misc.location.weblate.WeblateClient
-import ai.tech.core.misc.location.weblate.WeblateLocalizationProvider
+import ai.tech.core.misc.location.localization.AbstractLocalizationService
+import ai.tech.core.misc.location.localization.weblate.WeblateClient
+import ai.tech.core.misc.location.localization.weblate.WeblateService
 import ai.tech.core.misc.model.config.client.ClientConfig
 import ai.tech.core.presentation.event.navigator.DefaultNavigator
 import ai.tech.core.presentation.event.navigator.Navigator
@@ -56,13 +56,13 @@ public class CommonModule(private val enableNetworkLogs: Boolean) {
         config: ClientConfig,
         httpClient: HttpClient,
     ): Consul = Consul(httpClient, config.consul)
-    
+
     @Single
     public fun provideLocalizationProvider(
         config: ClientConfig,
         httpClient: HttpClient,
-    ): LocalizationProvider =
-        WeblateLocalizationProvider(
+    ): AbstractLocalizationService =
+        WeblateService(
             WeblateClient(
                 httpClient,
                 config.localization.weblate[config.localizationProvider]!!,

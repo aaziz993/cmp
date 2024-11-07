@@ -1,9 +1,9 @@
 package ai.tech.plugin.di
 
 import ai.tech.core.misc.consul.Consul
-import ai.tech.core.misc.location.LocalizationProvider
-import ai.tech.core.misc.location.weblate.WeblateClient
-import ai.tech.core.misc.location.weblate.WeblateLocalizationProvider
+import ai.tech.core.misc.location.localization.AbstractLocalizationService
+import ai.tech.core.misc.location.localization.weblate.WeblateClient
+import ai.tech.core.misc.location.localization.weblate.WeblateService
 import ai.tech.core.misc.model.config.server.ServerConfig
 import ai.tech.core.misc.network.http.client.createHttpClient
 import io.ktor.client.*
@@ -55,8 +55,8 @@ public class DefaultModule {
     public fun provideLocalizationProvider(
         config: ServerConfig,
         httpClient: HttpClient,
-    ): LocalizationProvider =
-        WeblateLocalizationProvider(
+    ): AbstractLocalizationService =
+        WeblateService(
             WeblateClient(
                 httpClient,
                 config.localization.weblate[config.localizationProvider]!!,
