@@ -19,7 +19,7 @@ import org.koin.core.annotation.Module
 import org.koin.core.annotation.Single
 
 @Module
-@ComponentScan
+@ComponentScan("ai.tech")
 public class DefaultModule {
 
     @OptIn(ExperimentalSerializationApi::class)

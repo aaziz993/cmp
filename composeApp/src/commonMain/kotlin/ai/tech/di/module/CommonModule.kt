@@ -24,7 +24,7 @@ import ai.tech.core.misc.location.localization.MapLocalizationService
 import org.koin.core.annotation.ComponentScan
 
 @Module
-@ComponentScan
+@ComponentScan("ai.tech")
 public class CommonModule(private val enableNetworkLogs: Boolean) {
 
     @Single
