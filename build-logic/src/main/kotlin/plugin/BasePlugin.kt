@@ -27,6 +27,7 @@ import plugin.extension.config.configurePowerAssertGradleExtension
 import plugin.extension.config.configureSonarExtension
 
 internal class BasePlugin : Plugin<Project> {
+
     override fun apply(target: Project): Unit = with(target) {
         with(pluginManager) {
             apply(id("kover"))
@@ -41,7 +42,7 @@ internal class BasePlugin : Plugin<Project> {
             apply(id("kmp.nativecoroutines"))
             apply(id("dataframe"))
 //            apply(id("kotlinx.rpc"))
-            apply(id("ktorfit"))
+//            apply(id("ktorfit"))
             apply(id("apollo3"))
             apply(id("power.assert"))
             apply(id("kotest.multiplatform"))
@@ -56,10 +57,10 @@ internal class BasePlugin : Plugin<Project> {
 
         // Code format check and fix
         extensions.configure<SpotlessExtension>(::configureSpotlessExtension)
-//
-//        tasks.withType<SpotlessApply> {
-//            dependsOn("synchronizeRootFiles")
-//        }
+
+        tasks.withType<SpotlessApply> {
+            dependsOn("synchronizeRootFiles")
+        }
 
         // Code quality check
         extensions.configure<SonarExtension>(::configureSonarExtension)
@@ -83,7 +84,7 @@ internal class BasePlugin : Plugin<Project> {
         extensions.configure<PowerAssertGradleExtension>(::configurePowerAssertGradleExtension)
 
         // Http client generator
-        extensions.configure<KtorfitGradleConfiguration>(::configureKtorfitGradle)
+//        extensions.configure<KtorfitGradleConfiguration>(::configureKtorfitGradle)
 
         // GraphQL
         extensions.configure<ApolloExtension>(::configureApolloExtension)

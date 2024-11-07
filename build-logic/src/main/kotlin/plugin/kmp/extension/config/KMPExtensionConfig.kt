@@ -94,6 +94,7 @@ internal fun Project.configureKMPExtension(extension: KotlinMultiplatformExtensi
                     implementation(bundle("arrow"))
                     implementation(lib("okio"))
                     implementation(bundle("multiplatform.settings"))
+                    implementation(lib("kstore"))
                     implementation(bundle("sqldelight"))
                     implementation(lib("store5"))
                     implementation(bundle("ktor.serialization"))
@@ -116,6 +117,7 @@ internal fun Project.configureKMPExtension(extension: KotlinMultiplatformExtensi
 
             getByName("nonWebMain").dependencies {
                 implementation(lib("androidx.room.runtime.ktx"))
+                implementation(lib("kstore.file"))
                 implementation(lib("sqlite"))
                 implementation(lib("androidx.sqlite.bundled"))
             }
@@ -213,6 +215,7 @@ internal fun Project.configureKMPExtension(extension: KotlinMultiplatformExtensi
                     implementation(npm("@types/encoding-japanese", version("encoding.japanese.types").toString()))
                     // The synchronous sqljs-driver (pre-2.0) has been replaced with the asynchronous web-worker-driver. This requires configuring the generateAsync setting in your Gradle configuration.
                     implementation(lib("okio.nodefilesystem"))
+                    implementation(lib("kstore.storage"))
                     implementation(lib("sqldelight.web.worker.driver"))
                     implementation(lib("compass.geolocation.browser"))
                     implementation(lib("ktor.client.js"))
