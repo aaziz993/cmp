@@ -535,7 +535,7 @@ kotlinx-rpc-krpc-server = { module = "org.jetbrains.kotlinx:kotlinx-rpc-krpc-ser
 kotlinx-rpc-krpc-ktor-server = { module = "org.jetbrains.kotlinx:kotlinx-rpc-krpc-ktor-server", version.ref = "kotlinx-rpc" }
 
 # Generates http client
-ktorfit-lib = { module = "de.jensklingenberg.ktorfit:ktorfit-lib-ktor", version.ref = "ktorfit" }
+ktorfit-lib = { module = "de.jensklingenberg.ktorfit:ktorfit-lib-ktor-3.0.0", version.ref = "ktorfit" }
 ktorfit-converters-call = { module = "de.jensklingenberg.ktorfit:ktorfit-converters-call-ktor-3.0.0", version.ref = "ktorfit" }
 ktorfit-converters-flow = { module = "de.jensklingenberg.ktorfit:ktorfit-converters-flow-ktor-3.0.0", version.ref = "ktorfit" }
 ktorfit-converters-response = { module = "de.jensklingenberg.ktorfit:ktorfit-converters-response-ktor-3.0.0", version.ref = "ktorfit" }
