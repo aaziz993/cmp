@@ -3,6 +3,7 @@ package plugin.kmp
 import androidx.room.gradle.RoomExtension
 import app.cash.sqldelight.gradle.SqlDelightExtension
 import com.android.build.gradle.BaseExtension
+import de.jensklingenberg.ktorfit.gradle.KtorfitGradleConfiguration
 import plugin.extension.id
 import plugin.extension.lib
 import org.gradle.api.Plugin
@@ -29,18 +30,23 @@ import org.jetbrains.kotlin.gradle.tasks.Kotlin2JsCompile
 internal class KMPPlugin(
     private val androidPluginId: String,
 ) : Plugin<Project> {
+
     override fun apply(target: Project): Unit = BasePlugin().apply(target).also {
         with(target) {
             with(pluginManager) {
                 apply(id("js.plain.objects"))
                 apply(id("karakum"))
                 apply(id("kotlin.multiplatform"))
+                apply(id("ktorfit"))
                 apply(androidPluginId)
                 apply(id("sqldelight"))
                 apply(id("room"))
             }
 
             extensions.configure<KotlinProjectExtension>(::configureKotlinProjectExtension)
+
+            // Http client generator
+            extensions.configure<KtorfitGradleConfiguration>(::configureKtorfitGradle)
 
             extensions.configure<KotlinMultiplatformExtension>(::configureKMPExtension)
 

@@ -42,7 +42,6 @@ internal class BasePlugin : Plugin<Project> {
             apply(id("kmp.nativecoroutines"))
             apply(id("dataframe"))
 //            apply(id("kotlinx.rpc"))
-//            apply(id("ktorfit"))
             apply(id("apollo3"))
             apply(id("power.assert"))
             apply(id("kotest.multiplatform"))
@@ -82,9 +81,6 @@ internal class BasePlugin : Plugin<Project> {
         // Providing detailed failure messages with contextual information during testing.
         @OptIn(ExperimentalKotlinGradlePluginApi::class)
         extensions.configure<PowerAssertGradleExtension>(::configurePowerAssertGradleExtension)
-
-        // Http client generator
-//        extensions.configure<KtorfitGradleConfiguration>(::configureKtorfitGradle)
 
         // GraphQL
         extensions.configure<ApolloExtension>(::configureApolloExtension)

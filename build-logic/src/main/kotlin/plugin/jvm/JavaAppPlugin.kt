@@ -1,5 +1,6 @@
 package plugin.jvm
 
+import de.jensklingenberg.ktorfit.gradle.KtorfitGradleConfiguration
 import plugin.extension.bundle
 import plugin.extension.id
 import plugin.extension.lib
@@ -19,16 +20,20 @@ import plugin.extension.config.testImplementation
 import plugin.jvm.extension.config.configureJavaApp
 
 public class JavaAppPlugin : Plugin<Project> {
+
     override fun apply(target: Project): Unit =
         BasePlugin().apply(target).also {
             with(target) {
                 with(pluginManager) {
                     apply(id("kotlin.jvm"))
+                    apply(id("ktorfit"))
                     apply(id("ktor"))
                     apply("application")
                 }
 
                 extensions.configure<KotlinProjectExtension>(::configureKotlinProjectExtension)
+                // Http client generator
+                extensions.configure<KtorfitGradleConfiguration>(::configureKtorfitGradle)
 
                 extensions.configure<JavaPluginExtension>(::configureJavaPluginExtension)
 
@@ -93,12 +98,13 @@ public class JavaAppPlugin : Plugin<Project> {
                     // The below shows how to add a native implementation (statically linked BoringSSL library, a fork of OpenSSL)
                     if (tcnativeClassifier != null) {
                         implementation("io.netty:netty-tcnative-boringssl-static:${version("tcnative")}:$tcnativeClassifier")
-                    } else {
+                    }
+                    else {
                         implementation("io.netty:netty-tcnative-boringssl-static:${version("tcnative")}")
                     }
                 }
 
-             }
+            }
         }
 }
 
