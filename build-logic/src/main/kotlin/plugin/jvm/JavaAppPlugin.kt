@@ -74,7 +74,7 @@ public class JavaAppPlugin : Plugin<Project> {
                     implementation(lib("ktor.client.okhttp"))
                     implementation(bundle("kotlinx.rpc.serialization"))
                     implementation(bundle("kotlinx.rpc.server"))
-                    implementation(lib("ktorfit.lib"))
+                    implementation(bundle("ktorfit"))
                     implementation(bundle("kgraphql"))
                     implementation(bundle("metrics"))
                     implementation(bundle("koin.ktor"))

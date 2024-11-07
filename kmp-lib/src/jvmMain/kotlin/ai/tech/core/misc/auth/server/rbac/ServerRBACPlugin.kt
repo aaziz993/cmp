@@ -1,7 +1,7 @@
 package ai.tech.core.misc.auth.server.rbac
 
+import ai.tech.core.misc.auth.model.Role
 import ai.tech.core.misc.auth.model.exception.UnauthorizedAccessException
-import ai.tech.core.misc.auth.model.identity.RoleAuth
 import ai.tech.core.misc.auth.server.rbac.model.ServerRBACPluginConfig
 import io.ktor.http.*
 import io.ktor.server.application.*
@@ -19,7 +19,7 @@ public fun rbac(name: String? = null, config: ServerRBACPluginConfig.() -> Unit)
 public class RBACConfiguration {
 
     public lateinit var configurations: Set<String?>
-    public lateinit var role: RoleAuth
+    public lateinit var role: Role
 }
 
 public val RBACPlugin: RouteScopedPlugin<RBACConfiguration> =
@@ -39,7 +39,7 @@ public val RBACPlugin: RouteScopedPlugin<RBACConfiguration> =
 
                     if (!role.validate(roles)) {
                         val message =
-                            "Authorization failed for ${call.request.path()} should be ${role.type.name.lowercase()} of the roles [${
+                            "Authorization failed for ${call.request.path()} should be ${role.resolution.name.lowercase()} of the roles [${
                                 roles.joinToString(", ")
                             }] in [${role.roles.joinToString(", ")}]"
                         if (application.developmentMode) {
@@ -59,8 +59,8 @@ public val RBACPlugin: RouteScopedPlugin<RBACConfiguration> =
 
 public class AuthorizedRouteSelector(private vararg val configurations: String?) : RouteSelector() {
 
-    override fun evaluate(context: RoutingResolveContext, segmentIndex: Int): RouteSelectorEvaluation =
+    override suspend fun evaluate(context: RoutingResolveContext, segmentIndex: Int): RouteSelectorEvaluation =
         RouteSelectorEvaluation.Constant
 
-    override fun toString(): String = "(authorize ${configurations.joinToString(", ")})"
+    override fun toString(): String = "(authorize $configurations)"
 }

@@ -526,6 +526,9 @@ kotlinx-rpc-krpc-ktor-server = { module = "org.jetbrains.kotlinx:kotlinx-rpc-krp
 
 # Generates http client
 ktorfit-lib = { module = "de.jensklingenberg.ktorfit:ktorfit-lib", version.ref = "ktorfit" }
+ktorfit-converters-call = { module = "de.jensklingenberg.ktorfit:ktorfit-converters-call", version.ref = "ktorfit" }
+ktorfit-converters-flow = { module = "de.jensklingenberg.ktorfit:ktorfit-converters-flow", version.ref = "ktorfit" }
+ktorfit-converters-response = { module = "de.jensklingenberg.ktorfit:ktorfit-converters-response", version.ref = "ktorfit" }
 ktorfit-ksp = { module = "de.jensklingenberg.ktorfit:ktorfit-ksp", version.ref = "ktorfit" }
 
 # GraphQL
@@ -788,6 +791,15 @@ kotlinx-rpc-server = [
     "kotlinx-rpc-krpc-server",
     "kotlinx-rpc-krpc-ktor-server"
 ]
+
+# Ktorfit
+ktorfit = [
+    "ktorfit-lib",
+    "ktorfit-converters-call",
+    "ktorfit-converters-flow",
+    "ktorfit-converters-response"
+]
+
 # GraphQL
 # server
 kgraphql = [

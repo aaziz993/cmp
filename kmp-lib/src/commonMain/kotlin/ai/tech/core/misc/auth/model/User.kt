@@ -1,4 +1,4 @@
-package ai.tech.core.misc.auth.model.identity
+package ai.tech.core.misc.auth.model
 
 import kotlinx.serialization.Serializable
 
@@ -13,5 +13,6 @@ public data class User(
     val roles: Set<String>? = null,
     val attributes: Map<String, List<String>>? = null
 ) {
-    public fun validate(role: RoleAuth? = null): Boolean = role?.validate(roles ?: emptySet()) != false
+
+    public fun validate(role: Role? = null): Boolean = role?.validate(roles ?: emptySet()) != false
 }

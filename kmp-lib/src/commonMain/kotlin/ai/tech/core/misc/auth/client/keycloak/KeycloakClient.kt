@@ -82,10 +82,10 @@ public class KeycloakClient(
 
     public suspend fun createUser(
         user: UserRepresentation,
-        accessToken: String? = null,
+        accessToken: String,
     ) {
         httpClient.post("/admin/realms/${config.realm}/users") {
-            accessToken?.let { header(HttpHeaders.Authorization, "Bearer $it") }
+            header(HttpHeaders.Authorization, "Bearer $accessToken")
             setBody(user)
         }
     }

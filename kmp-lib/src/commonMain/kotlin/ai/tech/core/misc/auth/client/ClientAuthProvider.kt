@@ -1,6 +1,6 @@
 package ai.tech.core.misc.auth.client
 
-import ai.tech.core.misc.auth.model.identity.User
+import ai.tech.core.misc.auth.model.User
 import io.ktor.client.request.*
 
 public interface ClientAuthProvider {

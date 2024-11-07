@@ -100,7 +100,7 @@ internal fun Project.configureKMPExtension(extension: KotlinMultiplatformExtensi
                     implementation(bundle("ktor.client"))
                     implementation(bundle("kotlinx.rpc.serialization"))
                     implementation(bundle("kotlinx.rpc.client"))
-                    implementation(lib("ktorfit.lib"))
+                    implementation(bundle("ktorfit"))
                     implementation(bundle("apollo"))
                     implementation(bundle("compass"))
                     implementation(bundle("koin.kotlin.multiplatform"))
