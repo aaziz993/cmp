@@ -1,8 +1,8 @@
 package ai.tech.di.module
 
 import ai.tech.core.misc.network.http.client.createHttpClient
-import ai.tech.core.misc.auth.client.ClientAuthProvider
-import ai.tech.core.misc.auth.client.keycloak.KeycloakAuthProvider
+import ai.tech.core.misc.auth.client.ClientAuthService
+import ai.tech.core.misc.auth.client.keycloak.KeycloakService
 import ai.tech.core.misc.auth.client.keycloak.KeycloakClient
 import ai.tech.core.misc.location.localization.AbstractLocalizationService
 import ai.tech.core.misc.location.localization.weblate.WeblateClient
@@ -75,7 +75,7 @@ public class CommonModule(private val enableNetworkLogs: Boolean) {
         config: ClientConfig,
         httpClient: HttpClient,
         keyValue: SettingsKeyValue
-    ): ClientAuthProvider = KeycloakAuthProvider(
+    ): ClientAuthService = KeycloakService(
         KeycloakClient(httpClient, config.auth.oauth.entries.first { (_, config) -> config.provider == "keycloak" }.value),
         keyValue,
         config.authProvider,

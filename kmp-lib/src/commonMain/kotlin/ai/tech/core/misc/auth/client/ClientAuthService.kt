@@ -3,7 +3,7 @@ package ai.tech.core.misc.auth.client
 import ai.tech.core.misc.auth.model.User
 import io.ktor.client.request.*
 
-public interface ClientAuthProvider {
+public interface ClientAuthService {
     public val name: String?
 
     public suspend fun signIn(username: String, password: String)

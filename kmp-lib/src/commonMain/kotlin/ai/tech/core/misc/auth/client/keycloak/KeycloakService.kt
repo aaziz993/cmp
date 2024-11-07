@@ -1,7 +1,7 @@
 package ai.tech.core.misc.auth.client.keycloak
 
 import ai.tech.core.data.keyvalue.AbstractKeyValue
-import ai.tech.core.misc.auth.client.ClientAuthProvider
+import ai.tech.core.misc.auth.client.ClientAuthService
 import ai.tech.core.misc.auth.client.keycloak.model.ResetPassword
 import ai.tech.core.misc.auth.client.keycloak.model.UserRepresentation
 import ai.tech.core.misc.auth.model.User
@@ -10,11 +10,11 @@ import io.ktor.client.request.*
 import io.ktor.http.*
 import kotlinx.datetime.Clock
 
-public class KeycloakAuthProvider(
+public class KeycloakService(
     public val client: KeycloakClient,
     public val keyValue: AbstractKeyValue,
     public override val name: String?,
-) : ClientAuthProvider {
+) : ClientAuthService {
 
     private var onSignInExpireBlock: (() -> Unit)? = null
 
