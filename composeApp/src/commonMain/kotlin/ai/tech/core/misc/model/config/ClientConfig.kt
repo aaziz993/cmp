@@ -13,7 +13,7 @@ public data class ClientConfig(
     override val project: String,
     override val consul: ConsulConfig,
     override val localization: LocalizationConfig,
-    override val databaseProvider: String,
+    override val database: String,
     override val validator: ValidatorConfig = ValidatorConfig(),
     override val ktor: KtorServerConfig,
     override val auth: ClientAuthConfig,

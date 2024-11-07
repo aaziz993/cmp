@@ -88,7 +88,6 @@ public class CommonModule(private val enableNetworkLogs: Boolean) {
         return KeycloakService(
             KeycloakClient(httpClient, config.auth.providerConfig),
             keyValue,
-            config.auth.provider,
         )
     }
 }
