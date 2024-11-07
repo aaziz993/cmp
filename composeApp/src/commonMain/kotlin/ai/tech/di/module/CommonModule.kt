@@ -20,6 +20,7 @@ import org.koin.core.annotation.Module
 import org.koin.core.annotation.Single
 import ai.tech.core.data.keyvalue.SettingsKeyValue
 import ai.tech.core.misc.consul.Consul
+import ai.tech.core.misc.location.localization.MapLocalizationService
 
 @Module
 public class CommonModule(private val enableNetworkLogs: Boolean) {
@@ -61,23 +62,33 @@ public class CommonModule(private val enableNetworkLogs: Boolean) {
     public fun provideLocalizationProvider(
         config: ClientConfig,
         httpClient: HttpClient,
-    ): AbstractLocalizationService =
-        WeblateService(
-            WeblateClient(
-                httpClient,
-                config.localization.weblate[config.localization.provider]!!,
-            ),
-            config.project,
-        )
+    ): AbstractLocalizationService = with(config.localization) {
+        weblate?.let {
+            WeblateService(
+                WeblateClient(
+                    httpClient,
+                    it,
+                ),
+                config.project,
+                foundLanguage,
+            )
+        } ?: MapLocalizationService(foundLanguage, map)
+    }
 
     @Single
     public fun provideAuthProvider(
         config: ClientConfig,
         httpClient: HttpClient,
         keyValue: SettingsKeyValue
-    ): ClientAuthService = KeycloakService(
-        KeycloakClient(httpClient, config.auth.oauth.entries.first { (_, config) -> config.provider == "keycloak" }.value),
-        keyValue,
-        config.auth.provider,
-    )
+    ): ClientAuthService {
+        require(config.auth.providerConfig.provider == "keycloak") {
+            "Only keycloak auth provider is supported for now."
+        }
+
+        return KeycloakService(
+            KeycloakClient(httpClient, config.auth.providerConfig),
+            keyValue,
+            config.auth.provider,
+        )
+    }
 }

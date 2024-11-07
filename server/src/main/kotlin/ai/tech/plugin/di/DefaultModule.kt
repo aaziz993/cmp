@@ -2,6 +2,7 @@ package ai.tech.plugin.di
 
 import ai.tech.core.misc.consul.Consul
 import ai.tech.core.misc.location.localization.AbstractLocalizationService
+import ai.tech.core.misc.location.localization.MapLocalizationService
 import ai.tech.core.misc.location.localization.weblate.WeblateClient
 import ai.tech.core.misc.location.localization.weblate.WeblateService
 import ai.tech.core.misc.model.config.server.ServerConfig
@@ -11,7 +12,6 @@ import io.ktor.client.plugins.*
 import io.ktor.client.plugins.contentnegotiation.*
 import io.ktor.client.plugins.logging.*
 import io.ktor.serialization.kotlinx.json.*
-import kotlin.collections.get
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.json.Json
 import org.koin.core.annotation.Module
@@ -55,12 +55,16 @@ public class DefaultModule {
     public fun provideLocalizationProvider(
         config: ServerConfig,
         httpClient: HttpClient,
-    ): AbstractLocalizationService =
-        WeblateService(
-            WeblateClient(
-                httpClient,
-                config.localization.weblate[config.localization.provider]!!,
-            ),
-            config.project,
-        )
+    ): AbstractLocalizationService = with(config.localization) {
+        weblate?.let {
+            WeblateService(
+                WeblateClient(
+                    httpClient,
+                    it,
+                ),
+                config.project,
+                foundLanguage,
+            )
+        } ?: MapLocalizationService(foundLanguage, map)
+    }
 }

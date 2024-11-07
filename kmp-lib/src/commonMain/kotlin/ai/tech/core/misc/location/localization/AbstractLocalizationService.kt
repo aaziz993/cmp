@@ -9,11 +9,13 @@ public abstract class AbstractLocalizationService {
     public open lateinit var languages: List<Language>
         protected set
 
-    public lateinit var language: Language
-        private set
+    public open lateinit var language: Language
+        protected set
 
     public open lateinit var translations: Map<String, List<String>>
         protected set
+
+    public abstract suspend fun initialize()
 
     public open suspend fun localize(language: Language) {
         this.language = language

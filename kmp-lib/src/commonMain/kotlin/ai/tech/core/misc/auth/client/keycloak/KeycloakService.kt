@@ -13,7 +13,6 @@ import kotlinx.datetime.Clock
 public class KeycloakService(
     public val client: KeycloakClient,
     public val keyValue: AbstractKeyValue,
-    public override val name: String?,
 ) : ClientAuthService {
 
     private var onSignInExpireBlock: (() -> Unit)? = null
@@ -101,7 +100,7 @@ public class KeycloakService(
 
     public override suspend fun forgetPassword(username: String): Unit = client.forgetPassword(username).getOrThrow()
 
-    override suspend fun onSignInExpire(block: () -> Unit) {
+    override suspend fun onExpired(block: () -> Unit) {
         onSignInExpireBlock = block
         handleRefreshTokenExpire()
     }
@@ -160,42 +159,8 @@ public class KeycloakService(
     private val Throwable.isUnauthorized: Boolean
         get() = this is HttpResponseException && this.status == HttpStatusCode.Unauthorized
 
-    private fun UserRepresentation.toUser(): User = User(
-        username,
-        firstName,
-        lastName,
-        attributes?.get(USER_PHONE_ATTRIBUTE_KEY)?.get(0),
-        email,
-        attributes?.get(USER_IMAGE_ATTRIBUTE_KEY)?.get(0),
-        realmRoles,
-        attributes?.toMutableMap()?.apply {
-            remove(USER_PHONE_ATTRIBUTE_KEY)
-            remove(USER_IMAGE_ATTRIBUTE_KEY)
-        },
-    )
-
-    private fun User.toUserRepresentation(): UserRepresentation =
-        UserRepresentation(
-            username = username,
-            firstName = firstName,
-            lastName = lastName,
-            email = email,
-            realmRoles = roles,
-            attributes = if (!(phone == null && image == null)) {
-                (attributes ?: emptyMap()) + mutableMapOf<String, List<String>>().apply {
-                    phone?.let { this[USER_PHONE_ATTRIBUTE_KEY] = listOf(it) }
-                    image?.let { this[USER_IMAGE_ATTRIBUTE_KEY] = listOf(it) }
-                }
-            }
-            else {
-                attributes
-            },
-        )
-
-    private companion object {
-
-        private const val TOKEN_KEY = "TOKEN"
-        private const val USER_PHONE_ATTRIBUTE_KEY = "phone"
-        private const val USER_IMAGE_ATTRIBUTE_KEY = "image"
+    public companion object {
+        
+        public const val TOKEN_KEY: String = "KEYCLOAK_TOKEN"
     }
 }

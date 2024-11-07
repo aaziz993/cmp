@@ -4,7 +4,6 @@ import ai.tech.core.misc.auth.model.User
 import io.ktor.client.request.*
 
 public interface ClientAuthService {
-    public val name: String?
 
     public suspend fun signIn(username: String, password: String)
 
@@ -24,7 +23,7 @@ public interface ClientAuthService {
 
     public suspend fun forgetPassword(username: String)
 
-    public suspend fun onSignInExpire(block: () -> Unit)
+    public suspend fun onExpired(block: () -> Unit)
 
-    public suspend fun configHttpRequest(builder: HttpRequestBuilder)
+    public suspend fun HttpRequestBuilder.auth()
 }

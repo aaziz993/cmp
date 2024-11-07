@@ -22,6 +22,8 @@ public class ResLocalizationService(
     private val stringArrayResources: Map<String, StringArrayResource> = emptyMap(),
 ) : AbstractLocalizationService() {
 
+    override suspend fun initialize(): Unit = Unit
+
     override suspend fun localize(language: Language) {
         super.localize(language)
 
