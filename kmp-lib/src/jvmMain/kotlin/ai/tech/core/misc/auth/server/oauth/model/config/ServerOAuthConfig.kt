@@ -14,7 +14,7 @@ public data class ServerOAuthConfig(
     override val address: String,
     override val realm: String,
     override val clientId: String,
-    override val clientSecret: String,
+    val clientSecret: String,
     val authorizeUrl: String = "$address/auth/realms/$realm/protocol/openid-connect/auth",
     val accessTokenUrl: String = "$address/auth/realms/$realm/protocol/openid-connect/token",
     val requestMethod: HttpMethodSerial = HttpMethod.Post,
