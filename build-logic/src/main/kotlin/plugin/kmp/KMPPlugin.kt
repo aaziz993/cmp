@@ -45,10 +45,10 @@ internal class KMPPlugin(
 
             extensions.configure<KotlinProjectExtension>(::configureKotlinProjectExtension)
 
+            extensions.configure<KotlinMultiplatformExtension>(::configureKMPExtension)
+
             // Http client generator
             extensions.configure<KtorfitGradleConfiguration>(::configureKtorfitGradle)
-
-            extensions.configure<KotlinMultiplatformExtension>(::configureKMPExtension)
 
             // Android base extension
             extensions.configure<BaseExtension>(::configureBaseExtension)
