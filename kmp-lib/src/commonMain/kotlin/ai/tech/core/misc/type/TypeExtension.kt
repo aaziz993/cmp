@@ -368,8 +368,9 @@ else {
     this
 }
 
+@Suppress("UNCHECKED_CAST")
 public inline fun <reified T : Any> Json.create(value: T? = null, block: (Map<String, Any?>) -> Map<String, Any?> = { it }): T =
-    decodeFromMap(block(value?.let(::encodeToMap).orEmpty()))
+    decodeFromAny(block((value?.let(::encodeToAny) as Map<String, *>?).orEmpty()))
 
 // ///////////////////////////////////////////////////////ACCESSOR///////////////////////////////////////////////////////
 public inline fun <T : Any> T.getOrNull(
