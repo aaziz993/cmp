@@ -373,22 +373,36 @@ public inline fun <reified T : Any> Json.create(value: T? = null, block: (Map<St
     decodeFromAny(block((value?.let(::encodeToAny) as Map<String, *>?).orEmpty()))
 
 // ///////////////////////////////////////////////////////ACCESSOR///////////////////////////////////////////////////////
-public inline fun <T : Any> T.getOrNull(
-    keys: List<Any?>,
-    accessor: (List<Accessor>, key: Any?, value: Any?) -> Accessor? = { _, key, value -> value?.accessor(parentKey = key) },
+public fun <T : Any> T.accessor(
+    accessor: (List<Accessor>, key: Any?, value: Any?) -> Accessor? = { _, key, value ->
+        value?.let {
+            when (it) {
+                is List<*> -> ListAccessor(it, key)
+
+                is Map<*, *> -> MapLikeAccessor(it, it, key)
+
+                else -> MapLikeAccessor(it, json.encodeToAny(it) as Map<*, *>, key)
+            }
+        }
+    },
+    vararg keys: Any?,
 ): Accessor? = accessor(emptyList(), null, this)?.let {
     keys.fold(listOf(it)) { acc, key ->
-        acc + listOf(
-            acc.last().let { lastAccessor ->
-                lastAccessor.call(key).let { value ->
-                    accessor(acc, key, value)?.also {
-                        if (value == null) {
-                            lastAccessor.call(key, it.instance, false)
-                        }
-                    } ?: return null
-                }
-            },
-        )
+        val accessor = acc.last()
+
+        val value = accessor[key]
+
+        val newAccessor = accessor(acc, key, value)
+
+        if (newAccessor == null) {
+            return null
+        }
+
+        if (value == null) {
+            accessor[key] = it.instance
+        }
+
+        acc + listOf(newAccessor)
     }.last()
 }
 
