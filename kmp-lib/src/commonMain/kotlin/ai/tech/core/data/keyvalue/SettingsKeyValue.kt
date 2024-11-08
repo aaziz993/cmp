@@ -64,7 +64,6 @@ public class SettingsKeyValue(
         } ?: defaultValue) as T
     }
 
-
     override suspend fun <T> getFlow(
         keys: List<String>,
         serializer: KSerializer<T>
@@ -86,7 +85,7 @@ public class SettingsKeyValue(
                     }
                 }
             }
-        }
+        }.map { it as T }
     }
 
     override suspend fun remove(keys: List<String>): Unit = lock.withLock {

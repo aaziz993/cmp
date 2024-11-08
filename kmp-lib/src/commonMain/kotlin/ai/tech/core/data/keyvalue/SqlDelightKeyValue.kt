@@ -45,7 +45,7 @@ public class SqlDelightKeyValue(private val queries: KeyValueQueries, public val
     override suspend fun <T> getFlow(
         keys: List<String>,
         serializer: KSerializer<T>,
-    ): Flow<T> = keys.toKey().let { key -> stateFlow.filter { it.key == key }.map { it.value } as Flow<T> }
+    ): Flow<T> = keys.toKey().let { key -> stateFlow.filter { it.key == key }.map { it.value as T } }
 
     override suspend fun remove(keys: List<String>): Unit = transactional {
         keys.toKey().let {
