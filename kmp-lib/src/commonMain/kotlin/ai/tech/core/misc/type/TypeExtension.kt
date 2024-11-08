@@ -371,11 +371,11 @@ else {
 
 @Suppress("UNCHECKED_CAST")
 public inline fun <reified T : Any> Json.copyInstance(value: T, block: (Map<String, Any?>) -> Map<String, Any?> = { it }): T =
-    decodeFromAny(block(encodeToAny(value) as Map<String, Any?>))
+    decodeFromAny(block(encodeToAny(value) as Map<String, Any?>))!!
 
 @Suppress("UNCHECKED_CAST")
 public inline fun <reified T : Any> Json.newInstance(value: Map<String, Any?>): T =
-    decodeFromAny(value)
+    decodeFromAny(value)!!
 
 // ///////////////////////////////////////////////////////ACCESSOR///////////////////////////////////////////////////////
 internal fun Any.accessor(parentKey: Any?) = when (this) {
