@@ -1,3 +1,5 @@
+@file:OptIn(ExperimentalSerializationApi::class)
+
 package ai.tech.core.data.keyvalue
 
 import com.russhwolf.settings.ExperimentalSettingsApi
@@ -10,13 +12,13 @@ import com.russhwolf.settings.coroutines.getFloatOrNullFlow
 import com.russhwolf.settings.coroutines.getIntOrNullFlow
 import com.russhwolf.settings.coroutines.getLongOrNullFlow
 import com.russhwolf.settings.coroutines.getStringOrNullFlow
-import kotlinx.atomicfu.locks.ReentrantLock
-import kotlinx.atomicfu.locks.reentrantLock
 import kotlinx.atomicfu.locks.withLock
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
-import kotlinx.serialization.json.Json
-import kotlinx.serialization.json.JsonNull
+import kotlinx.serialization.ExperimentalSerializationApi
+import kotlinx.serialization.KSerializer
+import kotlinx.serialization.descriptors.capturedKClass
+import kotlinx.serialization.serializer
 
 @Suppress("UNCHECKED_CAST")
 @OptIn(ExperimentalSettingsApi::class)
@@ -39,12 +41,12 @@ public class SettingsKeyValue(
             is Float -> settings.putFloat(key, value)
             is Double -> settings.putDouble(key, value)
             is String -> settings.putString(key, value)
-            else -> settings.putString(key, value?.let { json.encode(it, TypeResolver(it::class)) } ?: nullValue)
+            else -> settings.putString(key, value?.let { json.encodeToString(serializer(), it) } ?: nullValue)
         }
     }
 
-    override suspend fun <T> get(keys: List<String>, type: TypeResolver, defaultValue: T?): T = keys.toKey().let {
-        (when (type.kClass) {
+    override suspend fun <T> get(keys: List<String>, serializer: KSerializer<T>, defaultValue: T?): T = keys.toKey().let {
+        (when (serializer.descriptor.capturedKClass) {
             Boolean::class -> settings.getBooleanOrNull(it)
             Int::class -> settings.getIntOrNull(it)
             Long::class -> settings.getLongOrNull(it)
@@ -56,17 +58,18 @@ public class SettingsKeyValue(
                     null
                 }
                 else {
-                    json.decode(it, type)
+                    json.decodeFromString(serializer, it)
                 }
             }
         } ?: defaultValue) as T
     }
 
+
     override suspend fun <T> getFlow(
         keys: List<String>,
-        type: TypeResolver,
+        serializer: KSerializer<T>
     ): Flow<T> = keys.toKey().let {
-        when (type.kClass) {
+        when (serializer.descriptor.capturedKClass) {
             Boolean::class -> observableSettings.getBooleanOrNullFlow(it)
             Int::class -> observableSettings.getIntOrNullFlow(it)
             Long::class -> observableSettings.getLongOrNullFlow(it)
@@ -74,15 +77,15 @@ public class SettingsKeyValue(
             Double::class -> observableSettings.getDoubleOrNullFlow(it)
             String::class -> observableSettings.getStringOrNullFlow(it)
             else -> observableSettings.getStringOrNullFlow(it).map {
-                    it?.let {
-                        if (it == "null") {
-                            null
-                        }
-                        else {
-                            json.decode(it, type)
-                        }
+                it?.let {
+                    if (it == "null") {
+                        null
+                    }
+                    else {
+                        json.decodeFromString(serializer, it)
                     }
                 }
+            }
         } as Flow<T>
     }
 
