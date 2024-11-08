@@ -6,17 +6,16 @@ import kotlinx.atomicfu.locks.ReentrantLock
 import kotlinx.atomicfu.locks.reentrantLock
 import kotlinx.atomicfu.locks.withLock
 import kotlinx.coroutines.flow.Flow
+import kotlinx.serialization.DeserializationStrategy
 import kotlinx.serialization.InternalSerializationApi
-import kotlinx.serialization.KSerializer
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.serializer
-import kotlinx.uuid.Serializer
 
 public abstract class AbstractKeyValue {
 
     protected val lock: ReentrantLock = reentrantLock()
 
-    protected val json: Json = ai.tech.core.misc.type.Json {
+    public val json: Json = ai.tech.core.misc.type.Json {
         encodeDefaults = false
         ignoreUnknownKeys = true
     }
@@ -33,13 +32,13 @@ public abstract class AbstractKeyValue {
 
     public suspend fun <T> set(key: String, value: T): Unit = set(listOf(key), value)
 
-    public abstract suspend fun <T> get(keys: List<String>, serializer: KSerializer<T>, defaultValue: T? = null): T
+    public abstract suspend fun <T> get(keys: List<String>, deserializer: DeserializationStrategy<T>, defaultValue: T? = null): T
 
-    public suspend fun <T> get(key: String, serializer: KSerializer<T>, defaultValue: T? = null): T = get(listOf(key), serializer, defaultValue)
+    public suspend fun <T> get(key: String, deserializer: DeserializationStrategy<T>, defaultValue: T? = null): T = get(listOf(key), deserializer, defaultValue)
 
-    public abstract suspend fun <T> getFlow(keys: List<String>, serializer: KSerializer<T>): Flow<T>
+    public abstract suspend fun <T> getFlow(keys: List<String>, deserializer: DeserializationStrategy<T>): Flow<T>
 
-    public suspend fun <T> getFlow(key: String, serializer: KSerializer<T>): Flow<T> = getFlow(listOf(key), serializer)
+    public suspend fun <T> getFlow(key: String, deserializer: DeserializationStrategy<T>): Flow<T> = getFlow(listOf(key), deserializer)
 
     public abstract suspend fun remove(keys: List<String>)
 
@@ -52,22 +51,14 @@ public abstract class AbstractKeyValue {
     public abstract suspend fun size(): Int
 }
 
-public suspend inline fun <reified T : Any> AbstractKeyValue.get(
-    keys: List<String>,
-    defaultValue: T? = null
-): T = get(keys, T::class.serializer(), defaultValue)
+public suspend inline fun <reified T> AbstractKeyValue.get(keys: List<String>, defaultValue: T? = null): T =
+    get(keys, json.serializersModule.serializer(), defaultValue)
 
-public suspend inline fun <reified T : Any> AbstractKeyValue.get(
-    key: String,
-    defaultValue: T? = null
-): T = get(key, T::class.serializer(), defaultValue)
+public suspend inline fun <reified T> AbstractKeyValue.get(key: String, defaultValue: T? = null): T =
+    get(key, json.serializersModule.serializer(), defaultValue)
 
-public suspend inline fun <reified T:Any> AbstractKeyValue.getFlow(
-    keys: List<String>,
-    vararg typeParameters: TypeResolver,
-): Flow<T> = getFlow(keys, TypeResolver(T::class, * typeParameters))
+public suspend inline fun <reified T> AbstractKeyValue.getFlow(keys: List<String>): Flow<T> =
+    getFlow(keys, json.serializersModule.serializer())
 
-public suspend inline fun <reified T> AbstractKeyValue.getFlow(
-    key: String,
-    vararg typeParameters: TypeResolver,
-): Flow<T> = getFlow(key, TypeResolver(T::class, * typeParameters))
+public suspend inline fun <reified T> AbstractKeyValue.getFlow(key: String): Flow<T> =
+    getFlow(key, json.serializersModule.serializer())

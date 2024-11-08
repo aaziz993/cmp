@@ -15,6 +15,7 @@ import com.russhwolf.settings.coroutines.getStringOrNullFlow
 import kotlinx.atomicfu.locks.withLock
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
+import kotlinx.serialization.DeserializationStrategy
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.descriptors.capturedKClass
@@ -45,8 +46,8 @@ public class SettingsKeyValue(
         }
     }
 
-    override suspend fun <T> get(keys: List<String>, serializer: KSerializer<T>, defaultValue: T?): T = keys.toKey().let {
-        (when (serializer.descriptor.capturedKClass) {
+    override suspend fun <T> get(keys: List<String>, deserializer: DeserializationStrategy<T>, defaultValue: T?): T = keys.toKey().let {
+        (when (deserializer.descriptor.capturedKClass) {
             Boolean::class -> settings.getBooleanOrNull(it)
             Int::class -> settings.getIntOrNull(it)
             Long::class -> settings.getLongOrNull(it)
@@ -58,7 +59,7 @@ public class SettingsKeyValue(
                     null
                 }
                 else {
-                    json.decodeFromString(serializer, it)
+                    json.decodeFromString(deserializer, it)
                 }
             }
         } ?: defaultValue) as T
@@ -66,9 +67,9 @@ public class SettingsKeyValue(
 
     override suspend fun <T> getFlow(
         keys: List<String>,
-        serializer: KSerializer<T>
+        deserializer: DeserializationStrategy<T>,
     ): Flow<T> = keys.toKey().let {
-        when (serializer.descriptor.capturedKClass) {
+        when (deserializer.descriptor.capturedKClass) {
             Boolean::class -> observableSettings.getBooleanOrNullFlow(it)
             Int::class -> observableSettings.getIntOrNullFlow(it)
             Long::class -> observableSettings.getLongOrNullFlow(it)
@@ -81,7 +82,7 @@ public class SettingsKeyValue(
                         null
                     }
                     else {
-                        json.decodeFromString(serializer, it)
+                        json.decodeFromString(deserializer, it)
                     }
                 }
             }

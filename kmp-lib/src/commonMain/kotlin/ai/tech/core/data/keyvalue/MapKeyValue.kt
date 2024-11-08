@@ -14,6 +14,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.update
+import kotlinx.serialization.DeserializationStrategy
 import kotlinx.serialization.json.Json
 
 @Suppress("UNCHECKED_CAST")
@@ -32,14 +33,14 @@ public open class MapKeyValue(
 
     override suspend fun <T> get(
         keys: List<String>,
-        type: TypeResolver,
+        deserializer: DeserializationStrategy<T>,
         defaultValue: T?
     ): T =
         (map.callOrNull(keys)?.let { json.decode(it, type) } ?: defaultValue) as T
 
     override suspend fun <T> getFlow(
         keys: List<String>,
-        type: TypeResolver,
+        deserializer: DeserializationStrategy<T>,
     ): Flow<T> = stateFlow.filter { it.key == keys }.map { it.value } as Flow<T>
 
     public override suspend fun remove(keys: List<String>) {

@@ -6,6 +6,7 @@ import io.github.xxfast.kstore.KStore
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.map
+import kotlinx.serialization.DeserializationStrategy
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.encodeToString
 
@@ -26,17 +27,17 @@ public open class KStoreKeyValue(
 
     override suspend fun <T> get(
         keys: List<String>,
-        serializer: KSerializer<T>,
+        deserializer: DeserializationStrategy<T>,
         defaultValue: T?
     ): T = keys.toKey().let { key ->
-        (store.get()?.find { it.key == key }?.value?.let { json.decodeFromString(serializer, it) } ?: defaultValue) as T
+        (store.get()?.find { it.key == key }?.value?.let { json.decodeFromString(deserializer, it) } ?: defaultValue) as T
     }
 
     override suspend fun <T> getFlow(
         keys: List<String>,
-        serializer: KSerializer<T>,
+        deserializer: DeserializationStrategy<T>,
     ): Flow<T> = keys.toKey().let { key ->
-        store.updates.map { it?.find { it.key == key } }.filterNotNull().map { (_, v) -> v?.let { json.decodeFromString(serializer, it) } as T }
+        store.updates.map { it?.find { it.key == key } }.filterNotNull().map { (_, v) -> v?.let { json.decodeFromString(deserializer, it) } as T }
     }
 
     public override suspend fun remove(keys: List<String>): Unit = keys.toKey().let { key ->

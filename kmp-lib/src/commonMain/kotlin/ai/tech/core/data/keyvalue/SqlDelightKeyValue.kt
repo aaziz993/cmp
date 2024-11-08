@@ -8,6 +8,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.update
+import kotlinx.serialization.DeserializationStrategy
 import kotlinx.serialization.InternalSerializationApi
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.encodeToString
@@ -36,15 +37,15 @@ public class SqlDelightKeyValue(private val queries: KeyValueQueries, public val
 
     override suspend fun <T> get(
         keys: List<String>,
-        serializer: KSerializer<T>,
+        deserializer: DeserializationStrategy<T>,
         defaultValue: T?
     ): T = keys.toKey().let {
-        (queries.select(it).executeAsOne().value_?.let { json.decodeFromString(serializer, it) } ?: defaultValue) as T
+        (queries.select(it).executeAsOne().value_?.let { json.decodeFromString(deserializer, it) } ?: defaultValue) as T
     }
 
     override suspend fun <T> getFlow(
         keys: List<String>,
-        serializer: KSerializer<T>,
+        deserializer: DeserializationStrategy<T>,
     ): Flow<T> = keys.toKey().let { key -> stateFlow.filter { it.key == key }.map { it.value as T } }
 
     override suspend fun remove(keys: List<String>): Unit = transactional {
