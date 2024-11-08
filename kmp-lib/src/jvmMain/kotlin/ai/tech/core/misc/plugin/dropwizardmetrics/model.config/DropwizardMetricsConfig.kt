@@ -9,5 +9,5 @@ public data class DropwizardMetricsConfig(
     val registerJvmMetricSets: Boolean? = null,
     val slf4jReporter: Slf4jReporterConfig? = null,
     val jmxReporter: JmxReporterConfig? = null,
-    override val enable: Boolean? = null,
+    override val enable: Boolean = true,
 ) : EnabledConfig

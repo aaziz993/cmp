@@ -1,5 +1,6 @@
 package ai.tech.core.misc.plugin.applicationmonitoring
 
+import ai.tech.core.misc.model.config.EnabledConfig
 import ai.tech.core.misc.plugin.applicationmonitoring.model.config.ApplicationMonitoringConfig
 import io.ktor.events.EventDefinition
 import io.ktor.http.*
@@ -25,6 +26,6 @@ private val ApplicationMonitoringPlugin = createApplicationPlugin(name = "Applic
 
 private val NotFoundEvent: EventDefinition<ApplicationCall> = EventDefinition()
 
-public fun Application.configureApplicationMonitoring(config: ApplicationMonitoringConfig?) = config?.takeIf { it.enable != false }?.let {
+public fun Application.configureApplicationMonitoring(config: ApplicationMonitoringConfig?) = config?.takeIf(EnabledConfig::enable)?.let {
     install(ApplicationMonitoringPlugin)
 }

@@ -5,7 +5,7 @@ dropwizard-metrics:
     convertRatesTo: SECONDS
     convertDurationsTo: MILLISECONDS
     start:
-      perdiod: 10
+      period: 10
       unit: SECONDS
   jmx-reporter:
     convertRatesTo: SECONDS

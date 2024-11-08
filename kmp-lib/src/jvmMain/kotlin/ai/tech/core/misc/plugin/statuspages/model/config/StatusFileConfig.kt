@@ -8,5 +8,5 @@ import kotlinx.serialization.Serializable
 public data class StatusFileConfig(
     val codes: List<HttpStatusCodeSerial>,
     val filePattern: String,
-    override val enable: Boolean? = null,
+    override val enable: Boolean = true,
 ) : EnabledConfig

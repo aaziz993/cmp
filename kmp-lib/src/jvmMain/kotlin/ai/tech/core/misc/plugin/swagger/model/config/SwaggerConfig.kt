@@ -11,5 +11,5 @@ public data class SwaggerConfig(
     val authentication: String? = null,
     val info: SwaggerInfoConfig? = null,
     val securityScheme: Map<String, SwaggerSecuritySchemeConfig>? = null,
-    override val enable: Boolean? = null,
+    override val enable: Boolean = true,
 ) : EnabledConfig

@@ -16,7 +16,7 @@ public fun Application.configureWebSockets(
 ) {
     var configBlock: (WebSockets.WebSocketOptions.() -> Unit)? = null
 
-    config?.takeIf { it.enable != false }?.let {
+    config?.takeIf(EnabledConfig::enable)?.let {
         // Websocket page for testing
         it.pages?.let {
             routing {

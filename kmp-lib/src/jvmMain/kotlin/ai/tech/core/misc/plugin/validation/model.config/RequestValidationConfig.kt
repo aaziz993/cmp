@@ -5,5 +5,5 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 public data class RequestValidationConfig(
-    override val enable: Boolean? = null,
+    override val enable: Boolean = true,
 ) : EnabledConfig

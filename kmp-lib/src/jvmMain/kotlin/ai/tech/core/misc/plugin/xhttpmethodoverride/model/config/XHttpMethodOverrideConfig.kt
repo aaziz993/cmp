@@ -6,5 +6,5 @@ import kotlinx.serialization.Serializable
 @Serializable
 public data class XHttpMethodOverrideConfig(
     val headerName: String? = null,
-    override val enable: Boolean? = null,
+    override val enable: Boolean = true,
 ) : EnabledConfig

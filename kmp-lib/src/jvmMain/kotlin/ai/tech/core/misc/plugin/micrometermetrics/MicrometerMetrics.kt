@@ -23,7 +23,7 @@ public fun Application.configureMicrometerMetrics(config: MicrometerMetricsConfi
 
     var configBlock: (io.ktor.server.metrics.micrometer.MicrometerMetricsConfig.() -> Unit)? = null
 
-    config?.takeIf { it.enable != false }?.let {
+    config?.takeIf(EnabledConfig::enable)?.let {
         val appMicrometerRegistry: MeterRegistry = when (it.type) {
             PROMETHEUS -> {
                 PrometheusMeterRegistry(PrometheusConfig.DEFAULT).also {

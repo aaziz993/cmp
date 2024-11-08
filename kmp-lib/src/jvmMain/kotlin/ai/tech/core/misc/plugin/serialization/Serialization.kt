@@ -15,11 +15,11 @@ import nl.adaptivity.xmlutil.serialization.XML
 
 @OptIn(ExperimentalSerializationApi::class)
 public fun Application.configureSerialization(config: SerializationConfig?, block: (ContentNegotiationConfig.() -> Unit)? = null) {
-    val configBlock: (ContentNegotiationConfig.() -> Unit)? = config?.takeIf { it.enable != false }?.let {
+    val configBlock: (ContentNegotiationConfig.() -> Unit)? = config?.takeIf(EnabledConfig::enable)?.let {
         {
 
             // JSON
-            it.json?.takeIf { it.enable != false }?.let {
+            it.json?.takeIf(EnabledConfig::enable)?.let {
                 json(
                     Json {
                         it.let {
@@ -43,7 +43,7 @@ public fun Application.configureSerialization(config: SerializationConfig?, bloc
             }
 
             // XML
-            it.xml?.takeIf { it.enable != false }?.let {
+            it.xml?.takeIf(EnabledConfig::enable)?.let {
                 xml(
                     XML {
                         it.let {
@@ -60,7 +60,7 @@ public fun Application.configureSerialization(config: SerializationConfig?, bloc
             }
 
             // CBOR
-            it.cbor?.takeIf { it.enable != false }?.let {
+            it.cbor?.takeIf(EnabledConfig::enable)?.let {
                 cbor(
                     Cbor {
                         it.let {
@@ -73,7 +73,7 @@ public fun Application.configureSerialization(config: SerializationConfig?, bloc
             }
 
             // PROTOBUF
-            it.protobuf?.takeIf { it.enable != false }?.let {
+            it.protobuf?.takeIf(EnabledConfig::enable)?.let {
                 protobuf(
                     ProtoBuf {
                         it.let {

@@ -1,17 +1,18 @@
 package ai.tech.core.misc.plugin.cachingheaders
 
+import ai.tech.core.misc.model.config.EnabledConfig
 import ai.tech.core.misc.plugin.cachingheaders.model.config.CachingHeadersConfig
 import io.ktor.http.content.*
 import io.ktor.server.application.*
 import io.ktor.server.plugins.cachingheaders.*
 
 public fun Application.configureCachingHeaders(config: CachingHeadersConfig?, block: (io.ktor.server.plugins.cachingheaders.CachingHeadersConfig.() -> Unit)? = null) {
-    val configBlock: (io.ktor.server.plugins.cachingheaders.CachingHeadersConfig.() -> Unit)? = config?.takeIf { it.enable != false }?.let {
+    val configBlock: (io.ktor.server.plugins.cachingheaders.CachingHeadersConfig.() -> Unit)? = config?.let {
         {
             options { call, outgoingContent ->
-                it.rootOption?.let { CachingOptions(it.cacheControl()) }
+                it.rootOption?.takeIf(EnabledConfig::enable)?.let { CachingOptions(it.cacheControl()) }
                 val contentType = outgoingContent.contentType?.withoutParameters()
-                it.options?.find { it.contentType == contentType }
+                it.options?.filter(EnabledConfig::enable)?.find { it.contentType == contentType }
                     ?.let { CachingOptions(it.cacheControl.cacheControl()) }
             }
         }

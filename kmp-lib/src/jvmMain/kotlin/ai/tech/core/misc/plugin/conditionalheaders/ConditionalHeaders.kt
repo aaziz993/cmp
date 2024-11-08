@@ -1,5 +1,6 @@
 package ai.tech.core.misc.plugin.conditionalheaders
 
+import ai.tech.core.misc.model.config.EnabledConfig
 import ai.tech.core.misc.plugin.conditionalheaders.model.config.ConditionalHeadersConfig
 import io.ktor.http.*
 import io.ktor.http.content.*
@@ -9,7 +10,7 @@ import java.io.File
 import java.util.*
 
 public fun Application.configureConditionalHeaders(config: ConditionalHeadersConfig?, block: (io.ktor.server.plugins.conditionalheaders.ConditionalHeadersConfig.() -> Unit)? = null) {
-    val configBlock: (io.ktor.server.plugins.conditionalheaders.ConditionalHeadersConfig.() -> Unit)? = config?.takeIf { it.enable != false }?.let {
+    val configBlock: (io.ktor.server.plugins.conditionalheaders.ConditionalHeadersConfig.() -> Unit)? = config?.takeIf(EnabledConfig::enable)?.let {
         {
             it.versionHeadersPath?.let {
                 val file = File(it)

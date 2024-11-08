@@ -6,5 +6,5 @@ import kotlinx.serialization.Serializable
 @Serializable
 public data class PartialContentConfig(
     val maxRangeCount: Int? = null,
-    override val enable: Boolean? = null,
+    override val enable: Boolean = true,
 ) : EnabledConfig

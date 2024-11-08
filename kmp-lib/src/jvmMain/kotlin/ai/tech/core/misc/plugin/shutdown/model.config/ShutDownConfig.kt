@@ -7,5 +7,5 @@ import kotlinx.serialization.Serializable
 public data class ShutDownConfig(
     val shutDownUrl: String? = null,
     val exitCodeSupplier: Int? = null,
-    override val enable: Boolean? = null,
+    override val enable: Boolean = true,
 ) : EnabledConfig

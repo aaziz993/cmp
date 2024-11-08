@@ -9,5 +9,5 @@ public data class SerializationConfig(
     val xml: XMLConfig? = null,
     val cbor: CBORConfig? = null,
     val protobuf: ProtobufConfig? = null,
-    override val enable: Boolean? = null,
+    override val enable: Boolean = true,
 ) : EnabledConfig

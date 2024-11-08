@@ -1,14 +1,15 @@
 package ai.tech.core.misc.plugin.compression
 
+import ai.tech.core.misc.model.config.EnabledConfig
 import ai.tech.core.misc.plugin.compression.model.config.CompressionConfig
 import io.ktor.server.application.*
 import io.ktor.server.plugins.compression.*
 
 public fun Application.configureCompression(config: CompressionConfig?, block: (io.ktor.server.plugins.compression.CompressionConfig.() -> Unit)? = null) {
-    val configBlock: (io.ktor.server.plugins.compression.CompressionConfig.() -> Unit)? = config?.takeIf { it.enable != false }?.let {
+    val configBlock: (io.ktor.server.plugins.compression.CompressionConfig.() -> Unit)? = config?.takeIf(EnabledConfig::enable)?.let {
         {
             //GZIP
-            it.gzip?.takeIf { it.enable != false }?.let {
+            it.gzip?.takeIf(EnabledConfig::enable)?.let {
                 gzip {
                     it.priority?.let {
                         priority = it
@@ -30,7 +31,7 @@ public fun Application.configureCompression(config: CompressionConfig?, block: (
             }
 
             // DEFLATE
-            it.deflate?.takeIf { it.enable != false }?.let {
+            it.deflate?.takeIf(EnabledConfig::enable)?.let {
                 deflate {
                     it.priority?.let {
                         priority = it
@@ -52,7 +53,7 @@ public fun Application.configureCompression(config: CompressionConfig?, block: (
             }
 
             // IDENTITY
-            it.identity?.takeIf { it.enable != false }?.let {
+            it.identity?.takeIf(EnabledConfig::enable)?.let {
                 identity {
                     // The minimum size of a response that will be compressed
                     it.priority?.let {

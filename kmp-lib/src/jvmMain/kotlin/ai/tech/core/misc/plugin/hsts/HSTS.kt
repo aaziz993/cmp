@@ -5,7 +5,7 @@ import io.ktor.server.application.*
 import io.ktor.server.plugins.hsts.*
 
 public fun Application.configureHSTS(config: HSTSConfig?, block: (io.ktor.server.plugins.hsts.HSTSConfig.() -> Unit)? = null) {
-    val configBlock: (io.ktor.server.plugins.hsts.HSTSConfig.() -> Unit)? = config?.takeIf { it.enable != false }?.let {
+    val configBlock: (io.ktor.server.plugins.hsts.HSTSConfig.() -> Unit)? = config?.takeIf(EnabledConfig::enable)?.let {
         {
             it.global?.let {
                 it.preload?.let { }

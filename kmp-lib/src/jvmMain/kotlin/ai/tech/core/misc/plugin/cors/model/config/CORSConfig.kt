@@ -6,13 +6,13 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 public data class CORSConfig(
-    val hosts: MutableSet<CORSHostConfig>? = null,
-    val headers: MutableSet<String>? = null,
-    val methods: MutableSet<HttpMethodSerial>? = null,
-    val exposedHeaders: MutableSet<String>? = null,
+    val hosts: Set<CORSHostConfig>? = null,
+    val headers: Set<String>? = null,
+    val methods: Set<HttpMethodSerial>? = null,
+    val exposedHeaders: Set<String>? = null,
     var allowCredentials: Boolean? = null,
     val maxAgeInSeconds: Long? = null,
     val allowSameOrigin: Boolean? = null,
     val allowNonSimpleContentTypes: Boolean? = null,
-    override val enable: Boolean? = null,
+    override val enable: Boolean = true,
 ) : EnabledConfig

@@ -1,13 +1,14 @@
 package ai.tech.core.misc.plugin.cors
 
+import ai.tech.core.misc.model.config.EnabledConfig
 import ai.tech.core.misc.plugin.cors.model.config.CORSConfig
 import io.ktor.server.application.*
 import io.ktor.server.plugins.cors.routing.*
 
 public fun Application.configureCORS(config: CORSConfig?, block: (io.ktor.server.plugins.cors.CORSConfig.() -> Unit)? = null) {
-    val configBlock: (io.ktor.server.plugins.cors.CORSConfig.() -> Unit)? = config?.takeIf { it.enable != false }?.let {
+    val configBlock: (io.ktor.server.plugins.cors.CORSConfig.() -> Unit)? = config?.takeIf(EnabledConfig::enable)?.let {
         {
-            it.hosts?.let { it.forEach { allowHost(it.host, it.schemes, it.subDomains) } }
+            it.hosts?.let { it.filter(EnabledConfig::enable).forEach { allowHost(it.host, it.schemes, it.subDomains) } }
             it.headers?.let { it.forEach { allowHeader(it) } }
             it.methods?.let { it.forEach { allowMethod(it) } }
             it.exposedHeaders?.let { it.forEach { exposeHeader(it) } }

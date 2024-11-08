@@ -20,5 +20,5 @@ public data class JsonConfig(
     val useAlternativeNames: Boolean? = null,
     val decodeEnumsCaseInsensitive: Boolean? = null,
     override val contentType: ContentTypeSerial = ContentType.Application.Json,
-    override val enable: Boolean? = null,
+    override val enable: Boolean = true,
 ) : SerializationFormatConfig

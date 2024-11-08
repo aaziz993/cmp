@@ -5,7 +5,7 @@ import io.ktor.server.application.*
 import io.ktor.server.plugins.partialcontent.*
 
 public fun Application.configurePartialContent(config: PartialContentConfig?, block: (io.ktor.server.plugins.partialcontent.PartialContentConfig.() -> Unit)? = null) {
-    val configBlock: (io.ktor.server.plugins.partialcontent.PartialContentConfig.() -> Unit)? = config?.takeIf { it.enable != false }?.let {
+    val configBlock: (io.ktor.server.plugins.partialcontent.PartialContentConfig.() -> Unit)? = config?.takeIf(EnabledConfig::enable)?.let {
         {
             // Maximum number of ranges that will be accepted from an HTTP request.
             // If the HTTP request specifies more ranges, they will all be merged into a single range.

@@ -17,7 +17,7 @@ public data class GenerateServerSSLConfig(
     val keySizeInBits: Int? = null,
     val domains: List<String>? = null,
     val rewrite: Boolean? = null,
-    override val enable: Boolean? = null
+    override val enable: Boolean = true
 ) : ServerSSLConfig, EnabledConfig {
 
     public fun generate() {

@@ -10,7 +10,7 @@ public data class CompressionEncoderConfig(
     val minimumSize: Long? = null,
     val matchContentType: List<ContentTypeSerial>? = null,
     val excludeContentType: List<ContentTypeSerial>? = null,
-    override val enable: Boolean? = null,
+    override val enable: Boolean = true,
 ) : EnabledConfig
 
 

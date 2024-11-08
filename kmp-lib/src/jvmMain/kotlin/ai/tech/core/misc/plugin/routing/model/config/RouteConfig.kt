@@ -9,5 +9,5 @@ public data class RoutingConfig(
     val staticRootPath: String? = null,
     val staticFiles: StaticContentConfig? = null,
     val staticResources: StaticContentConfig? = null,
-    override val enable: Boolean? = null,
+    override val enable: Boolean = true,
 ) : EnabledConfig

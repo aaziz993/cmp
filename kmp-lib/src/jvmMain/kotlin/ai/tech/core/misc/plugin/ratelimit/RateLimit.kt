@@ -5,7 +5,7 @@ import io.ktor.server.application.*
 import io.ktor.server.plugins.ratelimit.*
 
 public fun Application.configureRateLimit(config: RateLimitsConfig?, block: (RateLimitConfig.() -> Unit)? = null) {
-    val configBlock: (io.ktor.server.plugins.ratelimit.RateLimitConfig.() -> Unit)? = config?.takeIf { it.enable != false }?.let {
+    val configBlock: (RateLimitConfig.() -> Unit)? = config?.takeIf(EnabledConfig::enable)?.let {
         {
             it.global?.let {
                 global {

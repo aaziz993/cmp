@@ -6,7 +6,7 @@ import io.ktor.server.plugins.methodoverride.*
 
 public fun Application.configureXHttpMethodOverride(config: XHttpMethodOverrideConfig?, block: (io.ktor.server.plugins.methodoverride.XHttpMethodOverrideConfig.() -> Unit)? = null) {
 
-    val configBlock: (io.ktor.server.plugins.methodoverride.XHttpMethodOverrideConfig.() -> Unit)? = config?.takeIf { it.enable != false }?.let {
+    val configBlock: (io.ktor.server.plugins.methodoverride.XHttpMethodOverrideConfig.() -> Unit)? = config?.takeIf(EnabledConfig::enable)?.let {
         {
             config.headerName?.let { headerName = it }
         }

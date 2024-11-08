@@ -15,5 +15,5 @@ public data class MicrometerMetricsConfig(
     val jvmThreadMetrics: Boolean? = null,
     val fileDescriptorMetrics: Boolean? = null,
     val distributionStatistics: DistributionStatisticsConfig? = null,
-    override val enable: Boolean? = null
+    override val enable: Boolean = true
 ) : EnabledConfig

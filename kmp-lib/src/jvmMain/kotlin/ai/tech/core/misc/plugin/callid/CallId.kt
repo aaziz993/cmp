@@ -1,13 +1,14 @@
 package ai.tech.core.misc.plugin.callid
 
+import ai.tech.core.misc.model.config.EnabledConfig
 import ai.tech.core.misc.plugin.callid.model.config.CallIdConfig
 import io.ktor.server.application.*
 import io.ktor.server.plugins.callid.*
 
 public fun Application.configureCallId(config: CallIdConfig?, block: (io.ktor.server.plugins.callid.CallIdConfig.() -> Unit)? = null) {
-    val configBlock: (io.ktor.server.plugins.callid.CallIdConfig.() -> Unit)? = config?.takeIf { it.enable != false }?.let {
+    val configBlock: (io.ktor.server.plugins.callid.CallIdConfig.() -> Unit)? = config?.takeIf(EnabledConfig::enable)?.let {
         {
-            it.verify?.let { verify(it.dictionary, it.reject) }
+            it.verify?.takeIf(EnabledConfig::enable)?.let { verify(it.dictionary, it.reject) }
 
             if (it.header?.let { header(it) } == null) {
                 it.retrieveFromHeader?.let { retrieveFromHeader(it) }

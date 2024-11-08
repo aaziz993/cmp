@@ -9,7 +9,7 @@ public fun Application.configureHttpsRedirect(
     port: Int?,
     block: (HttpsRedirectConfig.() -> Unit)? = null
 ) {
-    val configBlock: (HttpsRedirectConfig.() -> Unit)? = config?.takeIf { it.enable != false }?.let {
+    val configBlock: (HttpsRedirectConfig.() -> Unit)? = config?.takeIf(EnabledConfig::enable)?.let {
         {
             // The port to redirect to. By default, 443, the default HTTPS port.
             it.sslPort?.let { sslPort = it } ?: port?.let { sslPort = it }

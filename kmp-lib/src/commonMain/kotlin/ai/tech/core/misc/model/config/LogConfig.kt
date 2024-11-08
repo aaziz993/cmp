@@ -5,4 +5,5 @@ import kotlinx.serialization.Serializable
 @Serializable
 public data class LogConfig(
     public val level: String? = null,
-)
+    override val enable: Boolean = true,
+) : EnabledConfig

@@ -9,5 +9,5 @@ public data class ForwardedHeadersConfig(
     override val useLast: Boolean? = null,
     override val skipLastProxies: Int? = null,
     override val skipKnownProxies: List<String>? = null,
-    override val enable: Boolean? = null,
+    override val enable: Boolean = true,
 ) : ForwardedHeaderConfig0, EnabledConfig

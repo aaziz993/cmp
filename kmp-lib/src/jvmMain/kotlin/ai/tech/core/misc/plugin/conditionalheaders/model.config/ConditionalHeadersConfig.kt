@@ -6,5 +6,5 @@ import kotlinx.serialization.Serializable
 @Serializable
 public data class ConditionalHeadersConfig(
     val versionHeadersPath: String? = null,
-    override val enable: Boolean? = null,
+    override val enable: Boolean = true,
 ) : EnabledConfig

@@ -6,7 +6,7 @@ import io.github.smiley4.ktorswaggerui.dsl.PluginConfigDsl
 import io.ktor.server.application.*
 
 public fun Application.configureSwagger(config: SwaggerConfig?, block: (PluginConfigDsl.() -> Unit)? = null) {
-    val configBlock: (PluginConfigDsl.() -> Unit)? = config?.takeIf { it.enable != false }?.let {
+    val configBlock: (PluginConfigDsl.() -> Unit)? = config?.takeIf(EnabledConfig::enable)?.let {
         {
             swagger {
                 it.forwardRoot?.let { forwardRoot = it }

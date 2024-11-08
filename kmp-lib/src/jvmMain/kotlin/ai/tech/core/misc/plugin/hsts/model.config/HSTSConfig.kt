@@ -7,5 +7,5 @@ import kotlinx.serialization.Serializable
 public data class HSTSConfig(
     val global: HSTSHostConfig? = null,
     val hostSpecific: Map<String, HSTSHostConfig>? = null,
-    override val enable: Boolean? = null,
+    override val enable: Boolean = true,
 ) : EnabledConfig

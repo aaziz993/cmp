@@ -16,5 +16,5 @@ public data class XMLConfig(
     val xmlVersion: XmlVersion? = null,
     val autoPolymorphic: Boolean? = null,
     override val contentType: ContentTypeSerial = ContentType.Application.Xml,
-    override val enable: Boolean? = null,
+    override val enable: Boolean = true,
 ) : SerializationFormatConfig

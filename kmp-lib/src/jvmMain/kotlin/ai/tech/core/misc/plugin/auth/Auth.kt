@@ -7,6 +7,7 @@ import ai.tech.core.misc.auth.server.model.config.ServerAuthConfig
 import ai.tech.core.misc.auth.server.oauth.ServerOAuth
 import ai.tech.core.misc.auth.server.oauth.model.config.ServerOAuthConfig
 import ai.tech.core.misc.auth.server.rbac.rbac
+import ai.tech.core.misc.model.config.EnabledConfig
 import io.ktor.client.*
 import io.ktor.http.auth.*
 import io.ktor.http.parsing.*
@@ -26,7 +27,8 @@ public fun Application.configureAuth(
 ) = authentication {
     config?.let {
         val redirects = mutableMapOf<String, String>()
-        it.jwtHs256.forEach { (name, config) ->
+
+        it.jwtHs256.filterValues(EnabledConfig::enable).forEach { (name, config) ->
             val jwtHS256Auth = ServerJWTHS256Auth(name, config)
             configJWT(name, config) {
                 // Load the token verification config
@@ -53,7 +55,7 @@ public fun Application.configureAuth(
             }
         }
 
-        it.jwtRs256.forEach { (name, config) ->
+        it.jwtRs256.filterValues(EnabledConfig::enable).forEach { (name, config) ->
             val jwtRS256Auth = ServerJWTRS256Auth(name, config)
             configJWT(name, config) {
                 // Load the token verification config
@@ -81,7 +83,7 @@ public fun Application.configureAuth(
             }
         }
 
-        it.oauth.forEach { (name, config) ->
+        it.oauth.filterValues(EnabledConfig::enable).forEach { (name, config) ->
             configOAuth(
                 serverURL,
                 httpClient,

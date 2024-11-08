@@ -7,5 +7,5 @@ import kotlinx.serialization.Serializable
 public data class StatusPagesConfig(
     val status: List<StatusConfig>? = null,
     val statusFile: List<StatusFileConfig>? = null,
-    override val enable: Boolean? = null
+    override val enable: Boolean = true
 ) : EnabledConfig

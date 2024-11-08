@@ -7,5 +7,5 @@ import kotlinx.serialization.Serializable
 public data class FreeMarkerConfig(
     val classPaths: List<String>? = null,
     val filePaths: List<String>? = null,
-    override val  enable: Boolean? = null,
+    override val enable: Boolean = true,
 ) : EnabledConfig

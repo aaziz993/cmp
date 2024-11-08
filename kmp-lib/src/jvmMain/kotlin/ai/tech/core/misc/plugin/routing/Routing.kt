@@ -12,11 +12,11 @@ import io.ktor.server.sessions.*
 import java.io.File
 
 public fun Application.configureRouting(config: RoutingConfig?, block: (Routing.() -> Unit)? = null) = routing {
-    config?.takeIf { it.enable != false }?.let {
+    config?.takeIf(EnabledConfig::enable)?.let {
 
         it.staticRootPath?.let { staticRootFolder = File("static") }
 
-        it.staticFiles?.takeIf { it.enable != false }?.let {
+        it.staticFiles?.takeIf(EnabledConfig::enable)?.let {
             staticFiles(it.remotePath, File(it.pathName), it.index) {
                 it.defaultPath?.let { default(it) }
                 it.enableAutoHeadResponse?.let {
@@ -51,7 +51,7 @@ public fun Application.configureRouting(config: RoutingConfig?, block: (Routing.
             }
         }
 
-        it.staticResources?.takeIf { it.enable != false }?.let {
+        it.staticResources?.takeIf(EnabledConfig::enable)?.let {
             staticResources(it.remotePath, it.pathName, it.index) {
                 it.defaultPath?.let { default(it) }
                 it.preCompressed?.let { preCompressed(*it.map(::compressionToCompressedFileType).toTypedArray()) }

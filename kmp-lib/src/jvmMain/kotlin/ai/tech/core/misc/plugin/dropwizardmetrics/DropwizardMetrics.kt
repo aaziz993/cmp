@@ -7,7 +7,7 @@ import io.ktor.server.application.*
 import io.ktor.server.metrics.dropwizard.*
 
 public fun Application.configureDropwizardMetrics(config: DropwizardMetricsConfig?, block: (io.ktor.server.metrics.dropwizard.DropwizardMetricsConfig.() -> Unit)? = null) {
-    val configBlock: (io.ktor.server.metrics.dropwizard.DropwizardMetricsConfig.() -> Unit)? = config?.takeIf { it.enable != false }?.let {
+    val configBlock: (io.ktor.server.metrics.dropwizard.DropwizardMetricsConfig.() -> Unit)? = config?.takeIf(EnabledConfig::enable)?.let {
         {
             it.baseName?.let { baseName = it }
             it.registerJvmMetricSets?.let { registerJvmMetricSets = it }

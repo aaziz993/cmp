@@ -9,5 +9,5 @@ public data class CallIdConfig(
     val header: String? = null,
     val retrieveFromHeader: String? = null,
     val replyToHeader: String? = null,
-    override val enable: Boolean? = null,
+    override val enable: Boolean = true,
 ) : EnabledConfig
