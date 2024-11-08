@@ -23,7 +23,7 @@ public open class MapKeyValue(
 
     private val stateFlow = MutableStateFlow<Entry<List<String>, Any?>>(Entry(emptyList(), null))
 
-    override suspend fun contains(keys: List<String>): Boolean = map.containsOrNull(keys)!!
+    override suspend fun contains(keys: List<String>): Boolean = lock.withLock { map.containsOrNull(keys)!! }
 
     override suspend fun <T> set(keys: List<String>, value: T): Unit = lock.withLock {
         map.callOrNull(keys, value, false)
@@ -34,7 +34,9 @@ public open class MapKeyValue(
         keys: List<String>,
         type: TypeResolver,
         defaultValue: T?
-    ): T = (map.callOrNull(keys)?.let { json.decode(it, type) } ?: defaultValue) as T
+    ): T = lock.withLock {
+        (map.callOrNull(keys)?.let { json.decode(it, type) } ?: defaultValue) as T
+    }
 
     override suspend fun <T> getFlow(
         keys: List<String>,
@@ -42,12 +44,18 @@ public open class MapKeyValue(
     ): Flow<T> = stateFlow.filter { it.key == keys }.map { it.value } as Flow<T>
 
     public override suspend fun remove(keys: List<String>) {
-        map.removeOrNull(keys)
+        lock.withLock {
+            map.removeOrNull(keys)
+        }
     }
 
-    override suspend fun clear(): Unit = map.clear()
+    override suspend fun clear(): Unit = lock.withLock {
+        map.clear()
+    }
 
     override suspend fun flush(): Unit = Unit
 
-    override suspend fun size(): Int = map.size
+    override suspend fun size(): Int = lock.withLock {
+        map.size
+    }
 }

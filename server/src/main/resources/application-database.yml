@@ -1,22 +1,32 @@
 database:
-  - name: h2-default
-    type: H2
-    driver: h2
-    protocol: mem
-    database: r2dbc:h2:mem:///rackets;DB_CLOSE_DELAY=-1
-    user: sa
-    password:
-    init:
-      packages: digital.sadad.project
-      if-not-exists: true
-#  - name: oracle-default
-#    type: ORACLE
-#    driver: oracle
-#    host: localhost
-#    port: 1521
-#    database: database
-#    user: sa
-#    password:
-#    init:
-#      packages: digital.sadad.project
-#      if-not-exists: true
+  # Application Postgresql database
+  app-postgresql:
+    enable: true
+    connection:
+      protocol: r2dbc
+      driver: postgresql
+      host: localhost
+      port: 5432
+      user: user
+      password: user_password
+      database: app
+    create-tables:
+      - packages:
+          - ai.tech
+        if-not-exists: true
+
+#  # Application Oracle database
+#  app-oracle:
+#    enable: true
+#    connection:
+#      protocol: r2dbc
+#      driver: oracle
+#      host: localhost
+#      port: 1521
+#      user: user
+#      password: user_password
+#      database: app
+#    create-tables:
+#      - packages:
+#          - ai.tech
+#        if-not-exists: true

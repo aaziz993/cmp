@@ -4,18 +4,14 @@ routing:
     remote-path: /static
     path-name: files
     pre-compressed:
-      - extension: br
-        encoding:
-      - extension: gz
-        encoding: gzip
+      - BROTLI
+      - GZIP
     enable-auto-head-response: true
   static-resources:
     remote-path: /static
     path-name: assets
     pre-compressed:
-      - extension: br
-        encoding:
-      - extension: gz
-        encoding: gzip
+      - BROTLI
+      - GZIP
     enable-auto-head-response: true
 

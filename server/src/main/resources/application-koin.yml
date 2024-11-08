@@ -1,0 +1,3 @@
+koin:
+  logging:
+    level: INFO

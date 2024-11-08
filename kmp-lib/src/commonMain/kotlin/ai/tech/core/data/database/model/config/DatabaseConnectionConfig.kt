@@ -7,13 +7,13 @@ import kotlin.time.toDuration
 
 @Serializable
 public data class DatabaseConnectionConfig(
+    val protocol: String = "r2dbc",
     val driver: String,
     val host: String,
     val port: Int,
     val user: String,
     val password: String,
     val database: String,
-    val protocol: String? = null,
     val ssl: Boolean = false,
     val connectTimeout: Duration = 15.toDuration(DurationUnit.SECONDS),
     val lockWaitTimeout: Duration = 15.toDuration(DurationUnit.SECONDS),

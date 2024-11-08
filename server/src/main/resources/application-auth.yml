@@ -1,0 +1,12 @@
+auth:
+  jwt-rs256:
+    app:
+      enable: true
+      realm: app
+      issuer: 'http://localhost:8180/realms/app'
+      audience: app-cli
+      username-claim-keys:
+        - preferred_username
+      roles-claim-keys:
+        - realm_access
+        - roles

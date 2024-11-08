@@ -36,7 +36,7 @@ public abstract class AbstractKeyValue {
 
     public suspend fun <T> getFlow(key: String, type: TypeResolver): Flow<T> = getFlow(listOf(key), type)
 
-    public abstract suspend fun remove(keys: List<String>)
+    public abstract suspend fun remove(keys: List<String>): Any?
 
     public suspend fun remove(key: String): Unit = remove(listOf(key))
 

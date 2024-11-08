@@ -1,7 +1,7 @@
 package ai.tech.core.misc.plugin.di
 
 import ai.tech.core.misc.model.config.server.ServerConfig
-import ai.tech.core.misc.plugin.di.module.kotysaDatabaseModule
+import ai.tech.core.misc.plugin.di.module.databaseModule
 import io.ktor.server.application.*
 import org.koin.core.KoinApplication
 import org.koin.core.logger.Level
@@ -22,7 +22,7 @@ public fun Application.configureKoin(
 
         modules(
             module { single { config } },
-            kotysaDatabaseModule(config.database),
+            databaseModule(config.database),
         )
     }
 }

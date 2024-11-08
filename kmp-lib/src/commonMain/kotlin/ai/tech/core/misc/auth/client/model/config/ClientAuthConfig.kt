@@ -7,9 +7,9 @@ import kotlinx.serialization.Transient
 @Serializable
 public data class ClientAuthConfig(
     val provider: String,
-    val oauth: List<ClientOAuthConfig> = emptyList(),
+    val oauth: Map<String, ClientOAuthConfig> = emptyMap(),
 ) {
 
     @Transient
-    public val providerConfig: ClientOAuthConfig = oauth.find { it.provider == provider }!!
+    public val providerConfig: ClientOAuthConfig = oauth[provider]!!
 }
