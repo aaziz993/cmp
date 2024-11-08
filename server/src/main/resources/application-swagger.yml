@@ -3,15 +3,19 @@ swagger:
   swagger-url: swagger
   forward-root: false
   info:
+    enable: true
     title: Ktor API REST
     version: latest
     description: Ktor API REST using Kotlin and Ktor
     contact:
+      enable: true
       name: Atoev Aziz
       url: https://github.com/a-aziz93
     license:
+      enable: true
   security-scheme:
     keycloak:
+      enable: true
       type: http
       scheme: bearer
       bearer-format: oauth2

@@ -1,14 +1,13 @@
-package ai.tech.core.misc.plugin.templating
+package ai.tech.core.misc.plugin.freemarker
 
 import ai.tech.core.misc.model.config.EnabledConfig
-import ai.tech.core.misc.plugin.templating.model.config.FreeMarkerConfig
+import ai.tech.core.misc.plugin.freemarker.model.config.FreeMarkerConfig
 import freemarker.cache.ClassTemplateLoader
 import freemarker.cache.FileTemplateLoader
 import freemarker.cache.MultiTemplateLoader
 import freemarker.template.Configuration
 import io.ktor.server.application.*
 import io.ktor.server.freemarker.*
-import io.ktor.server.sessions.SessionsConfig
 import java.io.File
 
 public fun Application.configureFreeMarker(config: FreeMarkerConfig?, block: (Configuration.() -> Unit)? = null) {

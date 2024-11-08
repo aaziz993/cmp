@@ -1,5 +1,6 @@
 rate-limit:
   enable: true
   global:
+    enable: true
     limit: 5
     refill-period: 60s

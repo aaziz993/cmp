@@ -32,38 +32,35 @@ ktor:
 configurations:
   - koin
   - auth
-  - ssl
+  - generate-ssl
   - cache
-  - storage
   - database
   - serialization
-  - httpsredirect
+  - https-redirect
   - routing
   - websockets
   - graphql
-  - calllogging
-  - callid
-  - ratelimit
+  - call-logging
+  - call-id
+  - rate-limit
   - cors
   - compression
-  - partialcontent
-  - dataconversion
+  - partial-content
+  - data-conversion
   - validation
   - resources
-  - statuspages
-  - defaultheaders
-  - cachingheaders
-  - conditionalheaders
-  - forwardedheaders
-  - xforwardedheaders
+  - status-pages
+  - default-headers
+  - caching-headers
+  - conditional-headers
+  - forwarded-headers
+  - x-forwarded-headers
   - hsts
-  - autoheadresponse
-  - xhttpmethodoverride
-  - session
-  - security
-  - templating
+  - auto-head-response
+  - x-http-method-override
+  - freemarker
   - swagger
-  - applicationmonitoring
-  - micrometermetrics
-  - dropwizardmetrics
+  - application-monitoring
+  - micrometer-metrics
+  - dropwizard-metrics
   - shutdown

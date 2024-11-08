@@ -1,4 +1,4 @@
-package ai.tech.core.misc.plugin.di.module
+package ai.tech.core.misc.plugin.koin.module
 
 import ai.tech.core.data.database.kotysa.createKotysaR2dbcClient
 import ai.tech.core.data.database.model.config.DatabaseProviderConfig

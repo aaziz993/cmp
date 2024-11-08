@@ -1,4 +1,4 @@
-micrometermetrics:
+micrometer-metrics:
   enable: true
   type: PROMETHEUS
   class-loader-metrics: true
@@ -8,6 +8,7 @@ micrometermetrics:
   jvm-thread-metrics: true
   file-descriptor-metrics: true
   distribution-statistics:
+    enable: true
     percentilesHistogram: true
     maximumExpectedValue: 20s
     serviceLevelObjectives: [ 100ms, 500ms ]

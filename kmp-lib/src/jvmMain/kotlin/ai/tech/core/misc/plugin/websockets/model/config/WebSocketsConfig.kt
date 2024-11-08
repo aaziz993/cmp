@@ -12,6 +12,6 @@ public data class WebSocketsConfig(
     val maxFrameSize: Long? = null,
     val masking: Boolean? = null,
     val contentConverter: JsonConfig? = null,
-    val pages: List<WebSocketPageConfig>? = null,
+    val page: List<WebSocketPageConfig>? = null,
     override val enable: Boolean = true,
 ) : EnabledConfig

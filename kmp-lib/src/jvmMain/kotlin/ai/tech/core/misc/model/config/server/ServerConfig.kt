@@ -23,11 +23,10 @@ import ai.tech.core.misc.plugin.ratelimit.model.config.RateLimitsConfig
 import ai.tech.core.misc.plugin.resources.model.config.ResourcesConfig
 import ai.tech.core.misc.plugin.routing.model.config.RoutingConfig
 import ai.tech.core.misc.plugin.serialization.model.config.SerializationConfig
-import ai.tech.core.misc.plugin.session.model.config.SessionEncryptConfig
 import ai.tech.core.misc.plugin.shutdown.model.config.ShutDownConfig
 import ai.tech.core.misc.plugin.statuspages.model.config.StatusPagesConfig
 import ai.tech.core.misc.plugin.swagger.model.config.SwaggerConfig
-import ai.tech.core.misc.plugin.templating.model.config.FreeMarkerConfig
+import ai.tech.core.misc.plugin.freemarker.model.config.FreeMarkerConfig
 import ai.tech.core.misc.plugin.validation.model.config.RequestValidationConfig
 import ai.tech.core.misc.plugin.websockets.model.config.WebSocketsConfig
 import ai.tech.core.misc.plugin.xhttpmethodoverride.model.config.XHttpMethodOverrideConfig
@@ -62,9 +61,8 @@ public interface ServerConfig : Config {
     public val hsts: HSTSConfig?
     public val autoHeadResponse: AutoHeadResponseConfig?
     public val xHttpMethodOverride: XHttpMethodOverrideConfig?
-    public val session: SessionEncryptConfig?
     public val auth: ServerAuthConfig?
-    public val freeMarker: FreeMarkerConfig?
+    public val freemarker: FreeMarkerConfig?
     public val swagger: SwaggerConfig?
     public val applicationMonitoring: ApplicationMonitoringConfig?
     public val micrometerMetrics: MicrometerMetricsConfig?

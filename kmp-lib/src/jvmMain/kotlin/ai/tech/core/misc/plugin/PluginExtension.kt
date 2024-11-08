@@ -28,7 +28,7 @@ import ai.tech.core.misc.plugin.session.configureSession
 import ai.tech.core.misc.plugin.shutdown.configureShutdown
 import ai.tech.core.misc.plugin.statuspages.configureStatusPages
 import ai.tech.core.misc.plugin.swagger.configureSwagger
-import ai.tech.core.misc.plugin.templating.configureFreeMarker
+import ai.tech.core.misc.plugin.freemarker.configureFreeMarker
 import ai.tech.core.misc.plugin.validation.configureRequestValidation
 import ai.tech.core.misc.plugin.websockets.configureWebSockets
 import ai.tech.core.misc.plugin.xhttpmethodoverride.configureXHttpMethodOverride
@@ -172,7 +172,7 @@ public fun Application.configure(
     configureAuth(ktor.deployment.httpURL, get(), auth, authBlock)
 
     // Configure the FreeMarker plugin for templating .ftl files
-    configureFreeMarker(freeMarker, freeMarkerBlock)
+    configureFreeMarker(freemarker, freeMarkerBlock)
 
     // Configure the Swagger plugin
     configureSwagger(swagger, swaggerBlock)

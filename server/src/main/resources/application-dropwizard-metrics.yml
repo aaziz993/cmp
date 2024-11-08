@@ -2,12 +2,14 @@ dropwizard-metrics:
   enable: true
   register-jvm-metric-sets: false
   slf4j-reporter:
+    enable: true
     convertRatesTo: SECONDS
     convertDurationsTo: MILLISECONDS
     start:
       period: 10
       unit: SECONDS
   jmx-reporter:
+    enable: true
     convertRatesTo: SECONDS
     convertDurationsTo: MILLISECONDS
 

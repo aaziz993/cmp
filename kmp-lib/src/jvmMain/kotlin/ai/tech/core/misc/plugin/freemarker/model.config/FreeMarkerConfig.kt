@@ -1,4 +1,4 @@
-package ai.tech.core.misc.plugin.templating.model.config
+package ai.tech.core.misc.plugin.freemarker.model.config
 
 import ai.tech.core.misc.model.config.EnabledConfig
 import kotlinx.serialization.Serializable

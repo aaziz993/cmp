@@ -1,0 +1,3 @@
+conditional-headers:
+  enable: true
+  version-headers-path: src/main/kotlin/ai/tech/Application.kt

@@ -1,4 +1,4 @@
-free-marker:
+freemarker:
   enable: true
   class-paths:
     - templates

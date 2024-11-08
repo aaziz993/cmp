@@ -1,7 +1,8 @@
 cors:
   enable: true
   hosts:
-    - host: *
+    - enable: true
+      host: *
       schemes:
         - http
         - https

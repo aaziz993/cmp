@@ -33,7 +33,7 @@ import ai.tech.core.misc.plugin.session.model.config.SessionEncryptConfig
 import ai.tech.core.misc.plugin.shutdown.model.config.ShutDownConfig
 import ai.tech.core.misc.plugin.statuspages.model.config.StatusPagesConfig
 import ai.tech.core.misc.plugin.swagger.model.config.SwaggerConfig
-import ai.tech.core.misc.plugin.templating.model.config.FreeMarkerConfig
+import ai.tech.core.misc.plugin.freemarker.model.config.FreeMarkerConfig
 import ai.tech.core.misc.plugin.validation.model.config.RequestValidationConfig
 import ai.tech.core.misc.plugin.websockets.model.config.WebSocketsConfig
 import ai.tech.core.misc.plugin.xhttpmethodoverride.model.config.XHttpMethodOverrideConfig

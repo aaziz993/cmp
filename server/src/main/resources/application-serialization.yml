@@ -1,12 +1,19 @@
 serialization:
   enable: true
   json:
+    enable: true
     encode-defaults: true
     is-lenient: true
     allow-special-floating-point-values: true
     allow-structured-map-keys: true
     pretty-print: false
     use-array-polymorphism: false
+
   xml:
+    enable: true
+
   cbor:
+    enable: true
+
   protobuf:
+    enable: true

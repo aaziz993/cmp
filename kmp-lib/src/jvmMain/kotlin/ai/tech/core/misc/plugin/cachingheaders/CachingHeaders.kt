@@ -7,7 +7,7 @@ import io.ktor.server.application.*
 import io.ktor.server.plugins.cachingheaders.*
 
 public fun Application.configureCachingHeaders(config: CachingHeadersConfig?, block: (io.ktor.server.plugins.cachingheaders.CachingHeadersConfig.() -> Unit)? = null) {
-    val configBlock: (io.ktor.server.plugins.cachingheaders.CachingHeadersConfig.() -> Unit)? = config?.let {
+    val configBlock: (io.ktor.server.plugins.cachingheaders.CachingHeadersConfig.() -> Unit)? = config?.takeIf(EnabledConfig::enable)?.let {
         {
             options { call, outgoingContent ->
                 it.rootOption?.takeIf(EnabledConfig::enable)?.let { CachingOptions(it.cacheControl()) }

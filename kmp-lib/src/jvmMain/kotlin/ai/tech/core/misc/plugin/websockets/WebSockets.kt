@@ -20,11 +20,11 @@ public fun Application.configureWebSockets(
     config?.takeIf(EnabledConfig::enable)?.let {
         // Websocket page for testing
         routing {
-            it.pages?.filter(EnabledConfig::enable)?.forEach {
+            it.page?.filter(EnabledConfig::enable)?.forEach {
                 get(it.uri) {
                     call.respond(
                         FreeMarkerContent(
-                            "templates/websocket/index.ftl",
+                            "websocket/index.ftl",
                             mapOf(
                                 "wsURL" to "$wsURL/${it.wsURI}",
                             ),

@@ -1,7 +1,8 @@
-package ai.tech.core.misc.plugin.di
+package ai.tech.core.misc.plugin.koin
 
+import ai.tech.core.misc.model.config.EnabledConfig
 import ai.tech.core.misc.model.config.server.ServerConfig
-import ai.tech.core.misc.plugin.di.module.databaseModule
+import ai.tech.core.misc.plugin.koin.module.databaseModule
 import io.ktor.server.application.*
 import org.koin.core.KoinApplication
 import org.koin.core.logger.Level
@@ -14,8 +15,8 @@ public fun Application.configureKoin(
     application: KoinApplication.() -> Unit = {}
 ) {
     install(Koin) {
-        config.koin?.let {
-            it.logging?.level?.let { slf4jLogger(Level.valueOf(it)) } ?: slf4jLogger()
+        config.koin?.takeIf(EnabledConfig::enable)?.let {
+            it.logging?.takeIf(EnabledConfig::enable)?.level?.let { slf4jLogger(Level.valueOf(it)) } ?: slf4jLogger()
         }
 
         application()

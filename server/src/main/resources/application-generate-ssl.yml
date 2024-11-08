@@ -1,4 +1,4 @@
-ssl:
+generate-ssl:
   keyStore: server/src/main/resources/cert/keystore.p12
   keyStorePassword: AITech
   keyAlias: applicationTLS
