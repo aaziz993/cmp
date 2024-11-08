@@ -34,13 +34,10 @@ public class SettingsKeyValue(public val keyDelimiter: Char = '.') : AbstractKey
     override suspend fun <T> set(keys: List<String>, value: T): Unit = keys.toKey().let { key ->
         when (value) {
             is Boolean -> settings.putBoolean(key, value)
-            is Byte -> settings.putInt(key, value.toInt())
             is Int -> settings.putInt(key, value)
-            is Short -> settings.putInt(key, value.toInt())
             is Long -> settings.putLong(key, value)
             is Float -> settings.putFloat(key, value)
             is Double -> settings.putDouble(key, value)
-            is Char -> settings.putString(key, value.toString())
             is String -> settings.putString(key, value)
             else -> value?.let { settings.putString(key, json.encode(it, TypeResolver(it::class))) }
                 ?: settings.putString(key, "null")
@@ -54,9 +51,7 @@ public class SettingsKeyValue(public val keyDelimiter: Char = '.') : AbstractKey
     ): T = keys.toKey().let {
         (when (type.kClass) {
             Boolean::class -> settings.getBooleanOrNull(it)
-            Byte::class -> settings.getIntOrNull(it)?.toByte()
             Int::class -> settings.getIntOrNull(it)
-            Short::class -> settings.getIntOrNull(it)?.toShort()
             Long::class -> settings.getLongOrNull(it)
             Float::class -> settings.getFloatOrNull(it)
             Double::class -> settings.getDoubleOrNull(it)
