@@ -86,7 +86,7 @@ public class SettingsKeyValue(
                     }
                 }
             }
-        } as Flow<T>
+        }
     }
 
     override suspend fun remove(keys: List<String>): Unit = lock.withLock {

@@ -1,34 +1,37 @@
 @file:OptIn(ExperimentalSerializationApi::class, InternalSerializationApi::class)
+
 package ai.tech.core.misc.type
 
 import ai.tech.core.misc.type.serializer.UuidSerializer
 import ai.tech.core.misc.type.serializer.bignum.BigDecimalSerializer
 import ai.tech.core.misc.type.serializer.bignum.BigIntegerSerializer
 import ai.tech.core.misc.type.serializer.subclass
-import kotlinx.serialization.ExperimentalSerializationApi
-import kotlinx.serialization.InternalSerializationApi
-import kotlinx.serialization.json.Json
-import kotlinx.serialization.json.JsonArray
-import kotlinx.serialization.json.JsonElement
-import kotlinx.serialization.json.JsonNull
-import kotlinx.serialization.json.JsonObject
-import kotlinx.serialization.json.JsonPrimitive
-import kotlinx.serialization.json.booleanOrNull
-import kotlinx.serialization.json.doubleOrNull
-import kotlinx.serialization.json.longOrNull
-import kotlinx.serialization.serializer
 import kotlin.time.Duration
 import kotlinx.datetime.DatePeriod
 import kotlinx.datetime.DateTimePeriod
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.LocalDateTime
 import kotlinx.datetime.LocalTime
+import kotlinx.serialization.DeserializationStrategy
+import kotlinx.serialization.ExperimentalSerializationApi
+import kotlinx.serialization.InternalSerializationApi
 import kotlinx.serialization.KSerializer
-import kotlinx.serialization.encodeToString
+import kotlinx.serialization.SerializationStrategy
+import kotlinx.serialization.json.Json
+import kotlinx.serialization.json.JsonArray
 import kotlinx.serialization.json.JsonBuilder
+import kotlinx.serialization.json.JsonElement
+import kotlinx.serialization.json.JsonNull
+import kotlinx.serialization.json.JsonObject
+import kotlinx.serialization.json.JsonPrimitive
+import kotlinx.serialization.json.booleanOrNull
+import kotlinx.serialization.json.doubleOrNull
+import kotlinx.serialization.json.encodeToJsonElement
+import kotlinx.serialization.json.longOrNull
 import kotlinx.serialization.modules.SerializersModule
 import kotlinx.serialization.modules.contextual
 import kotlinx.serialization.modules.polymorphic
+import kotlinx.serialization.serializer
 
 public val json: Json = Json {
     serializersModule = SerializersModule {
@@ -62,7 +65,7 @@ public fun Json(from: Json = json, builderAction: JsonBuilder.() -> Unit): Json 
 
 @OptIn(InternalSerializationApi::class)
 @Suppress("UNCHECKED_CAST")
-public fun Json.decodeFromJsonElement(element: JsonElement): Any? = with(element) {
+public fun Json.decodeAnyFromJsonElement(element: JsonElement): Any? = with(element) {
     when (this) {
         JsonNull -> null
 
@@ -73,38 +76,25 @@ public fun Json.decodeFromJsonElement(element: JsonElement): Any? = with(element
             (booleanOrNull ?: longOrNull ?: doubleOrNull)!!
         }
 
-        is JsonArray -> map(::decodeFromJsonElement)
+        is JsonArray -> map(::decodeAnyFromJsonElement)
 
-        is JsonObject -> mapValues { (_, v) -> decodeFromJsonElement(v) }
+        is JsonObject -> mapValues { (_, v) -> decodeAnyFromJsonElement(v) }
     }
 }
 
-@OptIn(InternalSerializationApi::class)
-@Suppress("UNCHECKED_CAST")
-public fun Json.encodeToJsonElement(value: Any?): JsonElement = when (value) {
-    null -> JsonNull
+public fun <T> Json.encodeToAny(serializer: SerializationStrategy<T>, value: T): Any? = decodeAnyFromJsonElement(encodeToJsonElement(serializer, value))
 
-    is JsonElement -> value
+public inline fun <reified T> Json.encodeToAny(value: T): Any? = encodeToAny(serializersModule.serializer(), value)
 
-    is List<*> -> JsonArray(value.map(::encodeToJsonElement))
-
-    is Map<*, *> -> JsonObject(
-        value.entries.associate { it.key.toString() to encodeToJsonElement(it.value) },
-    )
-
-    else -> encodeToJsonElement(value::class.serializer() as KSerializer<Any>, value)
-}
-
-public fun Json.encodeMapToString(value: Map<*, *>): String = encodeToString(encodeToJsonElement(value))
-
-@Suppress("UNCHECKED_CAST")
-public fun Json.decodeStringToMap(value: String): Map<String, *> = decodeFromJsonElement(decodeFromString(value)) as Map<String, *>
-
-@Suppress("UNCHECKED_CAST")
-public fun Json.encodeToMap(value: Any): Map<String, *> = decodeFromJsonElement(encodeToJsonElement(value)) as Map<String, *>
-
-public inline fun <reified T : Any> Json.decodeFromMap(value: Map<*, *>): T =
+public fun <T, R> Json.decodeFromAny(
+    serializer: SerializationStrategy<T>,
+    deserializer: DeserializationStrategy<R>,
+    value: T
+): R =
     decodeFromJsonElement(
-        T::class.serializer(),
-        encodeToJsonElement(value),
+        deserializer,
+        encodeToJsonElement(serializer, value),
     )
+
+public inline fun <reified T, reified R> Json.decodeFromAny(value: T): R = decodeFromAny(serializersModule.serializer(), serializersModule.serializer(), value)
+
