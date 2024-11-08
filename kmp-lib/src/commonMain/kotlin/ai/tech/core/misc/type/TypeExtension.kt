@@ -114,14 +114,6 @@ public val KClass<*>.isMap: Boolean
         else -> false
     }
 
-public val KClass<*>.newInstance: Any
-    get() = when {
-        isList -> mutableListOf<Any?>()
-        isSet -> mutableSetOf<Any?>()
-        isMap || this == Any::class -> mutableMapOf<String?, Any?>()
-        else -> Json.Default.create(type = TypeResolver(this))
-    }
-
 public fun KClass<*>.primeDefault(
     booleanDefault: Boolean = BOOLEAN_DEFAULT,
     uByteDefault: UByte = UBYTE_DEFAULT,
@@ -284,7 +276,8 @@ public fun KType.primeDefault(
     nullIfNullable: Boolean = true,
 ): Any? = if (isMarkedNullable && nullIfNullable) {
     null
-} else {
+}
+else {
     kClass.primeDefault(
         booleanDefault,
         uByteDefault,
@@ -307,7 +300,7 @@ public fun KType.primeDefault(
         durationDefault,
         datePeriodDefault,
         dateTimePeriodDefault,
-        uuidDefault
+        uuidDefault,
     )
 }
 
@@ -370,147 +363,64 @@ public inline fun <T : R, R> T.letIf(
     block: (T) -> R,
 ): R = if (condition(this)) {
     block(this)
-} else {
+}
+else {
     this
 }
 
+public inline fun <reified T : Any> Json.create(value: T? = null, block: (Map<String, Any?>) -> Map<String, Any?> = { it }): T =
+    decodeFromMap(block(value?.let(::encodeToMap).orEmpty()))
+
 // ///////////////////////////////////////////////////////ACCESSOR///////////////////////////////////////////////////////
-public fun Any.accessor(
-    json: Json = Json.Default,
-    yaml: Yaml = Yaml.Default,
-    stringTransform: (String) -> Any = {
-        when (it.extension) {
-            "json" -> json.decode(it)
-            "xml" -> throw NotImplementedError()
-            "html" -> throw NotImplementedError()
-            "yaml" -> yaml.decodeMapFromString(it)
-            "properties" -> throw NotImplementedError()
-            "toml" -> throw NotImplementedError()
-            else -> throw IllegalArgumentException("Unknown string \"$it\" extension")
-        }
-    },
-    listTransform: (List<Any?>) -> Any = { it },
-    keyTransform: (Any?) -> Any? = { it },
-    parentKey: Any? = null,
-): Accessor =
-    when (val value = when (this) {
-        is String -> stringTransform(this)
-        is List<*> -> listTransform(this)
-        else -> this
-    }) {
-        is List<*> -> ListAccessor(value, parentKey)
-
-        is Map<*, *> -> MapLikeAccessor(value, value, keyTransform, parentKey)
-
-        else -> MapLikeAccessor(value, json.toGeneric<Map<*, *>>(value), keyTransform, parentKey)
-    }
-
-public inline fun <T : Any> T.accessorOrNull(
+public inline fun <T : Any> T.getOrNull(
     keys: List<Any?>,
     accessor: (List<Accessor>, key: Any?, value: Any?) -> Accessor? = { _, key, value -> value?.accessor(parentKey = key) },
 ): Accessor? = accessor(emptyList(), null, this)?.let {
     keys.fold(listOf(it)) { acc, key ->
-        acc + listOf(acc.last().let { lastAccessor ->
-            lastAccessor.call(key).let { value ->
-                accessor(acc, key, value)?.also {
-                    if (value == null) {
-                        lastAccessor.call(key, it.instance, false)
-                    }
-                } ?: return null
-            }
-        })
+        acc + listOf(
+            acc.last().let { lastAccessor ->
+                lastAccessor.call(key).let { value ->
+                    accessor(acc, key, value)?.also {
+                        if (value == null) {
+                            lastAccessor.call(key, it.instance, false)
+                        }
+                    } ?: return null
+                }
+            },
+        )
     }.last()
 }
 
-public inline fun <T : Any> T.containsOrNull(
-    keys: List<Any?>,
-    accessor: (List<Accessor>, key: Any?, value: Any?) -> Accessor? = { _, key, value -> value?.accessor(parentKey = key) },
-): Boolean? = accessorOrNull(keys.dropLast(1), accessor)?.contains(keys.last())
-
-public inline fun <T : Any> T.callOrNull(
-    keys: List<Any?>,
-    value: Any? = null,
-    spread: Boolean = true,
-    accessor: (List<Accessor>, key: Any?, value: Any?) -> Accessor? = { _, key, value -> value?.accessor(parentKey = key) },
-): Any? = accessorOrNull(keys.dropLast(1), accessor)?.call(keys.last(), value, spread)
-
-public inline fun <T : Any> T.removeOrNull(
-    keys: List<Any?>,
-    accessor: (List<Accessor>, key: Any?, value: Any?) -> Accessor? = { _, key, value -> value?.accessor(parentKey = key) },
-): Any? = accessorOrNull(keys.dropLast(1), accessor)?.remove(keys.last())
-
 // //////////////////////////////////////////////////////TRAVERSER///////////////////////////////////////////////////////
-public fun Any.assign(
-    from: Any,
-    keyTransformer: (keys: List<Any?>, fromKey: Any?) -> Any? = { _, fromKey -> fromKey },
-    valueTransform: (keys: List<Any?>, thisValueKType: KType, thisValue: Any?, fromValue: Any?) -> Any? = { _, _, thisValue, fromValue ->
-        when {
-            fromValue is List<*> -> (thisValue as List<Any?>? ?: emptyList()) + mutableListOf<Any?>().apply {
-                assign(fromValue, keyTransformer)
-            }
-
-            thisValue == null -> fromValue?.let {
-                when {
-                    it::class.isPrime -> it
-                    else -> it::class.newInstance
-                }
-            }
-
-            else -> Unit
-        }
-    },
-    accessor: (keys: List<Any?>, Any?) -> Accessor? = { keys, v ->
-        if (keys.isNotEmpty() && v is List<*>) {
-            null
-        } else {
-            v?.accessor()
-        }
-    }
-) {
-//    val thisAccessors = mutableListOf(accessor(emptyList(), this)!!)
+//public fun Any.assign(
+//    from: Any,
+//    keyTransformer: (keys: List<Any?>, fromKey: Any?) -> Any? = { _, fromKey -> fromKey },
+//    valueTransform: (keys: List<Any?>, thisValueKType: KType, thisValue: Any?, fromValue: Any?) -> Any? = { _, _, thisValue, fromValue ->
+//        when {
+//            fromValue is List<*> -> (thisValue as List<Any?>? ?: emptyList()) + mutableListOf<Any?>().apply {
+//                assign(fromValue, keyTransformer)
+//            }
 //
-//    accessor(emptyList(), from)!!.iterator().depthIterator({ _, (fromKey, fromValue) ->
-//        val thisAccessor = thisAccessors.last()
-//
-//        val transformedKey = if (thisAccessor.instance is List<*>) {
-//            fromKey
-//        } else {
-//            keyTransformer(keys, fromKey)
-//        }
-//
-//        val tmpThisKeys = keys + transformedKey
-//
-//        if (thisAccessor.instance is MutableList<*> || thisAccessor.instance is MutableMap<*, *> || thisAccessor.contains(
-//                transformedKey
-//            )
-//        ) {
-//            var thisValue = thisAccessor.call(transformedKey)
-//
-//            valueTransform(tmpThisKeys, thisAccessor.valueType(transformedKey), thisValue, fromValue).let {
-//                if (it != Unit) {
-//                    thisValue = it
-//                    thisAccessor.call(transformedKey, thisValue, spread = false)
+//            thisValue == null -> fromValue?.let {
+//                when {
+//                    it::class.isPrime -> it
+//                    else -> it::class.newInstance
 //                }
 //            }
 //
-//            if (thisValue?.let { it::class.isPrime } == false) {
-//                return@depthIterator accessor(tmpThisKeys, thisValue)?.let { ta ->
-//                    accessor(tmpThisKeys, fromValue)?.let {
-//                        keys += transformedKey
-//                        thisAccessors += ta
-//                        it.iterator()
-//                    }
-//                }
-//            }
+//            else -> Unit
 //        }
-//        null
-//    }) {
-//        if (keys.isNotEmpty()) {
-//            keys.removeLast().toString()
-//            thisAccessors.removeLast()
+//    },
+//    accessor: (keys: List<Any?>, Any?) -> Accessor? = { keys, v ->
+//        if (keys.isNotEmpty() && v is List<*>) {
+//            null
 //        }
-//    }.forEach { _ -> }
-}
+//        else {
+//            v?.accessor()
+//        }
+//    }
+//) {
+//}
 
 //fun Map<String,Any?>.map(
 //    mapper: Map<String, List<String>>,
@@ -542,10 +452,11 @@ public fun <T : Any> T.transform(
 ) {
     val transforms = mutableListOf(this)
 
-    transform(emptyList(), this)?.depthIterator({ _, value ->
-        transform(transforms, value)?.also { transforms.add(value as T) }
-    }) {
+    transform(emptyList(), this)?.depthIterator(
+        { _, value -> transform(transforms, value)?.also { transforms.add(value as T) } },
+    ) {
         val last = transforms.removeLast()
+
         removeLast(transforms, last)
     }?.forEach { _ -> }
 }

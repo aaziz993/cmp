@@ -1,6 +1,5 @@
 package ai.tech.core.data.keyvalue
 
-import ai.tech.core.misc.type.TypeResolver
 import com.russhwolf.settings.ExperimentalSettingsApi
 import com.russhwolf.settings.ObservableSettings
 import com.russhwolf.settings.Settings
