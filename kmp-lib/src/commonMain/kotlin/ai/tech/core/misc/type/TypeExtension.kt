@@ -30,6 +30,7 @@ import com.ionspin.kotlin.bignum.integer.BigInteger
 import ai.tech.core.misc.type.accessor.Accessor
 import ai.tech.core.misc.type.accessor.ListAccessor
 import ai.tech.core.misc.type.accessor.MapLikeAccessor
+import ai.tech.core.misc.type.accessorOrNull
 import ai.tech.core.misc.type.multiple.depthIterator
 import ai.tech.core.misc.type.multiple.extension
 import ai.tech.core.misc.type.single.parseOrNull
@@ -377,18 +378,16 @@ public inline fun <reified T : Any> Json.newInstance(value: Map<String, Any?>): 
     decodeFromAny(value)
 
 // ///////////////////////////////////////////////////////ACCESSOR///////////////////////////////////////////////////////
-public fun <T : Any> T.accessor(
-    accessor: (List<Accessor>, key: Any?, value: Any?) -> Accessor? = { _, key, value ->
-        value?.let {
-            when (it) {
-                is List<*> -> ListAccessor(it, key)
+private fun Any.accessor(parentKey: Any?) = when (this) {
+    is List<*> -> ListAccessor(this, parentKey)
 
-                is Map<*, *> -> MapLikeAccessor(it, it, key)
+    is Map<*, *> -> MapLikeAccessor(this, this, parentKey)
 
-                else -> MapLikeAccessor(it, json.encodeToAny(it) as Map<*, *>, key)
-            }
-        }
-    },
+    else -> MapLikeAccessor(this, json.encodeToAny(this) as Map<*, *>, parentKey)
+}
+
+public fun <T : Any> T.accessorOrNull(
+    accessor: (List<Accessor>, key: Any?, value: Any?) -> Accessor? = { _, key, value -> value?.accessor(key) },
     vararg keys: Any?,
 ): Accessor? = accessor(emptyList(), null, this)?.let {
     keys.fold(listOf(it)) { acc, key ->
@@ -409,6 +408,16 @@ public fun <T : Any> T.accessor(
         acc + listOf(newAccessor)
     }.last()
 }
+
+public fun <T : Any> T.containsOrNull(
+    keys: List<Any?>,
+    accessor: (List<Accessor>, key: Any?, value: Any?) -> Accessor? = { _, key, value -> value?.accessor(key) },
+): Boolean? = accessorOrNull(accessor, keys.dropLast(1))?.contains(keys.last())
+
+public fun <T : Any> T.removeOrNull(
+    keys: List<Any?>,
+    accessor: (List<Accessor>, key: Any?, value: Any?) -> Accessor? = { _, key, value -> value?.accessor(key) },
+): Any? = accessorOrNull(accessor, keys.dropLast(1))?.remove(keys.last())
 
 // //////////////////////////////////////////////////////TRAVERSER///////////////////////////////////////////////////////
 //public fun Any.assign(
