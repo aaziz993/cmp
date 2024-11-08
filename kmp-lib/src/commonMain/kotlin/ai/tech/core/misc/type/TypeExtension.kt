@@ -369,8 +369,12 @@ else {
 }
 
 @Suppress("UNCHECKED_CAST")
-public inline fun <reified T : Any> Json.create(value: T? = null, block: (Map<String, Any?>) -> Map<String, Any?> = { it }): T =
-    decodeFromAny(block((value?.let(::encodeToAny) as Map<String, *>?).orEmpty()))
+public inline fun <reified T : Any> Json.copyInstance(value: T, block: (Map<String, Any?>) -> Map<String, Any?> = { it }): T =
+    decodeFromAny(block(encodeToAny(value) as Map<String, Any?>))
+
+@Suppress("UNCHECKED_CAST")
+public inline fun <reified T : Any> Json.newInstance(value: Map<String, Any?>): T =
+    decodeFromAny(value)
 
 // ///////////////////////////////////////////////////////ACCESSOR///////////////////////////////////////////////////////
 public fun <T : Any> T.accessor(
