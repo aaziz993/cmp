@@ -3,6 +3,7 @@ package ai.tech.core.misc.type.accessor
 import kotlin.reflect.KType
 
 public interface Accessor : Iterable<Map.Entry<Any?, Any?>> {
+
     public val parentKey: Any?
 
     public val instance: Any
@@ -13,11 +14,9 @@ public interface Accessor : Iterable<Map.Entry<Any?, Any?>> {
 
     public fun contains(key: Any?): Boolean
 
-    public fun call(
-        key: Any?,
-        arg: Any? = null,
-        spread: Boolean = true,
-    ): Any?
+    public operator fun get(key: Any?): Any?
+
+    public operator fun set(key: Any?, value: Any?)
 
     public fun remove(key: Any?): Any?
 
