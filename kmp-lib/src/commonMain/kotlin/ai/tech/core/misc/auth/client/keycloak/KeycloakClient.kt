@@ -8,7 +8,7 @@ import ai.tech.core.misc.auth.client.keycloak.model.UserInfo
 import ai.tech.core.misc.auth.client.keycloak.model.UserRepresentation
 import ai.tech.core.misc.auth.client.model.config.oauth.ClientOAuthConfig
 import ai.tech.core.misc.type.encode
-import ai.tech.core.misc.type.toGeneric
+import ai.tech.core.misc.type.encodeToAny
 import io.ktor.client.*
 import io.ktor.client.call.*
 import io.ktor.client.plugins.contentnegotiation.*
@@ -102,7 +102,7 @@ public class KeycloakClient(
                 (it.attributes as Map<*, *>?)?.let {
                     parameter("q", it.entries.joinToString(" ") { (k, v) -> "$k:${json.encode(v)}" })
                 }
-                json.toGeneric<UserRepresentation, Map<*, *>>(it).filter { (k, v) -> k !== "attributes" && v != null }.forEach { (k, v) ->
+                (json.encodeToAny(it) as Map<*, *>).filter { (k, v) -> k !== "attributes" && v != null }.forEach { (k, v) ->
                     parameter(k.toString(), v)
                 }
             }

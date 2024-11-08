@@ -17,6 +17,7 @@ import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.InternalSerializationApi
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.SerializationStrategy
+import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonArray
 import kotlinx.serialization.json.JsonBuilder
@@ -25,6 +26,7 @@ import kotlinx.serialization.json.JsonNull
 import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.JsonPrimitive
 import kotlinx.serialization.json.booleanOrNull
+import kotlinx.serialization.json.decodeFromJsonElement
 import kotlinx.serialization.json.doubleOrNull
 import kotlinx.serialization.json.encodeToJsonElement
 import kotlinx.serialization.json.longOrNull
@@ -82,19 +84,33 @@ public fun Json.decodeAnyFromJsonElement(element: JsonElement): Any? = with(elem
     }
 }
 
+@OptIn(InternalSerializationApi::class)
+@Suppress("UNCHECKED_CAST")
+public fun Json.encodeAnyToJsonElement(value: Any?): JsonElement = when (value) {
+    null -> JsonNull
+
+    is JsonElement -> value
+
+    is List<*> -> JsonArray(value.map(::encodeAnyToJsonElement))
+
+    is Map<*, *> -> JsonObject(
+        value.entries.associate { it.key.toString() to encodeAnyToJsonElement(it.value) },
+    )
+
+    else -> throw IllegalArgumentException("Illegal argument type \"${value::class.simpleName}\"")
+}
+
 public fun <T> Json.encodeToAny(serializer: SerializationStrategy<T>, value: T): Any? = decodeAnyFromJsonElement(encodeToJsonElement(serializer, value))
 
 public inline fun <reified T> Json.encodeToAny(value: T): Any? = encodeToAny(serializersModule.serializer(), value)
 
-public fun <T, R> Json.decodeFromAny(
-    serializer: SerializationStrategy<T>,
-    deserializer: DeserializationStrategy<R>,
-    value: T
-): R =
-    decodeFromJsonElement(
-        deserializer,
-        encodeToJsonElement(serializer, value),
-    )
+public fun <T> Json.decodeFromAny(deserializer: DeserializationStrategy<T>, value: Any): T =
+    decodeFromJsonElement(deserializer, encodeAnyToJsonElement(value))
 
-public inline fun <reified T, reified R> Json.decodeFromAny(value: T): R = decodeFromAny(serializersModule.serializer(), serializersModule.serializer(), value)
+public inline fun <reified T> Json.decodeFromAny(value: Any): T = decodeFromAny(serializersModule.serializer(), encodeAnyToJsonElement(value))
+
+public fun Json.encodeAnyToString(value: Any?): String = encodeToString(encodeAnyToJsonElement(value))
+
+public fun Json.decodeAnyToString(value: String): Any? = decodeAnyFromJsonElement(decodeFromString(value))
+
 

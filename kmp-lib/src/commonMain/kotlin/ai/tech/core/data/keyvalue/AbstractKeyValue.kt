@@ -1,12 +1,15 @@
+@file:OptIn(InternalSerializationApi::class)
+
 package ai.tech.core.data.keyvalue
 
-import ai.tech.core.misc.type.TypeResolver
 import kotlinx.atomicfu.locks.ReentrantLock
 import kotlinx.atomicfu.locks.reentrantLock
 import kotlinx.atomicfu.locks.withLock
 import kotlinx.coroutines.flow.Flow
+import kotlinx.serialization.InternalSerializationApi
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.json.Json
+import kotlinx.serialization.serializer
 import kotlinx.uuid.Serializer
 
 public abstract class AbstractKeyValue {
@@ -49,18 +52,17 @@ public abstract class AbstractKeyValue {
     public abstract suspend fun size(): Int
 }
 
-public suspend inline fun <reified T:Any> AbstractKeyValue.get(
+public suspend inline fun <reified T : Any> AbstractKeyValue.get(
     keys: List<String>,
     defaultValue: T? = null
-): T = get(keys, T::class.ser, defaultValue)
+): T = get(keys, T::class.serializer(), defaultValue)
 
-public suspend inline fun <reified T> AbstractKeyValue.get(
+public suspend inline fun <reified T : Any> AbstractKeyValue.get(
     key: String,
-    typeParameters: List<TypeResolver> = emptyList(),
     defaultValue: T? = null
-): T = get(key, TypeResolver(T::class, * typeParameters.toTypedArray()), defaultValue)
+): T = get(key, T::class.serializer(), defaultValue)
 
-public suspend inline fun <reified T> AbstractKeyValue.getFlow(
+public suspend inline fun <reified T:Any> AbstractKeyValue.getFlow(
     keys: List<String>,
     vararg typeParameters: TypeResolver,
 ): Flow<T> = getFlow(keys, TypeResolver(T::class, * typeParameters))
