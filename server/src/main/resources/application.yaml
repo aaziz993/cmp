@@ -30,11 +30,12 @@ ktor:
       privateKeyPassword: AITech
 
 configurations:
+  - koin
+  - auth
   - ssl
   - cache
   - storage
   - database
-  - di
   - serialization
   - httpsredirect
   - routing
