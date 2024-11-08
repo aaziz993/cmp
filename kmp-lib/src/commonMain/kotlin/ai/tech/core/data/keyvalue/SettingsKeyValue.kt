@@ -23,7 +23,10 @@ import kotlinx.serialization.json.JsonNull
 
 @Suppress("UNCHECKED_CAST")
 @OptIn(ExperimentalSettingsApi::class)
-public class SettingsKeyValue(public val keyDelimiter: Char = '.') : AbstractKeyValue() {
+public class SettingsKeyValue(
+    public val keyDelimiter: Char = '.',
+    public val nullValue: String = "null",
+) : AbstractKeyValue() {
 
     private val settings: Settings by lazy { Settings() }
 
@@ -39,16 +42,11 @@ public class SettingsKeyValue(public val keyDelimiter: Char = '.') : AbstractKey
             is Float -> settings.putFloat(key, value)
             is Double -> settings.putDouble(key, value)
             is String -> settings.putString(key, value)
-            else -> value?.let { settings.putString(key, json.encode(it, TypeResolver(it::class))) }
-                ?: settings.putString(key, "null")
+            else -> settings.putString(key, value?.let { json.encode(it, TypeResolver(it::class)) } ?: nullValue)
         }
     }
 
-    override suspend fun <T> get(
-        keys: List<String>,
-        type: TypeResolver,
-        defaultValue: T?
-    ): T = keys.toKey().let {
+    override suspend fun <T> get(keys: List<String>, type: TypeResolver, defaultValue: T?): T = keys.toKey().let {
         (when (type.kClass) {
             Boolean::class -> settings.getBooleanOrNull(it)
             Int::class -> settings.getIntOrNull(it)
@@ -57,7 +55,7 @@ public class SettingsKeyValue(public val keyDelimiter: Char = '.') : AbstractKey
             Double::class -> settings.getDoubleOrNull(it)
             String::class -> settings.getStringOrNull(it)
             else -> settings.getStringOrNull(it)?.let {
-                if (it == "null") {
+                if (it == nullValue) {
                     null
                 }
                 else {
@@ -78,8 +76,7 @@ public class SettingsKeyValue(public val keyDelimiter: Char = '.') : AbstractKey
             Float::class -> observableSettings.getFloatOrNullFlow(it)
             Double::class -> observableSettings.getDoubleOrNullFlow(it)
             String::class -> observableSettings.getStringOrNullFlow(it)
-            else -> observableSettings.getStringOrNullFlow(it)
-                .map {
+            else -> observableSettings.getStringOrNullFlow(it).map {
                     it?.let {
                         if (it == "null") {
                             null

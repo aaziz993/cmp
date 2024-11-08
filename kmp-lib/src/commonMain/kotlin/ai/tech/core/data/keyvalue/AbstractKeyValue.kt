@@ -5,13 +5,15 @@ import kotlinx.atomicfu.locks.ReentrantLock
 import kotlinx.atomicfu.locks.reentrantLock
 import kotlinx.atomicfu.locks.withLock
 import kotlinx.coroutines.flow.Flow
+import kotlinx.serialization.KSerializer
 import kotlinx.serialization.json.Json
+import kotlinx.uuid.Serializer
 
 public abstract class AbstractKeyValue {
 
     protected val lock: ReentrantLock = reentrantLock()
 
-    protected val json: Json = Json {
+    protected val json: Json = ai.tech.core.misc.type.Json {
         encodeDefaults = false
         ignoreUnknownKeys = true
     }
@@ -28,15 +30,15 @@ public abstract class AbstractKeyValue {
 
     public suspend fun <T> set(key: String, value: T): Unit = set(listOf(key), value)
 
-    public abstract suspend fun <T> get(keys: List<String>, type: TypeResolver, defaultValue: T? = null): T
+    public abstract suspend fun <T> get(keys: List<String>, serializer: KSerializer<T>, defaultValue: T? = null): T
 
-    public suspend fun <T> get(key: String, type: TypeResolver, defaultValue: T? = null): T = get(listOf(key), type, defaultValue)
+    public suspend fun <T> get(key: String, serializer: KSerializer<T>, defaultValue: T? = null): T = get(listOf(key), serializer, defaultValue)
 
-    public abstract suspend fun <T> getFlow(keys: List<String>, type: TypeResolver): Flow<T>
+    public abstract suspend fun <T> getFlow(keys: List<String>, serializer: KSerializer<T>): Flow<T>
 
-    public suspend fun <T> getFlow(key: String, type: TypeResolver): Flow<T> = getFlow(listOf(key), type)
+    public suspend fun <T> getFlow(key: String, serializer: KSerializer<T>): Flow<T> = getFlow(listOf(key), serializer)
 
-    public abstract suspend fun remove(keys: List<String>): Unit
+    public abstract suspend fun remove(keys: List<String>)
 
     public suspend fun remove(key: String): Unit = remove(listOf(key))
 
@@ -47,11 +49,10 @@ public abstract class AbstractKeyValue {
     public abstract suspend fun size(): Int
 }
 
-public suspend inline fun <reified T> AbstractKeyValue.get(
+public suspend inline fun <reified T:Any> AbstractKeyValue.get(
     keys: List<String>,
-    typeParameters: List<TypeResolver> = emptyList(),
     defaultValue: T? = null
-): T = get(keys, TypeResolver(T::class, * typeParameters.toTypedArray()), defaultValue)
+): T = get(keys, T::class.ser, defaultValue)
 
 public suspend inline fun <reified T> AbstractKeyValue.get(
     key: String,
