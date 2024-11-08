@@ -15,8 +15,7 @@ import kotlinx.coroutines.flow.update
 import kotlinx.serialization.InternalSerializationApi
 
 @Suppress("UNCHECKED_CAST")
-public class SqlDelightKeyValue(database: KeyValue) : ai.tech.core.data.keyvalue.AbstractKeyValue() {
-    private val queries: KeyValueQueries = database.keyValueQueries
+public class SqlDelightKeyValue(private val queries: KeyValueQueries, public val keyDelimiter: Char = '.') : AbstractKeyValue() {
 
     private val stateFlow = MutableStateFlow<Entry<String, Any?>>(Entry("", null))
 
@@ -52,21 +51,18 @@ public class SqlDelightKeyValue(database: KeyValue) : ai.tech.core.data.keyvalue
         type: TypeResolver,
     ): Flow<T> = keys.toKey().let { key -> stateFlow.filter { it.key == key }.map { it.value } as Flow<T> }
 
-    override suspend fun remove(keys: List<String>): Unit =
+    override suspend fun remove(keys: List<String>): Unit = transactional {
         keys.toKey().let {
-            queries.deleteLike("$it$KEY_DELIMITER%")
+            queries.delete(it)
+            queries.deleteLike("$it$keyDelimiter%")
         }
+    }
 
     override suspend fun clear(): Unit = queries.deleteAll()
 
     override suspend fun flush(): Unit = Unit
 
-    override suspend fun size(): Int  = queries.count()
+    override suspend fun size(): Int = queries.count()
 
-    private fun List<String>.toKey() = reduce { acc, v -> "$acc$KEY_DELIMITER$v}" }
-
-    public companion object {
-
-        public const val KEY_DELIMITER: Char = '.'
-    }
+    private fun List<String>.toKey() = reduce { acc, v -> "$acc$keyDelimiter$v}" }
 }

@@ -19,10 +19,11 @@ import kotlinx.atomicfu.locks.withLock
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import kotlinx.serialization.json.Json
+import kotlinx.serialization.json.JsonNull
 
 @Suppress("UNCHECKED_CAST")
 @OptIn(ExperimentalSettingsApi::class)
-public class SettingsKeyValue : AbstractKeyValue() {
+public class SettingsKeyValue(public val keyDelimiter: Char = '.') : AbstractKeyValue() {
 
     private val settings: Settings by lazy { Settings() }
 
@@ -30,16 +31,19 @@ public class SettingsKeyValue : AbstractKeyValue() {
 
     override suspend fun contains(keys: List<String>): Boolean = settings.contains(keys.toKey())
 
-    override suspend fun <T> set(keys: List<String>, value: T): Unit = keys.toKey().let { ks ->
+    override suspend fun <T> set(keys: List<String>, value: T): Unit = keys.toKey().let { key ->
         when (value) {
-            is Boolean -> settings.putBoolean(ks, value)
-            is Int -> settings.putInt(ks, value)
-            is Long -> settings.putLong(ks, value)
-            is Float -> settings.putFloat(ks, value)
-            is Double -> settings.putDouble(ks, value)
-            is String -> settings.putString(ks, value)
-            else -> value?.let { settings.putString(ks, json.encode(it, TypeResolver(it::class))) }
-                ?: settings.remove(ks)
+            is Boolean -> settings.putBoolean(key, value)
+            is Byte -> settings.putInt(key, value.toInt())
+            is Int -> settings.putInt(key, value)
+            is Short -> settings.putInt(key, value.toInt())
+            is Long -> settings.putLong(key, value)
+            is Float -> settings.putFloat(key, value)
+            is Double -> settings.putDouble(key, value)
+            is Char -> settings.putString(key, value.toString())
+            is String -> settings.putString(key, value)
+            else -> value?.let { settings.putString(key, json.encode(it, TypeResolver(it::class))) }
+                ?: settings.putString(key, "null")
         }
     }
 
@@ -50,12 +54,21 @@ public class SettingsKeyValue : AbstractKeyValue() {
     ): T = keys.toKey().let {
         (when (type.kClass) {
             Boolean::class -> settings.getBooleanOrNull(it)
+            Byte::class -> settings.getIntOrNull(it)?.toByte()
             Int::class -> settings.getIntOrNull(it)
+            Short::class -> settings.getIntOrNull(it)?.toShort()
             Long::class -> settings.getLongOrNull(it)
             Float::class -> settings.getFloatOrNull(it)
             Double::class -> settings.getDoubleOrNull(it)
             String::class -> settings.getStringOrNull(it)
-            else -> settings.getStringOrNull(it)?.let { json.decode(it, type) }
+            else -> settings.getStringOrNull(it)?.let {
+                if (it == "null") {
+                    null
+                }
+                else {
+                    json.decode(it, type)
+                }
+            }
         } ?: defaultValue) as T
     }
 
@@ -71,17 +84,25 @@ public class SettingsKeyValue : AbstractKeyValue() {
             Double::class -> observableSettings.getDoubleOrNullFlow(it)
             String::class -> observableSettings.getStringOrNullFlow(it)
             else -> observableSettings.getStringOrNullFlow(it)
-                .map { it?.let { json.decode(it, type) } }
+                .map {
+                    it?.let {
+                        if (it == "null") {
+                            null
+                        }
+                        else {
+                            json.decode(it, type)
+                        }
+                    }
+                }
         } as Flow<T>
     }
 
     override suspend fun remove(keys: List<String>): Unit = lock.withLock {
-        keys.toKey().let { "$it$KEY_DELIMITER" }.let { ks ->
-            settings.keys.filter { it.startsWith(ks) }.let {
-                it.forEach {
-                    settings.remove(it)
-                }
-                it.isNotEmpty()
+        keys.toKey().let { key ->
+            val subKey = "$key$keyDelimiter"
+
+            settings.keys.filter { it == key || it.startsWith(subKey) }.forEach {
+                settings.remove(it)
             }
         }
     }
@@ -92,10 +113,5 @@ public class SettingsKeyValue : AbstractKeyValue() {
 
     override suspend fun size(): Int = settings.size
 
-    private fun List<String>.toKey() = reduce { acc, v -> "$acc$KEY_DELIMITER$v" }
-
-    public companion object {
-
-        public const val KEY_DELIMITER: Char = '.'
-    }
+    private fun List<String>.toKey() = reduce { acc, v -> "$acc$keyDelimiter$v" }
 }
