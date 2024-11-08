@@ -151,10 +151,10 @@ public fun <T> Json.encodeToAny(serializer: SerializationStrategy<T>, value: T):
 
 public inline fun <reified T> Json.encodeToAny(value: T): Any? = encodeToAny(serializersModule.serializer(), value)
 
-public fun <T> Json.decodeFromAny(deserializer: DeserializationStrategy<T>, value: Any): T =
+public fun <T> Json.decodeFromAny(deserializer: DeserializationStrategy<T>, value: Any?): T =
     decodeFromJsonElement(deserializer, encodeAnyToJsonElement(value))
 
-public inline fun <reified T> Json.decodeFromAny(value: Any): T = decodeFromAny(serializersModule.serializer(), value)
+public inline fun <reified T> Json.decodeFromAny(value: Any?): T = decodeFromAny(serializersModule.serializer(), value)
 
 public fun Json.encodeAnyToString(value: Any?): String = encodeToString(encodeAnyToJsonElement(value))
 
