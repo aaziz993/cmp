@@ -1,5 +1,6 @@
 package ai.tech.core.misc.plugin.swagger
 
+import ai.tech.core.misc.model.config.EnabledConfig
 import ai.tech.core.misc.plugin.swagger.model.config.SwaggerConfig
 import io.github.smiley4.ktorswaggerui.SwaggerUI
 import io.github.smiley4.ktorswaggerui.dsl.PluginConfigDsl
@@ -14,20 +15,20 @@ public fun Application.configureSwagger(config: SwaggerConfig?, block: (PluginCo
                 it.rootHostPath?.let { rootHostPath = it }
                 it.authentication?.let { authentication = it }
             }
-            it.info?.let {
+            it.info?.takeIf(EnabledConfig::enable)?.let {
                 info {
                     it.title?.let { title = it }
                     it.version?.let { version = it }
                     it.description?.let { description = it }
                     it.termsOfService?.let { termsOfService = it }
-                    it.contact?.let {
+                    it.contact?.takeIf(EnabledConfig::enable)?.let {
                         contact {
                             it.name?.let { name = it }
                             it.url?.let { url = it }
                             it.email?.let { email = it }
                         }
                     }
-                    it.license?.let {
+                    it.license?.takeIf(EnabledConfig::enable)?.let {
                         license {
                             it.name?.let { name = it }
                             it.url?.let { url = it }
@@ -35,7 +36,7 @@ public fun Application.configureSwagger(config: SwaggerConfig?, block: (PluginCo
                     }
                 }
             }
-            it.securityScheme?.forEach {
+            it.securityScheme?.filterValues(EnabledConfig::enable)?.forEach {
                 // We can add security
                 securityScheme(it.key) {
                     it.value.type?.let { type = it }

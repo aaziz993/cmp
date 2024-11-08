@@ -1,5 +1,6 @@
 package ai.tech.core.misc.plugin.shutdown
 
+import ai.tech.core.misc.model.config.EnabledConfig
 import ai.tech.core.misc.plugin.shutdown.model.config.ShutDownConfig
 import io.ktor.server.application.*
 import io.ktor.server.engine.*

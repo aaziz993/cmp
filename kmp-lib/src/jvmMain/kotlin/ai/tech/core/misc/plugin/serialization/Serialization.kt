@@ -1,5 +1,6 @@
 package ai.tech.core.misc.plugin.serialization
 
+import ai.tech.core.misc.model.config.EnabledConfig
 import ai.tech.core.misc.plugin.serialization.model.config.SerializationConfig
 import io.ktor.serialization.kotlinx.cbor.*
 import io.ktor.serialization.kotlinx.json.*

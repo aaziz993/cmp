@@ -1,5 +1,6 @@
 package ai.tech.core.misc.plugin.micrometermetrics
 
+import ai.tech.core.misc.model.config.EnabledConfig
 import ai.tech.core.misc.plugin.micrometermetrics.model.config.MicrometerMetrics.*
 import ai.tech.core.misc.plugin.micrometermetrics.model.config.MicrometerMetricsConfig
 import io.ktor.server.application.*
@@ -52,7 +53,7 @@ public fun Application.configureMicrometerMetrics(config: MicrometerMetricsConfi
                 if (it.fileDescriptorMetrics == true) FileDescriptorMetrics() else null,
             )
 
-            it.distributionStatistics?.let {
+            it.distributionStatistics?.takeIf(EnabledConfig::enable)?.let {
 
                 val distributionStatisticConfigBuilder = DistributionStatisticConfig.Builder()
 

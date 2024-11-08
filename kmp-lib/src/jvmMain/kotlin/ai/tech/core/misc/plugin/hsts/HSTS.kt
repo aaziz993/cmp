@@ -1,5 +1,6 @@
 package ai.tech.core.misc.plugin.hsts
 
+import ai.tech.core.misc.model.config.EnabledConfig
 import ai.tech.core.misc.plugin.hsts.model.config.HSTSConfig
 import io.ktor.server.application.*
 import io.ktor.server.plugins.hsts.*
@@ -7,14 +8,14 @@ import io.ktor.server.plugins.hsts.*
 public fun Application.configureHSTS(config: HSTSConfig?, block: (io.ktor.server.plugins.hsts.HSTSConfig.() -> Unit)? = null) {
     val configBlock: (io.ktor.server.plugins.hsts.HSTSConfig.() -> Unit)? = config?.takeIf(EnabledConfig::enable)?.let {
         {
-            it.global?.let {
+            it.global?.takeIf(EnabledConfig::enable)?.let {
                 it.preload?.let { }
                 it.includeSubDomains?.let { includeSubDomains = it }
                 it.maxAgeInSeconds?.let { maxAgeInSeconds = it }
                 it.customDirectives?.let { customDirectives + it }
             }
 
-            it.hostSpecific?.forEach {
+            it.hostSpecific?.filterValues(EnabledConfig::enable)?.forEach {
                 withHost(it.key) {
                     it.value.preload?.let { }
                     it.value.includeSubDomains?.let { includeSubDomains = it }

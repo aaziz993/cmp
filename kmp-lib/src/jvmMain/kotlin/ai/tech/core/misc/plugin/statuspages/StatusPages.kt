@@ -2,6 +2,7 @@ package ai.tech.core.misc.plugin.statuspages
 
 import ai.tech.core.misc.auth.model.exception.UnauthenticatedAccessException
 import ai.tech.core.misc.auth.model.exception.UnauthorizedAccessException
+import ai.tech.core.misc.model.config.EnabledConfig
 import ai.tech.core.misc.plugin.statuspages.model.config.StatusPagesConfig
 import io.ktor.http.*
 import io.ktor.server.application.*
@@ -32,13 +33,13 @@ public fun Application.configureStatusPages(config: StatusPagesConfig?, block: (
                 call.respond(HttpStatusCode.Forbidden, cause.message.toString())
             }
 
-            it.status?.filter { it.enable }?.forEach {
+            it.status?.filter(EnabledConfig::enable)?.forEach {
                 status(*it.codes.toTypedArray()) { call, status ->
                     call.respondText(text = it.text, status = status)
                 }
             }
 
-            it.statusFile?.filter { it.enable }?.forEach {
+            it.statusFile?.filter(EnabledConfig::enable)?.forEach {
                 statusFile(*it.codes.toTypedArray(), filePattern = it.filePattern)
             }
         }

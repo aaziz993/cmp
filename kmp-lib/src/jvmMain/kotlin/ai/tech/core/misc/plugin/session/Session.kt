@@ -1,6 +1,7 @@
 package ai.tech.core.misc.plugin.session
 
 import ai.tech.core.misc.auth.server.model.config.ServerAuthConfig
+import ai.tech.core.misc.model.config.EnabledConfig
 import ai.tech.core.misc.plugin.session.model.UserSession
 import ai.tech.core.misc.plugin.session.model.config.CookieConfig
 import io.ktor.server.application.*
@@ -10,16 +11,16 @@ import java.io.File
 public fun Application.configureSession(config: ServerAuthConfig?, block: (SessionsConfig.() -> Unit)? = null) {
     val configBlock: (SessionsConfig.() -> Unit)? = config?.let {
         {
-            it.jwtHs256.forEach { (name, config) ->
-                cookie<UserSession>(name, config.cookie)
+            it.jwtHs256.filterValues(EnabledConfig::enable).forEach { (name, config) ->
+                cookie<UserSession>(name, config.cookie?.takeIf(EnabledConfig::enable))
             }
 
-            it.jwtRs256.forEach { (name, config) ->
-                cookie<UserSession>(name, config.cookie)
+            it.jwtRs256.filterValues(EnabledConfig::enable).forEach { (name, config) ->
+                cookie<UserSession>(name, config.cookie?.takeIf(EnabledConfig::enable))
             }
 
-            it.oauths.forEach { (name, config) ->
-                cookie<UserSession>(name, config.cookie)
+            it.oauth.filterValues(EnabledConfig::enable).forEach { (name, config) ->
+                cookie<UserSession>(name, config.cookie?.takeIf(EnabledConfig::enable))
             }
         }
     }

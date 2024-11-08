@@ -1,5 +1,6 @@
 package ai.tech.core.misc.plugin.graphql
 
+import ai.tech.core.misc.model.config.EnabledConfig
 import com.apurebase.kgraphql.GraphQL
 import ai.tech.core.misc.plugin.graphql.model.config.GraphQLConfig
 import io.ktor.server.application.*

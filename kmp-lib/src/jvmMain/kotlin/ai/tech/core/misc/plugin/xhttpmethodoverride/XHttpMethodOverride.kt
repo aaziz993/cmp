@@ -1,5 +1,6 @@
 package ai.tech.core.misc.plugin.xhttpmethodoverride
 
+import ai.tech.core.misc.model.config.EnabledConfig
 import ai.tech.core.misc.plugin.xhttpmethodoverride.model.config.XHttpMethodOverrideConfig
 import io.ktor.server.application.*
 import io.ktor.server.plugins.methodoverride.*

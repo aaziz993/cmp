@@ -1,5 +1,6 @@
 package ai.tech.core.misc.plugin.validation
 
+import ai.tech.core.misc.model.config.EnabledConfig
 import ai.tech.core.misc.plugin.validation.model.config.RequestValidationConfig
 import io.ktor.server.application.*
 import io.ktor.server.plugins.requestvalidation.*

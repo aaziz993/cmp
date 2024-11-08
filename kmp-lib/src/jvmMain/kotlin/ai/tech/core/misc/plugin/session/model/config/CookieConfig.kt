@@ -1,5 +1,6 @@
 package ai.tech.core.misc.plugin.session.model.config
 
+import ai.tech.core.misc.model.config.EnabledConfig
 import io.ktor.http.*
 import kotlinx.serialization.Serializable
 
@@ -15,4 +16,5 @@ public data class CookieConfig(
     val httpOnly: Boolean? = null,
     val extensions: MutableMap<String, String?>? = null,
     val encryption: SessionEncryptConfig? = null,
-)
+    override val enable: Boolean = true,
+) : EnabledConfig

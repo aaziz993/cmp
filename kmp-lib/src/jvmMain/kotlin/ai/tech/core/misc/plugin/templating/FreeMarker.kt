@@ -1,5 +1,6 @@
 package ai.tech.core.misc.plugin.templating
 
+import ai.tech.core.misc.model.config.EnabledConfig
 import ai.tech.core.misc.plugin.templating.model.config.FreeMarkerConfig
 import freemarker.cache.ClassTemplateLoader
 import freemarker.cache.FileTemplateLoader

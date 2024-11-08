@@ -1,7 +1,6 @@
 package ai.tech.core.misc.plugin.routing.model.config
 
 import ai.tech.core.misc.model.config.EnabledConfig
-import core.io.model.http.server.routing.StaticContentConfig
 import kotlinx.serialization.Serializable
 
 @Serializable

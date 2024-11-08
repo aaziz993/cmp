@@ -1,5 +1,6 @@
 package ai.tech.core.misc.plugin.micrometermetrics.model.config
 
+import ai.tech.core.misc.model.config.EnabledConfig
 import kotlin.time.Duration
 import kotlinx.serialization.Serializable
 
@@ -13,4 +14,5 @@ public data class DistributionStatisticsConfig(
     val maximumExpectedValue: Double? = null,
     val expiry: Duration? = null,
     val bufferLength: Int? = null,
-)
+    override val enable: Boolean = true,
+) : EnabledConfig

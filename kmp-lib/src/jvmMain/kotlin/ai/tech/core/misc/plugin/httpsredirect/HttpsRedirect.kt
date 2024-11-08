@@ -1,5 +1,6 @@
 package ai.tech.core.misc.plugin.httpsredirect
 
+import ai.tech.core.misc.model.config.EnabledConfig
 import ai.tech.core.misc.plugin.httpsredirect.model.config.HTTPSRedirectConfig
 import io.ktor.server.application.*
 import io.ktor.server.plugins.httpsredirect.*

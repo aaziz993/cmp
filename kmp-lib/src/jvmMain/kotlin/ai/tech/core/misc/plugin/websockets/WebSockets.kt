@@ -1,5 +1,6 @@
 package ai.tech.core.misc.plugin.websockets
 
+import ai.tech.core.misc.model.config.EnabledConfig
 import ai.tech.core.misc.plugin.websockets.model.config.WebSocketsConfig
 import io.ktor.serialization.kotlinx.*
 import io.ktor.server.application.*
@@ -18,19 +19,17 @@ public fun Application.configureWebSockets(
 
     config?.takeIf(EnabledConfig::enable)?.let {
         // Websocket page for testing
-        it.pages?.let {
-            routing {
-                it.forEach {
-                    get(it.uri) {
-                        call.respond(
-                            FreeMarkerContent(
-                                "templates/websocket/index.ftl",
-                                mapOf(
-                                    "wsURL" to "$wsURL/${it.wsURI}",
-                                ),
+        routing {
+            it.pages?.filter(EnabledConfig::enable)?.forEach {
+                get(it.uri) {
+                    call.respond(
+                        FreeMarkerContent(
+                            "templates/websocket/index.ftl",
+                            mapOf(
+                                "wsURL" to "$wsURL/${it.wsURI}",
                             ),
-                        )
-                    }
+                        ),
+                    )
                 }
             }
         }
@@ -41,7 +40,7 @@ public fun Application.configureWebSockets(
             it.masking?.let { masking = it }
             // Configure WebSockets
             // Serializer for WebSockets
-            it.contentConverter?.let {
+            it.contentConverter?.takeIf(EnabledConfig::enable)?.let {
                 contentConverter = KotlinxWebsocketSerializationConverter(
                     Json {
                         it.encodeDefaults?.let { encodeDefaults = it }

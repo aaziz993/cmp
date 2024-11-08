@@ -1,5 +1,6 @@
 package ai.tech.core.misc.plugin.forwardedheaders
 
+import ai.tech.core.misc.model.config.EnabledConfig
 import ai.tech.core.misc.plugin.forwardedheaders.mode.config.XForwardedHeadersConfig
 import io.ktor.server.application.*
 import io.ktor.server.plugins.forwardedheaders.*

@@ -1,5 +1,6 @@
 package ai.tech.core.misc.plugin.partialcontent
 
+import ai.tech.core.misc.model.config.EnabledConfig
 import ai.tech.core.misc.plugin.partialcontent.model.config.PartialContentConfig
 import io.ktor.server.application.*
 import io.ktor.server.plugins.partialcontent.*

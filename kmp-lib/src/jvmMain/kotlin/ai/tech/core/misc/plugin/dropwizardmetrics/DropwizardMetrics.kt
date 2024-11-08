@@ -1,5 +1,6 @@
 package ai.tech.core.misc.plugin.dropwizardmetrics
 
+import ai.tech.core.misc.model.config.EnabledConfig
 import com.codahale.metrics.Slf4jReporter
 import com.codahale.metrics.jmx.JmxReporter
 import ai.tech.core.misc.plugin.dropwizardmetrics.model.config.DropwizardMetricsConfig
@@ -12,10 +13,10 @@ public fun Application.configureDropwizardMetrics(config: DropwizardMetricsConfi
             it.baseName?.let { baseName = it }
             it.registerJvmMetricSets?.let { registerJvmMetricSets = it }
 
-            it.slf4jReporter?.let {
+            it.slf4jReporter?.takeIf(EnabledConfig::enable)?.let {
                 val slf4jReporter = Slf4jReporter.forRegistry(registry)
 
-                it.logging?.let {
+                it.logging?.takeIf(EnabledConfig::enable)?.let {
                     it.level?.let {
                         slf4jReporter.withLoggingLevel(Slf4jReporter.LoggingLevel.valueOf(it))
                     }
@@ -31,7 +32,7 @@ public fun Application.configureDropwizardMetrics(config: DropwizardMetricsConfi
                     .start(it.start.initialDelay, it.start.period, it.start.unit)
             }
 
-            it.jmxReporter?.let {
+            it.jmxReporter?.takeIf(EnabledConfig::enable)?.let {
                 val jmxReporter = JmxReporter.forRegistry(registry)
 
                 it.rateUnit?.let { jmxReporter.convertRatesTo(it) }
