@@ -378,7 +378,7 @@ public inline fun <reified T : Any> Json.newInstance(value: Map<String, Any?>): 
     decodeFromAny(value)
 
 // ///////////////////////////////////////////////////////ACCESSOR///////////////////////////////////////////////////////
-private fun Any.accessor(parentKey: Any?) = when (this) {
+internal fun Any.accessor(parentKey: Any?) = when (this) {
     is List<*> -> ListAccessor(this, parentKey)
 
     is Map<*, *> -> MapLikeAccessor(this, this, parentKey)
@@ -387,8 +387,8 @@ private fun Any.accessor(parentKey: Any?) = when (this) {
 }
 
 public fun <T : Any> T.accessorOrNull(
+    keys: List<Any?>,
     accessor: (List<Accessor>, key: Any?, value: Any?) -> Accessor? = { _, key, value -> value?.accessor(key) },
-    vararg keys: Any?,
 ): Accessor? = accessor(emptyList(), null, this)?.let {
     keys.fold(listOf(it)) { acc, key ->
         val accessor = acc.last()
@@ -409,15 +409,28 @@ public fun <T : Any> T.accessorOrNull(
     }.last()
 }
 
-public fun <T : Any> T.containsOrNull(
+public fun <T : Any> T.contains(
     keys: List<Any?>,
     accessor: (List<Accessor>, key: Any?, value: Any?) -> Accessor? = { _, key, value -> value?.accessor(key) },
-): Boolean? = accessorOrNull(accessor, keys.dropLast(1))?.contains(keys.last())
+): Boolean = accessorOrNull(keys.dropLast(1), accessor)?.contains(keys.last()) == true
 
-public fun <T : Any> T.removeOrNull(
+public fun <T : Any> T.get(
+    keys: List<Any?>,
+    accessor: (List<Accessor>, key: Any?, value: Any?) -> Accessor? = { _, key, value -> value?.accessor(parentKey = key) },
+): Any? = accessorOrNull(keys.dropLast(1), accessor)?.get(keys.last())
+
+public fun <T : Any> T.set(
+    keys: List<Any?>,
+    value: Any?,
+    accessor: (List<Accessor>, key: Any?, value: Any?) -> Accessor? = { _, key, value ->
+        value?.accessor(parentKey = key) ?: mutableMapOf<Any?, Any?>().accessor(key)
+    },
+): Any? = accessorOrNull(keys.dropLast(1), accessor)!!.set(keys.last(), value)
+
+public fun <T : Any> T.remove(
     keys: List<Any?>,
     accessor: (List<Accessor>, key: Any?, value: Any?) -> Accessor? = { _, key, value -> value?.accessor(key) },
-): Any? = accessorOrNull(accessor, keys.dropLast(1))?.remove(keys.last())
+): Any? = accessorOrNull(keys.dropLast(1), accessor)?.remove(keys.last())
 
 // //////////////////////////////////////////////////////TRAVERSER///////////////////////////////////////////////////////
 //public fun Any.assign(

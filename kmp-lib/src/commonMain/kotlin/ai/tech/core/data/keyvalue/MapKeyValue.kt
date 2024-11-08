@@ -1,21 +1,17 @@
 package ai.tech.core.data.keyvalue
 
-import ai.tech.core.misc.type.TypeResolver
-import ai.tech.core.misc.type.callOrNull
-import ai.tech.core.misc.type.containsOrNull
-import ai.tech.core.misc.type.decode
+import ai.tech.core.misc.type.contains
+import ai.tech.core.misc.type.decodeFromAny
+import ai.tech.core.misc.type.get
 import ai.tech.core.misc.type.model.Entry
-import ai.tech.core.misc.type.removeOrNull
-import kotlinx.atomicfu.locks.ReentrantLock
-import kotlinx.atomicfu.locks.reentrantLock
-import kotlinx.atomicfu.locks.withLock
+import ai.tech.core.misc.type.remove
+import ai.tech.core.misc.type.set
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.update
 import kotlinx.serialization.DeserializationStrategy
-import kotlinx.serialization.json.Json
 
 @Suppress("UNCHECKED_CAST")
 public open class MapKeyValue(
@@ -24,10 +20,10 @@ public open class MapKeyValue(
 
     private val stateFlow = MutableStateFlow<Entry<List<String>, Any?>>(Entry(emptyList(), null))
 
-    override suspend fun contains(keys: List<String>): Boolean = map.containsOrNull(keys)!!
+    override suspend fun contains(keys: List<String>): Boolean = map.contains(keys)
 
     override suspend fun <T> set(keys: List<String>, value: T) {
-        map.callOrNull(keys, value, false)
+        map.set(keys, value)
         stateFlow.update { Entry(keys, value) }
     }
 
@@ -36,15 +32,16 @@ public open class MapKeyValue(
         deserializer: DeserializationStrategy<T>,
         defaultValue: T?
     ): T =
-        (map.callOrNull(keys)?.let { json.decode(it, type) } ?: defaultValue) as T
+        (map.get(keys)?.let { json.decodeFromAny(deserializer, it) }
+            ?: defaultValue) as T
 
     override suspend fun <T> getFlow(
         keys: List<String>,
         deserializer: DeserializationStrategy<T>,
-    ): Flow<T> = stateFlow.filter { it.key == keys }.map { it.value } as Flow<T>
+    ): Flow<T> = stateFlow.filter { it.key == keys }.map { it.value as T }
 
     public override suspend fun remove(keys: List<String>) {
-        map.removeOrNull(keys)
+        map.remove(keys)
     }
 
     override suspend fun clear(): Unit = map.clear()
