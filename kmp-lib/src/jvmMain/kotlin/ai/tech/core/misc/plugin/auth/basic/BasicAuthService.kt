@@ -19,8 +19,10 @@ import kotlinx.coroutines.flow.toSet
 public class BasicAuthService(
     override val name: String,
     public val config: BasicAuthConfig,
-    public val principalRepository: CRUDRepository<PrincipalEntity>,
+    public val principalRepository: CRUDRepository<PrincipalEntity>?,
     public val roleRepository: CRUDRepository<RoleEntity>?,
+    public val userHashedTableAuth: UserHashedTableAuth? = null,
+    public val userTable: Map<String, User> = emptyMap(),
     private val digestFunction: ((String) -> ByteArray)? = config.digestFunction?.let { cfg -> getDigestFunction(cfg.algorithm) { cfg.salt } }
 ) : AuthProvider, ValidateAuthProvider<UserPasswordCredential> {
 
@@ -31,7 +33,7 @@ public class BasicAuthService(
         { p1, p2 -> digestFunction.invoke(p1) contentEquals p2.toByteArray(Charset.forName(config.charset)) }
     }
 
-    override suspend fun validate(call: ApplicationCall, credential: UserPasswordCredential): User? = principalRepository.transactional {
+    override suspend fun validate(call: ApplicationCall, credential: UserPasswordCredential): Any? = principalRepository?.transactional {
         val principal = find(predicate = "username".f.eq(credential.name)).singleOrNull()
 
         if (principal == null || !passwordsEquals(credential.password, principal.password)) {
@@ -39,7 +41,7 @@ public class BasicAuthService(
         }
 
         User(username = credential.name, roles = roleRepository?.let { it.find(predicate = "userId".f.eq(principal.id)).map { it.name }.toSet().ifEmpty { null } })
-    }
+    } ?: userHashedTableAuth?.authenticate(credential)?.let { User(it.name) }
 
     override fun roles(principal: Any): Set<String> = (principal as User).roles.orEmpty()
 }

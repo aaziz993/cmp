@@ -13,22 +13,23 @@ import kotlinx.coroutines.flow.singleOrNull
 public class DigestAuthService(
     override val name: String,
     public val config: DigestAuthConfig,
-    public val userRepository: CRUDRepository<User>,
+    public val principalRepository: CRUDRepository<User>,
     public val roleRepository: CRUDRepository<User>,
+    public val userTable: Map<String, ByteArray> = emptyMap()
 ) : AuthProvider, ValidateAuthProvider<DigestCredential> {
 
-    override suspend fun validate(call: ApplicationCall, credential: DigestCredential): Any? = userRepository.transactional {
+    public suspend fun digestProvider(username: String, realm: String): ByteArray? = userTable[username]
+
+    override suspend fun validate(call: ApplicationCall, credential: DigestCredential): Any? = principalRepository.transactional {
         val user = find(predicate = "username".f.eq(credential.userName)).singleOrNull()
 
-
-
         if (credential.userName.isNotEmpty()) {
-            CustomPrincipal(credential.userName, credential.realm)
+            User(credential.userName)
         }
         else {
             null
         }
     }
 
-    override fun roles(principal: Any): Set<String> = principal.roles.orEmpty()
+    override fun roles(principal: Any): Set<String> = (principal as User).roles.orEmpty()
 }

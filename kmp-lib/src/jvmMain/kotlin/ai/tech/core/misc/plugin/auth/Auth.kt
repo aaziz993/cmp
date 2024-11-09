@@ -69,6 +69,8 @@ public fun Application.configureAuth(
 
                 config.algorithmName?.let { algorithmName = it }
 
+                digestProvider(service::digestProvider)
+
                 validate {
                     service.validate(this, it)
                 }
