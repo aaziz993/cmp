@@ -1,7 +1,7 @@
 package ai.tech.core.misc.plugin.auth.form.model.config
 
 import ai.tech.core.misc.plugin.auth.model.config.ChallengeAuthProviderConfig
-import ai.tech.core.misc.plugin.auth.model.config.DatabaseAuthConfig
+import ai.tech.core.misc.plugin.auth.model.config.StorageAuthConfig
 import ai.tech.core.misc.plugin.session.model.config.CookieConfig
 import kotlinx.serialization.Serializable
 
@@ -15,4 +15,4 @@ public data class FormAuthConfig(
     override val cookie: CookieConfig? = null,
     override val exception: Boolean = false,
     override val enable: Boolean = true
-) : DatabaseAuthConfig, ChallengeAuthProviderConfig
+) : StorageAuthConfig, ChallengeAuthProviderConfig

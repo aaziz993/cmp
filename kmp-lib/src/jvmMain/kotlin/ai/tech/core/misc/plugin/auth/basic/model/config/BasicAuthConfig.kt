@@ -1,6 +1,6 @@
 package ai.tech.core.misc.plugin.auth.basic.model.config
 
-import ai.tech.core.misc.plugin.auth.model.config.DatabaseAuthConfig
+import ai.tech.core.misc.plugin.auth.model.config.StorageAuthConfig
 import ai.tech.core.misc.plugin.session.model.config.CookieConfig
 import kotlinx.serialization.Serializable
 
@@ -8,10 +8,10 @@ import kotlinx.serialization.Serializable
 public data class BasicAuthConfig(
     val realm: String? = null,
     val charset: String? = null,
-    val digestFunction: DigestFunctionConfig? = null,
+    val digest: DigestConfig? = null,
     override val database: String,
     override val principalTable: String,
     override val roleTable: String? = null,
     override val cookie: CookieConfig? = null,
     override val enable: Boolean = true
-) : DatabaseAuthConfig
+) : StorageAuthConfig

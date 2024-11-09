@@ -166,7 +166,21 @@ public fun Application.configure(
     configureXHttpMethodOverride(xHttpMethodOverride, xHttpMethodOverrideBlock)
 
     // Configure session with cookies
-    configureSession(auth, sessionBlock)
+    configureSession(auth) {
+//            it.jwtHs256.filterValues(EnabledConfig::enable).forEach { (name, config) ->
+//                cookie<UserSession>(name, config.cookie?.takeIf(EnabledConfig::enable))
+//            }
+//
+//            it.jwtRs256.filterValues(EnabledConfig::enable).forEach { (name, config) ->
+//                cookie<UserSession>(name, config.cookie?.takeIf(EnabledConfig::enable))
+//            }
+//
+//            it.oauth.filterValues(EnabledConfig::enable).forEach { (name, config) ->
+//                cookie<UserSession>(name, config.cookie?.takeIf(EnabledConfig::enable))
+//            }
+
+        sessionBlock?.invoke(this)
+    }
 
     // Configure the security plugin with JWT
     configureAuth(ktor.deployment.httpURL, get(), auth, authBlock)

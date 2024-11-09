@@ -1,4 +1,4 @@
-package ai.tech.core.misc.plugin.session.model
+package ai.tech.core.misc.plugin.auth.session.model
 
 import kotlinx.serialization.Serializable
 

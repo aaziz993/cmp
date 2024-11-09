@@ -6,7 +6,7 @@ import ai.tech.core.misc.plugin.auth.ValidateAuthProvider
 import ai.tech.core.misc.plugin.auth.jwt.model.JWTConfig
 import com.auth0.jwt.interfaces.Claim
 import com.auth0.jwt.interfaces.Payload
-import ai.tech.core.misc.plugin.session.model.UserSession
+import ai.tech.core.misc.plugin.auth.session.model.UserSession
 import io.ktor.server.application.*
 import io.ktor.server.auth.jwt.*
 import io.ktor.server.sessions.*

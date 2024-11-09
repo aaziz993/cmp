@@ -4,8 +4,7 @@ import ai.tech.core.misc.model.config.EnabledConfig
 import kotlinx.serialization.Serializable
 
 @Serializable
-public data class DigestFunctionConfig(
+public data class DigestConfig(
     val algorithm: String,
-    val salt: String,
     override val enable: Boolean = true
 ) : EnabledConfig

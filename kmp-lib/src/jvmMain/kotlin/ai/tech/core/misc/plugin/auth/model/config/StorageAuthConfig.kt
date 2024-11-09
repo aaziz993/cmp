@@ -1,6 +1,6 @@
 package ai.tech.core.misc.plugin.auth.model.config
 
-public interface DatabaseAuthConfig : AuthProviderConfig {
+public interface StorageAuthConfig : AuthProviderConfig {
 
     public val database: String
     public val principalTable: String

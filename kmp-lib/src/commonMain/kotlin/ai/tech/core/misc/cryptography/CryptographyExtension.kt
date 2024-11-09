@@ -1,6 +1,7 @@
 package ai.tech.core.misc.cryptography
 
 import ai.tech.core.misc.cryptography.model.ECC
+import ai.tech.core.misc.cryptography.model.HashAlgorithm
 import ai.tech.core.misc.cryptography.model.PGPKeyMetadata
 import ai.tech.core.misc.cryptography.model.PGPKey
 import ai.tech.core.misc.cryptography.model.PGPSignMode
@@ -59,6 +60,36 @@ private fun hasher(identifier: CryptographyAlgorithmId<Digest>): Hasher =
     provider
         .get(identifier)
         .hasher()
+
+@OptIn(DelicateCryptographyApi::class)
+public fun hasher(algorithm: HashAlgorithm): Hasher = hasher(
+    when (algorithm) {
+        HashAlgorithm.MD5 -> MD5
+
+        HashAlgorithm.SHA1 -> SHA1
+
+        HashAlgorithm.SHA224 -> SHA224
+
+        HashAlgorithm.SHA256 -> SHA256
+
+        HashAlgorithm.SHA384 -> SHA384
+
+        HashAlgorithm.SHA512 -> SHA512
+
+        HashAlgorithm.SHA3_224 -> SHA3_224
+
+        HashAlgorithm.SHA3_256 ->
+            SHA3_256
+
+        HashAlgorithm.SHA3_384 ->
+            SHA3_384
+
+        HashAlgorithm.SHA3_512 ->
+            SHA3_512
+
+        else -> throw IllegalArgumentException("Unsupported hash algorithm \"$algorithm\"")
+    },
+)
 
 @OptIn(DelicateCryptographyApi::class)
 private val md5Hasher: Hasher by lazy { hasher(MD5) }

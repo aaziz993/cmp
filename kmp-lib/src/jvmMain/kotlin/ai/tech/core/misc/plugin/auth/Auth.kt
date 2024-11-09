@@ -10,7 +10,6 @@ import ai.tech.core.misc.plugin.auth.oauth.model.config.ServerOAuthConfig
 import ai.tech.core.misc.plugin.auth.rbac.rbac
 import ai.tech.core.misc.model.config.EnabledConfig
 import ai.tech.core.misc.plugin.auth.basic.BasicAuthService
-import ai.tech.core.misc.plugin.auth.bearer.BearerAuthService
 import ai.tech.core.misc.plugin.auth.digest.DigestAuthService
 import ai.tech.core.misc.plugin.auth.form.FormAuthService
 import ai.tech.core.misc.plugin.auth.ldap.LDAPAuthService
@@ -73,35 +72,6 @@ public fun Application.configureAuth(
 
                 validate {
                     service.validate(this, it)
-                }
-
-                skipWhen(service::skip)
-            }
-
-            rbac(name) { roleExtractor = service::roles }
-        }
-
-        it.bearer.forEach { (name, config) ->
-            val service = BearerAuthService(name, config)
-
-            bearer(name) {
-                config.realm?.let { realm = it }
-
-                authenticate {
-                    service.validate(this, it)
-                }
-
-                config.authHeader?.let { header ->
-                    authHeader {
-                        it.authHeader(header)
-                    }
-                }
-
-                config.authSchemes?.let {
-                    authSchemes(
-                        it.defaultScheme,
-                        *it.additionalSchemes.toTypedArray(),
-                    )
                 }
 
                 skipWhen(service::skip)
