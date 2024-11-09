@@ -32,13 +32,15 @@ public fun Application.configureAuth(
     serverURL: String,
     httpClient: HttpClient,
     config: AuthConfig?,
-    getPrincipalRepositories: (database: String) -> Pair<CRUDRepository<PrincipalEntity>, CRUDRepository<RoleEntity>?>,
+    getRepositories: (database: String, principalTable: String, roleTable: String?) -> Pair<CRUDRepository<PrincipalEntity>, CRUDRepository<RoleEntity>?>,
     block: (AuthenticationConfig.() -> Unit)? = null
 ) = authentication {
     config?.let {
 
         it.basic.forEach { (name, config) ->
-            val service = BasicAuthService(name, config,)
+            val repositories = getRepositories(config.database, config.principalTable, config.roleTable)
+
+            val service = BasicAuthService(name, config, repositories.first, repositories.second)
 
             basic(name) {
                 config.realm?.let { realm = it }

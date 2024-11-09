@@ -20,7 +20,7 @@ public class FormAuthService(
     override val name: String,
     public val config: FormAuthConfig,
     public val principalRepository: CRUDRepository<PrincipalEntity>,
-    public val roleRepository: CRUDRepository<RoleEntity>,
+    public val roleRepository: CRUDRepository<RoleEntity>?,
 ) : AuthProvider, ValidateAuthProvider<UserPasswordCredential>, AbstractChallengeAuthProvider(config) {
 
     override suspend fun validate(call: ApplicationCall, credential: UserPasswordCredential): Any? = principalRepository.transactional {
@@ -30,7 +30,7 @@ public class FormAuthService(
             return@transactional null
         }
 
-        User(username = credential.name, roles = roleRepository.find(predicate = "userId".f.eq(principal.id)).map { it.name }.toSet().ifEmpty { null })
+        User(username = credential.name, roles = roleRepository?.let { it.find(predicate = "userId".f.eq(principal.id)).map { it.name }.toSet().ifEmpty { null } })
     }
 
     override fun roles(principal: Any): Set<String> = (principal as User).roles ?: emptySet()

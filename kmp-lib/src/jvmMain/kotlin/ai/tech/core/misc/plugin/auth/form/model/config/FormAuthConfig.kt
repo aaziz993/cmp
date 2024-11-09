@@ -10,9 +10,9 @@ public data class FormAuthConfig(
     val userParamName: String? = null,
     val passwordParamName: String? = null,
     override val database: String,
-    override val userTable: String,
+    override val principalTable: String,
     override val roleTable: String? = null,
     override val cookie: CookieConfig? = null,
-    override val exception: Boolean=false,
+    override val exception: Boolean = false,
     override val enable: Boolean = true
 ) : DatabaseAuthConfig, ChallengeAuthProviderConfig

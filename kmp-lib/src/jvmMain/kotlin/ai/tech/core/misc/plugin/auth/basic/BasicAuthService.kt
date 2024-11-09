@@ -20,7 +20,7 @@ public class BasicAuthService(
     override val name: String,
     public val config: BasicAuthConfig,
     public val principalRepository: CRUDRepository<PrincipalEntity>,
-    public val roleRepository: CRUDRepository<RoleEntity>,
+    public val roleRepository: CRUDRepository<RoleEntity>?,
     private val digestFunction: ((String) -> ByteArray)? = config.digestFunction?.let { cfg -> getDigestFunction(cfg.algorithm) { cfg.salt } }
 ) : AuthProvider, ValidateAuthProvider<UserPasswordCredential> {
 
@@ -38,7 +38,7 @@ public class BasicAuthService(
             return@transactional null
         }
 
-        User(username = credential.name, roles = roleRepository.find(predicate = "userId".f.eq(principal.id)).map { it.name }.toSet().ifEmpty { null })
+        User(username = credential.name, roles = roleRepository?.let { it.find(predicate = "userId".f.eq(principal.id)).map { it.name }.toSet().ifEmpty { null } })
     }
 
     override fun roles(principal: Any): Set<String> = (principal as User).roles.orEmpty()
