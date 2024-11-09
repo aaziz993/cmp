@@ -38,7 +38,7 @@ public data class UserRepresentation(
         email = user.email,
         realmRoles = user.roles,
         attributes = if (!(user.phone == null && user.image == null)) {
-            (user.attributes ?: emptyMap()) + mutableMapOf<String, List<String>>().apply {
+            (user.attributes.orEmpty()) + mutableMapOf<String, List<String>>().apply {
                 user.phone?.let { this[USER_PHONE_ATTRIBUTE_KEY] = listOf(it) }
                 user.image?.let { this[USER_IMAGE_ATTRIBUTE_KEY] = listOf(it) }
             }

@@ -1,7 +1,7 @@
 package ai.tech.core.misc.model.config.server
 
 import ai.tech.core.data.database.model.config.DatabaseProviderConfig
-import ai.tech.core.misc.auth.server.model.config.ServerAuthConfig
+import ai.tech.core.misc.plugin.auth.model.model.config.ServerAuthConfig
 import ai.tech.core.misc.model.config.Config
 import ai.tech.core.misc.model.config.di.KoinConfig
 import ai.tech.core.misc.plugin.applicationmonitoring.model.config.ApplicationMonitoringConfig

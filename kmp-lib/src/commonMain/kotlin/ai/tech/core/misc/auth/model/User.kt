@@ -14,5 +14,5 @@ public data class User(
     val attributes: Map<String, List<String>>? = null
 ) {
 
-    public fun validate(role: Role? = null): Boolean = role?.validate(roles ?: emptySet()) != false
+    public fun validate(role: Role? = null): Boolean = role?.validate(roles.orEmpty()) != false
 }

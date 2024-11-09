@@ -231,6 +231,8 @@ jsch = { module = "com.jcraft:jsch", version.ref = "jsch" }
 # testing
 junit = { group = "junit", name = "junit", version.ref = "junit" }
 # Kotlin
+# Ksp symbol processor api
+symbol-processing-api = { module = "com.google.devtools.ksp:symbol-processing-api", version.ref = "ksp" }
 km-logging = { module = "org.lighthousegames:logging", version.ref = "km-logging" }
 kotlinx-datetime = { group = "org.jetbrains.kotlinx", name = "kotlinx-datetime", version.ref = "kotlinx-datetime" }
 kotlinx-uuid-core = { module = "app.softwork:kotlinx-uuid-core", version.ref = "kotlinx-uuid-core" }

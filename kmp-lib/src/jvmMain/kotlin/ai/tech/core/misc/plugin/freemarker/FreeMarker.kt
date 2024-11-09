@@ -15,10 +15,10 @@ public fun Application.configureFreeMarker(config: FreeMarkerConfig?, block: (Co
         {
             val templateLoaders = (it.classPaths?.let {
                 it.map { ClassTemplateLoader(this::class.java.classLoader, it) }
-            } ?: emptyList()) +
+            }.orEmpty()) +
                 (it.filePaths?.let {
                     it.map { FileTemplateLoader(File(it)) }
-                } ?: emptyList())
+                } .orEmpty())
 
             if (templateLoaders.isNotEmpty()) {
                 templateLoader =

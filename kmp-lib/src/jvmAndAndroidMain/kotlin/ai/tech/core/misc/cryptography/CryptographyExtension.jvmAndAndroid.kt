@@ -472,7 +472,7 @@ public actual suspend fun ByteArray.pgpDecrypt(
     val vkrc =
         (
                 verificationKeys?.map { ByteArrayInputStream(it).readPublicKeys(true) }
-                    ?: emptyList()
+                    .orEmpty()
                 ).onEach { consumerOptions.addVerificationCerts(it) }
 
     passwords?.forEach { password ->

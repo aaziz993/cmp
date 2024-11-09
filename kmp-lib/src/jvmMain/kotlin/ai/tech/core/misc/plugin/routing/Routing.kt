@@ -40,7 +40,7 @@ public fun Application.configureRouting(config: RoutingConfig?, block: (Routing.
                             it.map {
                                 it.cacheControl()
                             }
-                        } ?: emptyList())
+                        }.orEmpty())
                     }
                 }
                 it.extensions?.let {
@@ -72,7 +72,7 @@ public fun Application.configureRouting(config: RoutingConfig?, block: (Routing.
                             it.map {
                                 it.cacheControl()
                             }
-                        } ?: emptyList())
+                        }.orEmpty())
                     }
                 }
                 it.extensions?.let {

@@ -1,7 +1,9 @@
 package ai.tech.core.misc.plugin.session
 
-import ai.tech.core.misc.auth.server.model.config.ServerAuthConfig
+import ai.tech.core.misc.plugin.auth.model.model.config.ServerAuthConfig
 import ai.tech.core.misc.model.config.EnabledConfig
+import ai.tech.core.misc.plugin.auth.jwt.model.ServerJWTRS256Config
+import ai.tech.core.misc.plugin.auth.model.oauth.model.config.ServerOAuthConfig
 import ai.tech.core.misc.plugin.session.model.UserSession
 import ai.tech.core.misc.plugin.session.model.config.CookieConfig
 import io.ktor.server.application.*
@@ -16,11 +18,11 @@ public fun Application.configureSession(config: ServerAuthConfig?, block: (Sessi
             }
 
             it.jwtRs256.filterValues(EnabledConfig::enable).forEach { (name, config) ->
-                cookie<UserSession>(name, config.cookie?.takeIf(EnabledConfig::enable))
+                cookie<UserSession>(name, ServerJWTRS256Config.cookie?.takeIf(EnabledConfig::enable))
             }
 
             it.oauth.filterValues(EnabledConfig::enable).forEach { (name, config) ->
-                cookie<UserSession>(name, config.cookie?.takeIf(EnabledConfig::enable))
+                cookie<UserSession>(name, ServerOAuthConfig.cookie?.takeIf(EnabledConfig::enable))
             }
         }
     }

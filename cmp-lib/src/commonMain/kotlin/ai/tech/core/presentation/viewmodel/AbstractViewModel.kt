@@ -1,15 +1,19 @@
 package ai.tech.core.presentation.viewmodel
 
+import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import org.koin.core.component.KoinComponent
 
 public abstract class AbstractViewModel<S : Any, A : Any> : ViewModel(), KoinComponent {
+
+    public abstract val savedStateHandle: SavedStateHandle
+
     public val state: StateFlow<ViewState<S>>
         field = MutableStateFlow(ViewState.Uninitialized)
 
-//    protected open fun onInitialized(): Unit = Unit
+    //    protected open fun onInitialized(): Unit = Unit
 //
 //    abstract suspend fun initialStateData(): S
 //
@@ -27,10 +31,14 @@ public abstract class AbstractViewModel<S : Any, A : Any> : ViewModel(), KoinCom
         state.update { state ->
             try {
                 success(block(state.data!!))
-            } catch (throwable: Throwable) {
-                failure(state.data!!, handleThrowable(throwable).also {
-                    Logger.e(throwable) { it.message.orEmpty() }
-                })
+            }
+            catch (throwable: Throwable) {
+                failure(
+                    state.data!!,
+                    handleThrowable(throwable).also {
+                        Logger.e(throwable) { it.message.orEmpty() }
+                    },
+                )
             }
         }
     }

@@ -378,7 +378,7 @@ public inline fun <reified T : Any> Json.newInstance(value: Map<String, Any?>): 
     decodeFromAny(value)!!
 
 // ///////////////////////////////////////////////////////ACCESSOR///////////////////////////////////////////////////////
-internal fun Any.accessor(parentKey: Any?) = when (this) {
+internal fun Any.accessor(parentKey: Any? = null) = when (this) {
     is List<*> -> ListAccessor(this, parentKey)
 
     is Map<*, *> -> MapLikeAccessor(this, this, parentKey)
@@ -425,7 +425,7 @@ public fun <T : Any> T.set(
     accessor: (List<Accessor>, key: Any?, value: Any?) -> Accessor? = { _, key, value ->
         value?.accessor(parentKey = key) ?: mutableMapOf<Any?, Any?>().accessor(key)
     },
-): Any? = accessorOrNull(keys.dropLast(1), accessor)!!.set(keys.last(), value)
+): Unit = accessorOrNull(keys.dropLast(1), accessor)!!.set(keys.last(), value)
 
 public fun <T : Any> T.remove(
     keys: List<Any?>,
