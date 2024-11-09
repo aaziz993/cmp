@@ -44,7 +44,7 @@ internal class CMPPlugin(
                             implementation(composeDeps.materialIconsExtended)
                             implementation(lib("compose.colorpicker"))
                             implementation(bundle("compose.icons"))
-                            implementation(lib("squircle.shape"))
+//                            implementation(lib("squircle.shape"))
                             implementation(bundle("material3.adaptive"))
                             implementation(bundle("compose.settings.ui"))
                             implementation(bundle("androidx.multiplatform"))
