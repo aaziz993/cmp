@@ -32,15 +32,19 @@ public fun Application.configureAuth(
     serverURL: String,
     httpClient: HttpClient,
     config: AuthConfig?,
-    getRepositories: (database: String, principalTable: String, roleTable: String?) -> Pair<CRUDRepository<PrincipalEntity>, CRUDRepository<RoleEntity>?>,
+    getPrincipalRepository: (database: String, table: String) -> CRUDRepository<PrincipalEntity>,
+    getRoleRepository: (database: String, table: String?) -> CRUDRepository<RoleEntity>?,
     block: (AuthenticationConfig.() -> Unit)? = null
 ) = authentication {
     config?.let {
 
         it.basic.forEach { (name, config) ->
-            val repositories = getRepositories(config.database, config.principalTable, config.roleTable)
-
-            val service = BasicAuthService(name, config, repositories.first, repositories.second)
+            val service = BasicAuthService(
+                name,
+                config,
+                getPrincipalRepository(config.database, config.principalTable),
+                getRoleRepository(config.database, config.roleTable),
+            )
 
             basic(name) {
                 config.realm?.let { realm = it }
@@ -105,7 +109,12 @@ public fun Application.configureAuth(
         }
 
         it.form.forEach { (name, config) ->
-            val service = FormAuthService(name, config)
+            val service = FormAuthService(
+                name,
+                config,
+                getPrincipalRepository(config.database, config.principalTable),
+                getRoleRepository(config.database, config.roleTable),
+            )
 
             form(name) {
                 config.userParamName?.let { userParamName = it }
