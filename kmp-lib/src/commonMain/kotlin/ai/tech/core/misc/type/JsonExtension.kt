@@ -158,7 +158,7 @@ public inline fun <reified T> Json.decodeFromAny(value: Any?): T = decodeFromAny
 
 public fun Json.encodeAnyToString(value: Any?): String = encodeToString(encodeAnyToJsonElement(value))
 
-public fun Json.decodeAnyToString(value: String): Any? = decodeAnyFromJsonElement(decodeFromString(value))
+public fun Json.decodeAnyFromString(value: String): Any? = decodeAnyFromJsonElement(decodeFromString(value))
 
 // Make deep copy of an object
 @OptIn(InternalSerializationApi::class)
