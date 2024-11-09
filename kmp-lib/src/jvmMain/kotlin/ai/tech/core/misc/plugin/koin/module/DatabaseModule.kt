@@ -1,12 +1,11 @@
 package ai.tech.core.misc.plugin.koin.module
 
-import ai.tech.core.data.database.kotysa.createClient
+import ai.tech.core.data.database.kotysa.createKotysaR2dbcSqlClient
 import ai.tech.core.data.database.model.config.DatabaseProviderConfig
 import ai.tech.core.misc.model.config.EnabledConfig
 import kotlinx.coroutines.runBlocking
 import org.koin.core.module.Module
 import org.koin.core.qualifier.named
-import org.koin.dsl.lazyModule
 import org.koin.dsl.module
 import org.ufoss.kotysa.R2dbcSqlClient
 
@@ -19,7 +18,7 @@ public fun databaseModule(config: Map<String, DatabaseProviderConfig>?): Module 
         r2dbc.forEach { (name, config) ->
             single<R2dbcSqlClient>(named(name)) {
                 runBlocking {
-                    createClient(config)
+                    createKotysaR2dbcSqlClient(config)
                 }
             }
         }

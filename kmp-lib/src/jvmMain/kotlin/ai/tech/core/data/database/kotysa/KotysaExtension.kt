@@ -23,7 +23,7 @@ import org.ufoss.kotysa.postgresql.PostgresqlTable
 import org.ufoss.kotysa.r2dbc.coSqlClient
 import org.ufoss.kotysa.tables
 
-public suspend fun createR2dbcSqlClient(config: DatabaseProviderConfig): R2dbcSqlClient {
+public suspend fun createKotysaR2dbcSqlClient(config: DatabaseProviderConfig): R2dbcSqlClient {
     val r2dbcConnectionFactory = createR2dbcConnectionFactory(config.connection)
 
     val createTables: List<Pair<List<Table<*>>, Boolean>>
