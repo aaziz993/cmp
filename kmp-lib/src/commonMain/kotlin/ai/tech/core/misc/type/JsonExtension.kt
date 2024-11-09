@@ -160,4 +160,12 @@ public fun Json.encodeAnyToString(value: Any?): String = encodeToString(encodeAn
 
 public fun Json.decodeAnyToString(value: String): Any? = decodeAnyFromJsonElement(decodeFromString(value))
 
+@OptIn(InternalSerializationApi::class)
+@Suppress("UNCHECKED_CAST")
+public fun <T : Any> Json.copy(serializer: KSerializer<T>, value: T, block: (Map<String, Any?>) -> Map<String, Any?> = { it }): T =
+    decodeFromAny(serializer, block(encodeToAny(serializer, value) as Map<String, Any?>))
+
+public inline fun <reified T : Any> Json.copy(value: T, noinline block: (Map<String, Any?>) -> Map<String, Any?> = { it }): T =
+    copy(serializersModule.serializer(), value, block)
+
 

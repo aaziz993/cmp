@@ -51,6 +51,10 @@ import kotlin.reflect.KClass
 import kotlin.reflect.KType
 import kotlin.reflect.typeOf
 import kotlin.time.Duration
+import kotlinx.serialization.DeserializationStrategy
+import kotlinx.serialization.InternalSerializationApi
+import kotlinx.serialization.KSerializer
+import kotlinx.serialization.serializer
 
 public val KClass<*>.isUIntNumber: Boolean
     get() = when (this) {
@@ -368,14 +372,6 @@ public inline fun <T : R, R> T.letIf(
 else {
     this
 }
-
-@Suppress("UNCHECKED_CAST")
-public inline fun <reified T : Any> Json.copyInstance(value: T, block: (Map<String, Any?>) -> Map<String, Any?> = { it }): T =
-    decodeFromAny(block(encodeToAny(value) as Map<String, Any?>))!!
-
-@Suppress("UNCHECKED_CAST")
-public inline fun <reified T : Any> Json.newInstance(value: Map<String, Any?>): T =
-    decodeFromAny(value)!!
 
 // ///////////////////////////////////////////////////////ACCESSOR///////////////////////////////////////////////////////
 internal fun Any.accessor(parentKey: Any? = null) = when (this) {

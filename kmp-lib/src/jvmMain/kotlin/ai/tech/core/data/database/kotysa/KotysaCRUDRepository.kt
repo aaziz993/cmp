@@ -40,6 +40,7 @@ import kotlin.reflect.full.memberFunctions
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.toList
 import kotlinx.datetime.TimeZone
+import kotlinx.serialization.KSerializer
 import kotlinx.serialization.json.Json
 import org.slf4j.LoggerFactory
 import org.ufoss.kotysa.CoroutinesSqlClientDeleteOrUpdate
@@ -52,7 +53,7 @@ import org.ufoss.kotysa.Table
 import org.ufoss.kotysa.WholeNumberColumn
 
 public abstract class KotysaCRUDRepository<T : Any>(
-    private val kClass: KClass<T>,
+    private val serializer: KSerializer<T>,
     private val client: R2dbcSqlClient,
     table: Table<T>,
     private val createdAtProperty: String? = "createdAt",
@@ -73,16 +74,18 @@ public abstract class KotysaCRUDRepository<T : Any>(
 
     @Suppress("UNCHECKED_CAST")
     final override suspend fun insert(entities: List<T>) {
-        client.insert(*((table.createdAtColumn?.let {
-            val temporal = it.value.now!!(timeZone)
-            entities.map { Json.Default.copy(it, mapOf(createdAtProperty!! to temporal)) }
-        } ?: entities).toTypedArray<Any>() as Array<T>))
+        client.insert(
+            *((table.createdAtColumn?.let {
+                val temporal = it.value.now!!(timeZone)
+                entities.map { Json.Default.copy(serializer, it) { mapOf(createdAtProperty!! to temporal) } }
+            } ?: entities).toTypedArray<Any>() as Array<T>),
+        )
     }
 
     override suspend fun updateSafe(entities: List<T>): List<Boolean> = client.transactional {
         table.updatedAtColumn?.let {
             val temporal = it.value.now!!(timeZone)
-            entities.map { update(Json.Default.copy(it, mapOf(updatedAtProperty!! to temporal))).execute() > 0L }
+            entities.map { update(Json.Default.copy(serializer, it) { mapOf(updatedAtProperty!! to temporal) }).execute() > 0L }
         } ?: entities.map { update(it).execute() > 0L }
     }!!
 
@@ -113,7 +116,7 @@ public abstract class KotysaCRUDRepository<T : Any>(
         projections: List<Variable>, sort: List<Order>?, predicate: BooleanVariable?, limitOffset: LimitOffset
     ): Page<List<Any?>> = client.transactional {
         Page(
-            findHelper(projections, sort, predicate, limitOffset).toList(), aggregate(count(), predicate)
+            findHelper(projections, sort, predicate, limitOffset).toList(), aggregate(count(), predicate),
         )
     }!!
 
@@ -162,7 +165,8 @@ public abstract class KotysaCRUDRepository<T : Any>(
             table[v.value].let {
                 if (v.distinct) {
                     acc.selectDistinct(it.column)
-                } else {
+                }
+                else {
                     acc.select(it.column)
                 }.let { select ->
                     v.alias?.let { select.`as`(it) } ?: select
@@ -179,7 +183,8 @@ public abstract class KotysaCRUDRepository<T : Any>(
         sort?.fold(it.ordersBy()) { acc, v ->
             if (v.ascending) {
                 acc.orderByAsc(table[v.name].column)
-            } else {
+            }
+            else {
                 acc.orderByDesc(table[v.name].column)
             }
         } ?: it
@@ -196,20 +201,22 @@ public abstract class KotysaCRUDRepository<T : Any>(
 
         val logValue = StringBuilder()
 
-        (predicate as Expression).evaluate({ _ ->
-            when {
-                value == null -> {
-                    val field = arguments[0] as Field
+        (predicate as Expression).evaluate(
+            { _ ->
+                when {
+                    value == null -> {
+                        val field = arguments[0] as Field
 
-                    logValue.append("where(${field.value})")
-                    value = this@predicate.exp("where", field).compareExp(this, logValue)
+                        logValue.append("where(${field.value})")
+                        value = this@predicate.exp("where", field).compareExp(this, logValue)
+                    }
+
+                    expression == null -> expression = this
+
+                    else -> throw IllegalArgumentException("Unsupported expression tree")
                 }
-
-                expression == null -> expression = this
-
-                else -> throw IllegalArgumentException("Unsupported expression tree")
-            }
-        }) {
+            },
+        ) {
             value = value!!.logicExp(this, (expression!!.arguments[0] as Field), logValue)
                 .compareExp(expression!!, logValue)
 
@@ -228,23 +235,28 @@ public abstract class KotysaCRUDRepository<T : Any>(
             if (isTemporal) {
                 exp("afterOrEq", expression.arguments[1] as Value<*>).exp("and", expression.arguments[0] as Value<*>)
                     .exp("beforeOrEq", expression.arguments[2] as Value<*>)
-            } else {
+            }
+            else {
                 exp("supOrEq", expression.arguments[1] as Value<*>).exp("and", expression.arguments[0] as Value<*>)
                     .exp("infOrEq", expression.arguments[2] as Value<*>)
             }
-        } else {
+        }
+        else {
             when (expression) {
                 is Equals -> {
                     if (expression.arguments.size == 2) {
                         "eq"
-                    } else {
+                    }
+                    else {
                         val matchAll = (expression.arguments[2] as BooleanValue).value
                         val ignoreCase = (expression.arguments[3] as BooleanValue).value
                         if (matchAll) {
                             "eq"
-                        } else if (ignoreCase) {
+                        }
+                        else if (ignoreCase) {
                             "containsIgnoreCase"
-                        } else {
+                        }
+                        else {
                             "contains"
                         }
                     }
@@ -254,25 +266,29 @@ public abstract class KotysaCRUDRepository<T : Any>(
 
                 is GreaterThan -> if (isTemporal) {
                     "after"
-                } else {
+                }
+                else {
                     "sup"
                 }
 
                 is GreaterEqualThan -> if (isTemporal) {
                     "afterOrEq"
-                } else {
+                }
+                else {
                     "supOrEq"
                 }
 
                 is LessThan -> if (isTemporal) {
                     "before"
-                } else {
+                }
+                else {
                     "inf"
                 }
 
                 is LessEqualThan -> if (isTemporal) {
                     "beforeOrEq"
-                } else {
+                }
+                else {
                     "infOrEq"
                 }
 

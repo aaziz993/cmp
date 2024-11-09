@@ -5,4 +5,5 @@ plugins {
 dependencies {
     implementation(projects.kmpLib)
     implementation(projects.shared)
+    ksp(projects.compiler)
 }

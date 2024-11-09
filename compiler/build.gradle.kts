@@ -7,5 +7,6 @@ kotlin {
 }
 
 dependencies {
+    implementation(projects.kmpLib)
     implementation(projectLibs.symbol.processing.api)
 }
