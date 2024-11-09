@@ -31,7 +31,7 @@ public fun Application.configureAuth(
     serverURL: String,
     httpClient: HttpClient,
     config: AuthConfig?,
-    getPrincipalRepository: (database: String, table: String) -> CRUDRepository<PrincipalEntity>,
+    getPrincipalRepository: (database: String?, table: String?) -> CRUDRepository<PrincipalEntity>,
     getRoleRepository: (database: String, table: String?) -> CRUDRepository<RoleEntity>?,
     block: (AuthenticationConfig.() -> Unit)? = null
 ) = authentication {

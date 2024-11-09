@@ -15,7 +15,7 @@ public class DigestAuthService(
     public val config: DigestAuthConfig,
     public val principalRepository: CRUDRepository<User>,
     public val roleRepository: CRUDRepository<User>,
-    public val userTable: Map<String, ByteArray> = emptyMap()
+    public val userTable: Map<String, String> = emptyMap()
 ) : AuthProvider, ValidateAuthProvider<DigestCredential> {
 
     override suspend fun validate(call: ApplicationCall, credential: DigestCredential): Any? = principalRepository.transactional {

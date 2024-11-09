@@ -12,6 +12,7 @@ public data class FormAuthConfig(
     override val database: String,
     override val principalTable: String,
     override val roleTable: String? = null,
+    override val file: List<String>? = null,
     override val cookie: CookieConfig? = null,
     override val exception: Boolean = false,
     override val enable: Boolean = true

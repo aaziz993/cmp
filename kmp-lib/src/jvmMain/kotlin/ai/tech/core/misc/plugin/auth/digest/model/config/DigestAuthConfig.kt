@@ -11,6 +11,7 @@ public data class DigestAuthConfig(
     override val database: String,
     override val principalTable: String,
     override val roleTable: String? = null,
+    override val file: List<String>? = null,
     override val cookie: CookieConfig? = null,
     override val enable: Boolean = true
 ) : StorageAuthConfig

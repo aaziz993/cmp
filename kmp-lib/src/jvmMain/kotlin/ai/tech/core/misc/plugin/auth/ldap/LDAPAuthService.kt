@@ -17,7 +17,7 @@ public class LDAPAuthService(
         call: ApplicationCall,
         credential: UserPasswordCredential,
     ): User? =
-        ldapAuthenticate(credential, config.ldapServerURL, config.userDNFormat)
+        ldapAuthenticate(credential, config.ldapServerURL, config.userDNFormat)?.let(UserIdPrincipal::name)?.let(::User)
 
-    override fun roles(principal: Any): Set<String> = principal.roles.orEmpty()
+    override fun roles(principal: Any): Set<String> = (principal as User).roles.orEmpty()
 }
