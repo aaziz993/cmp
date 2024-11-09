@@ -79,7 +79,7 @@ public fun AdvancedTextField(
     shape: Shape = OutlinedTextFieldDefaults.shape,
     colors: TextFieldColors = OutlinedTextFieldDefaults.colors(),
     iconModifier: Modifier = Modifier.padding(horizontal = 2.dp),
-    type: TextField = TextField.TEXT,
+    type: TextField = TextField.Text,
     cursor: Boolean = false,
     clearable: Boolean = !readOnly,
     outlined: Boolean = false,
@@ -90,7 +90,7 @@ public fun AdvancedTextField(
     onShowValueChange: ((Boolean) -> Unit)? = null,
 ) {
     val isTemporal =
-        type == TextField.LOCAL_TIME || type == TextField.LOCAL_DATE || type == TextField.LOCAL_DATE_TIME
+        type is TextField.LocalTime || type is TextField.LocalDate || type == TextField.LocalDateTime
 
     val isUnvalidated = readOnly || isTemporal || validator == null
 
@@ -103,7 +103,7 @@ public fun AdvancedTextField(
 
     val isErrorWithValidation = isError || validation.isNotEmpty()
 
-    val advancedOnValueChange = if (readOnly || isTemporal || type == TextField.ENUM) {
+    val advancedOnValueChange = if (readOnly || isTemporal || type is TextField.Enum) {
         {}
     }
     else {
@@ -117,7 +117,7 @@ public fun AdvancedTextField(
     val clearIconButton: (@Composable () -> Unit)? = if (clearable && enabled && value.isNotBlank()) {
         {
             Icon(
-                    EvaIcons.Fill.Close, null, iconModifier.clickable { onValueChange("") }, MaterialTheme.colorScheme.error,
+                EvaIcons.Fill.Close, null, iconModifier.clickable { onValueChange("") }, MaterialTheme.colorScheme.error,
             )
         }
     }
@@ -128,13 +128,13 @@ public fun AdvancedTextField(
     val showIconButton: (@Composable (isError: Boolean) -> Unit)? = onShowValueChange?.let { osc ->
         {
             Icon(
-                    if (showValue) {
-                        EvaIcons.Outline.EyeOff2
-                    }
-                    else {
-                        EvaIcons.Outline.Eye
-                    },
-                    null, iconModifier.clickable { osc(!showValue) }, iconColorErrorAware(it),
+                if (showValue) {
+                    EvaIcons.Outline.EyeOff2
+                }
+                else {
+                    EvaIcons.Outline.Eye
+                },
+                null, iconModifier.clickable { osc(!showValue) }, iconColorErrorAware(it),
             )
         }
     }
@@ -148,19 +148,19 @@ public fun AdvancedTextField(
             var localTime: LocalTime? = null
 
             when (type) {
-                TextField.LOCAL_TIME -> localTime =
+                TextField.LocalTime -> localTime =
                     value.ifEmpty { null }?.let(LocalTime::parseOrNull) ?: LocalTime.now(
-                            TimeZone.currentSystemDefault(),
+                        TimeZone.currentSystemDefault(),
                     )
 
-                TextField.LOCAL_DATE -> localDate =
+                TextField.LocalDate -> localDate =
                     value.ifEmpty { null }?.let(LocalDate::parseOrNull) ?: LocalDate.now(
-                            TimeZone.currentSystemDefault(),
+                        TimeZone.currentSystemDefault(),
                     )
 
-                TextField.LOCAL_DATE_TIME -> value.ifEmpty { null }?.let(LocalDateTime::parseOrNull).let {
+                TextField.LocalDateTime -> value.ifEmpty { null }?.let(LocalDateTime::parseOrNull).let {
                     it ?: LocalDateTime.now(
-                            TimeZone.currentSystemDefault(),
+                        TimeZone.currentSystemDefault(),
                     )
                 }.let {
                     localTime = it.time
@@ -179,7 +179,7 @@ public fun AdvancedTextField(
                 timePickerState,
                 onConfirm = { _, _ ->
                     onValueChange(
-                            temporalPickerStateToTemporal(datePickerState, timePickerState)?.toString().orEmpty(),
+                        temporalPickerStateToTemporal(datePickerState, timePickerState)?.toString().orEmpty(),
                     )
                 },
                 onCancel = { showTemporalPicker = false },
@@ -187,9 +187,9 @@ public fun AdvancedTextField(
         }
         {
             Icon(
-                    Icons.Default.DateRange,
-                    "Select date",
-                    iconModifier.clickable(onClick = { showTemporalPicker = !showTemporalPicker }),
+                Icons.Default.DateRange,
+                "Select date",
+                iconModifier.clickable(onClick = { showTemporalPicker = !showTemporalPicker }),
             )
 
         }

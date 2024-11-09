@@ -1,9 +1,9 @@
 package ai.tech.core.presentation.component.textfield.model
 
-public enum class TextField {
-    TEXT,
-    ENUM,
-    LOCAL_TIME,
-    LOCAL_DATE,
-    LOCAL_DATE_TIME,
+public sealed class TextField {
+    public data object Text : TextField()
+    public data object LocalTime : TextField()
+    public data object LocalDate : TextField()
+    public data object LocalDateTime : TextField()
+    public data class Enum(val values: List<String>) : TextField()
 }
