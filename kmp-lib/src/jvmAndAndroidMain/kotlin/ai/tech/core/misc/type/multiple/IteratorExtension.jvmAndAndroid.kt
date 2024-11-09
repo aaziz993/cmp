@@ -1,6 +1,5 @@
 package ai.tech.core.misc.type.multiple
 
-import ai.tech.core.misc.type.letIf
 import ai.tech.core.misc.type.single.toIntLSB
 import java.io.InputStream
 import java.io.OutputStream
@@ -11,10 +10,12 @@ public fun Iterator<Byte>.asInputStream(): InputStream = IteratorInputStream(thi
 private class IteratorInputStream(
     private val iterator: Iterator<Byte>,
 ) : InputStream() {
+
     override fun read(): Int =
         if (iterator.hasNext()) {
             iterator.next().toIntLSB()
-        } else {
+        }
+        else {
             -1
         }
 
@@ -22,7 +23,15 @@ private class IteratorInputStream(
         b: ByteArray,
         off: Int,
         len: Int,
-    ): Int = iterator.next(len) { i, e -> b[off + i] = e }.letIf({ it == 0 }) { -1 }
+    ): Int = iterator.next(len) { i, e -> b[off + i] = e }
+        .let {
+            if (it == 0) {
+                -1
+            }
+            else {
+                it
+            }
+        }
 
     override fun available(): Int = if (iterator.hasNext()) 1 else 0
 }

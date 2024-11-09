@@ -363,16 +363,6 @@ public val SerialDescriptor.primeType: KType
 public val SerialDescriptor.isEnum: Boolean
     get() = kind == SerialKind.ENUM
 
-public inline fun <T : R, R> T.letIf(
-    noinline condition: (T) -> Boolean,
-    block: (T) -> R,
-): R = if (condition(this)) {
-    block(this)
-}
-else {
-    this
-}
-
 // ///////////////////////////////////////////////////////ACCESSOR///////////////////////////////////////////////////////
 internal fun Any.accessor(parentKey: Any? = null) = when (this) {
     is List<*> -> ListAccessor(this, parentKey)
