@@ -5,7 +5,7 @@ import io.r2dbc.spi.ConnectionFactories
 import io.r2dbc.spi.ConnectionFactory
 import io.r2dbc.spi.ConnectionFactoryOptions
 
-public fun createConnectionFactory(config: DatabaseConnectionConfig): ConnectionFactory = with(config) {
+public fun createR2dbcConnectionFactory(config: DatabaseConnectionConfig): ConnectionFactory = with(config) {
     ConnectionFactories.get(
         ConnectionFactoryOptions.builder()
             .option(ConnectionFactoryOptions.DRIVER, driver)

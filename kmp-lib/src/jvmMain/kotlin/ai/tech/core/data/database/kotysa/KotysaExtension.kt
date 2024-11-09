@@ -23,8 +23,8 @@ import org.ufoss.kotysa.postgresql.PostgresqlTable
 import org.ufoss.kotysa.r2dbc.coSqlClient
 import org.ufoss.kotysa.tables
 
-public suspend fun createClient(config: DatabaseProviderConfig): R2dbcSqlClient {
-    val connectionFactory = createConnectionFactory(config.connection)
+public suspend fun createR2dbcSqlClient(config: DatabaseProviderConfig): R2dbcSqlClient {
+    val r2dbcConnectionFactory = createR2dbcConnectionFactory(config.connection)
 
     val createTables: List<Pair<List<Table<*>>, Boolean>>
 
@@ -32,33 +32,33 @@ public suspend fun createClient(config: DatabaseProviderConfig): R2dbcSqlClient 
 
     when (config.connection.driver) {
         "h2" -> {
-            createTables = config.createTables.map { getH2Tables(it) to it.ifNotExists }
-            client = connectionFactory.coSqlClient(tables().h2(* createTables.flatMap { (tables, _) -> tables }.toTypedArray()))
+            createTables = config.createTables.map { getKotysaH2Tables(it) to it.ifNotExists }
+            client = r2dbcConnectionFactory.coSqlClient(tables().h2(* createTables.flatMap { (tables, _) -> tables }.toTypedArray()))
         }
 
         "postgresql" -> {
-            createTables = config.createTables.map { getPostgresqlTables(it) to it.ifNotExists }
-            client = connectionFactory.coSqlClient(tables().postgresql(*createTables.flatMap { (tables, _) -> tables }.toTypedArray()))
+            createTables = config.createTables.map { getKotysaPostgresqlTables(it) to it.ifNotExists }
+            client = r2dbcConnectionFactory.coSqlClient(tables().postgresql(*createTables.flatMap { (tables, _) -> tables }.toTypedArray()))
         }
 
         "mysql" -> {
-            createTables = config.createTables.map { getMysqlTables(it) to it.ifNotExists }
-            client = connectionFactory.coSqlClient(tables().mysql(*createTables.flatMap { (tables, _) -> tables }.toTypedArray()))
+            createTables = config.createTables.map { getKotysaMysqlTables(it) to it.ifNotExists }
+            client = r2dbcConnectionFactory.coSqlClient(tables().mysql(*createTables.flatMap { (tables, _) -> tables }.toTypedArray()))
         }
 
         "mssql" -> {
-            createTables = config.createTables.map { getMssqlTables(it) to it.ifNotExists }
-            client = connectionFactory.coSqlClient(tables().mssql(*createTables.flatMap { (tables, _) -> tables }.toTypedArray()))
+            createTables = config.createTables.map { getKotysaMssqlTables(it) to it.ifNotExists }
+            client = r2dbcConnectionFactory.coSqlClient(tables().mssql(*createTables.flatMap { (tables, _) -> tables }.toTypedArray()))
         }
 
         "mariadb" -> {
-            createTables = config.createTables.map { getMariadbTables(it) to it.ifNotExists }
-            client = connectionFactory.coSqlClient(tables().mariadb(*createTables.flatMap { (tables, _) -> tables }.toTypedArray()))
+            createTables = config.createTables.map { getKotysaMariadbTables(it) to it.ifNotExists }
+            client = r2dbcConnectionFactory.coSqlClient(tables().mariadb(*createTables.flatMap { (tables, _) -> tables }.toTypedArray()))
         }
 
         "oracle" -> {
-            createTables = config.createTables.map { getOracleTables(it) to it.ifNotExists }
-            client = connectionFactory.coSqlClient(tables().oracle(*createTables.flatMap { (tables, _) -> tables }.toTypedArray()))
+            createTables = config.createTables.map { getKotysaOracleTables(it) to it.ifNotExists }
+            client = r2dbcConnectionFactory.coSqlClient(tables().oracle(*createTables.flatMap { (tables, _) -> tables }.toTypedArray()))
         }
 
         else -> throw UnsupportedOperationException("Unknown database type \"${config.connection.driver}\"")
@@ -75,6 +75,8 @@ public suspend fun createClient(config: DatabaseProviderConfig): R2dbcSqlClient 
             }
         }
     }
+
+    return client
 }
 
 @Suppress("UNCHECKED_CAST")
@@ -97,31 +99,31 @@ private fun <T : Table<*>> getTables(
         }
     }
 
-public fun getH2Tables(config: CreateTableConfig): List<IH2Table<*>> =
+public fun getKotysaH2Tables(config: CreateTableConfig): List<IH2Table<*>> =
     getTables(config, IH2Table::class) + getTables(
         config,
         GenericTable::class,
     )
 
-public fun getMariadbTables(config: CreateTableConfig): List<MariadbTable<*>> =
+public fun getKotysaMariadbTables(config: CreateTableConfig): List<MariadbTable<*>> =
     getTables(config, MariadbTable::class)
 
-public fun getMysqlTables(config: CreateTableConfig): List<MysqlTable<*>> =
+public fun getKotysaMysqlTables(config: CreateTableConfig): List<MysqlTable<*>> =
     getTables(config, MysqlTable::class)
 
-public fun getMssqlTables(config: CreateTableConfig): List<IMssqlTable<*>> =
+public fun getKotysaMssqlTables(config: CreateTableConfig): List<IMssqlTable<*>> =
     getTables(config, MssqlTable::class) + getTables(
         config,
         GenericTable::class,
     )
 
-public fun getPostgresqlTables(config: CreateTableConfig): List<IPostgresqlTable<*>> =
+public fun getKotysaPostgresqlTables(config: CreateTableConfig): List<IPostgresqlTable<*>> =
     getTables(config, PostgresqlTable::class) + getTables(
         config,
         GenericTable::class,
     )
 
-public fun getOracleTables(config: CreateTableConfig): List<OracleTable<*>> =
+public fun getKotysaOracleTables(config: CreateTableConfig): List<OracleTable<*>> =
     getTables(config, OracleTable::class)
 
 public val AbstractTable<*>.name: String
