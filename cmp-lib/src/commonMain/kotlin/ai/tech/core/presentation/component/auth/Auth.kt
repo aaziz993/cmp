@@ -5,7 +5,7 @@ import ai.tech.core.misc.auth.model.User
 import androidx.compose.runtime.Composable
 
 @Composable
-public inline fun Resource(
+public inline fun Auth(
     auth: AuthResource?,
     provider: String?,
     user: User?,
