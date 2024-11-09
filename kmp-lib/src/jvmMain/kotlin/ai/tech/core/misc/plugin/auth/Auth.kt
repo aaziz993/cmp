@@ -50,9 +50,7 @@ public fun Application.configureAuth(
 
                 config.charset?.let { charset = Charset.forName(it) }
 
-                validate {
-                    service.validate(this, it)
-                }
+                validate { service.validate(this, it) }
 
                 skipWhen(service::skip)
             }
@@ -68,11 +66,7 @@ public fun Application.configureAuth(
 
                 config.algorithmName?.let { algorithmName = it }
 
-                digestProvider(service::digestProvider)
-
-                validate {
-                    service.validate(this, it)
-                }
+                validate { service.validate(this, it) }
 
                 skipWhen(service::skip)
             }
@@ -93,13 +87,9 @@ public fun Application.configureAuth(
 
                 config.passwordParamName?.let { passwordParamName = it }
 
-                challenge {
-                    service.challenge(call)
-                }
+                challenge { service.challenge(call) }
 
-                validate {
-                    service.validate(this, it)
-                }
+                validate { service.validate(this, it) }
 
                 skipWhen(service::skip)
             }
@@ -136,9 +126,7 @@ public fun Application.configureAuth(
 
                 config.charset?.let { charset = Charset.forName(it) }
 
-                validate {
-                    service.validate(this, it)
-                }
+                validate { service.validate(this, it) }
 
                 skipWhen(service::skip)
             }
@@ -151,20 +139,14 @@ public fun Application.configureAuth(
 
             configureJWT(name, config) {
                 // Load the token verification config
-                verifier {
-                    service.jwtVerifier(it)
-                }
+                verifier { service.jwtVerifier(it) }
 
-                validate {
-                    // If the token is valid, it also has the indicated audience,
-                    // and has the user's field to compare it with the one we want
-                    // return the JWTPrincipal, otherwise return null
-                    service.validate(this, it)
-                }
+                // If the token is valid, it also has the indicated audience,
+                // and has the user's field to compare it with the one we want
+                // return the JWTPrincipal, otherwise return null
+                validate { service.validate(this, it) }
 
-                challenge { defaultScheme, realm ->
-                    service.challenge(call, defaultScheme, realm)
-                }
+                challenge { defaultScheme, realm -> service.challenge(call, defaultScheme, realm) }
 
                 skipWhen(service::skip)
             }
@@ -177,20 +159,14 @@ public fun Application.configureAuth(
 
             configureJWT(name, config) {
                 // Load the token verification config
-                verifier(service.jwkProvider, config.issuer) {
-                    acceptLeeway(3)
-                }
+                verifier(service.jwkProvider, config.issuer) { acceptLeeway(3) }
 
-                validate {
-                    // If the token is valid, it also has the indicated audience,
-                    // and has the user's field to compare it with the one we want
-                    // return the JWTPrincipal, otherwise return null
-                    service.validate(this, it)
-                }
+                // If the token is valid, it also has the indicated audience,
+                // and has the user's field to compare it with the one we want
+                // return the JWTPrincipal, otherwise return null
+                validate { service.validate(this, it) }
 
-                challenge { defaultScheme, realm ->
-                    service.challenge(call, defaultScheme, realm)
-                }
+                challenge { defaultScheme, realm -> service.challenge(call, defaultScheme, realm) }
 
                 skipWhen(service::skip)
             }
@@ -220,17 +196,10 @@ private fun AuthenticationConfig.configureJWT(
         // With realm, we can get the token from the request
         realm = config.realm
 
-        config.authHeader?.let { header ->
-            authHeader {
-                it.authHeader(header)
-            }
-        }
+        config.authHeader?.let { header -> authHeader { it.authHeader(header) } }
 
         config.authSchemes?.let {
-            authSchemes(
-                it.defaultScheme,
-                *it.additionalSchemes.toTypedArray(),
-            )
+            authSchemes(it.defaultScheme, *it.additionalSchemes.toTypedArray(), )
         }
 
         configure()

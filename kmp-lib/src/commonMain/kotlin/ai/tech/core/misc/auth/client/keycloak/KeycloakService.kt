@@ -79,7 +79,7 @@ public class KeycloakService(
         client.updatePassword(userId, accessToken)
     }
 
-    override suspend fun isValidToken(): Boolean = getToken()?.let {
+    override suspend fun isAuth(): Boolean = getToken()?.let {
         val passedEpochSeconds: Long = Clock.System.now().epochSeconds - keyValue.get<Long>(TOKEN_EPOCH_SECONDS_KEY)
 
         it.refreshExpiresIn == null || passedEpochSeconds <= it.refreshExpiresIn

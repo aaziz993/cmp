@@ -18,8 +18,6 @@ public class DigestAuthService(
     public val userTable: Map<String, ByteArray> = emptyMap()
 ) : AuthProvider, ValidateAuthProvider<DigestCredential> {
 
-    public suspend fun digestProvider(username: String, realm: String): ByteArray? = userTable[username]
-
     override suspend fun validate(call: ApplicationCall, credential: DigestCredential): Any? = principalRepository.transactional {
         val user = find(predicate = "username".f.eq(credential.userName)).singleOrNull()
 
