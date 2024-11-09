@@ -1,6 +1,5 @@
 package ai.tech.core.misc.plugin.auth
 
-import ai.tech.core.misc.auth.model.User
 import ai.tech.core.misc.plugin.auth.jwt.ServerJWTHS256Auth
 import ai.tech.core.misc.plugin.auth.jwt.ServerJWTRS256Auth
 import ai.tech.core.misc.plugin.auth.jwt.model.ServerJWTConfig
@@ -163,7 +162,7 @@ public fun Application.configureAuth(
         it.jwtHs256.filterValues(EnabledConfig::enable).forEach { (name, config) ->
             val service = ServerJWTHS256Auth(name, config)
 
-            configJWT(name, config) {
+            configureJWT(name, config) {
                 // Load the token verification config
                 verifier {
                     service.jwtVerifier(it)
@@ -189,7 +188,7 @@ public fun Application.configureAuth(
         it.jwtRs256.filterValues(EnabledConfig::enable).forEach { (name, config) ->
             val service = ServerJWTRS256Auth(name, config)
 
-            configJWT(name, config) {
+            configureJWT(name, config) {
                 // Load the token verification config
                 verifier(service.jwkProvider, config.issuer) {
                     acceptLeeway(3)
@@ -213,14 +212,11 @@ public fun Application.configureAuth(
         }
 
         it.oauth.filterValues(EnabledConfig::enable).forEach { (name, config) ->
-            val redirects = mutableMapOf<String, String>()
-
-            configOAuth(
+            configureOAuth(
                 serverURL,
                 httpClient,
                 name,
                 config,
-                redirects,
             )
         }
     }
@@ -228,7 +224,7 @@ public fun Application.configureAuth(
     block?.invoke(this)
 }
 
-private fun AuthenticationConfig.configJWT(
+private fun AuthenticationConfig.configureJWT(
     name: String,
     config: ServerJWTConfig,
     configure: JWTAuthenticationProvider.Config.() -> Unit
@@ -254,13 +250,14 @@ private fun AuthenticationConfig.configJWT(
     }
 }
 
-private fun AuthenticationConfig.configOAuth(
+private fun AuthenticationConfig.configureOAuth(
     redirectUrl: String,
     httpClient: HttpClient,
     name: String,
     config: ServerOAuthConfig,
-    redirects: MutableMap<String, String>
 ) = with(config) {
+    val redirects = mutableMapOf<String, String>()
+
     val service = OAuthService(name, config)
 
     oauth(name) {
