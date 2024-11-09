@@ -53,19 +53,17 @@ import org.ufoss.kotysa.Table
 import org.ufoss.kotysa.WholeNumberColumn
 
 public abstract class KotysaCRUDRepository<T : Any>(
-    private val serializer: KSerializer<T>,
-    private val client: R2dbcSqlClient,
-    table: Table<T>,
-    private val createdAtProperty: String? = "createdAt",
-    private val updatedAtProperty: String? = "updatedAt",
-    timeZone: String? = null
+    public val client: R2dbcSqlClient,
+    public val table: Table<T>,
+    public val createdAtProperty: String? = "createdAt",
+    public val updatedAtProperty: String? = "updatedAt",
+    public val timeZone: TimeZone = TimeZone.UTC,
+    public val serializer: KSerializer<T>
 ) : CRUDRepository<T> {
 
     private val logger = LoggerFactory.getLogger(this::class.java)
 
-    private val table = KotysaTable(table, createdAtProperty, updatedAtProperty)
-
-    private val timeZone: TimeZone = timeZone?.let { TimeZone.of(it) } ?: TimeZone.UTC
+    private val kotysaTable = KotysaTable(table, createdAtProperty, updatedAtProperty)
 
     final override suspend fun <R> transactional(byUser: String?, block: suspend CRUDRepository<T>.() -> R): R =
         client.transactional {
@@ -75,7 +73,7 @@ public abstract class KotysaCRUDRepository<T : Any>(
     @Suppress("UNCHECKED_CAST")
     final override suspend fun insert(entities: List<T>) {
         client.insert(
-            *((table.createdAtColumn?.let {
+            *((kotysaTable.createdAtColumn?.let {
                 val temporal = it.value.now!!(timeZone)
                 entities.map { Json.Default.copy(serializer, it) { mapOf(createdAtProperty!! to temporal) } }
             } ?: entities).toTypedArray<Any>() as Array<T>),
@@ -83,7 +81,7 @@ public abstract class KotysaCRUDRepository<T : Any>(
     }
 
     override suspend fun updateSafe(entities: List<T>): List<Boolean> = client.transactional {
-        table.updatedAtColumn?.let {
+        kotysaTable.updatedAtColumn?.let {
             val temporal = it.value.now!!(timeZone)
             entities.map { update(Json.Default.copy(serializer, it) { mapOf(updatedAtProperty!! to temporal) }).execute() > 0L }
         } ?: entities.map { update(it).execute() > 0L }
@@ -121,39 +119,39 @@ public abstract class KotysaCRUDRepository<T : Any>(
     }!!
 
     override suspend fun delete(predicate: BooleanVariable?): Long = predicate?.let {
-        client.deleteFrom(table.table).predicate(it).execute()
-    } ?: client.deleteAllFrom(table.table)
+        client.deleteFrom(kotysaTable.table).predicate(it).execute()
+    } ?: client.deleteAllFrom(kotysaTable.table)
 
     @Suppress("UNCHECKED_CAST")
     override suspend fun <T> aggregate(aggregate: AggregateExpression<T>, predicate: BooleanVariable?): T =
         when (aggregate) {
-            is Count -> aggregate.projection?.let { client.selectCount(table[it.value].column).from(table.table) }
-                ?: client.selectCountFrom(table.table)
+            is Count -> aggregate.projection?.let { client.selectCount(kotysaTable[it.value].column).from(kotysaTable.table) }
+                ?: client.selectCountFrom(kotysaTable.table)
 
-            is Max -> client.selectMax(table[aggregate.projection.value].column as MinMaxColumn<*, *>).from(table.table)
-            is Min -> client.selectMin(table[aggregate.projection.value].column as MinMaxColumn<*, *>).from(table.table)
-            is Avg -> client.selectAvg(table[aggregate.projection.value].column as NumericColumn<*, *>)
-                .from(table.table)
+            is Max -> client.selectMax(kotysaTable[aggregate.projection.value].column as MinMaxColumn<*, *>).from(kotysaTable.table)
+            is Min -> client.selectMin(kotysaTable[aggregate.projection.value].column as MinMaxColumn<*, *>).from(kotysaTable.table)
+            is Avg -> client.selectAvg(kotysaTable[aggregate.projection.value].column as NumericColumn<*, *>)
+                .from(kotysaTable.table)
 
-            is Sum -> client.selectSum(table[aggregate.projection.value].column as WholeNumberColumn<*, *>)
-                .from(table.table)
+            is Sum -> client.selectSum(kotysaTable[aggregate.projection.value].column as WholeNumberColumn<*, *>)
+                .from(kotysaTable.table)
         }.let { select ->
             predicate?.let {
                 select.predicate(it)
             } ?: select
         }.fetchOne() as T
 
-    private fun update(entity: T): CoroutinesSqlClientDeleteOrUpdate.Return = client.update(table.table).let {
-        table.columns.values.fold(it) { acc, v -> v.updateFromEntity(acc, entity) }
-    }.predicate(table.getIdPredicate(entity))
+    private fun update(entity: T): CoroutinesSqlClientDeleteOrUpdate.Return = client.update(kotysaTable.table).let {
+        kotysaTable.columns.values.fold(it) { acc, v -> v.updateFromEntity(acc, entity) }
+    }.predicate(kotysaTable.getIdPredicate(entity))
 
     private fun update(map: Map<String, Any?>): CoroutinesSqlClientDeleteOrUpdate.Update<T> =
-        client.update(table.table).let {
-            map.entries.fold(it) { acc, (k, v) -> table[k].updateFromValue(acc, v) }
+        client.update(kotysaTable.table).let {
+            map.entries.fold(it) { acc, (k, v) -> kotysaTable[k].updateFromValue(acc, v) }
         }
 
     private fun findHelper(sort: List<Order>?, predicate: BooleanVariable?, limitOffset: LimitOffset? = null): Flow<T> =
-        client.selectFrom(table.table).wheres().execute(sort, predicate, limitOffset)
+        client.selectFrom(kotysaTable.table).wheres().execute(sort, predicate, limitOffset)
 
     private fun findHelper(
         projections: List<Variable>,
@@ -162,7 +160,7 @@ public abstract class KotysaCRUDRepository<T : Any>(
         limitOffset: LimitOffset? = null,
     ): Flow<List<Any?>> = client.selects().let {
         projections.filterIsInstance<Projection>().fold(it) { acc, v ->
-            table[v.value].let {
+            kotysaTable[v.value].let {
                 if (v.distinct) {
                     acc.selectDistinct(it.column)
                 }
@@ -173,7 +171,7 @@ public abstract class KotysaCRUDRepository<T : Any>(
                 }
             }
         }
-    }.froms().from(table.table).wheres().execute(sort, predicate, limitOffset)
+    }.froms().from(kotysaTable.table).wheres().execute(sort, predicate, limitOffset)
 
     private fun <R : Any> CoroutinesSqlClientSelect.Wheres<R>.execute(
         sort: List<Order>?,
@@ -182,10 +180,10 @@ public abstract class KotysaCRUDRepository<T : Any>(
     ): Flow<R> = (predicate?.let { predicate(it) } ?: this).let {
         sort?.fold(it.ordersBy()) { acc, v ->
             if (v.ascending) {
-                acc.orderByAsc(table[v.name].column)
+                acc.orderByAsc(kotysaTable[v.name].column)
             }
             else {
-                acc.orderByDesc(table[v.name].column)
+                acc.orderByDesc(kotysaTable[v.name].column)
             }
         } ?: it
     }.let { select ->
@@ -229,7 +227,7 @@ public abstract class KotysaCRUDRepository<T : Any>(
     }
 
     private fun Any.compareExp(expression: Expression, logValue: StringBuilder): Any {
-        val isTemporal = table[(expression.arguments[0] as Field).value].isTemporal
+        val isTemporal = kotysaTable[(expression.arguments[0] as Field).value].isTemporal
 
         return if (expression is Between) {
             if (isTemporal) {
@@ -321,7 +319,7 @@ public abstract class KotysaCRUDRepository<T : Any>(
         val v: Any?
 
         when (value) {
-            is Field -> table[value.value].column.let {
+            is Field -> kotysaTable[value.value].column.let {
                 vkClass = it::class
                 v = it
             }

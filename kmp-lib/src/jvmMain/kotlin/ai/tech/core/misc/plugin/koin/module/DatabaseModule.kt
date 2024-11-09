@@ -1,6 +1,6 @@
 package ai.tech.core.misc.plugin.koin.module
 
-import ai.tech.core.data.database.kotysa.createKotysaR2dbcClient
+import ai.tech.core.data.database.kotysa.createR2dbcClient
 import ai.tech.core.data.database.model.config.DatabaseProviderConfig
 import ai.tech.core.misc.model.config.EnabledConfig
 import org.koin.core.module.Module
@@ -15,7 +15,7 @@ public fun databaseModule(config: Map<String, DatabaseProviderConfig>?): Module 
 
         // R2DBC with Kotysa
         r2dbc.forEach { (name, config) ->
-            single<R2dbcSqlClient>(named(name)) { createKotysaR2dbcClient(config) }
+            single<R2dbcSqlClient>(named(name)) { createR2dbcClient(config) }
         }
     }
 }
