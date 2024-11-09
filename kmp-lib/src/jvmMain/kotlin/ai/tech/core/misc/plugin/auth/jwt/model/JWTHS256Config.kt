@@ -18,6 +18,6 @@ public data class JWTHS256Config(
     override val cookie: CookieConfig? = null,
     override val usernameClaimKeys: List<String> = listOf("preferred_username"),
     override val rolesClaimKeys: List<String> = listOf("realm_access", "roles"),
-    override val throwException: Boolean = false,
+    override val exception: Boolean = false,
     override val enable: Boolean = true
 ) : JWTConfig

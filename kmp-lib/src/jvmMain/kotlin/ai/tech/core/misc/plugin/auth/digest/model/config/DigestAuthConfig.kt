@@ -9,6 +9,8 @@ public data class DigestAuthConfig(
     val realm: String? = null,
     val algorithmName: String? = null,
     override val database: String,
+    override val userTable: String,
+    override val roleTable: String? = null,
     override val cookie: CookieConfig? = null,
     override val enable: Boolean = true
 ) : DatabaseAuthConfig

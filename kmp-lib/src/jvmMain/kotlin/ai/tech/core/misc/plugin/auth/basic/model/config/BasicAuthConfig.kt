@@ -11,7 +11,7 @@ public data class BasicAuthConfig(
     val digestFunction: DigestFunctionConfig? = null,
     override val database: String,
     override val userTable: String,
+    override val roleTable: String? = null,
     override val cookie: CookieConfig? = null,
-    override val throwException: Boolean = false,
     override val enable: Boolean = true
 ) : DatabaseAuthConfig

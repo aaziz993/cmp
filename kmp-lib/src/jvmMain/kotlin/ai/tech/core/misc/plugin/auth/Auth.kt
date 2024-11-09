@@ -1,5 +1,6 @@
 package ai.tech.core.misc.plugin.auth
 
+import ai.tech.core.data.database.crud.CRUDRepository
 import ai.tech.core.misc.plugin.auth.jwt.JWTHS256AuthService
 import ai.tech.core.misc.plugin.auth.jwt.JWTRS256AuthService
 import ai.tech.core.misc.plugin.auth.jwt.model.JWTConfig
@@ -13,6 +14,8 @@ import ai.tech.core.misc.plugin.auth.bearer.BearerAuthService
 import ai.tech.core.misc.plugin.auth.digest.DigestAuthService
 import ai.tech.core.misc.plugin.auth.form.FormAuthService
 import ai.tech.core.misc.plugin.auth.ldap.LDAPAuthService
+import ai.tech.core.misc.plugin.auth.model.PrincipalEntity
+import ai.tech.core.misc.plugin.auth.model.RoleEntity
 import io.ktor.client.*
 import io.ktor.http.auth.*
 import io.ktor.http.parsing.*
@@ -29,12 +32,13 @@ public fun Application.configureAuth(
     serverURL: String,
     httpClient: HttpClient,
     config: AuthConfig?,
+    getPrincipalRepositories: (database: String) -> Pair<CRUDRepository<PrincipalEntity>, CRUDRepository<RoleEntity>?>,
     block: (AuthenticationConfig.() -> Unit)? = null
 ) = authentication {
     config?.let {
 
         it.basic.forEach { (name, config) ->
-            val service = BasicAuthService(name, config)
+            val service = BasicAuthService(name, config,)
 
             basic(name) {
                 config.realm?.let { realm = it }
