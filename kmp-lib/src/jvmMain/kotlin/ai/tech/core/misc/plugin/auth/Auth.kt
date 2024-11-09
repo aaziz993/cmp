@@ -1,8 +1,8 @@
 package ai.tech.core.misc.plugin.auth
 
-import ai.tech.core.misc.plugin.auth.jwt.ServerJWTHS256Auth
-import ai.tech.core.misc.plugin.auth.jwt.ServerJWTRS256Auth
-import ai.tech.core.misc.plugin.auth.jwt.model.ServerJWTConfig
+import ai.tech.core.misc.plugin.auth.jwt.JWTHS256AuthService
+import ai.tech.core.misc.plugin.auth.jwt.JWTRS256AuthService
+import ai.tech.core.misc.plugin.auth.jwt.model.JWTConfig
 import ai.tech.core.misc.plugin.auth.model.config.AuthConfig
 import ai.tech.core.misc.plugin.auth.oauth.OAuthService
 import ai.tech.core.misc.plugin.auth.oauth.model.config.ServerOAuthConfig
@@ -160,7 +160,7 @@ public fun Application.configureAuth(
         }
 
         it.jwtHs256.filterValues(EnabledConfig::enable).forEach { (name, config) ->
-            val service = ServerJWTHS256Auth(name, config)
+            val service = JWTHS256AuthService(name, config)
 
             configureJWT(name, config) {
                 // Load the token verification config
@@ -186,7 +186,7 @@ public fun Application.configureAuth(
         }
 
         it.jwtRs256.filterValues(EnabledConfig::enable).forEach { (name, config) ->
-            val service = ServerJWTRS256Auth(name, config)
+            val service = JWTRS256AuthService(name, config)
 
             configureJWT(name, config) {
                 // Load the token verification config
@@ -226,7 +226,7 @@ public fun Application.configureAuth(
 
 private fun AuthenticationConfig.configureJWT(
     name: String,
-    config: ServerJWTConfig,
+    config: JWTConfig,
     configure: JWTAuthenticationProvider.Config.() -> Unit
 ) {
     jwt(name) {

@@ -6,7 +6,7 @@ import kotlinx.serialization.Serializable
 import kotlin.time.Duration
 
 @Serializable
-public data class ServerJWTHS256Config(
+public data class JWTHS256Config(
     val secret: String? = null,
     override val issuer: String,
     override val audience: String,
@@ -18,6 +18,6 @@ public data class ServerJWTHS256Config(
     override val cookie: CookieConfig? = null,
     override val usernameClaimKeys: List<String> = listOf("preferred_username"),
     override val rolesClaimKeys: List<String> = listOf("realm_access", "roles"),
-    override val throwException: Boolean? = null,
+    override val throwException: Boolean = false,
     override val enable: Boolean = true
-) : ServerJWTConfig
+) : JWTConfig

@@ -4,7 +4,7 @@ import ai.tech.core.misc.auth.model.exception.UnauthenticatedAccessException
 import ai.tech.core.misc.plugin.auth.AuthProvider
 import ai.tech.core.misc.plugin.auth.ChallengeAuthProvider
 import ai.tech.core.misc.plugin.auth.ValidateAuthProvider
-import ai.tech.core.misc.plugin.auth.jwt.model.ServerJWTConfig
+import ai.tech.core.misc.plugin.auth.jwt.model.JWTConfig
 import com.auth0.jwt.interfaces.Claim
 import com.auth0.jwt.interfaces.Payload
 import ai.tech.core.misc.plugin.session.model.UserSession
@@ -15,7 +15,7 @@ import io.ktor.server.response.*
 import io.ktor.server.sessions.*
 import java.util.*
 
-public abstract class AbstractServerJWTAuth<out T : ServerJWTConfig>(public override val name: String, public val config: T) :
+public abstract class AbstractJWTAuthService<out T : JWTConfig>(public override val name: String, public val config: T) :
     AuthProvider,
     ValidateAuthProvider<JWTCredential>,
     ChallengeAuthProvider {

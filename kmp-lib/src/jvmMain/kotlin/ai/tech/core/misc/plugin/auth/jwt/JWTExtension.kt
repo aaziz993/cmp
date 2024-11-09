@@ -5,6 +5,7 @@ import ai.tech.core.misc.type.get
 import com.auth0.jwt.interfaces.Claim
 import com.auth0.jwt.interfaces.Payload
 
+@Suppress("UNCHECKED_CAST")
 public fun <T> Payload.getClaim(
     vararg keys: String,
 ): T =

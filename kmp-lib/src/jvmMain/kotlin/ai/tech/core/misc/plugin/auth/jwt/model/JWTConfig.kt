@@ -4,7 +4,8 @@ import ai.tech.core.misc.plugin.auth.model.config.AuthProviderConfig
 import ai.tech.core.misc.plugin.auth.model.config.AuthSchemesConfig
 import kotlin.time.Duration
 
-public interface ServerJWTConfig : AuthProviderConfig {
+public interface JWTConfig : AuthProviderConfig {
+
     public val issuer: String
     public val audience: String
     public val realm: String
@@ -14,5 +15,4 @@ public interface ServerJWTConfig : AuthProviderConfig {
     public val authSchemes: AuthSchemesConfig?
     public val usernameClaimKeys: List<String>
     public val rolesClaimKeys: List<String>
-    public val throwException: Boolean?
 }
