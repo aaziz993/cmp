@@ -1,7 +1,7 @@
 package ai.tech.core.misc.model.config
 
 import ai.tech.core.data.database.model.config.DatabaseProviderConfig
-import ai.tech.core.misc.plugin.auth.model.model.config.ServerAuthConfig
+import ai.tech.core.misc.plugin.auth.model.config.AuthConfig
 import ai.tech.core.misc.consul.module.config.ConsulConfig
 import ai.tech.core.misc.location.localization.model.config.LocalizationConfig
 import ai.tech.core.misc.model.config.di.KoinConfig
@@ -68,9 +68,8 @@ public data class ServerConfig(
     override val hsts: HSTSConfig? = null,
     override val autoHeadResponse: AutoHeadResponseConfig? = null,
     override val xHttpMethodOverride: XHttpMethodOverrideConfig? = null,
-    override val session: SessionEncryptConfig? = null,
-    override val auth: ServerAuthConfig? = null,
-    override val freeMarker: FreeMarkerConfig? = null,
+    override val auth: AuthConfig? = null,
+    override val freemarker: FreeMarkerConfig? = null,
     override val swagger: SwaggerConfig? = null,
     override val applicationMonitoring: ApplicationMonitoringConfig? = null,
     override val micrometerMetrics: MicrometerMetricsConfig? = null,

@@ -1,16 +1,16 @@
 package ai.tech.core.misc.plugin.session
 
-import ai.tech.core.misc.plugin.auth.model.model.config.ServerAuthConfig
+import ai.tech.core.misc.plugin.auth.model.config.AuthConfig
 import ai.tech.core.misc.model.config.EnabledConfig
 import ai.tech.core.misc.plugin.auth.jwt.model.JWTRS256Config
-import ai.tech.core.misc.plugin.auth.model.oauth.model.config.ServerOAuthConfig
+import ai.tech.core.misc.plugin.auth.oauth.model.config.ServerOAuthConfig
 import ai.tech.core.misc.plugin.session.model.UserSession
 import ai.tech.core.misc.plugin.session.model.config.CookieConfig
 import io.ktor.server.application.*
 import io.ktor.server.sessions.*
 import java.io.File
 
-public fun Application.configureSession(config: ServerAuthConfig?, block: (SessionsConfig.() -> Unit)? = null) {
+public fun Application.configureSession(config: AuthConfig?, block: (SessionsConfig.() -> Unit)? = null) {
     val configBlock: (SessionsConfig.() -> Unit)? = config?.let {
         {
             it.jwtHs256.filterValues(EnabledConfig::enable).forEach { (name, config) ->
