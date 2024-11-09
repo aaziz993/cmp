@@ -6,6 +6,7 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.stateIn
 
+// Provides ability to re-fetch data if the response fails or refresh any time, allowing the user to retry and improve their overall experience.
 public interface RestartableStateFlow<out T> : StateFlow<T> {
     public fun restart()
 }

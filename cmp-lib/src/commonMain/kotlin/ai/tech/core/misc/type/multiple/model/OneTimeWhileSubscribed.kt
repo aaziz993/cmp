@@ -12,6 +12,7 @@ import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.dropWhile
 import kotlinx.coroutines.flow.transformLatest
 
+// Prevents re-emitting flow from WhileSubscribed(5_000)
 public class OneTimeWhileSubscribed(
     private val stopTimeout: Long,
     private val replayExpiration: Long = Long.MAX_VALUE,
