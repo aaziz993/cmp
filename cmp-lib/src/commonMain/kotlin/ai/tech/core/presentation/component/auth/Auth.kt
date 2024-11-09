@@ -1,4 +1,4 @@
-package ai.tech.core.presentation.component
+package ai.tech.core.presentation.component.auth
 
 import ai.tech.core.misc.auth.model.AuthResource
 import ai.tech.core.misc.auth.model.User
