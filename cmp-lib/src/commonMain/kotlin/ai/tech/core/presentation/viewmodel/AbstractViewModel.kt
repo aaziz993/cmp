@@ -12,56 +12,50 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.ExperimentalForInheritanceCoroutinesApi
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.FlowCollector
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.flow
-import kotlinx.coroutines.flow.last
-import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.update
 import org.koin.core.component.KoinComponent
 
+// The reasoning 5_000 was chosen for the stopTimeoutMillis can be found in the official Android documentation, which discusses the ANR (Application Not Responding) timeout threshold.
 public abstract class AbstractViewModel<A : Any> : ViewModel(), KoinComponent {
 
     public abstract val savedStateHandle: SavedStateHandle
 
-    public val state: StateFlow<ViewModelState<Int>> = flow {
-        emit(success(0))
-    }.viewModelStateFlow(initialValue = success(1))
+    public val state: StateFlow<ViewModelState<Int>> = flow { emit(success(0)) }.viewModelStateFlow(success(1))
 
     private val state1: StateFlow<ViewModelState<Int>>
-        field = MutableStateFlow<ViewModelState<Int>>(success(0)).viewModelStateFlow()
+        field = MutableStateFlow(success(0)).viewModelStateFlow()
 
     protected open fun exceptionTransform(exception: Throwable): ViewModelStateException = ViewModelStateException(exception)
 
     public abstract fun action(action: A): Boolean
 
-    // The reasoning 5_000 was chosen for the stopTimeoutMillis can be found in the official Android documentation, which discusses the ANR (Application Not Responding) timeout threshold.
-    protected fun <T : Any> Flow<ViewModelState<T>>.viewModelStateFlow(
+    protected fun <T : Any> Flow<T>.viewModelStateFlow(
+        initialValue: T,
         started: SharingStarted = SharingStarted.OnetimeWhileSubscribed(5_000),
-        initialValue: ViewModelState<T>,
-    ): RestartableStateFlow<ViewModelState<T>> = restartableStateIn(
+    ): RestartableStateFlow<T> = restartableStateIn(
         started,
         viewModelScope,
         initialValue,
     )
 
-    protected fun <T : Any> MutableStateFlow<ViewModelState<T>>.viewModelStateFlow(
-        started: SharingStarted = OnetimeWhileSubscribed(5_000),
-        initialStateData: (suspend MutableStateFlow<ViewModelState<T>>.() -> T)? = null
-    ): RestartableMutableStateFlow<ViewModelState<T>> {
+    protected fun <T : Any> MutableStateFlow<T>.viewModelStateFlow(
+        onStartUpdate: (suspend MutableStateFlow<T>.(T) -> T)? = null,
+        started: SharingStarted = OnetimeWhileSubscribed(5_000)
+    ): RestartableMutableStateFlow<T> {
 
-        val restartableStateFlow = if (initialStateData == null) {
+        val restartableStateFlow = if (onStartUpdate == null) {
             this
         }
         else {
-            onStart { update { it.map { initialStateData() } } }
-        }.viewModelStateFlow(started, value)
+            onStart { update { onStartUpdate(it) } }
+        }.viewModelStateFlow(value, started)
 
-        return object : RestartableMutableStateFlow<ViewModelState<T>> by restartableStateFlow {
+        return object : RestartableMutableStateFlow<T> by restartableStateFlow {
             override fun restart() = restartableStateFlow.restart()
         }
     }
