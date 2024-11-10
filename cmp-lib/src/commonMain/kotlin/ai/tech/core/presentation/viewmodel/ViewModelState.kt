@@ -1,99 +1,46 @@
 package ai.tech.core.presentation.viewmodel
 
-import ai.tech.core.presentation.component.loading.LoadingCircle
-import androidx.compose.runtime.Composable
+import ai.tech.core.presentation.viewmodel.model.exception.ViewModelStateException
+import arrow.core.Either
 
-public sealed class ViewModelState<out D : Any>(
-    public open val data: D? = null,
-    public open val throwable: Throwable? = null
-) {
-    public data object Idle : ViewModelState<Nothing>()
+public sealed interface ViewModelState<T : Any> {
 
-    public data class Loading<out D : Any>(override val data: D) : ViewModelState<D>(data)
+    public val data: T
 
-    public data class Success<out D : Any>(override val data: D) : ViewModelState<D>(data)
+    public data class Loading<T : Any>(override val data: T) : ViewModelState<T>
 
-    public data class Failure<out D : Any>(override val data: D, override val throwable: Throwable) :
-        ViewModelState<D>(data, throwable)
+    public data class Success<T : Any>(override val data: T) : ViewModelState<T>
 
-    public inline fun onLoading(
-        elseBlock: (ViewModelState<D>) -> Unit = {},
-        block: (D) -> Unit = {},
-    ): ViewModelState<D> = also {
-        if (it is Loading) {
-            block(it.data)
-        } else {
-            elseBlock(it)
-        }
+    public data class Failure<T : Any>(override val data: T, val exception: ViewModelStateException) :
+        ViewModelState<T>
+
+    public suspend fun map(
+        exceptionTransform: (Throwable) -> ViewModelStateException = ::ViewModelStateException,
+        block: suspend () -> T): ViewModelState<T> = try {
+        Loading(block())
+    }
+    catch (e: Throwable) {
+        Failure(data, exceptionTransform(e))
     }
 
-    public inline fun onSuccess(
-        elseBlock: (ViewModelState<D>) -> Unit = {},
-        block: (D) -> Unit = {},
-    ): ViewModelState<D> = also {
-        if (it is Success) {
-            block(it.data)
-        } else {
-            elseBlock(it)
-        }
-    }
+    public suspend fun mapResult(
+        exceptionTransform: (Throwable) -> ViewModelStateException = ::ViewModelStateException,
+        block: suspend () -> Result<T>): ViewModelState<T> = block().fold(
+        onSuccess = { Success(it) },
+        onFailure = { Failure(data, exceptionTransform(it)) },
+    )
 
-
-    public inline fun onFailure(
-        elseBlock: (ViewModelState<D>) -> Unit = { },
-        block: (data: D, throwable: Throwable) -> Unit = { _, _ -> },
-    ): ViewModelState<D> = also {
-        if (it is Failure) {
-            block(it.data, it.throwable)
-        } else {
-            elseBlock(it)
-        }
-    }
-
-    @Composable
-    public inline fun onLoadingComposable(
-        elseBlock: @Composable (ViewModelState<D>) -> Unit = {},
-        block: @Composable (D) -> Unit = { LoadingCircle() },
-    ): ViewModelState<D> = also {
-        if (it is Loading) {
-            block(it.data)
-        } else {
-            elseBlock(it)
-        }
-    }
-
-    @Composable
-    public inline fun onSuccessComposable(
-        elseBlock: @Composable (ViewModelState<D>) -> Unit = {},
-        block: @Composable (D) -> Unit = {},
-    ): ViewModelState<D> = also {
-        if (it is Success) {
-            block(it.data)
-        } else {
-            elseBlock(it)
-        }
-    }
-
-    @Composable
-    public inline fun onFailureComposable(
-        elseBlock: @Composable (ViewModelState<D>) -> Unit = { },
-        block: @Composable (data: D, throwable: Throwable) -> Unit = { _, _ -> },
-    ): ViewModelState<D> = also {
-        if (it is Failure) {
-            block(it.data, it.throwable)
-        } else {
-            elseBlock(it)
-        }
-    }
+    public suspend fun mapEither(
+        exceptionTransform: (Throwable) -> ViewModelStateException = ::ViewModelStateException,
+        block: suspend () -> Either<T, Throwable>
+    ): ViewModelState<T> = block().fold(
+        ifLeft = { Success(it) },
+        ifRight = { Failure(data, exceptionTransform(it)) },
+    )
 }
 
-public fun <S : Any> loading(data: S): ViewModelState.Loading<S> = ViewModelState.Loading(data)
+public fun <T : Any> loading(data: T): ViewModelState.Loading<T> = ViewModelState.Loading(data)
 
-public fun <S : Any> success(data: S): ViewModelState.Success<S> = ViewModelState.Success(data)
+public fun <T : Any> success(data: T): ViewModelState.Success<T> = ViewModelState.Success(data)
 
-public fun <S : Any> failure(data: S, throwable: Throwable): ViewModelState.Failure<S> = ViewModelState.Failure(data, throwable)
-
-//fun <T : Any> Result<T>.toViewState(): Unit = fold(
-//    onSuccess = { success(it) },
-//    onFailure = { failure(it) },
-//)
+public fun <T : Any> failure(data: T, exception: ViewModelStateException): ViewModelState.Failure<T> = ViewModelState.Failure(data, exception)

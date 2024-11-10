@@ -22,13 +22,15 @@ import ai.tech.auth.forgotpassword.presentation.ForgotPasswordScreen
 import ai.tech.auth.login.presentation.LoginScreen
 import ai.tech.auth.profile.presentation.ProfileScreen
 import ai.tech.core.misc.di.koinViewModel
+import ai.tech.core.presentation.event.navigator.NavigationAction
 import ai.tech.core.presentation.navigation.Destination
 import ai.tech.home.main.MainScreen
 import ai.tech.home.map.MapScreen
 import ai.tech.home.settings.SettingsScreen
-import ai.tech.navigation.presentation.model.NavViewModel
+import ai.tech.navigation.presentation.viewmodel.NavViewModel
 import ai.tech.wallet.balance.BalanceScreen
 import ai.tech.wallet.crypto.CryptoScreen
+import ai.tech.wallet.stock.StockScreen
 import kotlin.jvm.JvmSuppressWildcards
 import kotlin.reflect.KClass
 import kotlin.reflect.KType
@@ -81,167 +83,125 @@ public fun NavScreenNavHost(
     ) {
 
         composable<Destination.HomeGraph.Main>(
-                deepLinks = Destination.HomeGraph.Main.deepLinks,
+            Destination.HomeGraph.Main.typeMap,
+            Destination.HomeGraph.Main.deepLinks,
         ) {
             val navViewModel =
                 koinViewModel<Destination, NavViewModel>(navController = navController, backStackEntry = it)
 
-            MainScreen(
-                    {
-
-                    },
-            ) {
-
+            MainScreen({ navViewModel.action(NavigationAction.SafeNavigation.Navigate(it)) }) {
+                navViewModel.action(NavigationAction.NavigateBack)
             }
         }
 
         composable<Destination.HomeGraph.Map>(
-                deepLinks = Destination.HomeGraph.Map.deepLinks,
+            Destination.HomeGraph.Map.typeMap,
+            Destination.HomeGraph.Map.deepLinks,
         ) {
             val navViewModel =
                 koinViewModel<Destination, NavViewModel>(navController = navController, backStackEntry = it)
 
-            MapScreen(
-                    {
-
-                    },
-            ) {
-
+            MapScreen({ navViewModel.action(NavigationAction.SafeNavigation.Navigate(it)) }) {
+                navViewModel.action(NavigationAction.NavigateBack)
             }
         }
 
         composable<Destination.HomeGraph.Settings>(
-                deepLinks = Destination.HomeGraph.Settings.deepLinks,
+            Destination.HomeGraph.Settings.typeMap,
+            Destination.HomeGraph.Settings.deepLinks,
         ) {
             val navViewModel =
                 koinViewModel<Destination, NavViewModel>(navController = navController, backStackEntry = it)
 
-            SettingsScreen(
-                    {
-
-                    },
-            ) {
-
+            SettingsScreen({ navViewModel.action(NavigationAction.SafeNavigation.Navigate(it)) }) {
+                navViewModel.action(NavigationAction.NavigateBack)
             }
         }
 
         composable<Destination.HomeGraph.About>(
-                deepLinks = Destination.HomeGraph.About.deepLinks,
+            Destination.HomeGraph.About.typeMap,
+            Destination.HomeGraph.About.deepLinks,
         ) {
             val navViewModel =
                 koinViewModel<Destination, NavViewModel>(navController = navController, backStackEntry = it)
 
-            AboutScreen(
-                    {
-
-                    },
-            ) {
-
+            AboutScreen({ navViewModel.action(NavigationAction.SafeNavigation.Navigate(it)) }) {
+                navViewModel.action(NavigationAction.NavigateBack)
             }
         }
 
         navigation<Destination.AuthGraph>(Destination.Login) {
             composable<Destination.Login>(
-                    deepLinks = Destination.Login.deepLinks,
+                Destination.Login.typeMap,
+                Destination.Login.deepLinks,
             ) {
                 val navViewModel =
                     koinViewModel<Destination, NavViewModel>(navController = navController, backStackEntry = it)
 
-                Button(
-                        onClick = {
-                            navController.navigate("calendar") {
-                                popUpTo(Destination.AuthGraph) {
-                                    inclusive = true
-                                }
-                            }
-                        },
-                ) {
-
-                }
-
-                LoginScreen(
-                        {
-
-                        },
-                ) {
-
+                LoginScreen({ navViewModel.action(NavigationAction.SafeNavigation.Navigate(it)) }) {
+                    navViewModel.action(NavigationAction.NavigateBack)
                 }
             }
 
             composable<Destination.ForgotPassword>(
-                    deepLinks = Destination.ForgotPassword.deepLinks,
+                Destination.ForgotPassword.typeMap,
+                Destination.ForgotPassword.deepLinks,
             ) {
                 val navViewModel =
                     koinViewModel<Destination, NavViewModel>(navController = navController, backStackEntry = it)
 
-                ForgotPasswordScreen(
-                        {
-
-                        },
-                ) {
-
+                ForgotPasswordScreen({ navViewModel.action(NavigationAction.SafeNavigation.Navigate(it)) }) {
+                    navViewModel.action(NavigationAction.NavigateBack)
                 }
             }
 
             composable<Destination.Profile>(
-                    deepLinks = Destination.Profile.deepLinks,
+                Destination.Profile.typeMap,
+                Destination.Profile.deepLinks,
             ) {
                 val navViewModel =
                     koinViewModel<Destination, NavViewModel>(navController = navController, backStackEntry = it)
 
-                ProfileScreen(
-                        {
-
-                        },
-                ) {
-
+                ProfileScreen({ navViewModel.action(NavigationAction.SafeNavigation.Navigate(it)) }) {
+                    navViewModel.action(NavigationAction.NavigateBack)
                 }
             }
         }
 
         navigation<Destination.WalletGraph>(Destination.WalletGraph.Balance) {
             composable<Destination.WalletGraph.Balance>(
-                    deepLinks = Destination.WalletGraph.Balance.deepLinks,
+                Destination.WalletGraph.Balance.typeMap,
+                Destination.WalletGraph.Balance.deepLinks,
             ) {
                 val navViewModel =
                     koinViewModel<Destination, NavViewModel>(navController = navController, backStackEntry = it)
 
-                BalanceScreen(
-                        {
-
-                        },
-                ) {
-
+                BalanceScreen({ navViewModel.action(NavigationAction.SafeNavigation.Navigate(it)) }) {
+                    navViewModel.action(NavigationAction.NavigateBack)
                 }
             }
 
             composable<Destination.WalletGraph.Crypto>(
-                    deepLinks = Destination.WalletGraph.Crypto.deepLinks,
+                Destination.WalletGraph.Crypto.typeMap,
+                Destination.WalletGraph.Crypto.deepLinks,
             ) {
                 val navViewModel =
                     koinViewModel<Destination, NavViewModel>(navController = navController, backStackEntry = it)
 
-                CryptoScreen(
-                        {
-
-                        },
-                ) {
-
+                CryptoScreen({ navViewModel.action(NavigationAction.SafeNavigation.Navigate(it)) }) {
+                    navViewModel.action(NavigationAction.NavigateBack)
                 }
             }
 
             composable<Destination.WalletGraph.Stock>(
-                    deepLinks = Destination.WalletGraph.Stock.deepLinks,
+                Destination.WalletGraph.Stock.typeMap,
+                Destination.WalletGraph.Stock.deepLinks,
             ) {
                 val navViewModel =
                     koinViewModel<Destination, NavViewModel>(navController = navController, backStackEntry = it)
 
-                CryptoScreen(
-                        {
-
-                        },
-                ) {
-
+                StockScreen({ navViewModel.action(NavigationAction.SafeNavigation.Navigate(it)) }) {
+                    navViewModel.action(NavigationAction.NavigateBack)
                 }
             }
         }

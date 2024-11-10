@@ -15,11 +15,15 @@ import kotlinx.serialization.Serializable
 public sealed interface Destination {
     @Serializable
     public data object HomeGraph : Destination {
+
         public val deepLinks: List<NavDeepLink>
             get() = Destination.deepLinks.map { navDeepLink<Main>("${it}home") }
 
         @Serializable
         public data object Main : Destination {
+
+            public val typeMap: Map<KType, NavType<*>> = emptyMap()
+
             public val deepLinks: List<NavDeepLink>
                 get() = HomeGraph.deepLinks.map { navDeepLink<Main>("${it}main") }
 
@@ -33,6 +37,8 @@ public sealed interface Destination {
 
         @Serializable
         public data object Map : Destination {
+            public val typeMap: Map<KType, NavType<*>> = emptyMap()
+
             public val deepLinks: List<NavDeepLink>
                 get() = HomeGraph.deepLinks.map { navDeepLink<Map>("${it}map") }
 
@@ -46,6 +52,8 @@ public sealed interface Destination {
 
         @Serializable
         public data object Settings : Destination {
+            public val typeMap: Map<KType, NavType<*>> = emptyMap()
+
             public val deepLinks: List<NavDeepLink>
                 get() = HomeGraph.deepLinks.map { navDeepLink<Settings>("${it}settings") }
 
@@ -53,12 +61,14 @@ public sealed interface Destination {
                 text = { Text(label) },
                 icon = { Icon(Icons.Outlined.Settings, label) },
                 selectedIcon = { Icon(Icons.Filled.Settings, label) },
-                route = Settings
+                route = Settings,
             )
         }
 
         @Serializable
         public data object About : Destination {
+            public val typeMap: Map<KType, NavType<*>> = emptyMap()
+
             public val deepLinks: List<NavDeepLink>
                 get() = HomeGraph.deepLinks.map { navDeepLink<About>("${it}about") }
 
@@ -66,19 +76,23 @@ public sealed interface Destination {
                 text = { Text(label) },
                 icon = { Icon(Icons.Outlined.Info, label) },
                 selectedIcon = { Icon(Icons.Filled.Info, label) },
-                route = About
+                route = About,
             )
         }
     }
 
     @Serializable
     public data object AuthGraph : Destination {
+        public val typeMap: ai.tech.core.presentation.navigation.Destination.HomeGraph.Map<KType, NavType<*>> = emptyMap()
+
         public val deepLinks: List<String>
             get() = Destination.deepLinks.map { "${it}auth/" }
     }
 
     @Serializable
     public data object Login : Destination {
+        public val typeMap: Map<KType, NavType<*>> = emptyMap()
+
         public val deepLinks: List<NavDeepLink>
             get() = AuthGraph.deepLinks.map { navDeepLink<Login>("${it}login") }
 
@@ -92,7 +106,10 @@ public sealed interface Destination {
 
     @Serializable
     public data class ForgotPassword(val username: String) : Destination {
+
         public companion object {
+            public val typeMap: ai.tech.core.presentation.navigation.Destination.HomeGraph.Map<KType, NavType<*>> = emptyMap()
+
             public val deepLinks: List<NavDeepLink> =
                 AuthGraph.deepLinks.map { navDeepLink<ForgotPassword>("${it}forgotpassword") }
         }
@@ -100,6 +117,8 @@ public sealed interface Destination {
 
     @Serializable
     public data object Profile : Destination {
+        public val typeMap: ai.tech.core.presentation.navigation.Destination.HomeGraph.Map<KType, NavType<*>> = emptyMap()
+
         public val deepLinks: List<NavDeepLink>
             get() = AuthGraph.deepLinks.map { navDeepLink<Profile>("${it}profile") }
 
@@ -113,11 +132,15 @@ public sealed interface Destination {
 
     @Serializable
     public data object WalletGraph : Destination {
+        public val typeMap: ai.tech.core.presentation.navigation.Destination.HomeGraph.Map<KType, NavType<*>> = emptyMap()
+
         public val deepLinks: List<String>
             get() = Destination.deepLinks.map { "${it}wallet/" }
 
         @Serializable
         public data object Balance : Destination {
+            public val typeMap: ai.tech.core.presentation.navigation.Destination.HomeGraph.Map<KType, NavType<*>> = emptyMap()
+
             public val deepLinks: List<NavDeepLink>
                 get() = WalletGraph.deepLinks.map { navDeepLink<Balance>("${it}balance") }
 
@@ -131,6 +154,8 @@ public sealed interface Destination {
 
         @Serializable
         public data object Crypto : Destination {
+            public val typeMap: ai.tech.core.presentation.navigation.Destination.HomeGraph.Map<KType, NavType<*>> = emptyMap()
+
             public val deepLinks: List<NavDeepLink>
                 get() = WalletGraph.deepLinks.map { navDeepLink<Crypto>("${it}crypto") }
 
@@ -144,6 +169,8 @@ public sealed interface Destination {
 
         @Serializable
         public data object Stock : Destination {
+            public val typeMap: HomeGraph.Map<KType, NavType<*>> = emptyMap()
+
             public val deepLinks: List<NavDeepLink>
                 get() = WalletGraph.deepLinks.map { navDeepLink<Stock>("${it}stock") }
 
@@ -157,6 +184,7 @@ public sealed interface Destination {
     }
 
     public companion object {
+
         public val deepLinks: List<String> = listOf("https://", "http://")
 
         public fun navigationItems(
