@@ -4,10 +4,7 @@ package ai.tech.core.presentation.viewmodel
 
 import ai.tech.core.misc.type.multiple.model.OnetimeWhileSubscribed
 import ai.tech.core.misc.type.multiple.model.RestartableStateFlow
-import ai.tech.core.misc.type.multiple.model.restartableStateIn
-import ai.tech.core.presentation.viewmodel.ViewModelState.Failure
-import ai.tech.core.presentation.viewmodel.ViewModelState.Loading
-import ai.tech.core.presentation.viewmodel.ViewModelState.Success
+import ai.tech.core.misc.type.multiple.restartableStateIn
 import ai.tech.core.presentation.viewmodel.model.RestartableMutableStateFlow
 import ai.tech.core.presentation.viewmodel.model.exception.ViewModelStateException
 import androidx.lifecycle.SavedStateHandle
@@ -19,7 +16,6 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.FlowCollector
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
-import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.update
@@ -30,24 +26,26 @@ public abstract class AbstractViewModel<A : Any> : ViewModel(), KoinComponent {
 
     public abstract val savedStateHandle: SavedStateHandle
 
-    public val state: StateFlow<ViewModelState<Int>> = viewModelStateFlow(success(1)) { emit(success(0)) }
-
-    private val state1: StateFlow<ViewModelState<Int>>
-        field = viewModelStateFlow(success(1))
-
     public open fun exceptionTransform(exception: Throwable): ViewModelStateException = ViewModelStateException(exception)
 
-    public suspend fun <T : Any> map(
+    public suspend fun <T : Any> ViewModelState<T>.map(
         block: suspend () -> T
-    ): ViewModelState<T> = null
+    ): ViewModelState<T> = map(::exceptionTransform, block)
+
+    public suspend fun <T : Any> ViewModelState<T>.mapResult(
+        block: suspend () -> Result<T>): ViewModelState<T> = mapResult(::exceptionTransform, block)
+
+    public suspend fun <T : Any> ViewModelState<T>.mapEither(
+        block: suspend () -> Either<T, Throwable>
+    ): ViewModelState<T> = mapEither(::exceptionTransform, block)
 
     public abstract fun action(action: A): Boolean
 
     protected fun <T : ViewModelState<*>> viewModelStateFlow(
         initialValue: T,
         started: SharingStarted = SharingStarted.OnetimeWhileSubscribed(5_000),
-        block: suspend FlowCollector<T>.() -> Unit
-    ): RestartableStateFlow<T> = flow(block).viewModelStateFlow(initialValue, started)
+        block: suspend FlowCollector<T>.(T) -> Unit
+    ): RestartableStateFlow<T> = flow { block(initialValue) }.viewModelStateFlow(initialValue, started)
 
     protected fun <T : ViewModelState<*>> viewModelStateFlow(
         initialValue: T,

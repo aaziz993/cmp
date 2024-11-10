@@ -15,7 +15,7 @@ public sealed interface ViewModelState<T : Any> {
         ViewModelState<T>
 
     public suspend fun map(
-        exceptionTransform: (Throwable) -> ViewModelStateException = ::ViewModelStateException,
+        exceptionTransform: (Throwable) -> ViewModelStateException,
         block: suspend () -> T): ViewModelState<T> = try {
         Loading(block())
     }
@@ -24,14 +24,14 @@ public sealed interface ViewModelState<T : Any> {
     }
 
     public suspend fun mapResult(
-        exceptionTransform: (Throwable) -> ViewModelStateException = ::ViewModelStateException,
+        exceptionTransform: (Throwable) -> ViewModelStateException,
         block: suspend () -> Result<T>): ViewModelState<T> = block().fold(
         onSuccess = { Success(it) },
         onFailure = { Failure(data, exceptionTransform(it)) },
     )
 
     public suspend fun mapEither(
-        exceptionTransform: (Throwable) -> ViewModelStateException = ::ViewModelStateException,
+        exceptionTransform: (Throwable) -> ViewModelStateException,
         block: suspend () -> Either<T, Throwable>
     ): ViewModelState<T> = block().fold(
         ifLeft = { Success(it) },
