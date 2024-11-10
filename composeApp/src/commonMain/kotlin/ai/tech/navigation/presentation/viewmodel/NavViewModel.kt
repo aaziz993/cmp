@@ -17,9 +17,5 @@ public class NavViewModel(
     override val savedStateHandle: SavedStateHandle
 ) : AbstractViewModel<NavigationAction>() {
 
-    private val state1: StateFlow<ViewModelState<Int>>
-        field = MutableStateFlow(success(0)).viewModelStateFlow()
-
-
     override fun action(action: NavigationAction): Boolean = navigator.navigate(action)
 }
