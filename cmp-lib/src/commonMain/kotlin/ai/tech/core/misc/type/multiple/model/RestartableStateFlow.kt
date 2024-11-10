@@ -5,7 +5,6 @@ package ai.tech.core.misc.type.multiple.model
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.ExperimentalForInheritanceCoroutinesApi
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.stateIn
@@ -14,16 +13,4 @@ import kotlinx.coroutines.flow.stateIn
 public interface RestartableStateFlow<out T> : StateFlow<T> {
 
     public fun restart()
-}
-
-public fun <T> Flow<T>.restartableStateIn(
-    started: SharingStarted,
-    scope: CoroutineScope,
-    initialValue: T
-): RestartableStateFlow<T> {
-    val sharingRestartable = started.makeRestartable()
-    val stateFlow = stateIn(scope, sharingRestartable, initialValue)
-    return object : RestartableStateFlow<T> by stateFlow {
-        override fun restart() = sharingRestartable.restart()
-    }
 }
