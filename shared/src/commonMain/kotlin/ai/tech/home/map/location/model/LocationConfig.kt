@@ -4,6 +4,6 @@ import core.presentation.component.datatable.model.config.CRUDTableConfig
 import kotlinx.serialization.Serializable
 
 @Serializable
-public data class LocationConfig(
+public data class GeolocationConfig(
     val crudTable: CRUDTableConfig = CRUDTableConfig()
 )

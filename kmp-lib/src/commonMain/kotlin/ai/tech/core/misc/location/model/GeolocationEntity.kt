@@ -5,7 +5,7 @@ import kotlinx.datetime.LocalDateTime
 import kotlinx.serialization.Serializable
 
 @Serializable
-public data class LocationEntity(
+public data class GeolocationEntity(
     override val latitude: Double,
     override val longitude: Double,
     override val altitude: Double = 0.0,

@@ -7,30 +7,30 @@ import org.ufoss.kotysa.columns.LongDbIdentityColumnNotNull
 import org.ufoss.kotysa.columns.StringDbVarcharColumnNullable
 import org.ufoss.kotysa.timestamp
 
-public object LocationTable : GenericTable<LocationEntity>("location") {
+public object LocationTable : GenericTable<GeolocationEntity>("location") {
 
     // Primary key
-    public val id: LongDbIdentityColumnNotNull<LocationEntity> = bigInt(LocationEntity::id)
+    public val id: LongDbIdentityColumnNotNull<GeolocationEntity> = bigInt(GeolocationEntity::id)
         .identity()
         .primaryKey("PK_location")
 
     // Other fields
-    public val longitude: DoubleDbDoublePrecisionColumnNotNull<LocationEntity> =
-        doublePrecision(LocationEntity::longitude)
-    public val latitude: DoubleDbDoublePrecisionColumnNotNull<LocationEntity> =
-        doublePrecision(LocationEntity::latitude)
-    public val altitude: DoubleDbDoublePrecisionColumnNotNull<LocationEntity> =
-        doublePrecision(LocationEntity::altitude)
-    public val identifier: StringDbVarcharColumnNullable<LocationEntity> = varchar(LocationEntity::identifier).unique()
-    public val description: StringDbVarcharColumnNullable<LocationEntity> = varchar(LocationEntity::description)
+    public val longitude: DoubleDbDoublePrecisionColumnNotNull<GeolocationEntity> =
+        doublePrecision(GeolocationEntity::longitude)
+    public val latitude: DoubleDbDoublePrecisionColumnNotNull<GeolocationEntity> =
+        doublePrecision(GeolocationEntity::latitude)
+    public val altitude: DoubleDbDoublePrecisionColumnNotNull<GeolocationEntity> =
+        doublePrecision(GeolocationEntity::altitude)
+    public val identifier: StringDbVarcharColumnNullable<GeolocationEntity> = varchar(GeolocationEntity::identifier).unique()
+    public val description: StringDbVarcharColumnNullable<GeolocationEntity> = varchar(GeolocationEntity::description)
 
     // metadata
-    public val createdBy: StringDbVarcharColumnNullable<LocationEntity> =
-        varchar(LocationEntity::createdBy)
-    public val createdAt: KotlinxLocalDateTimeDbTimestampColumnNullable<LocationEntity> =
-        timestamp(LocationEntity::createdAt)
-    public val updatedBy: StringDbVarcharColumnNullable<LocationEntity> =
-        varchar(LocationEntity::updatedBy)
-    public val updatedAt: KotlinxLocalDateTimeDbTimestampColumnNullable<LocationEntity> =
-        timestamp(LocationEntity::updatedAt)
+    public val createdBy: StringDbVarcharColumnNullable<GeolocationEntity> =
+        varchar(GeolocationEntity::createdBy)
+    public val createdAt: KotlinxLocalDateTimeDbTimestampColumnNullable<GeolocationEntity> =
+        timestamp(GeolocationEntity::createdAt)
+    public val updatedBy: StringDbVarcharColumnNullable<GeolocationEntity> =
+        varchar(GeolocationEntity::updatedBy)
+    public val updatedAt: KotlinxLocalDateTimeDbTimestampColumnNullable<GeolocationEntity> =
+        timestamp(GeolocationEntity::updatedAt)
 }

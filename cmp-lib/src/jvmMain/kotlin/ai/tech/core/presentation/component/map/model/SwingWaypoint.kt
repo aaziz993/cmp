@@ -1,7 +1,7 @@
 package ai.tech.core.presentation.component.map.model
 
 import ai.tech.core.misc.location.model.Location
-import ai.tech.core.misc.location.model.LocationImpl
+import ai.tech.core.misc.location.model.Geolocation
 import org.jxmapviewer.viewer.DefaultWaypoint
 import org.jxmapviewer.viewer.GeoPosition
 import java.awt.Dimension
@@ -81,4 +81,4 @@ public fun Location.toSwingWaypoint(
 ): SwingWaypoint = SwingWaypoint(toGeoPosition(), identifier, description, size, offset, image, onHyperLinkClick)
 
 public fun SwingWaypoint.toLocation(): Location =
-    LocationImpl(position.latitude, position.longitude, 0.0, id, description)
+    Geolocation(position.latitude, position.longitude, 0.0, id, description)
