@@ -12,8 +12,8 @@ import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.dropWhile
 import kotlinx.coroutines.flow.transformLatest
 
-// Prevents re-emitting flow from WhileSubscribed(5_000)
-public class OneTimeWhileSubscribed(
+// Prevent re-emitting flow from WhileSubscribed(5_000)
+public class OnetimeWhileSubscribed internal constructor(
     private val stopTimeout: Long,
     private val replayExpiration: Long = Long.MAX_VALUE,
 ) : SharingStarted {
@@ -50,3 +50,9 @@ public class OneTimeWhileSubscribed(
             } // don't emit any STOP/RESET_BUFFER to start with, only START
             .distinctUntilChanged() // just in case somebody forgets it, don't leak our multiple sending of START
 }
+
+@Suppress("FunctionName")
+public fun SharingStarted.Companion.OnetimeWhileSubscribed(
+    stopTimeoutMillis: Long = 0,
+    replayExpirationMillis: Long = Long.MAX_VALUE
+): SharingStarted = OnetimeWhileSubscribed(stopTimeoutMillis, replayExpirationMillis)

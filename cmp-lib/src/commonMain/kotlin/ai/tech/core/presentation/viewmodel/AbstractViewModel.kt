@@ -1,17 +1,53 @@
 package ai.tech.core.presentation.viewmodel
 
+import ai.tech.core.misc.type.multiple.model.OnetimeWhileSubscribed
+import ai.tech.core.misc.type.multiple.model.RestartableStateFlow
+import ai.tech.core.misc.type.multiple.model.restartableStateIn
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import kotlinx.coroutines.ExperimentalForInheritanceCoroutinesApi
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.FlowCollector
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.onStart
+import kotlinx.coroutines.flow.update
 import org.koin.core.component.KoinComponent
 
-public abstract class AbstractViewModel<S : Any, A : Any> : ViewModel(), KoinComponent {
+
+
+public abstract class AbstractViewModel : ViewModel(), KoinComponent {
 
     public abstract val savedStateHandle: SavedStateHandle
 
-    public val state: StateFlow<ViewState<S>>
-        field = MutableStateFlow(ViewState.Uninitialized)
+    public val state: RestartableStateFlow<ViewModelState<Int>> = flow {
+        emit(loading(1))
+    }.viewModelStateFlow()
+
+    // The reasoning 5_000 was chosen for the stopTimeoutMillis can be found in the official Android documentation, which discusses the ANR (Application Not Responding) timeout threshold.
+    public fun <T : Any> Flow<ViewModelState<T>>.viewModelStateFlow(
+        started: SharingStarted = SharingStarted.OnetimeWhileSubscribed(5_000),
+        initialValue: ViewModelState<T> = ViewModelState.Idle,
+    ): RestartableStateFlow<ViewModelState<T>> = restartableStateIn(
+        started,
+        viewModelScope,
+        initialValue,
+    )
+
+    @OptIn(ExperimentalForInheritanceCoroutinesApi::class)
+    public fun <T : Any> MutableStateFlow<ViewModelState<T>>.viewModelStateFlow(
+        started: SharingStarted = OnetimeWhileSubscribed(5_000),
+        initialValue: ViewModelState<T> = ViewModelState.Idle,
+        fetchData: suspend () -> T
+    ): RestartableStateFlow<ViewModelState<T>> {
+        val mutableStateFlow = MutableStateFlow(initialValue)
+
+        return mutableStateFlow.onStart {
+            mutableStateFlow.update { success(fetchData()) }
+        }.viewModelStateFlow(started, initialValue)
+    }
 
     //    protected open fun onInitialized(): Unit = Unit
 //
