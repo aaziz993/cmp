@@ -6,6 +6,6 @@ import kotlinx.serialization.Serializable
 @Serializable
 public data class DatabaseProviderConfig(
     val connection: DatabaseConnectionConfig,
-    val createTables: List<CreateTableConfig> = emptyList(),
+    val table: List<TableConfig> = emptyList(),
     override val enable: Boolean = true
 ) : EnabledConfig

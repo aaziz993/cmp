@@ -1,10 +1,12 @@
 package ai.tech.core.data.database.kotysa
 
-import ai.tech.core.data.database.model.config.CreateTableConfig
+import ai.tech.core.data.database.model.config.TableConfig
 import ai.tech.core.data.database.model.config.DatabaseProviderConfig
+import ai.tech.core.data.database.model.config.TableCreation
 import ai.tech.core.data.database.r2dbc.*
 import java.lang.UnsupportedOperationException
-import kotlin.collections.mutableSetOf
+import kotlin.collections.contains
+import kotlin.collections.single
 import kotlin.reflect.KClass
 import kotlin.reflect.full.declaredMemberProperties
 import org.reflections.Reflections
@@ -38,59 +40,65 @@ public val <T : Any> Table<T>.foreignKeys: Set<ForeignKey<T, *>>
     get() = this::class.declaredMemberProperties.find { it.name == "kotysaForeignKeys" }!!.getter.call(this)!! as Set<ForeignKey<T, *>>
 
 @Suppress("UNCHECKED_CAST")
-public val <T : Any, U : Any> ForeignKey<T, U>.referencesMap: Map<AbstractDbColumn<T, *>, AbstractDbColumn<U, *>>
+public val <T : Any, U : Any> ForeignKey<T, U>.referencedColumns: Map<AbstractDbColumn<T, *>, AbstractDbColumn<U, *>>
     get() = this::class.declaredMemberProperties.find { it.name == "references" }!!.getter.call(this)!! as Map<AbstractDbColumn<T, *>, AbstractDbColumn<U, *>>
+
+@Suppress("UNCHECKED_CAST")
+public fun <T : Any, U : Any> ForeignKey<T, U>.referencedTables(tables: List<Table<*>>): List<Table<*>> = referencedColumns.keys.map { referencedColumn ->
+    tables.single { table -> table.columns.contains(referencedColumn) }
+}
 
 public suspend fun createKotysaR2dbcSqlClient(config: DatabaseProviderConfig): R2dbcSqlClient {
     val r2dbcConnectionFactory = createR2dbcConnectionFactory(config.connection)
 
-    val createTables: List<Pair<List<Table<*>>, Boolean>>
+    val createTables: List<Pair<List<Table<*>>, TableCreation>>
 
     val client: R2dbcSqlClient
 
     when (config.connection.driver) {
         "h2" -> {
-            createTables = config.createTables.map { getKotysaH2Tables(it) to it.ifNotExists }
+            createTables = config.table.map { getKotysaH2Tables(it) to it.create }
             client = r2dbcConnectionFactory.coSqlClient(tables().h2(* createTables.flatMap { (tables, _) -> tables }.toTypedArray()))
         }
 
         "postgresql" -> {
-            createTables = config.createTables.map { getKotysaPostgresqlTables(it) to it.ifNotExists }
+            createTables = config.table.map { getKotysaPostgresqlTables(it) to it.create }
             client = r2dbcConnectionFactory.coSqlClient(tables().postgresql(*createTables.flatMap { (tables, _) -> tables }.toTypedArray()))
         }
 
         "mysql" -> {
-            createTables = config.createTables.map { getKotysaMysqlTables(it) to it.ifNotExists }
+            createTables = config.table.map { getKotysaMysqlTables(it) to it.create }
             client = r2dbcConnectionFactory.coSqlClient(tables().mysql(*createTables.flatMap { (tables, _) -> tables }.toTypedArray()))
         }
 
         "mssql" -> {
-            createTables = config.createTables.map { getKotysaMssqlTables(it) to it.ifNotExists }
+            createTables = config.table.map { getKotysaMssqlTables(it) to it.create }
             client = r2dbcConnectionFactory.coSqlClient(tables().mssql(*createTables.flatMap { (tables, _) -> tables }.toTypedArray()))
         }
 
         "mariadb" -> {
-            createTables = config.createTables.map { getKotysaMariadbTables(it) to it.ifNotExists }
+            createTables = config.table.map { getKotysaMariadbTables(it) to it.create }
             client = r2dbcConnectionFactory.coSqlClient(tables().mariadb(*createTables.flatMap { (tables, _) -> tables }.toTypedArray()))
         }
 
         "oracle" -> {
-            createTables = config.createTables.map { getKotysaOracleTables(it) to it.ifNotExists }
+            createTables = config.table.map { getKotysaOracleTables(it) to it.create }
             client = r2dbcConnectionFactory.coSqlClient(tables().oracle(*createTables.flatMap { (tables, _) -> tables }.toTypedArray()))
         }
 
         else -> throw UnsupportedOperationException("Unknown database type \"${config.connection.driver}\"")
     }
 
-    createTables.forEach { (tables, ifNotExists) ->
-        if (ifNotExists) {
-            tables.forEach { client createTableIfNotExists it }
-        }
-        else {
-            tables.forEach() {
+    createTables.forEach { (tables, create) ->
+        when (create) {
+            TableCreation.IF_NOT_EXISTS -> tables.forEach { client createTableIfNotExists it }
+
+            TableCreation.OVERRIDE -> tables.forEach() {
                 client deleteAllFrom it
                 client createTable it
             }
+
+            else -> Unit
         }
     }
 
@@ -99,7 +107,7 @@ public suspend fun createKotysaR2dbcSqlClient(config: DatabaseProviderConfig): R
 
 @Suppress("UNCHECKED_CAST")
 private fun <T : Table<*>> getTables(
-    config: CreateTableConfig,
+    config: TableConfig,
     type: KClass<T>
 ): List<T> =
     config.packages.flatMap {
@@ -118,66 +126,59 @@ private fun <T : Table<*>> getTables(
     }.sortedByDependencies()
 
 private fun <T : Table<*>> List<T>.sortedByDependencies(): List<T> {
-    val dependencyMap = associateWith { mutableSetOf<Table<*>>() }
 
-    forEach { table ->
-        table.foreignKeys.forEach { foreignKey ->
-            val referencedTables = foreignKey.referencesMap.keys.map { referencedColumn ->
-                single { table -> table.columns.contains(referencedColumn) } as Table<*>
-            }
-
-            dependencyMap[table]?.addAll(referencedTables)
+    val (mainTables, dependentTables) = partition { it.foreignKeys.isEmpty() }.let {
+        it.first.toMutableList() to it.second.associateWith {
+            it.foreignKeys.flatMap { foreignKey -> foreignKey.referencedTables(this) }.toMutableSet()
         }
     }
 
     val sortedTables = mutableListOf<T>()
-
-    val mainTables = dependencyMap.filterValues { it.isEmpty() }.keys.toMutableList()
 
     while (mainTables.isNotEmpty()) {
         val table = mainTables.removeAt(0)
 
         sortedTables.add(table)
 
-        dependencyMap.forEach { (dependantTable, dependencies) ->
+        dependentTables.forEach { (dependantTable, dependencies) ->
             if (dependencies.remove(table) && dependencies.isEmpty()) {
                 mainTables.add(dependantTable)
             }
         }
     }
 
-    if (sortedTables.size != size) {
-        throw IllegalStateException("Circular dependency detected among tables!")
+    require(sortedTables.size == size) {
+        "Circular dependency detected among tables!"
     }
 
     return sortedTables
 }
 
-public fun getKotysaH2Tables(config: CreateTableConfig): List<IH2Table<*>> =
+public fun getKotysaH2Tables(config: TableConfig): List<IH2Table<*>> =
     getTables(config, IH2Table::class) + getTables(
         config,
         GenericTable::class,
     )
 
-public fun getKotysaMariadbTables(config: CreateTableConfig): List<MariadbTable<*>> =
+public fun getKotysaMariadbTables(config: TableConfig): List<MariadbTable<*>> =
     getTables(config, MariadbTable::class)
 
-public fun getKotysaMysqlTables(config: CreateTableConfig): List<MysqlTable<*>> =
+public fun getKotysaMysqlTables(config: TableConfig): List<MysqlTable<*>> =
     getTables(config, MysqlTable::class)
 
-public fun getKotysaMssqlTables(config: CreateTableConfig): List<IMssqlTable<*>> =
+public fun getKotysaMssqlTables(config: TableConfig): List<IMssqlTable<*>> =
     getTables(config, MssqlTable::class) + getTables(
         config,
         GenericTable::class,
     )
 
-public fun getKotysaPostgresqlTables(config: CreateTableConfig): List<IPostgresqlTable<*>> =
+public fun getKotysaPostgresqlTables(config: TableConfig): List<IPostgresqlTable<*>> =
     getTables(config, PostgresqlTable::class) + getTables(
         config,
         GenericTable::class,
     )
 
-public fun getKotysaOracleTables(config: CreateTableConfig): List<OracleTable<*>> =
+public fun getKotysaOracleTables(config: TableConfig): List<OracleTable<*>> =
     getTables(config, OracleTable::class)
 
 
