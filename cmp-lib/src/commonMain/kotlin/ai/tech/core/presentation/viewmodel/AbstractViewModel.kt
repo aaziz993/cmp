@@ -20,15 +20,12 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
 import org.koin.core.component.KoinComponent
 
-// The reasoning 5_000 was chosen for the stopTimeoutMillis can be found in the official Android documentation, which discusses the ANR (Application Not Responding) timeout threshold.
 public abstract class AbstractViewModel<A : Any> : ViewModel(), KoinComponent {
 
     public abstract val savedStateHandle: SavedStateHandle
-
-    public val state: StateFlow<ViewModelState<Int>>
-        field = viewModelStateFlow()
 
     public open fun exceptionTransform(exception: Throwable): ViewModelStateException = ViewModelStateException(exception)
 
@@ -81,6 +78,7 @@ public abstract class AbstractViewModel<A : Any> : ViewModel(), KoinComponent {
 
     public companion object Constants {
 
+        // The reasoning 5_000 was chosen for the stopTimeoutMillis can be found in the official Android documentation, which discusses the ANR (Application Not Responding) timeout threshold.
         public const val STATE_STARTED_STOP_TIMEOUT_MILLIS: Long = 5_000
     }
 }
