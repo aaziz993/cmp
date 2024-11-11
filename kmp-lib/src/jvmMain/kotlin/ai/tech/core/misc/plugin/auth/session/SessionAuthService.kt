@@ -10,9 +10,9 @@ import io.ktor.server.application.ApplicationCall
 public class SessionAuthService(
     override val name: String,
     public val config: SessionAuthConfig,
-) : AuthProvider, ValidateAuthProvider<UserSession>, AbstractChallengeAuthProvider, {
+) : AuthProvider, ValidateAuthProvider<UserSession>, AbstractChallengeAuthProvider(config), {
 
     override suspend fun validate(call: ApplicationCall, session: UserSession): Any? = session
 
-    override fun roles(principal: Any): Set<String> = principal.roles
+    override fun roles(principal: Any): Set<String> = (principal as UserSession).roles
 }

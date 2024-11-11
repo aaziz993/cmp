@@ -72,6 +72,12 @@ internal fun Project.configureKMPExtension(extension: KotlinMultiplatformExtensi
                         withIos()
                     }
                 }
+
+                group("nonAndroid") {
+                    withJvm()
+                    group("web")
+                    group("native")
+                }
             }
         }
 

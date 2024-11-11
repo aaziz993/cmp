@@ -8,7 +8,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.compose.LocalLifecycleOwner
 
-@Suppress("FunctionNaming")
+@Suppress("FunctionName")
 @Composable
 public actual fun BindEffect(permissionController: PermissionController) {
     val lifecycleOwner: LifecycleOwner = LocalLifecycleOwner.current

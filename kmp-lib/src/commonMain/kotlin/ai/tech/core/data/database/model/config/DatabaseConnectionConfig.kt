@@ -92,7 +92,7 @@ public data class DatabaseConnectionConfig(
     }
 }
 
-public val jdbcUR: Regex = Regex("^(jdbc:(\\w+)://([^:/]+):(\\d+)/(\\w+)(\\?.*)?$")
+public val jdbcUR: Regex = Regex("^jdbc:(\\w+)://([^:/]+):(\\d+)/(\\w+)(\\?.*)?$")
 public val r2dbcUR: Regex = Regex("^(r2dbc:(\\w+)://)?([^:@]+):([^@]+)@([^:/]+):(\\d+)/(\\w+)(\\?.*)?$")
 
 public val String.isJdbcUrl: Boolean

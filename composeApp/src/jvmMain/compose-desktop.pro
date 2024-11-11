@@ -21,7 +21,6 @@
 -keep class androidx.compose.ui.input.key.KeyEvent_desktopKt { *; }
 -dontnote androidx.compose.ui.input.key.KeyEvent_desktopKt
 
--keep class androidx.compose.ui.input.key.KeyEvent_skikoKt { *; }
 -dontnote androidx.compose.ui.input.key.KeyEvent_skikoKt
 -dontwarn androidx.compose.ui.input.key.KeyEvent_skikoKt
 
