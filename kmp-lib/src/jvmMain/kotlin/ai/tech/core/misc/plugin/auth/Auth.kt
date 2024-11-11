@@ -15,6 +15,8 @@ import ai.tech.core.misc.plugin.auth.form.FormAuthService
 import ai.tech.core.misc.plugin.auth.ldap.LDAPAuthService
 import ai.tech.core.misc.plugin.auth.model.PrincipalEntity
 import ai.tech.core.misc.plugin.auth.model.RoleEntity
+import ai.tech.core.misc.plugin.auth.session.SessionAuthService
+import ai.tech.core.misc.plugin.auth.session.model.UserSession
 import io.ktor.client.*
 import io.ktor.http.auth.*
 import io.ktor.http.parsing.*
@@ -97,25 +99,19 @@ public fun Application.configureAuth(
             rbac(name) { roleExtractor = service::roles }
         }
 
-//        sessionAuthServices.forEach { (name, service) ->
-//            session<UserSession>(name) {
-//                challenge {
-//                    service.challenge(call)
-//                }
-//
-//                validate {
-//                    service.validate(it)
-//                }
-//
-//                skipWhen { service.skip(it) }
-//            }
-//            rbac(name) {
-//                extractRoles {
-//                    // From UserIdPrincipal
-//                    service.roles(it)
-//                }
-//            }
-//        }
+        it.session.forEach { (name, config) ->
+            val service = SessionAuthService(name, config)
+
+            session<UserSession>(name) {
+                challenge { service.challenge(call) }
+
+                validate { service.validate(this, it) }
+
+                skipWhen(service::skip)
+            }
+
+            rbac(name) { roleExtractor = service::roles }
+        }
 
         it.ldap.forEach { (name, config) ->
             val service = LDAPAuthService(name, config)
@@ -199,7 +195,7 @@ private fun AuthenticationConfig.configureJWT(
         config.authHeader?.let { header -> authHeader { it.authHeader(header) } }
 
         config.authSchemes?.let {
-            authSchemes(it.defaultScheme, *it.additionalSchemes.toTypedArray(), )
+            authSchemes(it.defaultScheme, *it.additionalSchemes.toTypedArray())
         }
 
         configure()

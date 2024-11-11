@@ -4,7 +4,6 @@ import ai.tech.core.data.database.crud.CRUDRepository
 import ai.tech.core.data.expression.f
 import ai.tech.core.data.filesystem.pathExtension
 import ai.tech.core.data.filesystem.readResourceBytes
-import ai.tech.core.data.filesystem.readResourceText
 import ai.tech.core.misc.auth.model.User
 import ai.tech.core.misc.model.config.EnabledConfig
 import ai.tech.core.misc.plugin.auth.AuthProvider
@@ -14,16 +13,18 @@ import ai.tech.core.misc.plugin.auth.basic.model.config.DigestConfig
 import ai.tech.core.misc.plugin.auth.model.PrincipalEntity
 import ai.tech.core.misc.plugin.auth.model.RoleEntity
 import ai.tech.core.misc.type.decodeAnyFromString
-import ai.tech.core.misc.type.multiple.decode
 import io.ktor.server.application.ApplicationCall
 import io.ktor.server.auth.*
 import java.io.ByteArrayInputStream
 import java.security.MessageDigest
+import java.util.Properties
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.singleOrNull
 import kotlinx.coroutines.flow.toSet
+import kotlinx.serialization.InternalSerializationApi
 import kotlinx.serialization.json.Json
-import java.util.Properties
+import kotlinx.serialization.json.JsonObject
+import kotlinx.serialization.serializer
 
 public class BasicAuthService(
     override val name: String,
@@ -36,12 +37,14 @@ public class BasicAuthService(
         config.digest?.takeIf(EnabledConfig::enable)?.let(DigestConfig::algorithm)?.let(::getDigester)
             ?: String::toByteArray
 
+    @OptIn(InternalSerializationApi::class)
+    @Suppress("UNCHECKED_CAST")
     private val userHashedTableAuth: UserHashedTableAuth = UserHashedTableAuth(
         digester,
         config.file?.fold(emptyMap<String, ByteArray>()) { acc, file ->
             acc + readResourceBytes(file)?.let { bytes ->
                 when (file.pathExtension) {
-                    "json" -> Json.Default.decodeAnyFromString(bytes.decodeToString()) as Map<String, String>
+                    "json" -> Json.Default.decodeAnyFromString(JsonObject::class.serializer(), bytes.decodeToString()) as Map<String, String>
 
                     "properties" -> Properties().apply {
                         load(ByteArrayInputStream(bytes))
