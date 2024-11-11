@@ -1,4 +1,4 @@
-package ai.tech.core.data.database.r2dbc
+package ai.tech.core.misc.r2dbc
 
 import ai.tech.core.data.database.model.config.DatabaseConnectionConfig
 import io.r2dbc.spi.ConnectionFactories

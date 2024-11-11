@@ -1,4 +1,4 @@
-package ai.tech.core.data.database.kotysa.model
+package ai.tech.core.misc.kotysa.model
 
 import ai.tech.core.misc.type.single.now
 import kotlinx.datetime.LocalDate

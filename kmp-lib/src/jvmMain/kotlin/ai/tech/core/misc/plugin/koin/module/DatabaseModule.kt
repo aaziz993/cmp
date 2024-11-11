@@ -1,6 +1,6 @@
 package ai.tech.core.misc.plugin.koin.module
 
-import ai.tech.core.data.database.kotysa.createKotysaR2dbcSqlClient
+import ai.tech.core.misc.kotysa.createKotysaR2dbcSqlClient
 import ai.tech.core.data.database.model.config.DatabaseProviderConfig
 import ai.tech.core.misc.model.config.EnabledConfig
 import kotlinx.coroutines.runBlocking

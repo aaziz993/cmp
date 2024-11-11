@@ -5,10 +5,11 @@ package ai.tech.core.misc.type
 import ai.tech.core.misc.type.serializer.UuidSerializer
 import ai.tech.core.misc.type.serializer.bignum.BigDecimalSerializer
 import ai.tech.core.misc.type.serializer.bignum.BigIntegerSerializer
-import ai.tech.core.misc.type.serializer.subclass
+import ai.tech.core.misc.type.serializer.primitive
 import com.benasher44.uuid.Uuid
 import com.ionspin.kotlin.bignum.decimal.BigDecimal
 import com.ionspin.kotlin.bignum.integer.BigInteger
+import decodeAnyFromJsonElement
 import kotlin.time.Duration
 import kotlinx.datetime.DatePeriod
 import kotlinx.datetime.DateTimePeriod
@@ -29,9 +30,7 @@ import kotlinx.serialization.json.JsonNull
 import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.JsonPrimitive
 import kotlinx.serialization.json.booleanOrNull
-import kotlinx.serialization.json.decodeFromJsonElement
 import kotlinx.serialization.json.doubleOrNull
-import kotlinx.serialization.json.encodeToJsonElement
 import kotlinx.serialization.json.longOrNull
 import kotlinx.serialization.modules.SerializersModule
 import kotlinx.serialization.modules.contextual
@@ -45,23 +44,23 @@ public val json: Json = Json {
         contextual(UuidSerializer)
 
         polymorphic(Any::class) {
-            subclass(Byte::class)
-            subclass(Short::class)
-            subclass(Int::class)
-            subclass(Long::class)
-            subclass(Float::class)
-            subclass(Double::class)
-            subclass(BigIntegerSerializer)
-            subclass(BigDecimalSerializer)
-            subclass(Char::class)
-            subclass(String::class)
-            subclass(LocalTime::class)
-            subclass(LocalDate::class)
-            subclass(LocalDateTime::class)
-            subclass(Duration::class)
-            subclass(DatePeriod::class)
-            subclass(DateTimePeriod::class)
-            subclass(UuidSerializer)
+            primitive(Byte::class)
+            primitive(Short::class)
+            primitive(Int::class)
+            primitive(Long::class)
+            primitive(Float::class)
+            primitive(Double::class)
+            primitive(BigIntegerSerializer)
+            primitive(BigDecimalSerializer)
+            primitive(Char::class)
+            primitive(String::class)
+            primitive(LocalTime::class)
+            primitive(LocalDate::class)
+            primitive(LocalDateTime::class)
+            primitive(Duration::class)
+            primitive(DatePeriod::class)
+            primitive(DateTimePeriod::class)
+            primitive(UuidSerializer)
         }
     }
 }
@@ -125,7 +124,7 @@ public fun Json.encodeAnyToJsonElement(value: Any?): JsonElement = when (value) 
         value.entries.associate { it.key.toString() to encodeAnyToJsonElement(it.value) },
     )
 
-    else -> throw IllegalArgumentException("Illegal argument type \"${value::class.simpleName}\"")
+    else -> encodeToJsonElement(value::class.serializer() as KSerializer<Any>, value)
 }
 
 @OptIn(InternalSerializationApi::class)
@@ -158,7 +157,10 @@ public inline fun <reified T> Json.decodeFromAny(value: Any?): T = decodeFromAny
 
 public fun Json.encodeAnyToString(value: Any?): String = encodeToString(encodeAnyToJsonElement(value))
 
-public fun Json.decodeAnyFromString(value: String): Any? = decodeAnyFromJsonElement(decodeFromString(value))
+public fun Json.decodeAnyFromString(deserializer: DeserializationStrategy<JsonElement>, value: String): Any? =
+    decodeAnyFromJsonElement(decodeFromString(deserializer, value))
+
+public fun Json.decodeAnyFromString(value: String): Any? = decodeAnyFromString(serializersModule.serializer(), value)
 
 // Make deep copy of an object
 @OptIn(InternalSerializationApi::class)

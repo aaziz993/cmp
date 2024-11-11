@@ -8,15 +8,15 @@ import kotlinx.serialization.InternalSerializationApi
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.descriptors.SerialDescriptor
 import kotlinx.serialization.descriptors.buildClassSerialDescriptor
-import kotlinx.serialization.descriptors.capturedKClass
 import kotlinx.serialization.encoding.Decoder
 import kotlinx.serialization.encoding.Encoder
 import kotlinx.serialization.encoding.decodeStructure
 import kotlinx.serialization.encoding.encodeStructure
 import kotlinx.serialization.modules.PolymorphicModuleBuilder
+import kotlinx.serialization.modules.subclass
 import kotlinx.serialization.serializer
 
-public class PolymorphicSerializer<T : Any>(public val serializer: KSerializer<T>) : KSerializer<T> {
+public class PolymorphicPrimitiveSerializer<T : Any>(public val serializer: KSerializer<T>) : KSerializer<T> {
 
     public constructor(kClass: KClass<T>) : this(kClass.serializer())
 
@@ -35,7 +35,10 @@ public class PolymorphicSerializer<T : Any>(public val serializer: KSerializer<T
         }
 }
 
-public fun <T : Any> PolymorphicModuleBuilder<T>.subclass(kClass: KClass<T>) = subclass(kClass, PolymorphicSerializer(kClass.serializer()))
+@Suppress("UNCHECKED_CAST")
+public inline fun <reified T : Any> PolymorphicModuleBuilder<T>.primitive(serializer: KSerializer<T>) =
+    subclass(PolymorphicPrimitiveSerializer(serializer))
 
 @Suppress("UNCHECKED_CAST")
-public fun <T : Any> PolymorphicModuleBuilder<T>.subclass(serializer: KSerializer<T>) = subclass(serializer.descriptor.capturedKClass as KClass<T>, PolymorphicSerializer(serializer))
+public inline fun <reified T : Any> PolymorphicModuleBuilder<T>.primitive(kClass: KClass<T>) =
+    primitive(kClass.serializer())

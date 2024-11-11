@@ -1,10 +1,11 @@
-package ai.tech.core.data.database.kotysa
+package ai.tech.core.misc.kotysa
 
 import ai.tech.core.data.database.model.config.TableConfig
 import ai.tech.core.data.database.model.config.DatabaseProviderConfig
 import ai.tech.core.data.database.model.config.TableCreation
-import ai.tech.core.data.database.r2dbc.*
+import ai.tech.core.misc.r2dbc.createR2dbcConnectionFactory
 import ai.tech.core.misc.type.multiple.whileIndexed
+import java.lang.IllegalStateException
 import java.lang.UnsupportedOperationException
 import kotlin.collections.contains
 import kotlin.collections.single
@@ -126,7 +127,7 @@ private fun <T : Table<*>> getTables(
         }
     }.sortedByDependencies()
 
-private fun <T : Table<*>> List<T>.sortedByDependencies(): List<T> {
+public fun <T : Table<*>> List<T>.sortedByDependencies(): List<T> {
 
     val (tables, dependentTables) = partition { it.foreignKeys.isEmpty() }.let {
         it.first.toMutableList() to it.second.associateWith {
@@ -134,7 +135,7 @@ private fun <T : Table<*>> List<T>.sortedByDependencies(): List<T> {
         }
     }
 
-    tables.whileIndexed { _,table->
+    tables.whileIndexed { _, table ->
         dependentTables.forEach { (dependantTable, dependencies) ->
             if (dependencies.remove(table) && dependencies.isEmpty()) {
                 tables.add(dependantTable)
@@ -142,8 +143,8 @@ private fun <T : Table<*>> List<T>.sortedByDependencies(): List<T> {
         }
     }
 
-    require(tables.size == size) {
-        "Circular dependency detected among tables!"
+    if (tables.size != size) {
+        throw IllegalStateException("Circular dependency detected among tables!")
     }
 
     return tables
@@ -175,5 +176,7 @@ public fun getKotysaPostgresqlTables(config: TableConfig): List<IPostgresqlTable
 
 public fun getKotysaOracleTables(config: TableConfig): List<OracleTable<*>> =
     getTables(config, OracleTable::class)
+
+//public fun getKotysaTables(): List<Table<*>> = Table
 
 
