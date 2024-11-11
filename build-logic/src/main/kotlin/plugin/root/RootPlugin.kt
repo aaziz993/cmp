@@ -61,7 +61,7 @@ public class RootPlugin : Plugin<Project> {
     }
 }
 
-private fun synchronizeRootFile(
+private fun Project.synchronizeRootFile(
     url: String,
     fallbackFile: String,
     destFile: String,
@@ -74,14 +74,16 @@ private fun synchronizeRootFile(
         }
         catch (_: IOException) {
             val file = File(fallbackFile)
+
             warnln(
-                "Cannot retrieve ${file.nameWithoutExtension} from \"$url\" fallback to file \"$fallbackFile\"",
+                "Cannot retrieve ${file.nameWithoutExtension} from \"$url\" fallback to file \"${file.absolutePath}\"",
             )
             file.readText()
         },
     ) { acc, (k, v) -> acc.replace(k, v) }
 
-    val file = File(destFile)
+    val file = rootProject.file(destFile)
+
     if (file.exists()) {
         when (overrideType) {
             ProjectFileOverrideType.NEVER -> return

@@ -1,78 +1,99 @@
+# How to contribute
 
-# Contributor Covenant Code of Conduct
+Want to show KMP some love? Help out by contributing!
 
-## Our Pledge
+## :beetle: Found a bug
 
-In the interest of fostering an open and welcoming environment, we as
-contributors and maintainers pledge to make participation in our project and
-our community a harassment-free experience for everyone, regardless of age, body
-size, disability, ethnicity, sex characteristics, gender identity and expression,
-level of experience, education, socio-economic status, nationality, personal
-appearance, race, religion, or sexual identity and orientation.
+Log it in GitHub issues:
 
-## Our Standards
+* https://github.com/aaziz993/kmp/issues
+* or send a note to the [a.atoev93@gmail.com](https://gmail.com).
 
-Examples of behavior that contributes to creating a positive environment
-include:
+Be sure to include all relevant information, like the versions of KMP you’re using as long as Java version.
+A Test plan that caused the issue as well as any error messages are also very helpful.
 
-* Using welcoming and inclusive language
-* Being respectful of differing viewpoints and experiences
-* Gracefully accepting constructive criticism
-* Focusing on what is best for the community
-* Showing empathy towards other community members
+## :question: Need help
 
-Examples of unacceptable behavior by participants include:
+Contact:
 
-* The use of sexualized language or imagery and unwelcome sexual attention or
-  advances
-* Trolling, insulting/derogatory comments, and personal or political attacks
-* Public or private harassment
-* Publishing others' private information, such as a physical or electronic
-  address, without explicit permission
-* Other conduct which could reasonably be considered inappropriate in a
-  professional setting
+* KMP Developers mail list: [a.atoev93@gmail.com](https://gmail.com)
+* or ask question on [stackoverflow](https://stackoverflow.com/questions/tagged/kmp).
 
-## Our Responsibilities
+## :bar_chart: What needs to be developed
 
-Project maintainers are responsible for clarifying the standards of acceptable
-behavior and are expected to take appropriate and fair corrective action in
-response to any instances of unacceptable behavior.
+See:
 
-Project maintainers have the right and responsibility to remove, edit, or
-reject comments, commits, code, wiki edits, issues, and other contributions
-that are not aligned to this Code of Conduct, or to ban temporarily or
-permanently any contributor for other behaviors that they deem inappropriate,
-threatening, offensive, or harmful.
+* [Open issues for KMP](https://github.com/aaziz993/kmp/issues)
+* [Enhancement requests for KMP](https://github.com/aaziz993/kmp/issues?q=is%3Aopen+label%3Aenhancement)
 
-## Scope
+## Development setup
 
-This Code of Conduct applies within all project spaces, and it also applies when
-an individual is representing the project or its community in public spaces.
-Examples of representing a project or community include using an official
-project e-mail address, posting via an official social media account, or acting
-as an appointed representative at an online or offline event. Representation of
-a project may be further defined and clarified by project maintainers.
+### Gradle
 
-## Enforcement
+You might find useful Gradle commands in [gradle.md](gradle.md)
 
-Instances of abusive, harassing, or otherwise unacceptable behavior may be
-reported by contacting the project team at [INSERT EMAIL ADDRESS]. All
-complaints will be reviewed and investigated and will result in a response that
-is deemed necessary and appropriate to the circumstances. The project team is
-obligated to maintain confidentiality with regard to the reporter of an incident.
-Further details of specific enforcement policies may be posted separately.
+### <a name="intellij"></a>IntelliJ IDEA
 
-Project maintainers who do not follow or enforce the Code of Conduct in good
-faith may face temporary or permanent repercussions as determined by other
-members of the project's leadership.
+You require IntelliJ 2023.3 or newer.
 
-## Attribution
+1. Open the build.gradle.kts file with IntelliJ IDEA and choose `Open as Project`
+1. Make sure `Create separate module per source set` is selected
+1. Make sure `Use default gradle wrapper` is selected
+1. In the `File already exists` dialogue, choose `Yes` to overwrite
+1. In the `Open Project` dialogue, choose `Delete Existing Project and Import`
 
-This Code of Conduct is adapted from the [Contributor Covenant][homepage], version 1.4,
-available at https://www.contributor-covenant.org/version/1/4/code-of-conduct.html
+### Eclipse
 
-[homepage]: https://www.contributor-covenant.org
+Eclipse can import Gradle projects automatically via `Import...->Gradle project` wizard.
 
-For answers to common questions about this code of conduct, see
-https://www.contributor-covenant.org/faq
+Optionally you can generate an Eclipse project by running
 
+    ./gradlew eclipse
+
+The steps to import the sources (based on Eclipse 2019-06) into Eclipse are as follows:
+
+1. Install `Eclipse IDE for Java Developers`
+1. Install `Kotlin for Eclipse` plugin (JMeter code uses Java and Kotlin)
+1. Make sure you have a Java 17 compatible JDK configured in your workspace
+1. Open `File->Import...`
+1. Select `Existing Gradle Project` and click `Next`
+1. Read `How to experience the best Gradle integration` and click `Next`
+1. Then you might just click `Finish`
+
+## :star2: Have a patch
+
+The best way to make sure your issue or feature is addressed is to submit a patch.
+We accept patches through:
+
+* pull requests
+* patch attached to KMP developer mail list: [a.atoev93@gmail.com](https://gmail.com).
+
+However, before sending a patch, please make sure that the following applies:
+
+* Your commit message is descriptive.
+* Your patch doesn't have useless merge commits.
+* Your coding style is similar to ours.
+* Your patch is 100% tested. JUnit are welcome.
+* All tests checks pass (run `./gradlew check`)
+* You understand that we're very grateful for your patch!
+
+## :heart: Adding something new
+
+We do love to enhance KMP with you to become more powerful!
+The best way to work out your idea is to discuss it first at our dev mailing list:
+
+* KMP Developer mail list: [a.atoev93@gmail.com](https://gmail.com)
+
+Please, if you can, don't just throw us the code of a new feature; lets figure first together
+what would be the best approach regarding the current architecture and future plans,
+before any development.
+This way we all get sure that your idea is aligned with the codebase, and you can enjoy
+your happy coding even more :)
+
+## :closed_book: Want to write docs
+
+Documentation is very valuable to us.
+
+It is located in **[xdocs](xdocs)** folder in XML format.
+
+You can contribute as you would for code through patch or *PR* (pull request).
