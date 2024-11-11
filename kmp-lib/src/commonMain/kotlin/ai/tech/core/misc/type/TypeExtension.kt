@@ -445,59 +445,6 @@ public fun Any.mapTo(
 ) {
 }
 
-//public fun Any.assign(
-//    from: Any,
-//    keyTransformer: (keys: List<Any?>, fromKey: Any?) -> Any? = { _, fromKey -> fromKey },
-//    valueTransform: (keys: List<Any?>, thisValueKType: KType, thisValue: Any?, fromValue: Any?) -> Any? = { _, _, thisValue, fromValue ->
-//        when {
-//            fromValue is List<*> -> (thisValue as List<Any?>? ?: emptyList()) + mutableListOf<Any?>().apply {
-//                assign(fromValue, keyTransformer)
-//            }
-//
-//            thisValue == null -> fromValue?.let {
-//                when {
-//                    it::class.isPrime -> it
-//                    else -> it::class.newInstance
-//                }
-//            }
-//
-//            else -> Unit
-//        }
-//    },
-//    accessor: (keys: List<Any?>, Any?) -> Accessor? = { keys, v ->
-//        if (keys.isNotEmpty() && v is List<*>) {
-//            null
-//        }
-//        else {
-//            v?.accessor()
-//        }
-//    }
-//) {
-//}
-
-//fun Map<String,Any?>.map(
-//    mapper: Map<String, List<String>>,
-//    dateTimeFormats: Map<String, DateTimeFormat<DateTimeComponents>> = emptyMap(),
-//    accessor:(List<Accessor>)->Accessor?={ _, v ->
-//        when {
-//            v is String -> when {
-//                v.extension
-//            }
-//
-//            v is List<*> && mergeList -> v.fold(emptyMap<String, Any?>()) { acc, m -> acc + (m as Map<String, Any?>) }
-//                .accessor()
-//
-//            else -> v!!.accessor()
-//        }
-//    }
-//): T = decode<T>(mapper.mapValues { (toProperty, fromProperty) ->
-//    map.callOrNull(fromProperty)?.toString()
-//        ?.parsePrimeOrNull(
-//            kClass.serializer().descriptor.getElementDescriptor(toProperty),
-//            dateTimFormatMap[toProperty]
-//        )
-//}, TypeResolver(kClass))
-
 @Suppress("UNCHECKED_CAST")
 public fun <T : Any> T.transform(
     transform: (transforms: List<T>, value: Any?) -> Iterator<Any?>?,
