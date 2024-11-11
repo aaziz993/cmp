@@ -13,6 +13,8 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import arrow.core.Either
+import arrow.core.raise.Raise
+import arrow.core.raise.either
 import kotlinx.coroutines.ExperimentalForInheritanceCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.FlowCollector
@@ -44,11 +46,15 @@ public abstract class AbstractViewModel<A : Any> : ViewModel(), KoinComponent {
     )
 
     public suspend fun <T : Any> ViewModelState<T>.mapEither(
-        block: suspend () -> Either<T, Throwable>
+        block: suspend () -> Either<Throwable, T>
     ): ViewModelState<T> = block().fold(
-        ifLeft = { Success(it) },
-        ifRight = { toFailure(exceptionTransform(it)) },
+        ifLeft = { toFailure(exceptionTransform(it)) },
+        ifRight = { Success(it) },
     )
+
+    public suspend fun <T : Any> ViewModelState<T>.mapRaise(
+        block: suspend Raise<Throwable>.() -> T
+    ): ViewModelState<T> = mapEither { either<Throwable, T> { block() } }
 
     public abstract fun action(action: A): Boolean
 
