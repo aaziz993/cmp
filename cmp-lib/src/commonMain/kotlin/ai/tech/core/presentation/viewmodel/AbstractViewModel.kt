@@ -31,9 +31,8 @@ public abstract class AbstractViewModel<A : Any> : ViewModel(), KoinComponent {
 
     public open fun exceptionTransform(exception: Throwable): ViewModelStateException = ViewModelStateException(exception)
 
-    public suspend fun <T : Any> ViewModelState<T>.map(
-        block: suspend () -> T): ViewModelState<T> = try {
-        Loading(block())
+    public suspend fun <T : Any> ViewModelState<T>.map(block: suspend () -> T): ViewModelState<T> = try {
+        Success(block())
     }
     catch (e: Throwable) {
         toFailure(exceptionTransform(e))
