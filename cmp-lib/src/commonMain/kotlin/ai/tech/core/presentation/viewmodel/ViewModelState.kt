@@ -3,7 +3,6 @@ package ai.tech.core.presentation.viewmodel
 import ai.tech.core.presentation.component.loading.LoadingCircle
 import ai.tech.core.presentation.viewmodel.model.exception.ViewModelStateException
 import androidx.compose.runtime.Composable
-import arrow.core.Either
 
 public sealed interface ViewModelState<T : Any> {
 
@@ -24,6 +23,14 @@ public sealed interface ViewModelState<T : Any> {
             is Failure -> Loading(data)
         }
 
+    public fun toSuccess(exception: ViewModelStateException): ViewModelState<T> =
+        when (this) {
+            is Idle -> Idle(exception)
+            is Loading -> Success(data)
+            is Success -> Success(data)
+            is Failure -> Success(data)
+        }
+
     public fun toFailure(exception: ViewModelStateException): ViewModelState<T> =
         when (this) {
             is Idle -> Idle(exception)
@@ -31,30 +38,6 @@ public sealed interface ViewModelState<T : Any> {
             is Success -> Failure(data, exception)
             is Failure -> Failure(data, exception)
         }
-
-    public suspend fun map(
-        exceptionTransform: (Throwable) -> ViewModelStateException,
-        block: suspend () -> T): ViewModelState<T> = try {
-        Loading(block())
-    }
-    catch (e: Throwable) {
-        toFailure(exceptionTransform(e))
-    }
-
-    public suspend fun mapResult(
-        exceptionTransform: (Throwable) -> ViewModelStateException,
-        block: suspend () -> Result<T>): ViewModelState<T> = block().fold(
-        onSuccess = { Success(it) },
-        onFailure = { toFailure(exceptionTransform(it)) },
-    )
-
-    public suspend fun mapEither(
-        exceptionTransform: (Throwable) -> ViewModelStateException,
-        block: suspend () -> Either<T, Throwable>
-    ): ViewModelState<T> = block().fold(
-        ifLeft = { Success(it) },
-        ifRight = { toFailure(exceptionTransform(it)) },
-    )
 
     public fun onLoading(
         elseBlock: (ViewModelState<T>) -> Unit = {},

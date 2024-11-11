@@ -5,6 +5,8 @@ package ai.tech.core.presentation.viewmodel
 import ai.tech.core.misc.type.multiple.model.OnetimeWhileSubscribed
 import ai.tech.core.misc.type.multiple.model.RestartableStateFlow
 import ai.tech.core.misc.type.multiple.restartableStateIn
+import ai.tech.core.presentation.viewmodel.ViewModelState.Loading
+import ai.tech.core.presentation.viewmodel.ViewModelState.Success
 import ai.tech.core.presentation.viewmodel.model.ViewModelMutableStateFlow
 import ai.tech.core.presentation.viewmodel.model.exception.ViewModelStateException
 import androidx.lifecycle.SavedStateHandle
@@ -28,15 +30,25 @@ public abstract class AbstractViewModel<A : Any> : ViewModel(), KoinComponent {
     public open fun exceptionTransform(exception: Throwable): ViewModelStateException = ViewModelStateException(exception)
 
     public suspend fun <T : Any> ViewModelState<T>.map(
-        block: suspend () -> T
-    ): ViewModelState<T> = map(::exceptionTransform, block)
+        block: suspend () -> T): ViewModelState<T> = try {
+        Loading(block())
+    }
+    catch (e: Throwable) {
+        toFailure(exceptionTransform(e))
+    }
 
     public suspend fun <T : Any> ViewModelState<T>.mapResult(
-        block: suspend () -> Result<T>): ViewModelState<T> = mapResult(::exceptionTransform, block)
+        block: suspend () -> Result<T>): ViewModelState<T> = block().fold(
+        onSuccess = { Success(it) },
+        onFailure = { toFailure(exceptionTransform(it)) },
+    )
 
     public suspend fun <T : Any> ViewModelState<T>.mapEither(
         block: suspend () -> Either<T, Throwable>
-    ): ViewModelState<T> = mapEither(::exceptionTransform, block)
+    ): ViewModelState<T> = block().fold(
+        ifLeft = { Success(it) },
+        ifRight = { toFailure(exceptionTransform(it)) },
+    )
 
     public abstract fun action(action: A): Boolean
 
