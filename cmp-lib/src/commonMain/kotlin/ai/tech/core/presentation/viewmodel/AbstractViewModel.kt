@@ -68,13 +68,13 @@ public abstract class AbstractViewModel<A : Any> : ViewModel(), KoinComponent {
 
     protected fun <T : ViewModelState<*>> viewModelStateFlow(
         initialValue: T = idle(),
-        started: SharingStarted = SharingStarted.OnetimeWhileSubscribed(5_000),
+        started: SharingStarted = SharingStarted.OnetimeWhileSubscribed(STATE_STARTED_STOP_TIMEOUT_MILLIS),
         block: suspend FlowCollector<T>.(T) -> Unit
     ): RestartableStateFlow<T> = flow { block(initialValue) }.viewModelStateFlow(initialValue, started)
 
     protected fun <T : ViewModelState<*>> viewModelMutableStateFlow(
         initialValue: T = idle(),
-        started: SharingStarted = OnetimeWhileSubscribed(STATE_STARTED_STOP_TIMEOUT_MILLIS),
+        started: SharingStarted = SharingStarted.OnetimeWhileSubscribed(STATE_STARTED_STOP_TIMEOUT_MILLIS),
         block: (suspend MutableStateFlow<T>.(T) -> T)? = null,
     ): ViewModelMutableStateFlow<T> {
         val mutableStateFlow = MutableStateFlow(initialValue)
