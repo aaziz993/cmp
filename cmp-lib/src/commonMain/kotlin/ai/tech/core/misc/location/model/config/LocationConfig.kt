@@ -1,5 +1,6 @@
-package ai.tech.home.map.location.model
+package ai.tech.core.misc.location.model.config
 
+import ai.tech.core.presentation.component.lazycolumn.crud.model.config.CRUDTableConfig
 import kotlinx.serialization.Serializable
 
 @Serializable

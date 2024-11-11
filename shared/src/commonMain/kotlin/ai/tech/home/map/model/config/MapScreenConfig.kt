@@ -1,10 +1,10 @@
 package ai.tech.home.map.model.config
 
 import ai.tech.core.misc.auth.model.AuthResource
-import ai.tech.core.presentation.component.map.model.MapViewConfig
+import ai.tech.core.misc.location.model.config.LocationConfig
 import ai.tech.core.misc.model.config.presentation.DestinationConfig
+import ai.tech.core.presentation.component.map.model.MapViewConfig
 import kotlinx.serialization.Serializable
-import ai.tech.home.map.location.model.LocationConfig
 
 @Serializable
 public data class MapScreenConfig(
