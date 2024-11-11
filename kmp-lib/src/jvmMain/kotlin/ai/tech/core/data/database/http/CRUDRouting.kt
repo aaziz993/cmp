@@ -128,14 +128,13 @@ public inline fun <reified T : Any> Routing.CrudRouting(
         post("$path/aggregate") {
             val form = call.receiveMultipart().readFormData()
 
-            call.respondText(
-                repository.aggregate(
-                    Json.Default.decodeFromString<AggregateExpression<Nothing>>(form["aggregate"]!!) as AggregateExpression<Any?>,
-                    form["predicate"]?.let { Json.Default.decodeFromString(it) },
-                )?.let {
-                    json.encodeToString(PolymorphicSerializer(Any::class), it)
-                }.orEmpty()
-            )
+
+            repository.aggregate(
+                Json.Default.decodeFromString<AggregateExpression<Nothing>>(form["aggregate"]!!) as AggregateExpression<Any?>,
+                form["predicate"]?.let { Json.Default.decodeFromString(it) },
+            )?.let {
+                call.respondText(json.encodeToString(PolymorphicSerializer(Any::class), it))
+            } ?: call.respond(HttpStatusCode.NoContent)
 
         }
     }

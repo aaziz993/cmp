@@ -163,8 +163,8 @@ public open class CRUDClient<T : Any>(
                     },
                 ),
             )
-        }.bodyAsText().takeIf(String::isNotEmpty)?.let {
-            json.decodeFromString(PolymorphicSerializer(Any::class), it)
+        }.takeIf { it.status != HttpStatusCode.NoContent }?.let {
+            json.decodeFromString(PolymorphicSerializer(Any::class), it.bodyAsText())
         } as T
 
     private suspend fun findHelper(

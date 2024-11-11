@@ -437,6 +437,14 @@ public fun <T : Any> T.remove(
 ): Any? = accessorOrNull(keys.dropLast(1), accessor)?.remove(keys.last())
 
 // //////////////////////////////////////////////////////TRAVERSER///////////////////////////////////////////////////////
+public fun Any.mapTo(
+    value: Any,
+    keyTransform: (List<Accessor>, key: Any?) -> Any? = { _, key -> key },
+    valueTransform: (List<Accessor>, key: String, value: Any?) -> Any? = { _, _, value -> value },
+    accessor: (List<Accessor>, key: Any?, value: Any?) -> Accessor? = { _, key, value -> value?.accessor(key) },
+) {
+}
+
 //public fun Any.assign(
 //    from: Any,
 //    keyTransformer: (keys: List<Any?>, fromKey: Any?) -> Any? = { _, fromKey -> fromKey },
