@@ -3,10 +3,10 @@
 package ai.tech.core.presentation.viewmodel
 
 import ai.tech.core.misc.type.multiple.model.OnetimeWhileSubscribed
+import ai.tech.core.misc.type.multiple.model.RestartableMutableStateFlow
 import ai.tech.core.misc.type.multiple.model.RestartableStateFlow
 import ai.tech.core.misc.type.multiple.restartableStateIn
 import ai.tech.core.presentation.viewmodel.ViewModelState.Success
-import ai.tech.core.presentation.viewmodel.model.ViewModelMutableStateFlow
 import ai.tech.core.presentation.viewmodel.model.exception.ViewModelStateException
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
@@ -76,7 +76,7 @@ public abstract class AbstractViewModel<A : Any> : ViewModel(), KoinComponent {
         initialValue: T = idle(),
         started: SharingStarted = SharingStarted.OnetimeWhileSubscribed(STATE_STARTED_STOP_TIMEOUT_MILLIS),
         block: (suspend MutableStateFlow<T>.(T) -> T)? = null,
-    ): ViewModelMutableStateFlow<T> {
+    ): RestartableMutableStateFlow<T> {
         val mutableStateFlow = MutableStateFlow(initialValue)
 
         val restartableStateFlow = if (block == null) {
@@ -86,7 +86,7 @@ public abstract class AbstractViewModel<A : Any> : ViewModel(), KoinComponent {
             mutableStateFlow.onStart { mutableStateFlow.update { mutableStateFlow.block(it) } }
         }.viewModelStateFlow(initialValue, started)
 
-        return object : ViewModelMutableStateFlow<T> by restartableStateFlow {
+        return object : RestartableMutableStateFlow<T> by restartableStateFlow {
             override fun restart() = restartableStateFlow.restart()
         }
     }
