@@ -29,10 +29,14 @@ public abstract class AbstractViewModel<A : Any> : ViewModel(), KoinComponent {
 
     public abstract val savedStateHandle: SavedStateHandle
 
-    public val state: StateFlow<Int>
+    public val state: StateFlow<ViewModelState<Int>>
         field = viewModelMutableStateFlow {
             success(1)
         }
+
+    public val state1: StateFlow<ViewModelState<Int>> = viewModelStateFlow {
+        emit(success(80))
+    }
 
     public open fun exceptionTransform(exception: Throwable): ViewModelStateException = ViewModelStateException(exception)
 
@@ -62,16 +66,16 @@ public abstract class AbstractViewModel<A : Any> : ViewModel(), KoinComponent {
 
     public abstract fun action(action: A): Boolean
 
-    protected fun <T : Any> viewModelStateFlow(
-        initialValue: ViewModelState<T> = idle(),
+    protected fun <T : ViewModelState<*>> viewModelStateFlow(
+        initialValue: T = idle(),
         started: SharingStarted = SharingStarted.OnetimeWhileSubscribed(5_000),
-        block: suspend FlowCollector<ViewModelState<T>>.(ViewModelState<T>) -> Unit
-    ): RestartableStateFlow<ViewModelState<T>> = flow { block(initialValue) }.viewModelStateFlow(initialValue, started)
+        block: suspend FlowCollector<T>.(T) -> Unit
+    ): RestartableStateFlow<T> = flow { block(initialValue) }.viewModelStateFlow(initialValue, started)
 
-    protected fun <T : Any> viewModelMutableStateFlow(
-        initialValue: ViewModelState<T> = idle(),
+    protected fun <T : ViewModelState<*>> viewModelMutableStateFlow(
+        initialValue: T = idle(),
         started: SharingStarted = OnetimeWhileSubscribed(STATE_STARTED_STOP_TIMEOUT_MILLIS),
-        block: (suspend MutableStateFlow<ViewModelState<T>>.(ViewModelState<T>) -> ViewModelState<T>)? = null,
+        block: (suspend MutableStateFlow<T>.(T) -> T)? = null,
     ): ViewModelMutableStateFlow<T> {
         val mutableStateFlow = MutableStateFlow(initialValue)
 
