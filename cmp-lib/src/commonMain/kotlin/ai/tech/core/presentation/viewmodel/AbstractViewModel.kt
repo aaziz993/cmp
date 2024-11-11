@@ -16,6 +16,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.FlowCollector
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.update
@@ -25,6 +26,9 @@ import org.koin.core.component.KoinComponent
 public abstract class AbstractViewModel<A : Any> : ViewModel(), KoinComponent {
 
     public abstract val savedStateHandle: SavedStateHandle
+
+    public val state: StateFlow<ViewModelState<Int>>
+        field = viewModelStateFlow()
 
     public open fun exceptionTransform(exception: Throwable): ViewModelStateException = ViewModelStateException(exception)
 
@@ -41,15 +45,15 @@ public abstract class AbstractViewModel<A : Any> : ViewModel(), KoinComponent {
 
     public abstract fun action(action: A): Boolean
 
-    protected fun <T : ViewModelState<*>> viewModelStateFlow(
-        initialValue: T = ViewModelState.Idle,
+    protected fun <T : Any> viewModelStateFlow(
+        initialValue: ViewModelState<T> = idle(),
         started: SharingStarted = SharingStarted.OnetimeWhileSubscribed(5_000),
-        block: suspend FlowCollector<T>.(T) -> Unit
-    ): RestartableStateFlow<T> = flow { block(initialValue) }.viewModelStateFlow(initialValue, started)
+        block: suspend FlowCollector<ViewModelState<T>>.(ViewModelState<T>) -> Unit
+    ): RestartableStateFlow<ViewModelState<T>> = flow { block(initialValue) }.viewModelStateFlow(initialValue, started)
 
-    protected fun <T : ViewModelState<*>> viewModelStateFlow(
-        initialValue: T,
-        onStartUpdate: (suspend MutableStateFlow<T>.(T) -> T)? = null,
+    protected fun <T : Any> viewModelStateFlow(
+        initialValue: ViewModelState<T> = idle(),
+        onStartUpdate: (suspend MutableStateFlow<ViewModelState<T>>.(ViewModelState<T>) -> ViewModelState<T>)? = null,
         started: SharingStarted = OnetimeWhileSubscribed(STATE_STARTED_STOP_TIMEOUT_MILLIS)
     ): ViewModelMutableStateFlow<T> {
         val mutableStateFlow = MutableStateFlow(initialValue)
@@ -67,7 +71,7 @@ public abstract class AbstractViewModel<A : Any> : ViewModel(), KoinComponent {
     }
 
     private fun <T : ViewModelState<*>> Flow<T>.viewModelStateFlow(
-        initialValue: T = ViewModelState.Idle,
+        initialValue: T,
         started: SharingStarted = SharingStarted.OnetimeWhileSubscribed(STATE_STARTED_STOP_TIMEOUT_MILLIS),
     ): RestartableStateFlow<T> = restartableStateIn(
         started,

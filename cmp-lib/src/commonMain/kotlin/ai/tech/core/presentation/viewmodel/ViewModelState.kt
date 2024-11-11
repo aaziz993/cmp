@@ -7,7 +7,7 @@ import arrow.core.Either
 
 public sealed interface ViewModelState<T : Any> {
 
-    public data class Idle(val exception: ViewModelStateException? = null) : ViewModelState<Nothing>
+    public data class Idle<T : Any>(val exception: ViewModelStateException? = null) : ViewModelState<T>
 
     public data class Loading<T : Any>(val data: T) : ViewModelState<T>
 
@@ -22,7 +22,7 @@ public sealed interface ViewModelState<T : Any> {
             is Loading -> Loading(data)
             is Success -> Loading(data)
             is Failure -> Loading(data)
-        } as ViewModelState<T>
+        }
 
     public fun toFailure(exception: ViewModelStateException): ViewModelState<T> =
         when (this) {
@@ -30,7 +30,7 @@ public sealed interface ViewModelState<T : Any> {
             is Loading -> Failure(data, exception)
             is Success -> Failure(data, exception)
             is Failure -> Failure(data, exception)
-        } as ViewModelState<T>
+        }
 
     public suspend fun map(
         exceptionTransform: (Throwable) -> ViewModelStateException,
@@ -131,6 +131,8 @@ public sealed interface ViewModelState<T : Any> {
         }
     }
 }
+
+public fun <T : Any> idle(exception: ViewModelStateException? = null): ViewModelState<T> = ViewModelState.Idle(exception)
 
 public fun <T : Any> loading(data: T): ViewModelState.Loading<T> = ViewModelState.Loading(data)
 
