@@ -16,7 +16,6 @@ import ai.tech.core.misc.type.decodeAnyFromString
 import ai.tech.core.misc.type.json
 import io.ktor.client.*
 import io.ktor.client.call.*
-import io.ktor.client.plugins.auth.AuthProvider
 import io.ktor.client.plugins.defaultRequest
 import io.ktor.client.request.*
 import io.ktor.client.request.forms.*
