@@ -16,9 +16,9 @@ public interface CRUDRepository<T : Any> {
 
     public suspend fun insert(vararg entities: T): Unit = insert(entities.toList())
 
-    public suspend fun updateSafe(entities: List<T>): List<Boolean>
+    public suspend fun update(entities: List<T>): List<Boolean>
 
-    public suspend fun updateSafe(vararg entities: T): List<Boolean> = updateSafe(entities.toList())
+    public suspend fun update(vararg entities: T): List<Boolean> = update(entities.toList())
 
     public suspend fun update(
         entities: List<Map<String, Any?>>,

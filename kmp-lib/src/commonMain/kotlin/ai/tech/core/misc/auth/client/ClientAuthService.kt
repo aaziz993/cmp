@@ -23,7 +23,7 @@ public interface ClientAuthService {
 
     public suspend fun forgotPassword(username: String)
 
-    public suspend fun isAuth(): Boolean
+    public suspend fun isSignedIn(): Boolean
 
-    public suspend fun HttpRequestBuilder.auth()
+    public suspend fun auth(httpRequestBuilder: HttpRequestBuilder)
 }

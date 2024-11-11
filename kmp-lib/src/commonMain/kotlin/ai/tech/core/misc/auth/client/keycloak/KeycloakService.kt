@@ -79,15 +79,15 @@ public class KeycloakService(
         client.updatePassword(userId, accessToken)
     }
 
-    override suspend fun isAuth(): Boolean = getToken()?.let {
+    override suspend fun isSignedIn(): Boolean = getToken()?.let {
         val passedEpochSeconds: Long = Clock.System.now().epochSeconds - keyValue.get<Long>(TOKEN_EPOCH_SECONDS_KEY)
 
         it.refreshExpiresIn == null || passedEpochSeconds <= it.refreshExpiresIn
     } == true
 
-    override suspend fun HttpRequestBuilder.auth() {
+    override suspend fun auth(httpRequestBuilder: HttpRequestBuilder) {
         getOrRefreshToken()?.let {
-            header(HttpHeaders.Authorization, "Bearer ${it.accessToken}")
+            httpRequestBuilder.header(HttpHeaders.Authorization, "Bearer ${it.accessToken}")
         }
     }
 

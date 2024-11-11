@@ -4,6 +4,7 @@ import ai.tech.core.data.database.model.config.TableConfig
 import ai.tech.core.data.database.model.config.DatabaseProviderConfig
 import ai.tech.core.data.database.model.config.TableCreation
 import ai.tech.core.data.database.r2dbc.*
+import ai.tech.core.misc.type.multiple.whileIndexed
 import java.lang.UnsupportedOperationException
 import kotlin.collections.contains
 import kotlin.collections.single
@@ -127,31 +128,25 @@ private fun <T : Table<*>> getTables(
 
 private fun <T : Table<*>> List<T>.sortedByDependencies(): List<T> {
 
-    val (mainTables, dependentTables) = partition { it.foreignKeys.isEmpty() }.let {
+    val (tables, dependentTables) = partition { it.foreignKeys.isEmpty() }.let {
         it.first.toMutableList() to it.second.associateWith {
             it.foreignKeys.flatMap { foreignKey -> foreignKey.referencedTables(this) }.toMutableSet()
         }
     }
 
-    val sortedTables = mutableListOf<T>()
-
-    while (mainTables.isNotEmpty()) {
-        val table = mainTables.removeAt(0)
-
-        sortedTables.add(table)
-
+    tables.whileIndexed { _,table->
         dependentTables.forEach { (dependantTable, dependencies) ->
             if (dependencies.remove(table) && dependencies.isEmpty()) {
-                mainTables.add(dependantTable)
+                tables.add(dependantTable)
             }
         }
     }
 
-    require(sortedTables.size == size) {
+    require(tables.size == size) {
         "Circular dependency detected among tables!"
     }
 
-    return sortedTables
+    return tables
 }
 
 public fun getKotysaH2Tables(config: TableConfig): List<IH2Table<*>> =

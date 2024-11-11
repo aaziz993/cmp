@@ -22,41 +22,41 @@ public class RootPlugin : Plugin<Project> {
                 project.version = projectVersion
             }
 
-            tasks.create("synchronizeRootFiles", Task::class.java) {
-                // Download and write to file license
-                synchronizeRootFile(
-                    providers.gradleProperty("project.license.text.url").get(),
-                    providers.gradleProperty("project.license.fallback.file").get(),
-                    "LICENSE",
-                    ProjectFileOverrideType.valueOf(
-                        providers.gradleProperty("project.license.file.override").get().uppercase(),
-                    ),
-                    mapOf(
-                        providers.gradleProperty("project.license.year.placeholder").get() to projectInceptionYear,
-                        providers.gradleProperty("project.license.owner.placeholder").get() to developerName,
-                    ),
-                )
-
-                // Download or fallback to file and write to file code of conduct
-                synchronizeRootFile(
-                    providers.gradleProperty("project.code.of.conduct.text.url").get(),
-                    providers.gradleProperty("project.code.of.conduct.fallback.file").get(),
-                    "CODE_OF_CONDUCT.md",
-                    ProjectFileOverrideType.valueOf(
-                        providers.gradleProperty("project.code.of.conduct.file.override").get().uppercase(),
-                    ),
-                )
-
-                // Download or fallback to file and write to file contributing
-                synchronizeRootFile(
-                    providers.gradleProperty("project.contributing.text.url").get(),
-                    providers.gradleProperty("project.contributing.fallback.file").get(),
-                    "CONTRIBUTING.md",
-                    ProjectFileOverrideType.valueOf(
-                        providers.gradleProperty("project.contributing.file.override").get().uppercase(),
-                    ),
-                )
-            }
+//            tasks.create("synchronizeRootFiles", Task::class.java) {
+//                // Download and write to file license
+//                synchronizeRootFile(
+//                    providers.gradleProperty("project.license.text.url").get(),
+//                    providers.gradleProperty("project.license.fallback.file").get(),
+//                    "LICENSE",
+//                    ProjectFileOverrideType.valueOf(
+//                        providers.gradleProperty("project.license.file.override").get().uppercase(),
+//                    ),
+//                    mapOf(
+//                        providers.gradleProperty("project.license.year.placeholder").get() to projectInceptionYear,
+//                        providers.gradleProperty("project.license.owner.placeholder").get() to developerName,
+//                    ),
+//                )
+//
+//                // Download or fallback to file and write to file code of conduct
+//                synchronizeRootFile(
+//                    providers.gradleProperty("project.code.of.conduct.text.url").get(),
+//                    providers.gradleProperty("project.code.of.conduct.fallback.file").get(),
+//                    "CODE_OF_CONDUCT.md",
+//                    ProjectFileOverrideType.valueOf(
+//                        providers.gradleProperty("project.code.of.conduct.file.override").get().uppercase(),
+//                    ),
+//                )
+//
+//                // Download or fallback to file and write to file contributing
+//                synchronizeRootFile(
+//                    providers.gradleProperty("project.contributing.text.url").get(),
+//                    providers.gradleProperty("project.contributing.fallback.file").get(),
+//                    "CONTRIBUTING.md",
+//                    ProjectFileOverrideType.valueOf(
+//                        providers.gradleProperty("project.contributing.file.override").get().uppercase(),
+//                    ),
+//                )
+//            }
         }
     }
 }

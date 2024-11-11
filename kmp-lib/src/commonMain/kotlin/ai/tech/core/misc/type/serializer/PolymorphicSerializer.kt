@@ -35,9 +35,7 @@ public class PolymorphicSerializer<T : Any>(public val serializer: KSerializer<T
         }
 }
 
-public fun <T : Any> PolymorphicModuleBuilder<T>.subclass(kClass: KClass<T>) {
-    subclass(kClass, PolymorphicSerializer(kClass.serializer()))
-}
+public fun <T : Any> PolymorphicModuleBuilder<T>.subclass(kClass: KClass<T>) = subclass(kClass, PolymorphicSerializer(kClass.serializer()))
 
 @Suppress("UNCHECKED_CAST")
 public fun <T : Any> PolymorphicModuleBuilder<T>.subclass(serializer: KSerializer<T>) = subclass(serializer.descriptor.capturedKClass as KClass<T>, PolymorphicSerializer(serializer))

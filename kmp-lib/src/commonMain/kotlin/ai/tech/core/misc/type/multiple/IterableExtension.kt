@@ -59,6 +59,18 @@ public inline fun <T> MutableList<T>.replace(
     }) { e }
 }
 
+public inline fun <T> MutableList<T>.whileIndexed(block: MutableList<T>.(Int, T) -> Unit) {
+    var index = 0
+    while (index < size) {
+        block(index, this[index++])
+    }
+}
+
+public inline fun <T> MutableList<T>.whileIsNotEmpty(block: MutableList<T>.(T) -> Unit) {
+    while (isNotEmpty()) {
+        block(removeAt(0))
+    }
+}
 
 public inline fun <T> Iterable<T>.outersect(
     other: Collection<T>,

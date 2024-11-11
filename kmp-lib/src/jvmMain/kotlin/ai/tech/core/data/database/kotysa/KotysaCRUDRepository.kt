@@ -53,12 +53,12 @@ import org.ufoss.kotysa.Table
 import org.ufoss.kotysa.WholeNumberColumn
 
 public abstract class KotysaCRUDRepository<T : Any>(
+    public val serializer: KSerializer<T>,
     public val client: R2dbcSqlClient,
     public val table: Table<T>,
     public val createdAtProperty: String? = "createdAt",
     public val updatedAtProperty: String? = "updatedAt",
     public val timeZone: TimeZone = TimeZone.UTC,
-    public val serializer: KSerializer<T>
 ) : CRUDRepository<T> {
 
     private val logger = LoggerFactory.getLogger(this::class.java)
@@ -80,7 +80,7 @@ public abstract class KotysaCRUDRepository<T : Any>(
         )
     }
 
-    override suspend fun updateSafe(entities: List<T>): List<Boolean> = client.transactional {
+    override suspend fun update(entities: List<T>): List<Boolean> = client.transactional {
         kotysaTable.updatedAtColumn?.let {
             val temporal = it.value.now!!(timeZone)
             entities.map { update(Json.Default.copy(serializer, it) { mapOf(updatedAtProperty!! to temporal) }).execute() > 0L }
