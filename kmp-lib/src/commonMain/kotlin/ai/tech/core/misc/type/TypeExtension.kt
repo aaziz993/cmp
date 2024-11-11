@@ -2,39 +2,22 @@
 
 package ai.tech.core.misc.type
 
-import ai.tech.core.BIGDECIMAL_DEFAULT
-import ai.tech.core.BIGINTEGER_DEFAULT
-import ai.tech.core.BOOLEAN_DEFAULT
-import ai.tech.core.BYTE_DEFAULT
-import ai.tech.core.CHAR_DEFAULT
-import ai.tech.core.DATEPERIOD_DEFAULT
-import ai.tech.core.DATETIMEPERIOD_DEFAULT
-import ai.tech.core.DOUBLE_DEFAULT
-import ai.tech.core.DURATION_DEFAULT
-import ai.tech.core.FLOAT_DEFAULT
-import ai.tech.core.INT_DEFAULT
-import ai.tech.core.LOCALDATETIME_DEFAULT
-import ai.tech.core.LOCALDATE_DEFAULT
-import ai.tech.core.LOCALTIME_DEFAULT
-import ai.tech.core.LONG_DEFAULT
-import ai.tech.core.SHORT_DEFAULT
-import ai.tech.core.STRING_DEFAULT
-import ai.tech.core.UBYTE_DEFAULT
-import ai.tech.core.UINT_DEFAULT
-import ai.tech.core.ULONG_DEFAULT
-import ai.tech.core.USHORT_DEFAULT
-import ai.tech.core.UUID_DEFAULT
-import com.benasher44.uuid.Uuid
-import com.ionspin.kotlin.bignum.decimal.BigDecimal
-import com.ionspin.kotlin.bignum.integer.BigInteger
 import ai.tech.core.misc.type.accessor.Accessor
 import ai.tech.core.misc.type.accessor.ListAccessor
 import ai.tech.core.misc.type.accessor.MapLikeAccessor
-import ai.tech.core.misc.type.accessorOrNull
 import ai.tech.core.misc.type.multiple.depthIterator
-import ai.tech.core.misc.type.multiple.extension
 import ai.tech.core.misc.type.single.parseOrNull
 import ai.tech.core.misc.type.single.uuidFromOrNull
+import com.benasher44.uuid.Uuid
+import com.benasher44.uuid.uuid4
+import com.ionspin.kotlin.bignum.decimal.BigDecimal
+import com.ionspin.kotlin.bignum.integer.BigInteger
+import kotlin.reflect.KClass
+import kotlin.reflect.KType
+import kotlin.reflect.typeOf
+import kotlin.time.Duration
+import kotlin.time.DurationUnit
+import kotlin.time.toDuration
 import kotlinx.datetime.DatePeriod
 import kotlinx.datetime.DateTimePeriod
 import kotlinx.datetime.LocalDate
@@ -45,16 +28,51 @@ import kotlinx.datetime.format.DateTimeFormat
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.descriptors.SerialDescriptor
 import kotlinx.serialization.descriptors.SerialKind
-import kotlinx.serialization.json.Json
-import net.mamoe.yamlkt.Yaml
-import kotlin.reflect.KClass
-import kotlin.reflect.KType
-import kotlin.reflect.typeOf
-import kotlin.time.Duration
-import kotlinx.serialization.DeserializationStrategy
-import kotlinx.serialization.InternalSerializationApi
-import kotlinx.serialization.KSerializer
-import kotlinx.serialization.serializer
+
+public const val BOOLEAN_DEFAULT: Boolean = false
+
+public val UBYTE_DEFAULT: UByte = 0U.toUByte()
+
+public val USHORT_DEFAULT: UShort = 0U.toUShort()
+
+public const val UINT_DEFAULT: UInt = 0U
+
+public const val ULONG_DEFAULT: ULong = 0UL
+
+public const val BYTE_DEFAULT: Byte = 0.toByte()
+
+public const val SHORT_DEFAULT: Short = 0.toShort()
+
+public const val INT_DEFAULT: Int = 0
+
+public const val LONG_DEFAULT: Long = 0L
+
+public const val FLOAT_DEFAULT: Float = 0F
+
+public const val DOUBLE_DEFAULT: Double = 0.0
+
+public const val CHAR_DEFAULT: Char = ' '
+
+public const val STRING_DEFAULT: String = ""
+
+public val BIGINTEGER_DEFAULT: BigInteger = BigInteger.ZERO
+
+public val BIGDECIMAL_DEFAULT: BigDecimal = BigDecimal.ZERO
+
+public val LOCALTIME_DEFAULT: LocalTime = LocalTime(0, 0)
+
+public val LOCALDATE_DEFAULT: LocalDate = LocalDate(0, 0, 0)
+
+public val LOCALDATETIME_DEFAULT: LocalDateTime = LocalDateTime(0, 0, 0, 0, 0)
+
+public val DURATION_DEFAULT: Duration = 0.toDuration(DurationUnit.SECONDS)
+
+public val DATEPERIOD_DEFAULT: DatePeriod = DatePeriod()
+
+public val DATETIMEPERIOD_DEFAULT: DateTimePeriod = DateTimePeriod()
+
+public val UUID_DEFAULT: Uuid
+    get() = uuid4()
 
 public val KClass<*>.isUIntNumber: Boolean
     get() = when (this) {
