@@ -42,7 +42,7 @@ public abstract class AbstractViewModel<A : Any> : ViewModel(), KoinComponent {
     public abstract fun action(action: A): Boolean
 
     protected fun <T : ViewModelState<*>> viewModelStateFlow(
-        initialValue: T,
+        initialValue: T = ViewModelState.Idle,
         started: SharingStarted = SharingStarted.OnetimeWhileSubscribed(5_000),
         block: suspend FlowCollector<T>.(T) -> Unit
     ): RestartableStateFlow<T> = flow { block(initialValue) }.viewModelStateFlow(initialValue, started)
@@ -67,7 +67,7 @@ public abstract class AbstractViewModel<A : Any> : ViewModel(), KoinComponent {
     }
 
     private fun <T : ViewModelState<*>> Flow<T>.viewModelStateFlow(
-        initialValue: T,
+        initialValue: T = ViewModelState.Idle,
         started: SharingStarted = SharingStarted.OnetimeWhileSubscribed(STATE_STARTED_STOP_TIMEOUT_MILLIS),
     ): RestartableStateFlow<T> = restartableStateIn(
         started,
