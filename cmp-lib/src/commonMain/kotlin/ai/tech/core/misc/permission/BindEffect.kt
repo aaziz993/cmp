@@ -2,6 +2,6 @@ package ai.tech.core.misc.permission
 
 import androidx.compose.runtime.Composable
 
-@Suppress("FunctionNaming")
+@Suppress("FunctionName")
 @Composable
 public expect fun BindEffect(permissionController: PermissionController)
