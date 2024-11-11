@@ -43,7 +43,7 @@ public inline fun <reified T : Any> Routing.CrudRouting(
 
 
     auth(config?.updateAuth) {
-        post("$path/updateSafe") {
+        post("$path/updateTypeSafe") {
             call.respond(repository.update(call.receive<T>()))
         }
 
@@ -128,12 +128,14 @@ public inline fun <reified T : Any> Routing.CrudRouting(
         post("$path/aggregate") {
             val form = call.receiveMultipart().readFormData()
 
-            repository.aggregate<Any?>(
-                Json.Default.decodeFromString<AggregateExpression<Nothing>>(form["aggregate"]!!) as AggregateExpression<Any?>,
-                form["predicate"]?.let { Json.Default.decodeFromString(it) },
-            )?.let {
-                call.respond(json.encodeToString(PolymorphicSerializer(Any::class), it))
-            } ?: call.respondNullable(Unit)
+            call.respondText(
+                repository.aggregate(
+                    Json.Default.decodeFromString<AggregateExpression<Nothing>>(form["aggregate"]!!) as AggregateExpression<Any?>,
+                    form["predicate"]?.let { Json.Default.decodeFromString(it) },
+                )?.let {
+                    json.encodeToString(PolymorphicSerializer(Any::class), it)
+                }.orEmpty()
+            )
 
         }
     }

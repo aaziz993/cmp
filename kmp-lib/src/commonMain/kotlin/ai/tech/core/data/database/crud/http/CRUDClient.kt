@@ -16,6 +16,7 @@ import ai.tech.core.misc.type.decodeAnyFromString
 import ai.tech.core.misc.type.json
 import io.ktor.client.*
 import io.ktor.client.call.*
+import io.ktor.client.plugins.auth.AuthProvider
 import io.ktor.client.plugins.defaultRequest
 import io.ktor.client.request.*
 import io.ktor.client.request.forms.*
@@ -40,6 +41,7 @@ public open class CRUDClient<T : Any>(
     httpClient: HttpClient,
     public val path: String,
     public val config: CRUDRepositoryConfig? = null,
+    public val authProvider: String? = null,
     public val authService: ClientAuthService? = null,
 ) : CRUDRepository<T> {
 
@@ -59,7 +61,9 @@ public open class CRUDClient<T : Any>(
 
     override suspend fun insert(entities: List<T>) {
         httpClient.post("/insert") {
-            config?.saveAuth?.let { authService!!.auth(this) }
+            if (config?.saveAuth != null && authProvider in config.saveAuth.providers) {
+                authService!!.auth(this)
+            }
 
             header(HttpHeaders.ContentType, ContentType.Application.Json)
 
@@ -68,8 +72,10 @@ public open class CRUDClient<T : Any>(
     }
 
     override suspend fun update(entities: List<T>): List<Boolean> =
-        httpClient.post("$path/updateSafe") {
-            config?.updateAuth?.let { authService!!.auth(this) }
+        httpClient.post("/updateTypeSafe") {
+            if (config?.updateAuth != null && authProvider in config.updateAuth.providers) {
+                authService!!.auth(this)
+            }
 
             header(HttpHeaders.ContentType, ContentType.Application.Json)
 
@@ -77,8 +83,10 @@ public open class CRUDClient<T : Any>(
         }.body()
 
     override suspend fun update(entities: List<Map<String, Any?>>, predicate: BooleanVariable?): List<Long> =
-        httpClient.post("$path/update") {
-            config?.updateAuth?.let { authService!!.auth(this) }
+        httpClient.post("/update") {
+            if (config?.updateAuth != null && authProvider in config.updateAuth.providers) {
+                authService!!.auth(this)
+            }
 
             setBody(
                 MultiPartFormDataContent(
@@ -130,8 +138,10 @@ public open class CRUDClient<T : Any>(
         }
 
     override suspend fun delete(predicate: BooleanVariable?): Long =
-        httpClient.post("$path/delete") {
-            config?.deleteAuth?.let { authService!!.auth(this) }
+        httpClient.post("/delete") {
+            if (config?.deleteAuth != null && authProvider in config.deleteAuth.providers) {
+                authService!!.auth(this)
+            }
 
             header(HttpHeaders.ContentType, ContentType.Application.Json)
 
@@ -140,21 +150,22 @@ public open class CRUDClient<T : Any>(
 
     @Suppress("UNCHECKED_CAST")
     override suspend fun <T> aggregate(aggregate: AggregateExpression<T>, predicate: BooleanVariable?): T =
-        json.decodeFromString(
-            PolymorphicSerializer(Any::class),
-            httpClient.post("$path/aggregate") {
-                config?.readAuth?.let { authService!!.auth(this) }
+        httpClient.post("/aggregate") {
+            if (config?.readAuth != null && authProvider in config.readAuth.providers) {
+                authService!!.auth(this)
+            }
 
-                setBody(
-                    MultiPartFormDataContent(
-                        formData {
-                            append("aggregate", aggregate, jsonHeader)
-                            predicate?.let { append("predicate", it, jsonHeader) }
-                        },
-                    ),
-                )
-            }.bodyAsText(),
-        ) as T
+            setBody(
+                MultiPartFormDataContent(
+                    formData {
+                        append("aggregate", aggregate, jsonHeader)
+                        predicate?.let { append("predicate", it, jsonHeader) }
+                    },
+                ),
+            )
+        }.bodyAsText().takeIf(String::isNotEmpty)?.let {
+            json.decodeFromString(PolymorphicSerializer(Any::class), it)
+        } as T
 
     private suspend fun findHelper(
         projections: List<Variable>?,
@@ -162,8 +173,10 @@ public open class CRUDClient<T : Any>(
         predicate: BooleanVariable?,
         limitOffset: LimitOffset?
     ): HttpResponse =
-        httpClient.post("$path/find") {
-            config?.readAuth?.let { authService!!.auth(this) }
+        httpClient.post("/find") {
+            if (config?.readAuth != null && authProvider in config.readAuth.providers) {
+                authService!!.auth(this)
+            }
 
             setBody(
                 MultiPartFormDataContent(
