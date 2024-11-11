@@ -39,7 +39,8 @@ public sealed interface Destination {
 
         @Serializable
         public data object Map : Destination {
-            public val typeMap:  kotlin.collections.Map<KType, NavType<*>> = emptyMap()
+
+            public val typeMap: kotlin.collections.Map<KType, NavType<*>> = emptyMap()
 
             public val deepLinks: List<NavDeepLink>
                 get() = HomeGraph.deepLinks.map { navDeepLink<Map>("${it}map") }
@@ -54,6 +55,7 @@ public sealed interface Destination {
 
         @Serializable
         public data object Settings : Destination {
+
             public val typeMap: kotlin.collections.Map<KType, NavType<*>> = emptyMap()
 
             public val deepLinks: List<NavDeepLink>
@@ -69,6 +71,7 @@ public sealed interface Destination {
 
         @Serializable
         public data object About : Destination {
+
             public val typeMap: kotlin.collections.Map<KType, NavType<*>> = emptyMap()
 
             public val deepLinks: List<NavDeepLink>
@@ -85,55 +88,60 @@ public sealed interface Destination {
 
     @Serializable
     public data object AuthGraph : Destination {
+
         public val typeMap: Map<KType, NavType<*>> = emptyMap()
 
         public val deepLinks: List<String>
             get() = Destination.deepLinks.map { "${it}auth/" }
-    }
 
-    @Serializable
-    public data object Login : Destination {
-        public val typeMap: Map<KType, NavType<*>> = emptyMap()
+        @Serializable
+        public data object Login : Destination {
 
-        public val deepLinks: List<NavDeepLink>
-            get() = AuthGraph.deepLinks.map { navDeepLink<Login>("${it}login") }
-
-        public fun navigationItem(label: String): NavigationItem<Destination> = NavigationItem(
-            text = { Text(label) },
-            icon = { Icon(Icons.AutoMirrored.Outlined.Login, label) },
-            selectedIcon = { Icon(Icons.AutoMirrored.Filled.Login, label) },
-            route = Login,
-        )
-    }
-
-    @Serializable
-    public data class ForgotPassword(val username: String) : Destination {
-
-        public companion object {
             public val typeMap: Map<KType, NavType<*>> = emptyMap()
 
-            public val deepLinks: List<NavDeepLink> =
-                AuthGraph.deepLinks.map { navDeepLink<ForgotPassword>("${it}forgotpassword") }
+            public val deepLinks: List<NavDeepLink>
+                get() = AuthGraph.deepLinks.map { navDeepLink<Login>("${it}login") }
+
+            public fun navigationItem(label: String): NavigationItem<Destination> = NavigationItem(
+                text = { Text(label) },
+                icon = { Icon(Icons.AutoMirrored.Outlined.Login, label) },
+                selectedIcon = { Icon(Icons.AutoMirrored.Filled.Login, label) },
+                route = Login,
+            )
+        }
+
+        @Serializable
+        public data class ForgotPassword(val username: String) : Destination {
+
+            public companion object {
+
+                public val typeMap: Map<KType, NavType<*>> = emptyMap()
+
+                public val deepLinks: List<NavDeepLink> =
+                    AuthGraph.deepLinks.map { navDeepLink<ForgotPassword>("${it}forgotpassword") }
+            }
+        }
+
+        @Serializable
+        public data object Profile : Destination {
+
+            public val typeMap: Map<KType, NavType<*>> = emptyMap()
+
+            public val deepLinks: List<NavDeepLink>
+                get() = AuthGraph.deepLinks.map { navDeepLink<Profile>("${it}profile") }
+
+            public fun navigationItem(label: String): NavigationItem<Destination> = NavigationItem(
+                text = { Text(label) },
+                icon = { Icon(Icons.Outlined.Person, label) },
+                selectedIcon = { Icon(Icons.Filled.Person, label) },
+                route = Profile,
+            )
         }
     }
 
     @Serializable
-    public data object Profile : Destination {
-        public val typeMap: Map<KType, NavType<*>> = emptyMap()
-
-        public val deepLinks: List<NavDeepLink>
-            get() = AuthGraph.deepLinks.map { navDeepLink<Profile>("${it}profile") }
-
-        public fun navigationItem(label: String): NavigationItem<Destination> = NavigationItem(
-            text = { Text(label) },
-            icon = { Icon(Icons.Outlined.Person, label) },
-            selectedIcon = { Icon(Icons.Filled.Person, label) },
-            route = Profile,
-        )
-    }
-
-    @Serializable
     public data object WalletGraph : Destination {
+
         public val typeMap: Map<KType, NavType<*>> = emptyMap()
 
         public val deepLinks: List<String>
@@ -141,6 +149,7 @@ public sealed interface Destination {
 
         @Serializable
         public data object Balance : Destination {
+
             public val typeMap: Map<KType, NavType<*>> = emptyMap()
 
             public val deepLinks: List<NavDeepLink>
@@ -156,6 +165,7 @@ public sealed interface Destination {
 
         @Serializable
         public data object Crypto : Destination {
+
             public val typeMap: Map<KType, NavType<*>> = emptyMap()
 
             public val deepLinks: List<NavDeepLink>
@@ -171,6 +181,7 @@ public sealed interface Destination {
 
         @Serializable
         public data object Stock : Destination {
+
             public val typeMap: Map<KType, NavType<*>> = emptyMap()
 
             public val deepLinks: List<NavDeepLink>

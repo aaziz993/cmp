@@ -130,10 +130,10 @@ public fun NavScreenNavHost(
             }
         }
 
-        navigation<Destination.AuthGraph>(Destination.Login) {
-            composable<Destination.Login>(
-                Destination.Login.typeMap,
-                Destination.Login.deepLinks,
+        navigation<Destination.AuthGraph>(Destination.AuthGraph.Login) {
+            composable<Destination.AuthGraph.Login>(
+                Destination.AuthGraph.Login.typeMap,
+                Destination.AuthGraph.Login.deepLinks,
             ) {
                 val navViewModel =
                     koinViewModel<Destination, NavViewModel>(navController = navController, backStackEntry = it)
@@ -143,9 +143,9 @@ public fun NavScreenNavHost(
                 }
             }
 
-            composable<Destination.ForgotPassword>(
-                Destination.ForgotPassword.typeMap,
-                Destination.ForgotPassword.deepLinks,
+            composable<Destination.AuthGraph.ForgotPassword>(
+                Destination.AuthGraph.ForgotPassword.typeMap,
+                Destination.AuthGraph.ForgotPassword.deepLinks,
             ) {
                 val navViewModel =
                     koinViewModel<Destination, NavViewModel>(navController = navController, backStackEntry = it)
@@ -155,9 +155,9 @@ public fun NavScreenNavHost(
                 }
             }
 
-            composable<Destination.Profile>(
-                Destination.Profile.typeMap,
-                Destination.Profile.deepLinks,
+            composable<Destination.AuthGraph.Profile>(
+                Destination.AuthGraph.Profile.typeMap,
+                Destination.AuthGraph.Profile.deepLinks,
             ) {
                 val navViewModel =
                     koinViewModel<Destination, NavViewModel>(navController = navController, backStackEntry = it)
