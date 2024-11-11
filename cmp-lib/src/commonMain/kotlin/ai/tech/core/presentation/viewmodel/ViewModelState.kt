@@ -12,8 +12,7 @@ public sealed interface ViewModelState<T : Any> {
 
     public data class Success<T : Any>(val data: T) : ViewModelState<T>
 
-    public data class Failure<T : Any>(val data: T, val exception: ViewModelStateException) :
-        ViewModelState<T>
+    public data class Failure<T : Any>(val data: T, val exception: ViewModelStateException) : ViewModelState<T>
 
     public fun toLoading(): ViewModelState<T> =
         when (this) {
@@ -38,6 +37,18 @@ public sealed interface ViewModelState<T : Any> {
             is Success -> Failure(data, exception)
             is Failure -> Failure(data, exception)
         }
+
+    public fun onIdle(
+        elseBlock: (ViewModelState<T>) -> Unit = {},
+        block: (ViewModelStateException?) -> Unit = {},
+    ): ViewModelState<T> = also {
+        if (it is Idle) {
+            block(it.exception)
+        }
+        else {
+            elseBlock(it)
+        }
+    }
 
     public fun onLoading(
         elseBlock: (ViewModelState<T>) -> Unit = {},

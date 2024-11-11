@@ -5,7 +5,6 @@ package ai.tech.core.presentation.viewmodel
 import ai.tech.core.misc.type.multiple.model.OnetimeWhileSubscribed
 import ai.tech.core.misc.type.multiple.model.RestartableStateFlow
 import ai.tech.core.misc.type.multiple.restartableStateIn
-import ai.tech.core.presentation.viewmodel.ViewModelState.Loading
 import ai.tech.core.presentation.viewmodel.ViewModelState.Success
 import ai.tech.core.presentation.viewmodel.model.ViewModelMutableStateFlow
 import ai.tech.core.presentation.viewmodel.model.exception.ViewModelStateException
@@ -20,6 +19,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.FlowCollector
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.update
@@ -28,6 +28,11 @@ import org.koin.core.component.KoinComponent
 public abstract class AbstractViewModel<A : Any> : ViewModel(), KoinComponent {
 
     public abstract val savedStateHandle: SavedStateHandle
+
+    public val state: StateFlow<Int>
+        field = viewModelMutableStateFlow {
+            success(1)
+        }
 
     public open fun exceptionTransform(exception: Throwable): ViewModelStateException = ViewModelStateException(exception)
 
@@ -63,18 +68,18 @@ public abstract class AbstractViewModel<A : Any> : ViewModel(), KoinComponent {
         block: suspend FlowCollector<ViewModelState<T>>.(ViewModelState<T>) -> Unit
     ): RestartableStateFlow<ViewModelState<T>> = flow { block(initialValue) }.viewModelStateFlow(initialValue, started)
 
-    protected fun <T : Any> viewModelStateFlow(
+    protected fun <T : Any> viewModelMutableStateFlow(
         initialValue: ViewModelState<T> = idle(),
-        onStartUpdate: (suspend MutableStateFlow<ViewModelState<T>>.(ViewModelState<T>) -> ViewModelState<T>)? = null,
-        started: SharingStarted = OnetimeWhileSubscribed(STATE_STARTED_STOP_TIMEOUT_MILLIS)
+        started: SharingStarted = OnetimeWhileSubscribed(STATE_STARTED_STOP_TIMEOUT_MILLIS),
+        block: (suspend MutableStateFlow<ViewModelState<T>>.(ViewModelState<T>) -> ViewModelState<T>)? = null,
     ): ViewModelMutableStateFlow<T> {
         val mutableStateFlow = MutableStateFlow(initialValue)
 
-        val restartableStateFlow = if (onStartUpdate == null) {
+        val restartableStateFlow = if (block == null) {
             mutableStateFlow
         }
         else {
-            mutableStateFlow.onStart { mutableStateFlow.update { mutableStateFlow.onStartUpdate(it) } }
+            mutableStateFlow.onStart { mutableStateFlow.update { mutableStateFlow.block(it) } }
         }.viewModelStateFlow(initialValue, started)
 
         return object : ViewModelMutableStateFlow<T> by restartableStateFlow {
