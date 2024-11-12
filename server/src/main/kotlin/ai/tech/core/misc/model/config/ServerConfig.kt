@@ -44,7 +44,7 @@ import kotlinx.serialization.Serializable
 public data class ServerConfig(
     override val koin: KoinConfig? = null,
     override val ktorClient: KtorClientConfig = KtorClientConfig(),
-    override val consul: ConsulConfig,
+    override val consul: ConsulConfig? = null,
     override val database: Map<String, DatabaseProviderConfig>? = null,
     override val serialization: SerializationConfig? = null,
     override val httpsRedirect: HTTPSRedirectConfig? = null,

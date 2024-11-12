@@ -11,7 +11,7 @@ public interface Config {
 
     public val ktorClient: KtorClientConfig
 
-    public val consul: ConsulConfig
+    public val consul: ConsulConfig?
 
     public val localization: LocalizationConfig
 

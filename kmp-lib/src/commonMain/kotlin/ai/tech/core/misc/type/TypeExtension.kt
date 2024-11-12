@@ -437,7 +437,7 @@ public fun <T : Any> T.remove(
 ): Any? = accessorOrNull(keys.dropLast(1), accessor)?.remove(keys.last())
 
 // /////////////////////////////////////////////////////TRANSFORM///////////////////////////////////////////////////////
-public fun Any.mapTo(
+public fun Any.copyTo(
     value: Any,
     keyTransform: (List<Accessor>, key: Any?) -> Any? = { _, key -> key },
     valueTransform: (List<Accessor>, key: String, value: Any?) -> Any? = { _, _, value -> value },
@@ -446,7 +446,7 @@ public fun Any.mapTo(
 }
 
 @Suppress("UNCHECKED_CAST")
-public fun <T : Any> T.transform(
+public fun <T : Any> T.eval(
     transform: (transforms: List<T>, value: Any?) -> Iterator<Any?>?,
     removeLast: (transforms: List<T>, transform: Any?) -> Unit
 ) {

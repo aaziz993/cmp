@@ -9,6 +9,7 @@ import ai.tech.core.misc.plugin.callid.configureCallId
 import ai.tech.core.misc.plugin.calllogging.configureCallLogging
 import ai.tech.core.misc.plugin.compression.configureCompression
 import ai.tech.core.misc.plugin.conditionalheaders.configureConditionalHeaders
+import ai.tech.core.misc.plugin.consul.configureConsul
 import ai.tech.core.misc.plugin.cors.configureCORS
 import ai.tech.core.misc.plugin.dataconversion.configureDataConversion
 import ai.tech.core.misc.plugin.defaultheaders.configureDefaultHeaders
@@ -35,6 +36,7 @@ import ai.tech.core.misc.plugin.xhttpmethodoverride.configureXHttpMethodOverride
 import com.apurebase.kgraphql.GraphQL
 import freemarker.template.Configuration
 import io.github.smiley4.ktorswaggerui.dsl.PluginConfigDsl
+import io.ktor.client.HttpClient
 import io.ktor.server.application.Application
 import io.ktor.server.auth.AuthenticationConfig
 import io.ktor.server.engine.ShutDownUrl
@@ -63,6 +65,7 @@ import io.ktor.server.websocket.WebSockets
 import org.koin.ktor.ext.get
 
 public fun Application.configure(
+    httpClient: HttpClient,
     config: ServerConfig,
     serializationBlock: (ContentNegotiationConfig.() -> Unit)? = null,
     httpsRedirectBlock: (HttpsRedirectConfig.() -> Unit)? = null,
@@ -92,6 +95,9 @@ public fun Application.configure(
     dropwizardMetricsBlock: (DropwizardMetricsConfig.() -> Unit)? = null,
     shutdownBlock: (ShutDownUrl.Config.() -> Unit)? = null
 ) = with(config) {
+    // Configure consul
+    configureConsul(httpClient, config)
+
     // Configure the Serialization plugin
     configureSerialization(serialization, serializationBlock)
 
@@ -183,7 +189,13 @@ public fun Application.configure(
     }
 
     // Configure the security plugin with JWT
-    configureAuth(ktor.deployment.httpURL, get(), auth, authBlock)
+    configureAuth(
+        ktor.deployment.httpURL, get(), auth,
+        { provider, database, principalTable, roleTable ->
+            null
+        },
+        authBlock,
+    )
 
     // Configure the FreeMarker plugin for templating .ftl files
     configureFreeMarker(freemarker, freeMarkerBlock)
