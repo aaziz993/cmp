@@ -18,7 +18,6 @@ public class AuthRepository(
         find(predicate = "username".f.eq(username)).singleOrNull()
     }
 
-
     public suspend fun getUserPassword(username: String): Pair<User, String>? = principalRepository.transactional {
         getPrincipal(username)?.let { principal ->
 
