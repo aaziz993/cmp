@@ -40,8 +40,10 @@ import kotlin.reflect.full.memberFunctions
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.toList
 import kotlinx.datetime.TimeZone
+import kotlinx.serialization.InternalSerializationApi
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.json.Json
+import kotlinx.serialization.serializer
 import org.slf4j.LoggerFactory
 import org.ufoss.kotysa.CoroutinesSqlClientDeleteOrUpdate
 import org.ufoss.kotysa.CoroutinesSqlClientSelect
@@ -52,8 +54,9 @@ import org.ufoss.kotysa.SqlClientQuery
 import org.ufoss.kotysa.Table
 import org.ufoss.kotysa.WholeNumberColumn
 
+@OptIn(InternalSerializationApi::class)
 public abstract class KotysaCRUDRepository<T : Any>(
-    public val serializer: KSerializer<T>,
+    public val kClass: KClass<T>,
     public val client: R2dbcSqlClient,
     public val table: Table<T>,
     public val createdAtProperty: String? = "createdAt",
@@ -75,7 +78,7 @@ public abstract class KotysaCRUDRepository<T : Any>(
         client.insert(
             *((kotysaTable.createdAtColumn?.let {
                 val temporal = it.value.now!!(timeZone)
-                entities.map { Json.Default.copy(serializer, it) { mapOf(createdAtProperty!! to temporal) } }
+                entities.map { Json.Default.copy(kClass.serializer(), it) { mapOf(createdAtProperty!! to temporal) } }
             } ?: entities).toTypedArray<Any>() as Array<T>),
         )
     }
@@ -83,7 +86,7 @@ public abstract class KotysaCRUDRepository<T : Any>(
     override suspend fun update(entities: List<T>): List<Boolean> = client.transactional {
         kotysaTable.updatedAtColumn?.let {
             val temporal = it.value.now!!(timeZone)
-            entities.map { update(Json.Default.copy(serializer, it) { mapOf(updatedAtProperty!! to temporal) }).execute() > 0L }
+            entities.map { update(Json.Default.copy(kClass.serializer(), it) { mapOf(updatedAtProperty!! to temporal) }).execute() > 0L }
         } ?: entities.map { update(it).execute() > 0L }
     }!!
 

@@ -10,11 +10,12 @@ import ai.tech.core.misc.plugin.auth.oauth.model.config.ServerOAuthConfig
 import ai.tech.core.misc.plugin.auth.rbac.rbac
 import ai.tech.core.misc.model.config.EnabledConfig
 import ai.tech.core.misc.plugin.auth.basic.BasicAuthService
+import ai.tech.core.misc.plugin.auth.database.AuthRepository
+import ai.tech.core.misc.plugin.auth.database.principal.model.PrincipalEntity
 import ai.tech.core.misc.plugin.auth.digest.DigestAuthService
 import ai.tech.core.misc.plugin.auth.form.FormAuthService
 import ai.tech.core.misc.plugin.auth.ldap.LDAPAuthService
-import ai.tech.core.misc.plugin.auth.model.PrincipalEntity
-import ai.tech.core.misc.plugin.auth.model.RoleEntity
+import ai.tech.core.misc.plugin.auth.database.role.model.RoleEntity
 import ai.tech.core.misc.plugin.auth.session.SessionAuthService
 import ai.tech.core.misc.plugin.auth.session.model.UserSession
 import io.ktor.client.*
@@ -33,8 +34,7 @@ public fun Application.configureAuth(
     serverURL: String,
     httpClient: HttpClient,
     config: AuthConfig?,
-    getPrincipalRepository: (database: String?, table: String?) -> CRUDRepository<PrincipalEntity>,
-    getRoleRepository: (database: String, table: String?) -> CRUDRepository<RoleEntity>?,
+    getRepository: (provider: String, database: String?, userTable: String?, roleTable: String?) -> AuthRepository? = { _, _, _, _ -> null },
     block: (AuthenticationConfig.() -> Unit)? = null
 ) = authentication {
     config?.let {
@@ -43,8 +43,7 @@ public fun Application.configureAuth(
             val service = BasicAuthService(
                 name,
                 config,
-                getPrincipalRepository(config.database, config.principalTable),
-                getRoleRepository(config.database, config.roleTable),
+                getRepository,
             )
 
             basic(name) {
@@ -61,12 +60,18 @@ public fun Application.configureAuth(
         }
 
         it.digest.forEach { (name, config) ->
-            val service = DigestAuthService(name, config)
+            val service = DigestAuthService(
+                name,
+                config,
+                getRepository,
+            )
 
             digest(name) {
                 config.realm?.let { realm = it }
 
                 config.algorithmName?.let { algorithmName = it }
+
+                digestProvider(service::digestProvider)
 
                 validate { service.validate(this, it) }
 
@@ -80,8 +85,7 @@ public fun Application.configureAuth(
             val service = FormAuthService(
                 name,
                 config,
-                getPrincipalRepository(config.database, config.principalTable),
-                getRoleRepository(config.database, config.roleTable),
+                getRepository,
             )
 
             form(name) {

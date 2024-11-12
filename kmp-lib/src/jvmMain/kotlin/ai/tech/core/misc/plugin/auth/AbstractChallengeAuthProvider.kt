@@ -6,9 +6,11 @@ import io.ktor.http.*
 import io.ktor.server.application.*
 import io.ktor.server.response.*
 
-public abstract class AbstractChallengeAuthProvider(private val config: ChallengeAuthProviderConfig) {
+public interface AbstractChallengeAuthProvider {
 
-    public open suspend fun challenge(call: ApplicationCall, vararg args: Any) {
+    public val config: ChallengeAuthProviderConfig
+
+    public suspend fun challenge(call: ApplicationCall, vararg args: Any) {
         val message = "Token is not valid or has expired"
 
         if (config.exception) {

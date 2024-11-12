@@ -20,11 +20,11 @@ import org.koin.core.annotation.Single
 
 @Module
 @ComponentScan("ai.tech")
-public class DefaultModule {
+public class ServerModule {
 
     @OptIn(ExperimentalSerializationApi::class)
     @Single
-    public fun provideHttpClient(): HttpClient =
+    public fun provideHttpClient(config: ServerConfig): HttpClient =
         createHttpClient {
             install(HttpTimeout) {
                 requestTimeoutMillis = 10000

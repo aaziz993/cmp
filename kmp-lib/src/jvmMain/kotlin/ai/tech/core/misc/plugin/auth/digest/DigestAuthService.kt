@@ -1,33 +1,27 @@
 package ai.tech.core.misc.plugin.auth.digest
 
-import ai.tech.core.data.database.crud.CRUDRepository
-import ai.tech.core.data.expression.f
 import ai.tech.core.misc.auth.model.User
 import ai.tech.core.misc.plugin.auth.AuthProvider
+import ai.tech.core.misc.plugin.auth.StorageAuthProvider
 import ai.tech.core.misc.plugin.auth.ValidateAuthProvider
+import ai.tech.core.misc.plugin.auth.database.AuthRepository
 import ai.tech.core.misc.plugin.auth.digest.model.config.DigestAuthConfig
 import io.ktor.server.application.ApplicationCall
 import io.ktor.server.auth.*
-import kotlinx.coroutines.flow.singleOrNull
 
 public class DigestAuthService(
     override val name: String,
-    public val config: DigestAuthConfig,
-    public val principalRepository: CRUDRepository<User>,
-    public val roleRepository: CRUDRepository<User>,
-    public val userTable: Map<String, String> = emptyMap()
-) : AuthProvider, ValidateAuthProvider<DigestCredential> {
+    override val config: DigestAuthConfig,
+    override val getRepository: (provider: String, database: String?, userTable: String?, roleTable: String?) -> AuthRepository?,
+) : AuthProvider, StorageAuthProvider, ValidateAuthProvider<DigestCredential> {
 
-    override suspend fun validate(call: ApplicationCall, credential: DigestCredential): Any? = principalRepository.transactional {
-        val user = find(predicate = "username".f.eq(credential.userName)).singleOrNull()
+    private val authRepository = getRepository(name, config.database, config.principalTable, config.roleTable)
 
-        if (credential.userName.isNotEmpty()) {
-            User(credential.userName)
-        }
-        else {
-            null
-        }
-    }
+    public suspend fun digestProvider(userName: String, realm: String): ByteArray? =
+        authRepository?.getPrincipal(userName)?.password?.let(String::toByteArray)
+
+    override suspend fun validate(call: ApplicationCall, credential: DigestCredential): Any? =
+        authRepository?.getUserPassword(credential.userName)?.first
 
     override fun roles(principal: Any): Set<String> = (principal as User).roles.orEmpty()
 }

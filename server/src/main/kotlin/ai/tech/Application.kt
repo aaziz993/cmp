@@ -5,7 +5,7 @@ import ai.tech.core.misc.model.config.ServerConfig
 import ai.tech.core.misc.plugin.configure
 import ai.tech.core.misc.plugin.koin.configureKoin
 import ai.tech.map.mapRouting
-import ai.tech.plugin.di.DefaultModule
+import ai.tech.plugin.di.ServerModule
 import io.ktor.network.tls.certificates.*
 import io.ktor.server.application.Application
 import io.ktor.server.netty.EngineMain
@@ -22,7 +22,7 @@ public fun main(args: Array<String>) {
 @Suppress("unused")
 public fun Application.module() {
     configureKoin(ServerConfig.read<ServerConfig> { readResourceText(it) }) {
-        DefaultModule().module
+        ServerModule().module
     }
 
     val config: ServerConfig = get()

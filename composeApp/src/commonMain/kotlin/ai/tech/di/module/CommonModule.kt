@@ -21,6 +21,7 @@ import org.koin.core.annotation.Single
 import ai.tech.core.data.keyvalue.SettingsKeyValue
 import ai.tech.core.misc.consul.Consul
 import ai.tech.core.misc.location.localization.MapLocalizationService
+import io.ktor.client.plugins.HttpTimeout
 import org.koin.core.annotation.ComponentScan
 
 @Module
@@ -32,6 +33,10 @@ public class CommonModule(private val enableNetworkLogs: Boolean) {
 
     @Single
     public fun provideHttpClient(json: Json): HttpClient = createHttpClient {
+        install(HttpTimeout) {
+            requestTimeoutMillis = 15_000
+        }
+
         install(ContentNegotiation) {
             json(
                 Json {
