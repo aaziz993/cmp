@@ -28,6 +28,7 @@ public fun Application.module() {
     val config: ServerConfig = get()
 
     configure(
+        get(),
         config,
         routingBlock = {
             // Add all other routes here
