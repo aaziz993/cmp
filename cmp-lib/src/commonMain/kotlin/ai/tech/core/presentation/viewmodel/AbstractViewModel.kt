@@ -99,13 +99,13 @@ public abstract class AbstractViewModel<A : Any> : ViewModel(), KoinComponent {
         }
     }
 
-    public fun <T : Any> CRUDRepository<T>.viewModelFlow(
+    public fun <T : Any> CRUDRepository<T>.viewModelPagingDataFlow(
         sort: List<Order>? = null,
         predicate: BooleanVariable? = null,
         limitOffset: LimitOffset
     ): Flow<PagingData<T>> = findPager(sort, predicate, limitOffset).flow.cachedIn(viewModelScope)
 
-    public fun <T : Any> CRUDRepository<T>.viewModelFlow(
+    public fun <T : Any> CRUDRepository<T>.viewModelPagingDataFlow(
         projections: List<Variable>,
         sort: List<Order>? = null,
         predicate: BooleanVariable? = null,
