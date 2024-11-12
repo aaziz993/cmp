@@ -2,8 +2,8 @@
 
 package ai.tech.core.presentation.viewmodel
 
-import ai.tech.core.data.database.crud.CRUDPagingDaraPresenter
 import ai.tech.core.data.database.crud.CRUDRepository
+import ai.tech.core.data.database.crud.findPager
 import ai.tech.core.data.database.crud.model.LimitOffset
 import ai.tech.core.data.database.crud.model.Order
 import ai.tech.core.data.expression.BooleanVariable
@@ -99,13 +99,13 @@ public abstract class AbstractViewModel<A : Any> : ViewModel(), KoinComponent {
         }
     }
 
-    public fun <T : Any> CRUDPagingDaraPresenter<T>.viewModelPagingDataFlow(
+    public fun <T : Any> CRUDRepository<T>.viewModelFlow(
         sort: List<Order>? = null,
         predicate: BooleanVariable? = null,
         limitOffset: LimitOffset
     ): Flow<PagingData<T>> = findPager(sort, predicate, limitOffset).flow.cachedIn(viewModelScope)
 
-    public fun <T : Any> CRUDPagingDaraPresenter<T>.viewModelPagingDataFlow(
+    public fun <T : Any> CRUDRepository<T>.viewModelFlow(
         projections: List<Variable>,
         sort: List<Order>? = null,
         predicate: BooleanVariable? = null,

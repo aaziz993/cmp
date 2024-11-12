@@ -25,7 +25,7 @@ public interface CRUDRepository<T : Any> {
         predicate: BooleanVariable? = null,
     ): List<Long>
 
-    public suspend fun find(
+    public fun find(
         sort: List<Order>? = null,
         predicate: BooleanVariable? = null,
     ): Flow<T>
@@ -36,7 +36,7 @@ public interface CRUDRepository<T : Any> {
         limitOffset: LimitOffset
     ): Page<T>
 
-    public suspend fun find(
+    public fun find(
         projections: List<Variable>,
         sort: List<Order>? = null,
         predicate: BooleanVariable? = null,

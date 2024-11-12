@@ -97,13 +97,13 @@ public open class CRUDClient<T : Any>(
             )
         }.body()
 
-    override suspend fun find(sort: List<Order>?, predicate: BooleanVariable?): Flow<T> =
-        findHelper(null, sort, predicate, null).bodyAsChannel().let {
-            flow {
-                while (!it.isClosedForRead) {
-                    it.readUTF8Line()?.let {
-                        emit(Json.Default.decodeFromString(serializer, it))
-                    }
+    override fun find(sort: List<Order>?, predicate: BooleanVariable?): Flow<T> =
+        flow {
+            val channel = findHelper(null, sort, predicate, null).bodyAsChannel()
+
+            while (!channel.isClosedForRead) {
+                channel.readUTF8Line()?.let {
+                    emit(Json.Default.decodeFromString(serializer, it))
                 }
             }
         }
@@ -112,16 +112,16 @@ public open class CRUDClient<T : Any>(
         Json.Default.decodeFromString(findHelper(null, sort, predicate, limitOffset).bodyAsText())
 
     @OptIn(InternalSerializationApi::class)
-    override suspend fun find(
+    override fun find(
         projections: List<Variable>,
         sort: List<Order>?,
         predicate: BooleanVariable?,
-    ): Flow<List<Any?>> = findHelper(projections, sort, predicate, null).bodyAsChannel().let {
-        flow {
-            while (!it.isClosedForRead) {
-                it.readUTF8Line()?.let {
-                    emit(Json.Default.decodeAnyFromString(JsonArray::class.serializer(), it) as List<Any?>)
-                }
+    ): Flow<List<Any?>> = flow {
+        val channel = findHelper(projections, sort, predicate, null).bodyAsChannel()
+
+        while (!channel.isClosedForRead) {
+            channel.readUTF8Line()?.let {
+                emit(Json.Default.decodeAnyFromString(JsonArray::class.serializer(), it) as List<Any?>)
             }
         }
     }

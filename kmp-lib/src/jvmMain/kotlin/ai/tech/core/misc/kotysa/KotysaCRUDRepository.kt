@@ -96,18 +96,23 @@ public abstract class KotysaCRUDRepository<T : Any>(
         } ?: entities.map { update(it).execute() }
     }!!
 
-    final override suspend fun find(
+    final override fun find(
         sort: List<Order>?,
         predicate: BooleanVariable?,
     ): Flow<T> = findHelper(sort, predicate)
 
-    override suspend fun find(sort: List<Order>?, predicate: BooleanVariable?, limitOffset: LimitOffset): Page<T> =
+    override suspend fun find(
+        sort: List<Order>?,
+        predicate: BooleanVariable?,
+        limitOffset: LimitOffset): Page<T> =
         client.transactional {
             Page(findHelper(sort, predicate, limitOffset).toList(), aggregate(count(), predicate))
         }!!
 
-    override suspend fun find(
-        projections: List<Variable>, sort: List<Order>?, predicate: BooleanVariable?
+    override fun find(
+        projections: List<Variable>,
+        sort: List<Order>?,
+        predicate: BooleanVariable?
     ): Flow<List<Any?>> = findHelper(projections, sort, predicate)
 
     override suspend fun find(
