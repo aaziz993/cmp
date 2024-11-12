@@ -1,10 +1,10 @@
 package ai.tech.core.misc.plugin.session
 
-import ai.tech.core.misc.plugin.auth.model.config.AuthConfig
+import ai.tech.core.misc.plugin.auth.model.config.AuthProvidersConfig
 import io.ktor.server.application.*
 import io.ktor.server.sessions.*
 
-public fun Application.configureSession(config: AuthConfig?, block: (SessionsConfig.() -> Unit)? = null) {
+public fun Application.configureSession(config: AuthProvidersConfig?, block: (SessionsConfig.() -> Unit)? = null) {
     val configBlock: (SessionsConfig.() -> Unit)? = config?.let {
         {
 

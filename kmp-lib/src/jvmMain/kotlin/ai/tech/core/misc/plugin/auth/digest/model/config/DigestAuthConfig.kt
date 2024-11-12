@@ -1,6 +1,6 @@
 package ai.tech.core.misc.plugin.auth.digest.model.config
 
-import ai.tech.core.misc.plugin.auth.model.config.StorageAuthConfig
+import ai.tech.core.misc.plugin.auth.model.config.PrincipalAuthProviderConfig
 import ai.tech.core.misc.plugin.session.model.config.CookieConfig
 import kotlinx.serialization.Serializable
 
@@ -14,4 +14,4 @@ public data class DigestAuthConfig(
     override val file: List<String>? = null,
     override val cookie: CookieConfig? = null,
     override val enable: Boolean = true
-) : StorageAuthConfig
+) : PrincipalAuthProviderConfig

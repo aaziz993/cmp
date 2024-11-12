@@ -1,21 +1,18 @@
 package ai.tech.core.misc.plugin.auth
 
-import ai.tech.core.data.database.crud.CRUDRepository
 import ai.tech.core.misc.plugin.auth.jwt.JWTHS256AuthService
 import ai.tech.core.misc.plugin.auth.jwt.JWTRS256AuthService
 import ai.tech.core.misc.plugin.auth.jwt.model.JWTConfig
-import ai.tech.core.misc.plugin.auth.model.config.AuthConfig
+import ai.tech.core.misc.plugin.auth.model.config.AuthProvidersConfig
 import ai.tech.core.misc.plugin.auth.oauth.OAuthService
 import ai.tech.core.misc.plugin.auth.oauth.model.config.ServerOAuthConfig
 import ai.tech.core.misc.plugin.auth.rbac.rbac
 import ai.tech.core.misc.model.config.EnabledConfig
 import ai.tech.core.misc.plugin.auth.basic.BasicAuthService
 import ai.tech.core.misc.plugin.auth.database.AuthRepository
-import ai.tech.core.misc.plugin.auth.database.principal.model.PrincipalEntity
 import ai.tech.core.misc.plugin.auth.digest.DigestAuthService
 import ai.tech.core.misc.plugin.auth.form.FormAuthService
 import ai.tech.core.misc.plugin.auth.ldap.LDAPAuthService
-import ai.tech.core.misc.plugin.auth.database.role.model.RoleEntity
 import ai.tech.core.misc.plugin.auth.session.SessionAuthService
 import ai.tech.core.misc.plugin.auth.session.model.UserSession
 import io.ktor.client.*
@@ -33,7 +30,7 @@ import kotlin.collections.set
 public fun Application.configureAuth(
     serverURL: String,
     httpClient: HttpClient,
-    config: AuthConfig?,
+    config: AuthProvidersConfig?,
     getRepository: (provider: String, database: String?, userTable: String?, roleTable: String?) -> AuthRepository? = { _, _, _, _ -> null },
     block: (AuthenticationConfig.() -> Unit)? = null
 ) = authentication {

@@ -1,7 +1,7 @@
 package ai.tech.core.misc.model.config.server
 
 import ai.tech.core.data.database.model.config.DatabaseProviderConfig
-import ai.tech.core.misc.plugin.auth.model.config.AuthConfig
+import ai.tech.core.misc.plugin.auth.model.config.AuthProvidersConfig
 import ai.tech.core.misc.model.config.Config
 import ai.tech.core.misc.model.config.di.KoinConfig
 import ai.tech.core.misc.plugin.applicationmonitoring.model.config.ApplicationMonitoringConfig
@@ -61,7 +61,7 @@ public interface ServerConfig : Config {
     public val hsts: HSTSConfig?
     public val autoHeadResponse: AutoHeadResponseConfig?
     public val xHttpMethodOverride: XHttpMethodOverrideConfig?
-    public val auth: AuthConfig?
+    public val auth: AuthProvidersConfig?
     public val freemarker: FreeMarkerConfig?
     public val swagger: SwaggerConfig?
     public val applicationMonitoring: ApplicationMonitoringConfig?

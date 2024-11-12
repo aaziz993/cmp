@@ -1,14 +1,11 @@
 package ai.tech.core.misc.plugin.auth
 
 import ai.tech.core.data.filesystem.pathExtension
-import ai.tech.core.data.filesystem.readResourceBytes
 import ai.tech.core.data.filesystem.readResourceProperties
 import ai.tech.core.data.filesystem.readResourceText
 import ai.tech.core.misc.plugin.auth.database.AuthRepository
-import ai.tech.core.misc.plugin.auth.model.config.StorageAuthConfig
+import ai.tech.core.misc.plugin.auth.model.config.PrincipalAuthProviderConfig
 import ai.tech.core.misc.type.decodeAnyFromString
-import java.io.ByteArrayInputStream
-import java.util.Properties
 import kotlin.collections.component1
 import kotlin.collections.component2
 import kotlin.collections.orEmpty
@@ -16,11 +13,10 @@ import kotlinx.serialization.InternalSerializationApi
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.serializer
-import net.mamoe.yamlkt.Yaml
 
-public interface StorageAuthProvider {
+public interface PrincipalAuthProvider {
 
-    public val config: StorageAuthConfig
+    public val config: PrincipalAuthProviderConfig
 
     public val getRepository: (provider: String, database: String?, userTable: String?, roleTable: String?) -> AuthRepository?
 
@@ -33,7 +29,7 @@ public interface StorageAuthProvider {
 
                 "properties" -> readResourceProperties(file).entries.associate { (k, v) -> k.toString() to v.toString() }
 
-                else -> throw IllegalArgumentException("Unsupported file format: $file")
+                else -> throw IllegalArgumentException("Unsupported file extension: ${file.pathExtension}")
             }.mapValues { (_, v) -> v.toByteArray() }
         }.orEmpty()
 }

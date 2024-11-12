@@ -3,7 +3,7 @@ package ai.tech.core.misc.plugin.auth.form
 import ai.tech.core.misc.auth.model.User
 import ai.tech.core.misc.plugin.auth.AbstractChallengeAuthProvider
 import ai.tech.core.misc.plugin.auth.AuthProvider
-import ai.tech.core.misc.plugin.auth.StorageAuthProvider
+import ai.tech.core.misc.plugin.auth.PrincipalAuthProvider
 import ai.tech.core.misc.plugin.auth.ValidateAuthProvider
 import ai.tech.core.misc.plugin.auth.database.AuthRepository
 import ai.tech.core.misc.plugin.auth.form.model.config.FormAuthConfig
@@ -14,7 +14,7 @@ public class FormAuthService(
     override val name: String,
     override val config: FormAuthConfig,
     override val getRepository: (provider: String, database: String?, userTable: String?, roleTable: String?) -> AuthRepository?,
-) : AuthProvider, StorageAuthProvider, ValidateAuthProvider<UserPasswordCredential>, AbstractChallengeAuthProvider {
+) : AuthProvider, PrincipalAuthProvider, ValidateAuthProvider<UserPasswordCredential>, AbstractChallengeAuthProvider {
 
     override suspend fun validate(call: ApplicationCall, credential: UserPasswordCredential): Any? =
         getRepository(name, config.database, config.principalTable, config.roleTable)?.getUserPassword(credential.name)?.first

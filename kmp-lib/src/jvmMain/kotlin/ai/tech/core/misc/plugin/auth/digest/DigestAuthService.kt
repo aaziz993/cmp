@@ -2,7 +2,7 @@ package ai.tech.core.misc.plugin.auth.digest
 
 import ai.tech.core.misc.auth.model.User
 import ai.tech.core.misc.plugin.auth.AuthProvider
-import ai.tech.core.misc.plugin.auth.StorageAuthProvider
+import ai.tech.core.misc.plugin.auth.PrincipalAuthProvider
 import ai.tech.core.misc.plugin.auth.ValidateAuthProvider
 import ai.tech.core.misc.plugin.auth.database.AuthRepository
 import ai.tech.core.misc.plugin.auth.digest.model.config.DigestAuthConfig
@@ -13,7 +13,7 @@ public class DigestAuthService(
     override val name: String,
     override val config: DigestAuthConfig,
     override val getRepository: (provider: String, database: String?, userTable: String?, roleTable: String?) -> AuthRepository?,
-) : AuthProvider, StorageAuthProvider, ValidateAuthProvider<DigestCredential> {
+) : AuthProvider, PrincipalAuthProvider, ValidateAuthProvider<DigestCredential> {
 
     private val authRepository = getRepository(name, config.database, config.principalTable, config.roleTable)
 

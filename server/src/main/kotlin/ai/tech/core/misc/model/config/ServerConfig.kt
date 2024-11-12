@@ -1,7 +1,7 @@
 package ai.tech.core.misc.model.config
 
 import ai.tech.core.data.database.model.config.DatabaseProviderConfig
-import ai.tech.core.misc.plugin.auth.model.config.AuthConfig
+import ai.tech.core.misc.plugin.auth.model.config.AuthProvidersConfig
 import ai.tech.core.misc.consul.module.config.ConsulConfig
 import ai.tech.core.misc.location.localization.model.config.LocalizationConfig
 import ai.tech.core.misc.model.config.di.KoinConfig
@@ -29,7 +29,6 @@ import ai.tech.core.misc.plugin.ratelimit.model.config.RateLimitsConfig
 import ai.tech.core.misc.plugin.resources.model.config.ResourcesConfig
 import ai.tech.core.misc.plugin.routing.model.config.RoutingConfig
 import ai.tech.core.misc.plugin.serialization.model.config.SerializationConfig
-import ai.tech.core.misc.plugin.session.model.config.SessionEncryptConfig
 import ai.tech.core.misc.plugin.shutdown.model.config.ShutDownConfig
 import ai.tech.core.misc.plugin.statuspages.model.config.StatusPagesConfig
 import ai.tech.core.misc.plugin.swagger.model.config.SwaggerConfig
@@ -68,7 +67,7 @@ public data class ServerConfig(
     override val hsts: HSTSConfig? = null,
     override val autoHeadResponse: AutoHeadResponseConfig? = null,
     override val xHttpMethodOverride: XHttpMethodOverrideConfig? = null,
-    override val auth: AuthConfig? = null,
+    override val auth: AuthProvidersConfig? = null,
     override val freemarker: FreeMarkerConfig? = null,
     override val swagger: SwaggerConfig? = null,
     override val applicationMonitoring: ApplicationMonitoringConfig? = null,

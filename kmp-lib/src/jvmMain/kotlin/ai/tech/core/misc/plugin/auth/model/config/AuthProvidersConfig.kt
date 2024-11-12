@@ -11,7 +11,7 @@ import ai.tech.core.misc.plugin.auth.session.model.config.SessionAuthConfig
 import kotlinx.serialization.Serializable
 
 @Serializable
-public data class AuthConfig(
+public data class AuthProvidersConfig(
     val basic: Map<String, BasicAuthConfig> = emptyMap(),
     val digest: Map<String, DigestAuthConfig> = emptyMap(),
     val form: Map<String, FormAuthConfig> = emptyMap(),

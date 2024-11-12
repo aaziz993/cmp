@@ -1,7 +1,9 @@
 package ai.tech.core.misc.plugin.auth.form.model.config
 
+import ai.tech.core.misc.plugin.auth.basic.model.config.DigestConfig
 import ai.tech.core.misc.plugin.auth.model.config.ChallengeAuthProviderConfig
-import ai.tech.core.misc.plugin.auth.model.config.StorageAuthConfig
+import ai.tech.core.misc.plugin.auth.model.config.DigestAuthProviderConfig
+import ai.tech.core.misc.plugin.auth.model.config.PrincipalAuthProviderConfig
 import ai.tech.core.misc.plugin.session.model.config.CookieConfig
 import kotlinx.serialization.Serializable
 
@@ -9,6 +11,7 @@ import kotlinx.serialization.Serializable
 public data class FormAuthConfig(
     val userParamName: String? = null,
     val passwordParamName: String? = null,
+    override val digest: DigestConfig? = null,
     override val database: String,
     override val principalTable: String,
     override val roleTable: String? = null,
@@ -16,4 +19,4 @@ public data class FormAuthConfig(
     override val cookie: CookieConfig? = null,
     override val exception: Boolean = false,
     override val enable: Boolean = true
-) : StorageAuthConfig, ChallengeAuthProviderConfig
+) : DigestAuthProviderConfig, PrincipalAuthProviderConfig, ChallengeAuthProviderConfig
