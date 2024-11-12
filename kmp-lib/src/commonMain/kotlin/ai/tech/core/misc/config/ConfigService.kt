@@ -24,11 +24,17 @@ public abstract class AbstractConfigService<T : Config>(public val kClass: KClas
             readConfigs().forEach {
                 it.copyTo(
                     this, { _, key -> key.toString().toCamelCase() },
-                    { _, _, _ ->
+                    { _, _, _, _ ->
 
                     },
                 )
             }
         },
     )
+
+    public companion object {
+
+        public const val APPLICATION_SHARED_CONFIG_NAME: String = "application-shared"
+        public const val APPLICATION_CONFIG_NAME: String = "application"
+    }
 }

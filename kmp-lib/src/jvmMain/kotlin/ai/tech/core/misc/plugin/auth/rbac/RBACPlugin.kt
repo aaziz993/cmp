@@ -1,6 +1,6 @@
 package ai.tech.core.misc.plugin.auth.rbac
 
-import ai.tech.core.misc.auth.model.Role
+import ai.tech.core.misc.auth.model.AuthRole
 import ai.tech.core.misc.auth.model.exception.UnauthorizedAccessException
 import ai.tech.core.misc.plugin.auth.rbac.model.RBACPluginConfig
 import io.ktor.http.*
@@ -19,7 +19,7 @@ public fun rbac(name: String? = null, config: RBACPluginConfig.() -> Unit) {
 public class RBACConfiguration {
 
     public lateinit var configurations: Set<String?>
-    public lateinit var role: Role
+    public lateinit var role: AuthRole
 }
 
 public val RBACPlugin: RouteScopedPlugin<RBACConfiguration> =

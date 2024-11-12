@@ -15,12 +15,9 @@ public class ConsulConfigService<T : Config>(
 
     public val consul: Consul = Consul(httpClient, config)
 
+    @Suppress("UNCHECKED_CAST")
     override suspend fun readConfigs(): List<Map<String, Any?>> = listOf(
-        json.decodeAnyFromJsonElement(consul.config.read("yaml", APPLICATION_CONFIG_KEY)) as Map<String, Any?>,
+        json.decodeAnyFromJsonElement(consul.config.read("yaml", APPLICATION_SHARED_CONFIG_NAME)) as Map<String, Any?>,
+        json.decodeAnyFromJsonElement(consul.config.read("yaml", APPLICATION_CONFIG_NAME)) as Map<String, Any?>,
     )
-
-    public companion object {
-
-        public const val APPLICATION_CONFIG_KEY: String = "application"
-    }
 }

@@ -177,6 +177,19 @@ public fun getKotysaPostgresqlTables(config: TableConfig): List<IPostgresqlTable
 public fun getKotysaOracleTables(config: TableConfig): List<OracleTable<*>> =
     getTables(config, OracleTable::class)
 
-//public fun getKotysaTables(): List<Table<*>> = Table
+public fun getKotysaTables(config: DatabaseProviderConfig): List<Table<*>> =
+    when (config.connection.driver) {
+        "h2" -> config.table.flatMap(::getKotysaH2Tables)
 
+        "postgresql" -> config.table.flatMap(::getKotysaPostgresqlTables)
 
+        "mysql" -> config.table.flatMap(::getKotysaMysqlTables)
+
+        "mssql" -> config.table.flatMap(::getKotysaMssqlTables)
+
+        "mariadb" -> config.table.flatMap(::getKotysaMariadbTables)
+
+        "oracle" -> config.table.flatMap(::getKotysaOracleTables)
+
+        else -> throw UnsupportedOperationException("Unknown database type \"${config.connection.driver}\"")
+    }

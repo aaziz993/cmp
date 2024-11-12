@@ -3,8 +3,8 @@ package ai.tech.core.misc.plugin.auth.database
 import ai.tech.core.data.database.crud.CRUDRepository
 import ai.tech.core.data.expression.f
 import ai.tech.core.misc.auth.model.User
-import ai.tech.core.misc.plugin.auth.database.principal.model.PrincipalEntity
-import ai.tech.core.misc.plugin.auth.database.role.model.RoleEntity
+import ai.tech.core.misc.plugin.auth.database.kotysa.principal.model.PrincipalEntity
+import ai.tech.core.misc.plugin.auth.database.kotysa.role.model.RoleEntity
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.singleOrNull
 import kotlinx.coroutines.flow.toSet

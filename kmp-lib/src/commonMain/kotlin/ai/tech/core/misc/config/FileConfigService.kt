@@ -11,10 +11,4 @@ public class FileConfigService<T : Config>(kClass: KClass<T>) : AbstractConfigSe
     override suspend fun readConfigs(): List<Map<String, Any?>> {
         TODO("Not yet implemented")
     }
-
-    public companion object {
-
-        public const val APPLICATION_SHARED_CONFIG_NAME: String = "application-shared.yml"
-        public const val APPLICATION_CONFIG_NAME: String = "application.yml"
-    }
 }

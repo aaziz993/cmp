@@ -437,10 +437,10 @@ public fun <T : Any> T.remove(
 ): Any? = accessorOrNull(keys.dropLast(1), accessor)?.remove(keys.last())
 
 // /////////////////////////////////////////////////////TRANSFORM///////////////////////////////////////////////////////
-public fun Any.copyTo(
-    value: Any,
+public fun <T : Any> Any.copyTo(
+    value: T,
     keyTransform: (List<Accessor>, key: Any?) -> Any? = { _, key -> key },
-    valueTransform: (List<Accessor>, key: String, value: Any?) -> Any? = { _, _, value -> value },
+    valueTransform: (List<Accessor>, key: String, value: Any?, valueType: KType) -> Any? = { _, _, value, _ -> value },
     accessor: (List<Accessor>, key: Any?, value: Any?) -> Accessor? = { _, key, value -> value?.accessor(key) },
 ) {
 }
