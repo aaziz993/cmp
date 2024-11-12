@@ -9,7 +9,7 @@ import app.cash.paging.PagingSourceLoadResultError
 import app.cash.paging.PagingSourceLoadResultPage
 import app.cash.paging.PagingState
 
-public class DataPagingSource<Value : Any>(private val fetchData: (LimitOffset) -> Page<Value>, public val initialOffset: Long = 0) : PagingSource<Long, Value>() {
+public class DataPagingSource<Value : Any>(private val fetchData: suspend (LimitOffset) -> Page<Value>, public val initialOffset: Long = 0) : PagingSource<Long, Value>() {
 
     @Suppress("UNCHECKED_CAST")
     override suspend fun load(params: PagingSourceLoadParams<Long>): PagingSourceLoadResult<Long, Value> {

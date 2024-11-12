@@ -15,6 +15,7 @@ public fun <T : Any> CRUDRepository<T>.findPager(
     predicate: BooleanVariable? = null,
     limitOffset: LimitOffset,
     initialOffset: Long = 0,
+    enablePlaceholders: Boolean = true,
     maxSize: Int = MAX_SIZE_UNBOUNDED,
     jumpThreshold: Int = COUNT_UNDEFINED,
 ): Pager<Long, T> = Pager(PagingConfig(limitOffset.limit.toInt(), limitOffset.offset.toInt(), enablePlaceholders, limitOffset.limit.toInt(), maxSize, jumpThreshold), null) {
@@ -27,6 +28,7 @@ public fun <T : Any> CRUDRepository<T>.findPager(
     predicate: BooleanVariable? = null,
     limitOffset: LimitOffset,
     initialOffset: Long = 0,
+    enablePlaceholders: Boolean = true,
     maxSize: Int = MAX_SIZE_UNBOUNDED,
     jumpThreshold: Int = COUNT_UNDEFINED,
 ): Pager<Long, List<Any?>> = Pager(PagingConfig(limitOffset.limit.toInt(), limitOffset.offset.toInt(), enablePlaceholders, limitOffset.limit.toInt(), maxSize, jumpThreshold), null) {
