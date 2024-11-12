@@ -14,6 +14,7 @@ public class CRUDPagingSource<T : Any>(private val repository: CRUDRepository<T>
 
     override fun getRefreshKey(state: PagingState<Long, T>): Long? = state.anchorPosition?.toLong()
 
+    @Suppress("UNCHECKED_CAST")
     override suspend fun load(params: PagingSourceLoadParams<Long>): PagingSourceLoadResult<Long, T> {
         val offset = params.key ?: 0L
         val limit = params.loadSize.toLong()
@@ -21,15 +22,15 @@ public class CRUDPagingSource<T : Any>(private val repository: CRUDRepository<T>
         return try {
             val page = repository.find(limitOffset = LimitOffset(offset, limit))
 
-            return PagingSourceLoadResultPage(
+            PagingSourceLoadResultPage(
                 page.entities,
-                (offset - 1L).takeIf { it > -1 },
-                (offset + 1L).takeIf { it < page.totalCount },
+                (offset - 1).takeIf { it > -1 },
+                (offset + 1).takeIf { it < page.totalCount },
             )
         }
         catch (e: Exception) {
-            return PagingSourceLoadResultError<Long, T>(e)
-        }
+            PagingSourceLoadResultError<Long, T>(e)
+        } as PagingSourceLoadResult<Long, T>
     }
 }
 
