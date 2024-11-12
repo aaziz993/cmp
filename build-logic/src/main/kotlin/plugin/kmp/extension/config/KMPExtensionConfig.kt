@@ -119,6 +119,7 @@ internal fun Project.configureKMPExtension(extension: KotlinMultiplatformExtensi
                 implementation(lib("kotlinx.coroutines.test"))
                 implementation(lib("koin.test"))
                 implementation(lib("okio.fakefilesystem"))
+                implementation(lib("paging.testing"))
             }
 
             getByName("nonWebMain").dependencies {

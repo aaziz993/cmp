@@ -18,6 +18,7 @@ import plugin.kmp.KMPPlugin
 internal class CMPPlugin(
     private val androidPluginId: String,
 ) : Plugin<Project> {
+
     @OptIn(ExperimentalComposeLibrary::class)
     override fun apply(target: Project): Unit =
         KMPPlugin(androidPluginId).apply(target).also {
@@ -45,6 +46,7 @@ internal class CMPPlugin(
                             implementation(lib("compose.colorpicker"))
                             implementation(bundle("compose.icons"))
 //                            implementation(lib("squircle.shape"))
+                            implementation(bundle("paging"))
                             implementation(bundle("material3.adaptive"))
                             implementation(bundle("compose.settings.ui"))
                             implementation(bundle("androidx.multiplatform"))
@@ -70,6 +72,11 @@ internal class CMPPlugin(
                         androidMain.dependencies {
                             implementation(composeDeps.preview)
                             implementation(lib("androidx.activity.compose"))
+//                            implementation(lib("paging.runtime"))
+                        }
+
+                        iosMain.dependencies {
+                            implementation(lib("paging.runtime.uikit"))
                         }
 
                         jsMain.dependencies {

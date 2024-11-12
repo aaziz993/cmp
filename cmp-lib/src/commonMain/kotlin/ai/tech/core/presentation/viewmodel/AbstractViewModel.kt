@@ -66,17 +66,17 @@ public abstract class AbstractViewModel<A : Any> : ViewModel(), KoinComponent {
 
     public abstract fun action(action: A): Boolean
 
-    protected fun <T : ViewModelState<*>> viewModelStateFlow(
-        initialValue: T = idle(),
+    protected fun <T : Any> viewModelStateFlow(
+        initialValue: ViewModelState<T> = idle(),
         started: SharingStarted = SharingStarted.OnetimeWhileSubscribed(STATE_STARTED_STOP_TIMEOUT_MILLIS),
-        block: suspend FlowCollector<T>.(T) -> Unit
-    ): RestartableStateFlow<T> = flow { block(initialValue) }.viewModelStateFlow(initialValue, started)
+        block: suspend FlowCollector<ViewModelState<T>>.(ViewModelState<T>) -> Unit
+    ): RestartableStateFlow<ViewModelState<T>> = flow { block(initialValue) }.viewModelStateFlow(initialValue, started)
 
-    protected fun <T : ViewModelState<*>> viewModelMutableStateFlow(
-        initialValue: T = idle(),
+    protected fun <T : Any> viewModelMutableStateFlow(
+        initialValue: ViewModelState<T> = idle(),
         started: SharingStarted = SharingStarted.OnetimeWhileSubscribed(STATE_STARTED_STOP_TIMEOUT_MILLIS),
-        block: (suspend MutableStateFlow<T>.(T) -> T)? = null,
-    ): RestartableMutableStateFlow<T> {
+        block: (suspend MutableStateFlow<ViewModelState<T>>.(ViewModelState<T>) -> ViewModelState<T>)? = null,
+    ): RestartableMutableStateFlow<ViewModelState<T>> {
         val mutableStateFlow = MutableStateFlow(initialValue)
 
         val restartableStateFlow = if (block == null) {
@@ -86,7 +86,7 @@ public abstract class AbstractViewModel<A : Any> : ViewModel(), KoinComponent {
             mutableStateFlow.onStart { mutableStateFlow.update { mutableStateFlow.block(it) } }
         }.viewModelStateFlow(initialValue, started)
 
-        return object : RestartableMutableStateFlow<T> by restartableStateFlow {
+        return object : RestartableMutableStateFlow<ViewModelState<T>> by restartableStateFlow {
             override fun restart() = restartableStateFlow.restart()
         }
     }

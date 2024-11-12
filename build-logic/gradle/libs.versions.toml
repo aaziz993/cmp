@@ -130,6 +130,7 @@ compose-icons = "1.1.1"
 squircle-shape = "2.0.10"
 material3-adaptive = "1.0.0"
 compose-settings = "2.4.0"
+paging = "3.3.0-alpha02-0.4.0"
 androidx-navigation-compose = "2.8.0-alpha10"
 androidx-material-navigation = "1.7.0-beta02"
 filekit-compose = "0.8.1"
@@ -361,6 +362,12 @@ material3-adaptive-navigation = { module = "org.jetbrains.compose.material3.adap
 # settings ui
 compose-settings-ui = { group = "com.github.alorma.compose-settings", name = "ui-tiles", version.ref = "compose-settings" }
 compose-settings-ui-extended = { group = "com.github.alorma.compose-settings", name = "ui-tiles-extended", version.ref = "compose-settings" }
+# paging
+paging-common = { module = "app.cash.paging:paging-common", version.ref = "paging" }
+paging-compose-common = { module = "app.cash.paging:paging-compose-common", version.ref = "paging" }
+paging-runtime = { module = "app.cash.paging:paging-runtime", version.ref = "paging" }
+paging-runtime-uikit = { module = "app.cash.paging:paging-runtime-uikit", version.ref = "paging" }
+paging-testing = { module = "app.cash.paging:paging-testing", version.ref = "paging" }
 # lifecycle
 androidx-lifecycle-viewmodel = { group = "org.jetbrains.androidx.lifecycle", name = "lifecycle-viewmodel", version.ref = "androidx-lifecycle" }
 androidx-lifecycle-runtime-compose = { group = "org.jetbrains.androidx.lifecycle", name = "lifecycle-runtime-compose", version.ref = "androidx-lifecycle" }
@@ -697,6 +704,10 @@ material3-adaptive = [
 compose-settings-ui = [
     "compose-settings-ui",
     "compose-settings-ui-extended"
+]
+paging = [
+    "paging-compose-common",
+    "paging-common",
 ]
 androidx-multiplatform = [
     "androidx-lifecycle-viewmodel",
