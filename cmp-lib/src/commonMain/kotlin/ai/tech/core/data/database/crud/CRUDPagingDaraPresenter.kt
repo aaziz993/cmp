@@ -9,16 +9,16 @@ import app.cash.paging.COUNT_UNDEFINED
 import app.cash.paging.MAX_SIZE_UNBOUNDED
 import app.cash.paging.Pager
 import app.cash.paging.PagingConfig
-import app.cash.paging.createPagingConfig
 
-public class CRUDPresenter<T : Any>(
+public class CRUDPagingDaraPresenter<T : Any>(
     public val repository: CRUDRepository<T>,
     public val enablePlaceholders: Boolean = true,
     public val maxSize: Int = MAX_SIZE_UNBOUNDED,
     public val jumpThreshold: Int = COUNT_UNDEFINED,
-    public val initialOffset: Long) {
+    public val initialOffset: Long
+) : CRUDRepository<T> by repository {
 
-    public fun find(
+    public fun findPager(
         sort: List<Order>? = null,
         predicate: BooleanVariable? = null,
         limitOffset: LimitOffset
@@ -26,7 +26,7 @@ public class CRUDPresenter<T : Any>(
         DataPagingSource({ repository.find(sort, predicate, it) }, initialOffset)
     }
 
-    public fun find(
+    public fun findPager(
         projections: List<Variable>,
         sort: List<Order>? = null,
         predicate: BooleanVariable? = null,

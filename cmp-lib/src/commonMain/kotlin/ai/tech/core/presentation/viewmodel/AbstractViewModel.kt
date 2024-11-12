@@ -2,6 +2,12 @@
 
 package ai.tech.core.presentation.viewmodel
 
+import ai.tech.core.data.database.crud.CRUDPagingDaraPresenter
+import ai.tech.core.data.database.crud.CRUDRepository
+import ai.tech.core.data.database.crud.model.LimitOffset
+import ai.tech.core.data.database.crud.model.Order
+import ai.tech.core.data.expression.BooleanVariable
+import ai.tech.core.data.expression.Variable
 import ai.tech.core.misc.type.multiple.model.OnetimeWhileSubscribed
 import ai.tech.core.misc.type.multiple.model.RestartableMutableStateFlow
 import ai.tech.core.misc.type.multiple.model.RestartableStateFlow
@@ -11,6 +17,8 @@ import ai.tech.core.presentation.viewmodel.model.exception.ViewModelStateExcepti
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import app.cash.paging.PagingData
+import app.cash.paging.cachedIn
 import arrow.core.Either
 import arrow.core.raise.Raise
 import arrow.core.raise.either
@@ -90,6 +98,19 @@ public abstract class AbstractViewModel<A : Any> : ViewModel(), KoinComponent {
             override fun restart() = restartableStateFlow.restart()
         }
     }
+
+    public fun <T : Any> CRUDPagingDaraPresenter<T>.viewModelPagingDataFlow(
+        sort: List<Order>? = null,
+        predicate: BooleanVariable? = null,
+        limitOffset: LimitOffset
+    ): Flow<PagingData<T>> = findPager(sort, predicate, limitOffset).flow.cachedIn(viewModelScope)
+
+    public fun <T : Any> CRUDPagingDaraPresenter<T>.viewModelPagingDataFlow(
+        projections: List<Variable>,
+        sort: List<Order>? = null,
+        predicate: BooleanVariable? = null,
+        limitOffset: LimitOffset
+    ): Flow<PagingData<List<Any?>>> = findPager(projections, sort, predicate, limitOffset).flow.cachedIn(viewModelScope)
 
     private fun <T : ViewModelState<*>> Flow<T>.viewModelStateFlow(
         initialValue: T,
