@@ -21,37 +21,41 @@ import org.koin.core.annotation.Single
 import ai.tech.core.data.keyvalue.SettingsKeyValue
 import ai.tech.core.misc.consul.Consul
 import ai.tech.core.misc.location.localization.MapLocalizationService
+import ai.tech.core.misc.model.config.EnabledConfig
 import io.ktor.client.plugins.HttpTimeout
 import org.koin.core.annotation.ComponentScan
 
 @Module
 @ComponentScan("ai.tech")
-public class CommonModule(private val enableNetworkLogs: Boolean) {
+public class CommonModule {
 
     @Single
     public fun provideJson(): Json = Json { isLenient = true; ignoreUnknownKeys = true }
 
     @Single
-    public fun provideHttpClient(json: Json): HttpClient = createHttpClient {
-        install(HttpTimeout) {
-            requestTimeoutMillis = 15_000
-        }
+    public fun provideHttpClient(config: ClientConfig, json: Json): HttpClient = with(config.ktorClient) {
+        createHttpClient {
+            install(HttpTimeout) {
+                this@with.requestTimeoutMillis?.let { requestTimeoutMillis }
+                this@with.connectTimeoutMillis.let { connectTimeoutMillis }
+                this@with.socketTimeoutMillis.let { socketTimeoutMillis }
+            }
 
-        install(ContentNegotiation) {
-            json(
-                Json {
-                    prettyPrint = true
-                    isLenient = true
-                    ignoreUnknownKeys = true
-                    explicitNulls = false
-                },
-            )
-        }
+            install(ContentNegotiation) {
+                json(
+                    Json {
+                        isLenient = true
+                        ignoreUnknownKeys = true
+                        explicitNulls = false
+                    },
+                )
+            }
 
-        if (enableNetworkLogs) {
-            install(Logging) {
-                logger = Logger.DEFAULT
-                level = LogLevel.NONE
+            log?.takeIf(EnabledConfig::enable)?.let {
+                install(Logging) {
+                    logger = Logger.DEFAULT
+                    it.level?.let { level = LogLevel.valueOf(it.uppercase()) }
+                }
             }
         }
     }

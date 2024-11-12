@@ -9,7 +9,7 @@ public fun koinConfiguration(): KoinApplication = koinApplication {
     printLogger()
 
     modules(
-        CommonModule(true).module,
+        CommonModule().module,
         PlatformModule().module
     )
 }

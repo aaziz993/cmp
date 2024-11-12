@@ -4,6 +4,7 @@ import ai.tech.core.data.database.model.config.DatabaseProviderConfig
 import ai.tech.core.misc.plugin.auth.model.config.AuthProvidersConfig
 import ai.tech.core.misc.consul.module.config.ConsulConfig
 import ai.tech.core.misc.location.localization.model.config.LocalizationConfig
+import ai.tech.core.misc.model.config.client.KtorClientConfig
 import ai.tech.core.misc.model.config.di.KoinConfig
 import ai.tech.core.misc.model.config.server.KtorServerConfig
 import ai.tech.core.misc.model.config.server.ServerConfig
@@ -42,6 +43,7 @@ import kotlinx.serialization.Serializable
 @Serializable
 public data class ServerConfig(
     override val koin: KoinConfig? = null,
+    override val ktorClient: KtorClientConfig = KtorClientConfig(),
     override val consul: ConsulConfig,
     override val database: Map<String, DatabaseProviderConfig>? = null,
     override val serialization: SerializationConfig? = null,
