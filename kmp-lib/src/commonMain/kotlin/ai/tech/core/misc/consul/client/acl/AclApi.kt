@@ -75,7 +75,7 @@ public interface AclApi {
     public suspend fun updateToken(@Path("id") id: String, @Body token: Token): TokenResponse
 
     @GET("acl/tokens")
-    public suspend fun listTokens(@QueryMap query: Map<String, String>): List<TokenListResponse>
+    public suspend fun listTokens(@QueryMap query: Map<String, String> = emptyMap()): List<TokenListResponse>
 
     @DELETE("acl/token/{id}")
     public suspend fun deleteToken(@Path("id") id: String)
@@ -96,6 +96,6 @@ public interface AclApi {
     public suspend fun deleteRole(@Path("id") id: String)
 
     @GET("acl/roles")
-    public suspend fun listRoles(@QueryMap query: Map<String, String>): List<RoleListResponse>
+    public suspend fun listRoles(@QueryMap query: Map<String, String> = emptyMap()): List<RoleListResponse>
 }
 

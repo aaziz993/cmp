@@ -11,5 +11,5 @@ public interface CoordinateApi {
     public suspend fun getDatacenters(): List<Datacenter>
 
     @GET("coordinate/nodes")
-    public suspend fun getNodes(@QueryMap query: Map<String, String>): List<Coordinate>
+    public suspend fun getNodes(@QueryMap query: Map<String, String> = emptyMap()): List<Coordinate>
 }

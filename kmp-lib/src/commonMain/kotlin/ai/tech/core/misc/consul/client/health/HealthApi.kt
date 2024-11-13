@@ -13,37 +13,37 @@ public interface HealthApi {
     @GET("health/node/{node}")
     public suspend fun getNodeChecks(
         @Path("node") node: String,
-        @QueryMap query: Map<String, String>,
+        @QueryMap query: Map<String, String> = emptyMap(),
         @Query("tag") tag: List<String>,
         @Query("node-meta") nodeMeta: List<String>,
-        @HeaderMap headers: Map<String, String>
+        @HeaderMap headers: Map<String, String> = emptyMap()
     ): List<HealthCheck>
 
     @GET("health/checks/{service}")
     public suspend fun getServiceChecks(
         @Path("service") service: String,
-        @QueryMap query: Map<String, String>,
+        @QueryMap query: Map<String, String> = emptyMap(),
         @Query("tag") tag: List<String>,
         @Query("node-meta") nodeMeta: List<String>,
-        @HeaderMap headers: Map<String, String>
+        @HeaderMap headers: Map<String, String> = emptyMap()
     ): List<HealthCheck>
 
     @GET("health/state/{state}")
     public suspend fun getChecksByState(
         @Path("state") state: String,
-        @QueryMap query: Map<String, String>,
+        @QueryMap query: Map<String, String> = emptyMap(),
         @Query("tag") tag: List<String>,
         @Query("node-meta") nodeMeta: List<String>,
-        @HeaderMap headers: Map<String, String>
+        @HeaderMap headers: Map<String, String> = emptyMap()
     ): List<HealthCheck>
 
     @GET("health/service/{service}")
     public suspend fun getServiceInstances(
         @Path("service") service: String,
-        @QueryMap query: Map<String, String>,
+        @QueryMap query: Map<String, String> = emptyMap(),
         @Query("tag") tag: List<String>,
         @Query("node-meta") nodeMeta: List<String>,
-        @HeaderMap headers: Map<String, String>
+        @HeaderMap headers: Map<String, String> = emptyMap()
     ): List<ServiceHealth>
 }
 

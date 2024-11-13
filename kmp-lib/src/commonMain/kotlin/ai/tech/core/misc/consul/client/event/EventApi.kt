@@ -14,15 +14,15 @@ public interface EventApi {
     public suspend fun fire(
         @Path("name") name: String,
         @Body payload: JsonElement,
-        @QueryMap query: Map<String, String>
+        @QueryMap query: Map<String, String> = emptyMap()
     ): Event
 
     @PUT("event/fire/{name}")
     public suspend fun fire(
         @Path("name") name: String,
-        @QueryMap query: Map<String, String>
+        @QueryMap query: Map<String, String> = emptyMap()
     ): Event
 
     @GET("event/list")
-    public suspend fun list(@QueryMap query: Map<String, String>): List<Event>
+    public suspend fun list(@QueryMap query: Map<String, String> = emptyMap()): List<Event>
 }

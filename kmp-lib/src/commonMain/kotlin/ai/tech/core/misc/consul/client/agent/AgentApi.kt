@@ -19,14 +19,14 @@ public interface AgentApi {
     @PUT("agent/service/register")
     public suspend fun register(
         @Body registration: Registration,
-        @QueryMap options: Map<String, String>,
+        @QueryMap options: Map<String, String> = emptyMap(),
         @QueryName optionsParameters: List<String>
     )
 
     @PUT("agent/service/deregister/{serviceId}")
     public suspend fun deregister(
         @Path("serviceId") serviceId: String,
-        @QueryMap options: Map<String, String>
+        @QueryMap options: Map<String, String> = emptyMap()
     )
 
     @PUT("agent/check/register")
@@ -42,19 +42,19 @@ public interface AgentApi {
     public suspend fun getSelf(): Agent
 
     @GET("agent/checks")
-    public suspend fun getChecks(@QueryMap optionsParameters: Map<String, String>): Map<String, HealthCheck>
+    public suspend fun getChecks(@QueryMap optionsParameters: Map<String, String> = emptyMap()): Map<String, HealthCheck>
 
     @GET("agent/services")
-    public suspend fun getServices(@QueryMap query: Map<String, String>): Map<String, Service>
+    public suspend fun getServices(@QueryMap query: Map<String, String> = emptyMap()): Map<String, Service>
 
     @GET("agent/service/{serviceId}")
     public suspend fun getService(
         @Path("serviceId") id: String,
-        @QueryMap query: Map<String, String>
+        @QueryMap query: Map<String, String> = emptyMap()
     ): FullService
 
     @GET("agent/members")
-    public suspend fun getMembers(@QueryMap query: Map<String, String>): List<Member>
+    public suspend fun getMembers(@QueryMap query: Map<String, String> = emptyMap()): List<Member>
 
     @PUT("agent/force-leave/{node}")
     public suspend fun forceLeave(
@@ -66,18 +66,18 @@ public interface AgentApi {
     public suspend fun check(
         @Path("state") state: String,
         @Path("checkId") checkId: String,
-        @QueryMap query: Map<String, String>
+        @QueryMap query: Map<String, String> = emptyMap()
     )
 
     @PUT("agent/join/{address}")
     public suspend fun join(
         @Path("address") address: String,
-        @QueryMap query: Map<String, String>
+        @QueryMap query: Map<String, String> = emptyMap()
     )
 
     @PUT("agent/service/maintenance/{serviceId}")
     public suspend fun toggleMaintenanceMode(
         @Path("serviceId") serviceId: String,
-        @QueryMap query: Map<String, String>
+        @QueryMap query: Map<String, String> = emptyMap()
     )
 }

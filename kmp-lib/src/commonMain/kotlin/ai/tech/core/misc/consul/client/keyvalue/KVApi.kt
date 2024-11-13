@@ -16,38 +16,38 @@ public interface KVApi {
     @GET("kv/{key}")
     public suspend fun getValue(
         @Path("key") key: String,
-        @QueryMap query: Map<String, String>
+        @QueryMap query: Map<String, String> = emptyMap()
     ): List<Value>
 
     @GET("kv/{key}")
     public suspend fun getKeys(
         @Path("key") key: String,
-        @QueryMap query: Map<String, String>
+        @QueryMap query: Map<String, String> = emptyMap()
     ): List<String>
 
     @PUT("kv/{key}")
     public suspend fun putValue(
         @Path("key") key: String,
-        @QueryMap query: Map<String, String>
+        @QueryMap query: Map<String, String> = emptyMap()
     ): Boolean
 
     @PUT("kv/{key}")
     public suspend fun putValue(
         @Path("key") key: String,
         @Body data: JsonElement,
-        @QueryMap query: Map<String, String>
+        @QueryMap query: Map<String, String> = emptyMap()
     ): Boolean
 
     @DELETE("kv/{key}")
     public suspend fun deleteValues(
         @Path("key") key: String,
-        @QueryMap query: Map<String, String>
+        @QueryMap query: Map<String, String> = emptyMap()
     )
 
     @PUT("txn")
     @Headers("Content-Type: application/json")
     public suspend fun performTransaction(
         @Body body: JsonElement,
-        @QueryMap query: Map<String, String>
+        @QueryMap query: Map<String, String> = emptyMap()
     ): TxResponse
 }

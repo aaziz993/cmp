@@ -13,12 +13,12 @@ public interface SnapshotApi {
 
     @Streaming
     @GET("snapshot")
-    public suspend fun generate(@QueryMap query: Map<String, String>): HttpStatement
+    public suspend fun generate(@QueryMap query: Map<String, String> = emptyMap()): HttpStatement
 
     @PUT("snapshot")
     @Headers("Content-Type: application/binary")
     public suspend fun restore(
-        @QueryMap query: Map<String, String>,
+        @QueryMap query: Map<String, String> = emptyMap(),
         @Body requestBody: JsonElement
     )
 }
