@@ -14,8 +14,8 @@ public interface HealthApi {
     public suspend fun getNodeChecks(
         @Path("node") node: String,
         @QueryMap query: Map<String, String> = emptyMap(),
-        @Query("tag") tag: List<String>,
-        @Query("node-meta") nodeMeta: List<String>,
+        @Query("tag") tag: List<String> = emptyList(),
+        @Query("node-meta") nodeMeta: List<String> = emptyList(),
         @HeaderMap headers: Map<String, String> = emptyMap()
     ): List<HealthCheck>
 
@@ -23,8 +23,8 @@ public interface HealthApi {
     public suspend fun getServiceChecks(
         @Path("service") service: String,
         @QueryMap query: Map<String, String> = emptyMap(),
-        @Query("tag") tag: List<String>,
-        @Query("node-meta") nodeMeta: List<String>,
+        @Query("tag") tag: List<String> = emptyList(),
+        @Query("node-meta") nodeMeta: List<String> = emptyList(),
         @HeaderMap headers: Map<String, String> = emptyMap()
     ): List<HealthCheck>
 
@@ -32,8 +32,8 @@ public interface HealthApi {
     public suspend fun getChecksByState(
         @Path("state") state: String,
         @QueryMap query: Map<String, String> = emptyMap(),
-        @Query("tag") tag: List<String>,
-        @Query("node-meta") nodeMeta: List<String>,
+        @Query("tag") tag: List<String> = emptyList(),
+        @Query("node-meta") nodeMeta: List<String> = emptyList(),
         @HeaderMap headers: Map<String, String> = emptyMap()
     ): List<HealthCheck>
 
@@ -41,8 +41,8 @@ public interface HealthApi {
     public suspend fun getServiceInstances(
         @Path("service") service: String,
         @QueryMap query: Map<String, String> = emptyMap(),
-        @Query("tag") tag: List<String>,
-        @Query("node-meta") nodeMeta: List<String>,
+        @Query("tag") tag: List<String> = emptyList(),
+        @Query("node-meta") nodeMeta: List<String> = emptyList(),
         @HeaderMap headers: Map<String, String> = emptyMap()
     ): List<ServiceHealth>
 }

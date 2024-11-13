@@ -1,7 +1,7 @@
 package ai.tech.core.misc.consul.client.plugin
 
 import ai.tech.core.misc.consul.client.ConsulClient
-import ai.tech.core.misc.consul.client.model.config.ConsulPluginServiceConfig
+import ai.tech.core.misc.consul.client.plugin.model.config.ConsulPluginServiceConfig
 import io.ktor.client.plugins.api.ClientPlugin
 import io.ktor.client.plugins.api.createClientPlugin
 import io.ktor.client.request.HttpRequestPipeline

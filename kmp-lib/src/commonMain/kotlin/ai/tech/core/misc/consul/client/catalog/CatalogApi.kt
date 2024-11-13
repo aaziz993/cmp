@@ -21,8 +21,8 @@ public interface CatalogApi {
     @GET("catalog/nodes")
     public suspend fun getNodes(
         @QueryMap query: Map<String, String> = emptyMap(),
-        @Query("tag") tag: List<String>,
-        @Query("node-meta") nodeMeta: List<String>,
+        @Query("tag") tag: List<String> = emptyList(),
+        @Query("node-meta") nodeMeta: List<String> = emptyList(),
         @HeaderMap headers: Map<String, String> = emptyMap()
     ): List<Node>
 
@@ -30,16 +30,16 @@ public interface CatalogApi {
     public suspend fun getNode(
         @Path("node") node: String,
         @QueryMap query: Map<String, String> = emptyMap(),
-        @Query("tag") tag: List<String>,
-        @Query("node-meta") nodeMeta: List<String>,
+        @Query("tag") tag: List<String> = emptyList(),
+        @Query("node-meta") nodeMeta: List<String> = emptyList(),
         @HeaderMap headers: Map<String, String> = emptyMap()
     ): CatalogNode
 
     @GET("catalog/services")
     public suspend fun getServices(
         @QueryMap query: Map<String, String> = emptyMap(),
-        @Query("tag") tag: List<String>,
-        @Query("node-meta") nodeMeta: List<String>,
+        @Query("tag") tag: List<String> = emptyList(),
+        @Query("node-meta") nodeMeta: List<String> = emptyList(),
         @HeaderMap headers: Map<String, String> = emptyMap()
     ): Map<String, List<String>>
 
@@ -47,8 +47,8 @@ public interface CatalogApi {
     public suspend fun getService(
         @Path("service") service: String,
         @QueryMap queryMeta: Map<String, String> = emptyMap(),
-        @Query("tag") tag: List<String>,
-        @Query("node-meta") nodeMeta: List<String>,
+        @Query("tag") tag: List<String> = emptyList(),
+        @Query("node-meta") nodeMeta: List<String> = emptyList(),
         @HeaderMap headers: Map<String, String> = emptyMap()
     ): List<CatalogService>
 
