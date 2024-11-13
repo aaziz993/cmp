@@ -1,9 +1,9 @@
-package ai.tech.core.misc.consul.module.config
+package ai.tech.core.misc.consul.client.model.config
 
-import ai.tech.core.misc.consul.module.Connect
-import ai.tech.core.misc.consul.module.ServiceHealth
-import ai.tech.core.misc.consul.module.ServiceProxy
-import ai.tech.core.misc.consul.module.ServiceWeights
+import ai.tech.core.misc.consul.client.model.Connect
+import ai.tech.core.misc.consul.client.model.ServiceHealth
+import ai.tech.core.misc.consul.client.model.ServiceProxy
+import ai.tech.core.misc.consul.client.model.ServiceWeights
 import kotlinx.serialization.Serializable
 
 @Serializable

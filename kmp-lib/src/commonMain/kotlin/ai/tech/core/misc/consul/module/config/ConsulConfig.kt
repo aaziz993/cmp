@@ -1,4 +1,4 @@
-package ai.tech.core.misc.consul.module.config;
+package ai.tech.core.misc.consul.client.model.config;
 
 import kotlinx.serialization.Serializable
 

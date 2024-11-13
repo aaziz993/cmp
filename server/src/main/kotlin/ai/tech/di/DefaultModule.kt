@@ -1,6 +1,6 @@
 package ai.tech.di
 
-import ai.tech.core.misc.consul.Consul
+import ai.tech.core.misc.consul.client.Consul
 import ai.tech.core.misc.location.localization.AbstractLocalizationService
 import ai.tech.core.misc.location.localization.MapLocalizationService
 import ai.tech.core.misc.location.localization.weblate.WeblateClient

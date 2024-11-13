@@ -7,13 +7,13 @@ import kotlinx.serialization.Serializable
 public data class UserInfo(
     val sub: String,
     @SerialName("email_verified")
-    val emailVerified: Boolean,
+val emailVerified: Boolean,
     val name: String,
     @SerialName("preferred_username")
-    val preferredUsername: String,
+val preferredUsername: String,
     @SerialName("given_name")
-    val givenName: String,
+val givenName: String,
     @SerialName("family_name")
-    val familyName: String,
+val familyName: String,
     val email: String,
 )

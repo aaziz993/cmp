@@ -1,6 +1,6 @@
-package ai.tech.core.misc.consul.module.config
+package ai.tech.core.misc.consul.client.model.config
 
-import ai.tech.core.misc.consul.module.ServiceHealth
+import ai.tech.core.misc.consul.client.model.ServiceHealth
 import kotlin.also
 import kotlin.collections.all
 import kotlin.collections.firstOrNull

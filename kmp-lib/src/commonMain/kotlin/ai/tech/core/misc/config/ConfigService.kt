@@ -1,8 +1,8 @@
 package ai.tech.core.misc.config
 
-import ai.tech.core.misc.consul.Consul
-import ai.tech.core.misc.consul.module.KVMetadata
-import ai.tech.core.misc.consul.module.config.ConsulConfig
+import ai.tech.core.misc.consul.client.Consul
+import ai.tech.core.misc.consul.client.model.KVMetadata
+import ai.tech.core.misc.consul.client.model.config.ConsulConfig
 import ai.tech.core.misc.model.config.Config
 import ai.tech.core.misc.type.decodeFromAny
 import ai.tech.core.misc.type.copyTo
