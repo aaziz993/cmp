@@ -3,6 +3,7 @@ package ai.tech.core.misc.auth.client.keycloak
 import ai.tech.core.data.keyvalue.AbstractKeyValue
 import ai.tech.core.data.keyvalue.get
 import ai.tech.core.misc.auth.client.ClientAuthService
+import ai.tech.core.misc.auth.client.keycloak.model.ExecuteActionsEmail
 import ai.tech.core.misc.auth.client.keycloak.model.ResetPassword
 import ai.tech.core.misc.auth.client.keycloak.model.TokenResponse
 import ai.tech.core.misc.auth.client.keycloak.model.UserInfo
@@ -12,10 +13,6 @@ import io.ktor.client.request.*
 import io.ktor.http.*
 import kotlinx.atomicfu.locks.reentrantLock
 import kotlinx.atomicfu.locks.withLock
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.flow.MutableSharedFlow
-import kotlinx.coroutines.flow.SharedFlow
-import kotlinx.coroutines.flow.onStart
 import kotlinx.datetime.Clock
 
 public class KeycloakService(
@@ -33,7 +30,7 @@ public class KeycloakService(
 
         val userId = client.getUserInfo(accessToken).let(UserInfo::sub)
 
-        return client.getUsers(UserRepresentation(id = userId), true, accessToken).singleOrNull()?.let {
+        return client.getUsers(accessToken, UserRepresentation(id = userId), true).singleOrNull()?.let {
 
             val roles = client.getUserRealmRoles(userId, accessToken)
 
@@ -47,21 +44,21 @@ public class KeycloakService(
 
     override suspend fun createUsers(users: Set<User>, password: String): Unit = getOrRefreshToken()!!.let(TokenResponse::accessToken).let { accessToken ->
         users.forEach {
-            client.createUser(UserRepresentation(it), accessToken)
+            client.createUser(accessToken, UserRepresentation(it))
         }
     }
 
     override suspend fun updateUsers(users: Set<User>, password: String): Unit = getOrRefreshToken()!!.let(TokenResponse::accessToken).let { accessToken ->
         users.forEach { user ->
-            val userId = client.getUsers(UserRepresentation(username = user.username), true, accessToken).single().let(UserRepresentation::id)
+            val userId = client.getUsers(accessToken, UserRepresentation(username = user.username), true).single().let(UserRepresentation::id)
 
-            client.updateUser(UserRepresentation(user, userId), accessToken)
+            client.updateUser(accessToken, UserRepresentation(user, userId))
         }
     }
 
     override suspend fun deleteUsers(usernames: Set<String>, password: String): Unit = getOrRefreshToken()!!.let(TokenResponse::accessToken).let { accessToken ->
         usernames.forEach {
-            val userId = client.getUsers(UserRepresentation(username = it), true, accessToken).single().let(UserRepresentation::id)!!
+            val userId = client.getUsers(accessToken, UserRepresentation(username = it), true).single().let(UserRepresentation::id)!!
 
             client.deleteUser(userId, accessToken)
         }
@@ -70,13 +67,13 @@ public class KeycloakService(
     override suspend fun resetPassword(password: String, newPassword: String): Unit = getOrRefreshToken()!!.let(TokenResponse::accessToken).let { accessToken ->
         val userId = client.getUserInfo(accessToken).let(UserInfo::sub)
 
-        client.resetPassword(userId, ResetPassword(newPassword), accessToken)
+        client.resetPassword(accessToken, userId, ResetPassword(newPassword))
     }
 
     public override suspend fun forgotPassword(username: String): Unit = getOrRefreshToken()!!.let(TokenResponse::accessToken).let { accessToken ->
         val userId = client.getUserInfo(accessToken).let(UserInfo::sub)
 
-        client.updatePassword(userId, accessToken)
+        client.executeActionsEmail(accessToken, userId, ExecuteActionsEmail(listOf("UPDATE_PASSWORD")))
     }
 
     override suspend fun isSignedIn(): Boolean = getToken()?.let {

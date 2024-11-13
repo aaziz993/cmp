@@ -101,7 +101,6 @@ public class KeycloakClient(
         resetPassword: ResetPassword
     ): Unit = keycloakApi.resetPassword("Bearer $accessToken", config.realm, userId, resetPassword)
 
-    // To updatePassword just pass ExecuteActionsEmail(listOf("UPDATE_PASSWORD")
     public suspend fun executeActionsEmail(
         accessToken: String,
         userId: String,

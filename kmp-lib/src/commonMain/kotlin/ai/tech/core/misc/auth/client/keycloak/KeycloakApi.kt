@@ -1,9 +1,9 @@
 package ai.tech.core.misc.auth.client.keycloak
 
+import ai.tech.core.misc.auth.client.keycloak.model.ExecuteActionsEmail
 import ai.tech.core.misc.auth.client.keycloak.model.ResetPassword
 import ai.tech.core.misc.auth.client.keycloak.model.RoleRepresentation
 import ai.tech.core.misc.auth.client.keycloak.model.TokenResponse
-import ai.tech.core.misc.auth.client.keycloak.model.ExecuteActionsEmail
 import ai.tech.core.misc.auth.client.keycloak.model.UserInfo
 import ai.tech.core.misc.auth.client.keycloak.model.UserRepresentation
 import de.jensklingenberg.ktorfit.http.Body
