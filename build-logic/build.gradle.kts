@@ -42,9 +42,11 @@ dependencies {
     compileOnly(libs.kotlin.gradle.plugin)
     //  provides a repository for downloading JVMs
     implementation(libs.plugins.foojay.resolver.convention.toDep())
+    // creates fat/uber JARs with support for package relocation
+//    implementation(libs.plugins.shadow.toDep()) // conflict io.ktor.plugin:io.ktor.plugin.gradle.plugin:3.0.0 > io.ktor.plugin:plugin:3.0.0 > com.github.johnrengelman.shadow:com.github.johnrengelman.shadow.gradle.plugin:7.1.2
     // build config
     implementation(libs.plugins.build.config.toDep())
-    runtimeOnly(libs.plugins.build.config.toDep())
+//    runtimeOnly(libs.plugins.build.config.toDep())
     // pre-commit hooks
     implementation(libs.plugins.gradle.pre.commit.git.hooks.toDep())
     // publishing

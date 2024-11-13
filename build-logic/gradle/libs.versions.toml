@@ -14,6 +14,8 @@ project-version-name = "release"
 # Gradle
 # provides a repository for downloading JVMs
 foojay-resolver-convention = "0.8.0"
+# creates fat/uber JARs with support for package relocation.
+shadow = "8.3.5"
 # build config
 build-config = "4.1.1"
 # pre-commit hooks
@@ -518,9 +520,8 @@ ktor-server-call-logging = { module = "io.ktor:ktor-server-call-logging", versio
 # Call ID
 ktor-server-call-id = { module = "io.ktor:ktor-server-call-id", version.ref = "ktor" }
 # Micrometer Metrics
-ktor-server-metrics-micrometer = { module = "io.ktor:ktor-server-metrics-micrometer", version.ref = "ktor" }
-# Micrometer Metrics
 ktor-server-metrics = { module = "io.ktor:ktor-server-metrics", version.ref = "ktor" }
+ktor-server-metrics-micrometer = { module = "io.ktor:ktor-server-metrics-micrometer", version.ref = "ktor" }
 # ktor client
 ktor-client-core = { module = "io.ktor:ktor-client-core", version.ref = "ktor" }
 ktor-client-content-negotiation = { module = "io.ktor:ktor-client-content-negotiation", version.ref = "ktor" }
@@ -787,8 +788,8 @@ ktor-server = [
     "ktor-server-data-conversion",
     "ktor-server-call-logging",
     "ktor-server-call-id",
-    "ktor-server-metrics-micrometer",
     "ktor-server-metrics",
+    "ktor-server-metrics-micrometer",
     "ktor-swagger-ui"
 ]
 ktor-client = [
@@ -870,6 +871,8 @@ koin-test = [
 # Gradle
 # provides a repository for downloading JVMs
 foojay-resolver-convention = { id = "org.gradle.toolchains.foojay-resolver-convention", version.ref = "foojay-resolver-convention" }
+# creates fat/uber JARs with support for package relocation.
+shadow = { id = "com.gradleup.shadow", version.ref = "shadow" }
 # build config
 build-config = { id = "com.github.gmazzo.buildconfig", version.ref = "build-config" }
 # pre-commit hooks

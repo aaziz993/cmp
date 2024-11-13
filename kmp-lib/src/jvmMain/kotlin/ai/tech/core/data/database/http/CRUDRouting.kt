@@ -8,6 +8,7 @@ import ai.tech.core.data.expression.AggregateExpression
 import ai.tech.core.data.expression.BooleanVariable
 import ai.tech.core.data.expression.Variable
 import ai.tech.core.misc.network.http.client.readFormData
+import ai.tech.core.misc.network.http.server.handleHttpRequest
 import ai.tech.core.misc.plugin.auth.auth
 import ai.tech.core.misc.type.decodeAnyFromString
 import ai.tech.core.misc.type.encodeAnyToJsonElement
@@ -36,85 +37,93 @@ public inline fun <reified T : Any> Routing.CrudRouting(
 ) {
     auth(config?.saveAuth) {
         post("$path/insert") {
-            repository.insert(call.receive<List<T>>())
-            call.respondText("Inserted", status = HttpStatusCode.OK)
+            handleHttpRequest {
+                repository.insert(call.receive<List<T>>())
+                call.respondText("Inserted", status = HttpStatusCode.OK)
+            }
         }
     }
 
 
     auth(config?.updateAuth) {
         post("$path/updateTypeSafe") {
-            call.respond(HttpStatusCode.OK, repository.update(call.receive<T>()))
+            handleHttpRequest {
+                call.respond(HttpStatusCode.OK, repository.update(call.receive<T>()))
+            }
         }
 
         post("$path/update") {
-            val form = call.receiveMultipart().readFormData()
+            handleHttpRequest {
+                val form = call.receiveMultipart().readFormData()
 
-            call.respond(
-                HttpStatusCode.OK,
-                repository.update(
-                    Json.Default.decodeAnyFromString(
-                        JsonArray::class.serializer(),
-                        form["entities"]!!,
-                    ) as List<Map<String, Any?>>,
-                    form["predicate"]?.let { Json.Default.decodeFromString(it) },
-                ),
-            )
+                call.respond(
+                    HttpStatusCode.OK,
+                    repository.update(
+                        Json.Default.decodeAnyFromString(
+                            JsonArray::class.serializer(),
+                            form["entities"]!!,
+                        ) as List<Map<String, Any?>>,
+                        form["predicate"]?.let { Json.Default.decodeFromString(it) },
+                    ),
+                )
+            }
         }
     }
 
     auth(config?.readAuth) {
         post("$path/find") {
-            val form = call.receiveMultipart().readFormData()
+            handleHttpRequest {
+                val form = call.receiveMultipart().readFormData()
 
-            var projections: List<Variable>? = form["projections"]?.let { Json.Default.decodeFromString(it) }
+                var projections: List<Variable>? = form["projections"]?.let { Json.Default.decodeFromString(it) }
 
-            var sort: List<Order>? = form["sort"]?.let { Json.Default.decodeFromString(it) }
+                var sort: List<Order>? = form["sort"]?.let { Json.Default.decodeFromString(it) }
 
-            var predicate: BooleanVariable? = form["predicate"]?.let { Json.Default.decodeFromString(it) }
+                var predicate: BooleanVariable? = form["predicate"]?.let { Json.Default.decodeFromString(it) }
 
-            var limitOffset: LimitOffset? = form["limitOffset"]?.let { Json.Default.decodeFromString(it) }
+                var limitOffset: LimitOffset? = form["limitOffset"]?.let { Json.Default.decodeFromString(it) }
 
 
-            if (projections == null) {
-                if (limitOffset == null) {
-                    repository.find(sort, predicate).let {
-                        call.respondBytesWriter(ContentType.parse("application/stream+json"), HttpStatusCode.OK) {
-                            it.collect {
-                                writeStringUtf8("${Json.Default.encodeToString(it)}\n")
-                                flush()
+                if (projections == null) {
+                    if (limitOffset == null) {
+                        repository.find(sort, predicate).let {
+                            call.respondBytesWriter(ContentType.parse("application/stream+json"), HttpStatusCode.OK) {
+                                it.collect {
+                                    writeStringUtf8("${Json.Default.encodeToString(it)}\n")
+                                    flush()
+                                }
                             }
                         }
                     }
-                }
-                else {
-                    call.respond(HttpStatusCode.OK, repository.find(sort, predicate, limitOffset))
-                }
-            }
-            else {
-                if (limitOffset == null) {
-                    repository.find(projections, sort, predicate).let {
-                        call.respondBytesWriter(ContentType.parse("application/stream+json"), HttpStatusCode.OK) {
-                            it.collect {
-                                writeStringUtf8("${Json.Default.encodeAnyToString(it)}\n")
-                                flush()
-                            }
-                        }
+                    else {
+                        call.respond(HttpStatusCode.OK, repository.find(sort, predicate, limitOffset))
                     }
                 }
                 else {
-                    val page = repository.find(projections, sort, predicate, limitOffset)
-                    call.respondText(
-                        Json.Default.encodeToString(
-                            JsonObject(
-                                mapOf(
-                                    "entities" to Json.Default.encodeAnyToJsonElement(page.entities),
-                                    "totalCount" to JsonPrimitive(page.totalCount),
+                    if (limitOffset == null) {
+                        repository.find(projections, sort, predicate).let {
+                            call.respondBytesWriter(ContentType.parse("application/stream+json"), HttpStatusCode.OK) {
+                                it.collect {
+                                    writeStringUtf8("${Json.Default.encodeAnyToString(it)}\n")
+                                    flush()
+                                }
+                            }
+                        }
+                    }
+                    else {
+                        val page = repository.find(projections, sort, predicate, limitOffset)
+                        call.respondText(
+                            Json.Default.encodeToString(
+                                JsonObject(
+                                    mapOf(
+                                        "entities" to Json.Default.encodeAnyToJsonElement(page.entities),
+                                        "totalCount" to JsonPrimitive(page.totalCount),
+                                    ),
                                 ),
                             ),
-                        ),
-                        status = HttpStatusCode.OK,
-                    )
+                            status = HttpStatusCode.OK,
+                        )
+                    }
                 }
             }
         }
@@ -122,22 +131,26 @@ public inline fun <reified T : Any> Routing.CrudRouting(
 
     auth(config?.deleteAuth) {
         post("$path/delete") {
-            call.respond(HttpStatusCode.OK, repository.delete(call.receiveNullable()))
+            handleHttpRequest {
+                call.respond(HttpStatusCode.OK, repository.delete(call.receiveNullable()))
+            }
         }
     }
 
     auth(config?.readAuth) {
         post("$path/aggregate") {
-            val form = call.receiveMultipart().readFormData()
+            handleHttpRequest {
+                val form = call.receiveMultipart().readFormData()
 
 
-            repository.aggregate(
-                Json.Default.decodeFromString<AggregateExpression<Nothing>>(form["aggregate"]!!) as AggregateExpression<Any?>,
-                form["predicate"]?.let { Json.Default.decodeFromString(it) },
-            )?.let {
-                call.respondText(json.encodeToString(PolymorphicSerializer(Any::class), it), status = HttpStatusCode.OK)
-            } ?: call.respond(HttpStatusCode.NoContent)
+                repository.aggregate(
+                    Json.Default.decodeFromString<AggregateExpression<Nothing>>(form["aggregate"]!!) as AggregateExpression<Any?>,
+                    form["predicate"]?.let { Json.Default.decodeFromString(it) },
+                )?.let {
+                    call.respondText(json.encodeToString(PolymorphicSerializer(Any::class), it), status = HttpStatusCode.OK)
+                } ?: call.respond(HttpStatusCode.NoContent)
 
+            }
         }
     }
 }
