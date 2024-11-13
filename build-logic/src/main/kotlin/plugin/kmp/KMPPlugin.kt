@@ -22,7 +22,6 @@ import plugin.extension.config.configureRoomExtension
 import plugin.extension.config.configureSqlDelightExtension
 import plugin.extension.config.kspCommonMainMetadata
 import plugin.extension.config.configureKarakumExtension
-import plugin.kmp.extension.config.configureKMPExtension
 import io.github.sgrishchenko.karakum.gradle.plugin.KarakumExtension
 import io.github.sgrishchenko.karakum.gradle.plugin.tasks.KarakumGenerate
 import org.jetbrains.kotlin.gradle.tasks.Kotlin2JsCompile
@@ -45,7 +44,7 @@ internal class KMPPlugin(
 
             extensions.configure<KotlinProjectExtension>(::configureKotlinProjectExtension)
 
-            extensions.configure<KotlinMultiplatformExtension>(::configureKMPExtension)
+            extensions.configure<KotlinMultiplatformExtension>(::configureKotlinMultiplatformExtension)
 
             // Http client generator
             extensions.configure<KtorfitGradleConfiguration>(::configureKtorfitGradle)

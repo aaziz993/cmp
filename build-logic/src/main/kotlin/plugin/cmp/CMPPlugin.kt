@@ -9,7 +9,9 @@ import org.jetbrains.compose.ExperimentalComposeLibrary
 import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
 import plugin.cmp.extension.config.configureComposeExtension
 import plugin.extension.bundle
+import plugin.extension.composeDeps
 import plugin.extension.config.androidTestImplementation
+import plugin.extension.config.configureComposeKotlinMultiplatformExtension
 import plugin.extension.config.debugImplementation
 import plugin.extension.id
 import plugin.extension.lib
@@ -30,59 +32,8 @@ internal class CMPPlugin(
 
                 extensions.configure<ComposeExtension>(::configureComposeExtension)
 
-                val composeDeps = extensions.getByType<ComposeExtension>().dependencies
 
-                extensions.configure<KotlinMultiplatformExtension> {
-                    sourceSets.apply {
-                        commonMain.dependencies {
-                            implementation(composeDeps.runtime)
-                            implementation(composeDeps.foundation)
-                            implementation(composeDeps.material3)
-                            implementation(composeDeps.ui)
-                            implementation(composeDeps.components.resources)
-                            implementation(composeDeps.components.uiToolingPreview)
-                            implementation(composeDeps.material3AdaptiveNavigationSuite)
-                            implementation(composeDeps.materialIconsExtended)
-                            implementation(lib("compose.colorpicker"))
-                            implementation(bundle("compose.icons"))
-//                            implementation(lib("squircle.shape"))
-                            implementation(bundle("paging"))
-                            implementation(bundle("material3.adaptive"))
-                            implementation(bundle("compose.settings.ui"))
-                            implementation(bundle("androidx.multiplatform"))
-                            implementation(lib("filekit.compose"))
-                            implementation(bundle("koin.compose.multiplatform"))
-                        }
-
-                        commonTest.dependencies {
-                            @OptIn(ExperimentalComposeLibrary::class)
-                            implementation(composeDeps.uiTest)
-                        }
-
-                        jvmMain {
-                            dependencies {
-                                implementation(composeDeps.desktop.currentOs)
-                            }
-                        }
-
-                        getByName("mobileMain").dependencies {
-                            implementation(lib("permissions.compose"))
-                        }
-
-                        androidMain.dependencies {
-                            implementation(composeDeps.preview)
-                            implementation(lib("androidx.activity.compose"))
-                        }
-
-                        iosMain.dependencies {
-                            implementation(lib("paging.runtime.uikit"))
-                        }
-
-                        jsMain.dependencies {
-                            implementation(composeDeps.html.core)
-                        }
-                    }
-                }
+                extensions.configure<KotlinMultiplatformExtension>(::configureComposeKotlinMultiplatformExtension)
 
                 dependencies.apply {
                     debugImplementation(composeDeps.uiTooling)

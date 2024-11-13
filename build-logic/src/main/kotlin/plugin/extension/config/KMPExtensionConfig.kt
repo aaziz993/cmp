@@ -1,19 +1,17 @@
-package plugin.kmp.extension.config
+package plugin.extension.config
 
 import org.gradle.api.Project
 import org.gradle.kotlin.dsl.withType
+import org.jetbrains.compose.ExperimentalComposeLibrary
 import org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi
 import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
 import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTarget
 import plugin.extension.bundle
-import plugin.extension.config.configureKotlinAndroidTarget
-import plugin.extension.config.configureKotlinIosTarget
-import plugin.extension.config.configureKotlinNativeTarget
-import plugin.extension.config.implementation
+import plugin.extension.composeDeps
 import plugin.extension.lib
 import plugin.extension.version
 
-internal fun Project.configureKMPExtension(extension: KotlinMultiplatformExtension) =
+internal fun Project.configureKotlinMultiplatformExtension(extension: KotlinMultiplatformExtension) =
     extension.apply {
         jvm()
 
@@ -234,3 +232,56 @@ internal fun Project.configureKMPExtension(extension: KotlinMultiplatformExtensi
         // https://kotlinlang.org/docs/native-objc-interop.html#export-of-kdoc-comments-to-generated-objective-c-headers
         targets.withType<KotlinNativeTarget> { configureKotlinNativeTarget(this) }
     }
+
+
+internal fun Project.configureComposeKotlinMultiplatformExtension(extension: KotlinMultiplatformExtension) = extension.apply {
+    sourceSets.apply {
+        commonMain.dependencies {
+            implementation(composeDeps.runtime)
+            implementation(composeDeps.foundation)
+            implementation(composeDeps.material3)
+            implementation(composeDeps.ui)
+            implementation(composeDeps.components.resources)
+            implementation(composeDeps.components.uiToolingPreview)
+            implementation(composeDeps.material3AdaptiveNavigationSuite)
+            implementation(composeDeps.materialIconsExtended)
+            implementation(lib("compose.colorpicker"))
+            implementation(bundle("compose.icons"))
+//                            implementation(lib("squircle.shape"))
+            implementation(bundle("paging"))
+            implementation(bundle("material3.adaptive"))
+            implementation(bundle("compose.settings.ui"))
+            implementation(bundle("androidx.multiplatform"))
+            implementation(lib("filekit.compose"))
+            implementation(bundle("koin.compose.multiplatform"))
+        }
+
+        commonTest.dependencies {
+            @OptIn(ExperimentalComposeLibrary::class)
+            implementation(composeDeps.uiTest)
+        }
+
+        jvmMain {
+            dependencies {
+                implementation(composeDeps.desktop.currentOs)
+            }
+        }
+
+        getByName("mobileMain").dependencies {
+            implementation(lib("permissions.compose"))
+        }
+
+        androidMain.dependencies {
+            implementation(composeDeps.preview)
+            implementation(lib("androidx.activity.compose"))
+        }
+
+        iosMain.dependencies {
+            implementation(lib("paging.runtime.uikit"))
+        }
+
+        jsMain.dependencies {
+            implementation(composeDeps.html.core)
+        }
+    }
+}

@@ -198,7 +198,7 @@ public fun Application.configure(
     )
 
     // Configure the FreeMarker plugin for templating .ftl files
-    configureFreeMarker(freemarker, freeMarkerBlock)
+    configureFreeMarker(freeMarker, freeMarkerBlock)
 
     // Configure the Swagger plugin
     configureSwagger(swagger, swaggerBlock)

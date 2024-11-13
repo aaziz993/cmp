@@ -70,7 +70,7 @@ public data class ServerConfig(
     override val autoHeadResponse: AutoHeadResponseConfig? = null,
     override val xHttpMethodOverride: XHttpMethodOverrideConfig? = null,
     override val auth: AuthProvidersConfig? = null,
-    override val freemarker: FreeMarkerConfig? = null,
+    override val freeMarker: FreeMarkerConfig? = null,
     override val swagger: SwaggerConfig? = null,
     override val applicationMonitoring: ApplicationMonitoringConfig? = null,
     override val micrometerMetrics: MicrometerMetricsConfig? = null,

@@ -62,7 +62,7 @@ public interface ServerConfig : Config {
     public val autoHeadResponse: AutoHeadResponseConfig?
     public val xHttpMethodOverride: XHttpMethodOverrideConfig?
     public val auth: AuthProvidersConfig?
-    public val freemarker: FreeMarkerConfig?
+    public val freeMarker: FreeMarkerConfig?
     public val swagger: SwaggerConfig?
     public val applicationMonitoring: ApplicationMonitoringConfig?
     public val micrometerMetrics: MicrometerMetricsConfig?
