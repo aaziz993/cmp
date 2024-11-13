@@ -34,8 +34,6 @@ public class KeycloakClient(
         install(ContentNegotiation) {
             json(
                 Json {
-                    prettyPrint = true
-                    isLenient = true
                     ignoreUnknownKeys = true
                     explicitNulls = false
                 },

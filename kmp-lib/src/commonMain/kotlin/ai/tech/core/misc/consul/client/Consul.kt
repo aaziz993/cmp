@@ -2,6 +2,7 @@ package ai.tech.core.misc.consul.client
 
 import ai.tech.core.misc.consul.client.health.AgentClient
 import ai.tech.core.misc.consul.client.model.config.ConsulConfig
+import de.jensklingenberg.ktorfit.Ktorfit
 import io.ktor.client.HttpClient
 import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
 import io.ktor.client.plugins.defaultRequest
@@ -17,24 +18,23 @@ public class Consul(
     public val address: String,
 ) {
 
-    @OptIn(ExperimentalSerializationApi::class)
-    private val httpClient: HttpClient = httpClient.config {
-        defaultRequest {
-            url(address)
-            header(HttpHeaders.ContentType, ContentType.Application.Json)
-        }
+    private val ktorfit = Ktorfit.Builder().httpClient(
+        httpClient.config {
+            defaultRequest {
+                url(address)
+                header(HttpHeaders.ContentType, ContentType.Application.Json)
+            }
 
-        install(ContentNegotiation) {
-            json(
-                Json {
-                    prettyPrint = true
-                    isLenient = true
-                    ignoreUnknownKeys = true
-                    explicitNulls = false
-                },
-            )
-        }
-    }
+            install(ContentNegotiation) {
+                json(
+                    Json {
+                        ignoreUnknownKeys = true
+                        explicitNulls = false
+                    },
+                )
+            }
+        },
+    ).baseUrl(address).build()
 
     public val agent: AgentClient = ai.tech.core.misc.consul.client.health.AgentClient(this.httpClient)
     public val catalog: CatalogClient = CatalogClient(this.httpClient)

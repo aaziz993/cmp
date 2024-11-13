@@ -37,8 +37,6 @@ public class WeblateClient(
 
             json(
                 Json {
-                    prettyPrint = true
-                    isLenient = true
                     ignoreUnknownKeys = true
                     explicitNulls = false
                 },
