@@ -1,6 +1,6 @@
 package ai.tech.core.misc.plugin.consul
 
-import ai.tech.core.misc.consul.client.model.config.ConsulConfig
+import ai.tech.core.misc.consul.module.config.ConsulConfig
 import ai.tech.core.misc.plugin.consul.plugin.ConsulMicroservice
 import io.ktor.client.HttpClient
 import io.ktor.server.application.Application

@@ -1,9 +1,10 @@
-package ai.tech.core.misc.consul.client.model.config;
+package ai.tech.core.misc.consul.module.config
 
+import ai.tech.core.misc.consul.client.agent.model.Registration
 import kotlinx.serialization.Serializable
 
 @Serializable
 public data class ConsulConfig(
     val address: String,
-    val service: ConsulServiceConfig? = null
+    val service: Registration? = null,
 )

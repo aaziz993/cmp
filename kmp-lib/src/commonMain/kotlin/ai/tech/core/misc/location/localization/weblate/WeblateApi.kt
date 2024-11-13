@@ -7,13 +7,13 @@ import de.jensklingenberg.ktorfit.http.QueryName
 
 internal interface WeblateApi {
 
-    @GET("api/translations/?format=json")
+    @GET("api/translations")
     suspend fun getTranslations(
         @QueryName format: String? = null,
         @QueryName page: Int? = null,
     ): WeblateTranslationsResponse
 
-    @GET("api/units/?format=json")
+    @GET("api/units")
     suspend fun getUnits(
         @QueryName format: String? = null,
         @QueryName page: Int? = null,

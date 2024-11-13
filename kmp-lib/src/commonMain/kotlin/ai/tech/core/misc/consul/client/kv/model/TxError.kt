@@ -1,4 +1,4 @@
-package ai.tech.core.misc.consul.client.keyvalue.model
+package ai.tech.core.misc.consul.client.kv.model
 
 import ai.tech.core.misc.type.serializer.bignum.BigIntegerSerial
 import kotlinx.serialization.SerialName

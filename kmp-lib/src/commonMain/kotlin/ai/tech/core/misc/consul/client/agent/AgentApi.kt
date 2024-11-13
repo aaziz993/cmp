@@ -20,7 +20,7 @@ public interface AgentApi {
     public suspend fun register(
         @Body registration: Registration,
         @QueryMap options: Map<String, String> = emptyMap(),
-        @QueryName optionsParameters: List<String>
+        @QueryName optionsParameters: List<String> = emptyList()
     )
 
     @PUT("agent/service/deregister/{serviceId}")
@@ -59,7 +59,7 @@ public interface AgentApi {
     @PUT("agent/force-leave/{node}")
     public suspend fun forceLeave(
         @Path("node") node: String,
-        @QueryName optionsParameters: List<String>
+        @QueryName optionsParameters: List<String> = emptyList()
     )
 
     @PUT("agent/check/{state}/{checkId}")

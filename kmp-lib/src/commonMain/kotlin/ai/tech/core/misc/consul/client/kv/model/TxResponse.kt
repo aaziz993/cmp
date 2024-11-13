@@ -1,4 +1,4 @@
-package ai.tech.core.misc.consul.client.keyvalue.model
+package ai.tech.core.misc.consul.client.kv.model
 
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable

@@ -73,47 +73,9 @@ public fun Json.encodeAnyToJsonElement(value: Any?): JsonElement = when (value) 
 
     is JsonElement -> value
 
-    is Boolean -> JsonPrimitive(value)
-
-    is UByte -> JsonPrimitive(value)
-
-    is UShort -> JsonPrimitive(value)
-
-    is UInt -> JsonPrimitive(value)
-
-    is ULong -> JsonPrimitive(value)
-
-    is Byte -> JsonPrimitive(value)
-
-    is Short -> JsonPrimitive(value)
-
-    is Int -> JsonPrimitive(value)
-
-    is Long -> JsonPrimitive(value)
-
-    is Float -> JsonPrimitive(value)
-
-    is Double -> JsonPrimitive(value)
-
-    is Char -> JsonPrimitive(value.toString())
-
-    is String -> JsonPrimitive(value)
-
     is BigInteger -> JsonPrimitive(value.toString())
 
     is BigDecimal -> JsonPrimitive(value.toString())
-
-    is LocalTime -> JsonPrimitive(value.toString())
-
-    is LocalDate -> JsonPrimitive(value.toString())
-
-    is LocalDateTime -> JsonPrimitive(value.toString())
-
-    is Duration -> JsonPrimitive(value.toString())
-
-    is DatePeriod -> JsonPrimitive(value.toString())
-
-    is DateTimePeriod -> JsonPrimitive(value.toString())
 
     is Uuid -> JsonPrimitive(value.toString())
 

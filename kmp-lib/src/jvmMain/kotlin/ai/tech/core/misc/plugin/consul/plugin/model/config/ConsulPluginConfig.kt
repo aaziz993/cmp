@@ -1,6 +1,6 @@
 package ai.tech.core.misc.plugin.consul.plugin.model.config
 
-import ai.tech.core.misc.consul.client.model.config.ConsulConfig
+import ai.tech.core.misc.consul.module.config.ConsulConfig
 import ai.tech.core.misc.consul.client.model.config.ConsulPluginServiceConfig
 
 public class ConsulPluginConfig(public val config: ConsulConfig) {

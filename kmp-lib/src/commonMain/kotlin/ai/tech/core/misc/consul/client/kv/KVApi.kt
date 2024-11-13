@@ -1,7 +1,7 @@
-package ai.tech.core.misc.consul.client.keyvalue
+package ai.tech.core.misc.consul.client.kv
 
-import ai.tech.core.misc.consul.client.keyvalue.model.TxResponse
-import ai.tech.core.misc.consul.client.keyvalue.model.Value
+import ai.tech.core.misc.consul.client.kv.model.TxResponse
+import ai.tech.core.misc.consul.client.kv.model.Value
 import de.jensklingenberg.ktorfit.http.Body
 import de.jensklingenberg.ktorfit.http.DELETE
 import de.jensklingenberg.ktorfit.http.GET
