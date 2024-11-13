@@ -1,4 +1,4 @@
-package ai.tech.core.misc.consul.client.model.config
+package ai.tech.core.misc.consul.client.plugin.model.config
 
 import ai.tech.core.misc.consul.client.model.Connect
 import ai.tech.core.misc.consul.client.model.ServiceHealth

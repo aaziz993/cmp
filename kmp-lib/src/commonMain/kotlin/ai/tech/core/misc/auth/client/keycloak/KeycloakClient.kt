@@ -1,21 +1,17 @@
 package ai.tech.core.misc.auth.client.keycloak
 
+import ai.tech.core.misc.auth.client.keycloak.model.ExecuteActionsEmail
 import ai.tech.core.misc.auth.client.keycloak.model.ResetPassword
 import ai.tech.core.misc.auth.client.keycloak.model.RoleRepresentation
 import ai.tech.core.misc.auth.client.keycloak.model.TokenResponse
-import ai.tech.core.misc.auth.client.keycloak.model.UpdatePassword
 import ai.tech.core.misc.auth.client.keycloak.model.UserInfo
 import ai.tech.core.misc.auth.client.keycloak.model.UserRepresentation
 import ai.tech.core.misc.auth.client.model.config.oauth.ClientOAuthConfig
-import ai.tech.core.misc.type.encode
+import ai.tech.core.misc.type.encodeAnyToString
 import ai.tech.core.misc.type.encodeToAny
+import de.jensklingenberg.ktorfit.Ktorfit
 import io.ktor.client.*
-import io.ktor.client.call.*
 import io.ktor.client.plugins.contentnegotiation.*
-import io.ktor.client.plugins.defaultRequest
-import io.ktor.client.request.*
-import io.ktor.client.request.forms.*
-import io.ktor.http.*
 import io.ktor.serialization.kotlinx.json.*
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.json.Json
@@ -25,21 +21,22 @@ public class KeycloakClient(
     public val config: ClientOAuthConfig,
 ) {
 
-    @OptIn(ExperimentalSerializationApi::class)
-    private val httpClient: HttpClient = httpClient.config {
-        defaultRequest {
-            url(config.address)
-        }
+    private val ktorfit = Ktorfit.Builder().httpClient(
+        httpClient.config {
 
-        install(ContentNegotiation) {
-            json(
-                Json {
-                    ignoreUnknownKeys = true
-                    explicitNulls = false
-                },
-            )
-        }
-    }
+            install(ContentNegotiation) {
+                json(
+                    Json {
+                        isLenient = true
+                        ignoreUnknownKeys = true
+                        explicitNulls = false
+                    },
+                )
+            }
+        },
+    ).baseUrl(config.address).build()
+
+    private val keycloakApi = ktorfit.createKeycloakApi()
 
     @OptIn(ExperimentalSerializationApi::class)
     private val json = Json {
@@ -48,116 +45,64 @@ public class KeycloakClient(
     }
 
     public suspend fun getToken(username: String, password: String): TokenResponse =
-        httpClient.submitForm(
-            "/realms/${config.realm}/protocol/openid-connect/token",
-            parameters {
-                append("username", username)
-                append("password", password)
-                append("client_id", config.clientId)
-                append("grant_type", "password")
-            },
-        ).body<TokenResponse>()
+        keycloakApi.getToken(config.realm, username, password, config.clientId)
 
     public suspend fun getTokenByRefreshToken(refreshToken: String): TokenResponse =
-        httpClient.submitForm(
-            "/realms/${config.realm}/protocol/openid-connect/token",
-            parameters {
-                append("refresh_token", refreshToken)
-                append("client_id", config.clientId)
-                append("grant_type", "refresh_token")
-            },
-        ).body<TokenResponse>()
+        keycloakApi.getTokenByRefreshToken(config.realm, refreshToken, config.clientId)
 
     public suspend fun getTokenByClientSecret(clientSecret: String): TokenResponse =
-        httpClient.submitForm(
-            "/realms/${config.realm}/protocol/openid-connect/token",
-            parameters {
-                append("client_secret", clientSecret)
-                append("client_id", config.clientId)
-                append("grant_type", "client_credentials")
-            },
-        ).body<TokenResponse>()
+        keycloakApi.getTokenByClientSecret(config.realm, clientSecret, config.clientId)
 
     public suspend fun createUser(
-        user: UserRepresentation,
+        userRepresentation: UserRepresentation,
         accessToken: String,
-    ) {
-        httpClient.post("/admin/realms/${config.realm}/users") {
-            header(HttpHeaders.Authorization, "Bearer $accessToken")
-            setBody(user)
-        }
-    }
+    ): Unit = keycloakApi.createUser(config.realm, userRepresentation, "Bearer $accessToken")
 
     public suspend fun getUsers(
-        user: UserRepresentation? = null,
+        userRepresentation: UserRepresentation? = null,
         exact: Boolean? = null,
         accessToken: String,
-    ): Set<UserRepresentation> =
-        httpClient.get("/admin/realms/${config.realm}/users") {
-            header(HttpHeaders.Authorization, "Bearer $accessToken")
-
-            user?.let {
+    ): Set<UserRepresentation> = keycloakApi.getUsers(
+        config.realm,
+        userRepresentation?.let {
+            listOfNotNull(
+                exact?.let { "exact" to it.toString() },
                 (it.attributes as Map<*, *>?)?.let {
-                    parameter("q", it.entries.joinToString(" ") { (k, v) -> "$k:${json.encode(v)}" })
-                }
-                (json.encodeToAny(it) as Map<*, *>).filter { (k, v) -> k !== "attributes" && v != null }.forEach { (k, v) ->
-                    parameter(k.toString(), v)
-                }
+                    "q" to it.entries.joinToString(" ") { (k, v) -> "$k:${json.encodeAnyToString(v)}" }
+                },
+            ) + (json.encodeToAny(it) as Map<*, *>).filter { (k, v) -> k !== "attributes" && v != null }.map { (k, v) ->
+                k.toString() to json.encodeAnyToString(v)
             }
 
-            exact?.let { parameter("exact", exact) }
-        }.body<Set<UserRepresentation>>()
+        }?.toMap().orEmpty(),
+        "Bearer $accessToken",
+    )
 
     public suspend fun updateUser(
-        user: UserRepresentation,
+        userRepresentation: UserRepresentation,
         accessToken: String
-    ) {
-        httpClient.put("/admin/realms/${config.realm}/users/${user.id}") {
-            header(HttpHeaders.Authorization, "Bearer $accessToken")
-            contentType(ContentType.Application.Json)
-            setBody(user)
-        }
-    }
+    ): Unit = keycloakApi.updateUser(config.realm, userRepresentation.id!!, userRepresentation, "Bearer $accessToken")
 
     public suspend fun deleteUser(
         userId: String,
         accessToken: String,
-    ) {
-        httpClient.delete("/admin/realms/${config.realm}/users/$userId") {
-            header(HttpHeaders.Authorization, "Bearer $accessToken")
-        }
-    }
+    ): Unit = keycloakApi.deleteUser(config.realm, userId, "Bearer $accessToken")
 
     public suspend fun getUserInfo(accessToken: String): UserInfo =
-        httpClient.get("/realms/${config.realm}/protocol/openid-connect/userinfo") {
-            header(HttpHeaders.Authorization, "Bearer $accessToken")
-        }.body<UserInfo>()
+        keycloakApi.getUserInfo(config.realm, "Bearer $accessToken")
 
     public suspend fun getUserRealmRoles(
         userId: String,
         accessToken: String,
-    ): Set<RoleRepresentation> =
-        httpClient.get("/admin/realms/${config.realm}/users/$userId/role-mappings/realm") {
-            header(HttpHeaders.Authorization, "Bearer $accessToken")
-        }.body<Set<RoleRepresentation>>()
+    ): Set<RoleRepresentation> = keycloakApi.getUserRealmRoles(config.realm, userId, "Bearer $accessToken")
 
     public suspend fun resetPassword(
         userId: String,
         resetPassword: ResetPassword,
         accessToken: String
-    ) {
-        httpClient.put("/admin/realms/${config.realm}/users/$userId/reset-password") {
-            header(HttpHeaders.Authorization, "Bearer $accessToken")
-            contentType(ContentType.Application.Json)
-            setBody(resetPassword)
-        }
-    }
+    ): Unit = keycloakApi.resetPassword(config.realm, userId, resetPassword, "Bearer $accessToken")
 
-    public suspend fun updatePassword(userId: String, accessToken: String) {
-        httpClient.post("/admin/realms/${config.realm}/users/$userId/execute-actions-email") {
-            header(HttpHeaders.Authorization, "Bearer $accessToken")
-            contentType(ContentType.Application.Json)
-            setBody(UpdatePassword(listOf("UPDATE_PASSWORD")))
-        }
-    }
+    // To updatePassword just pass ExecuteActionsEmail(listOf("UPDATE_PASSWORD")
+    public suspend fun executeActionsEmail(userId: String, executeActionsEmail: ExecuteActionsEmail, accessToken: String): Unit =
+        keycloakApi.updatePassword(config.realm, userId, executeActionsEmail, "Bearer $accessToken")
 }

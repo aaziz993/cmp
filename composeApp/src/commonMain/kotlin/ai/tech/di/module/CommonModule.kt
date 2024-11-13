@@ -19,7 +19,7 @@ import kotlinx.serialization.json.Json
 import org.koin.core.annotation.Module
 import org.koin.core.annotation.Single
 import ai.tech.core.data.keyvalue.SettingsKeyValue
-import ai.tech.core.misc.consul.client.Consul
+import ai.tech.core.misc.consul.client.ConsulClient
 import ai.tech.core.misc.location.localization.MapLocalizationService
 import ai.tech.core.misc.model.config.EnabledConfig
 import io.ktor.client.plugins.HttpTimeout
@@ -67,7 +67,7 @@ public class CommonModule {
     public fun provideConsul(
         config: ClientConfig,
         httpClient: HttpClient,
-    ): Consul = Consul(httpClient, config.consul)
+    ): ConsulClient = ConsulClient(httpClient, config.consul)
 
     @Single
     public fun provideLocalizationProvider(

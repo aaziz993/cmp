@@ -1,8 +1,7 @@
 package ai.tech.core.misc.config
 
-import ai.tech.core.misc.consul.client.Consul
+import ai.tech.core.misc.consul.client.ConsulClient
 import ai.tech.core.misc.consul.client.model.KVMetadata
-import ai.tech.core.misc.consul.client.model.config.ConsulConfig
 import ai.tech.core.misc.model.config.Config
 import ai.tech.core.misc.type.decodeFromAny
 import ai.tech.core.misc.type.copyTo
@@ -10,7 +9,6 @@ import ai.tech.core.misc.type.decodeAnyFromString
 import ai.tech.core.misc.type.multiple.decode
 import ai.tech.core.misc.type.multiple.decodeBase64
 import io.ktor.client.HttpClient
-import kotlin.io.encoding.Base64
 import kotlin.io.encoding.ExperimentalEncodingApi
 import kotlin.reflect.KClass
 import kotlinx.serialization.InternalSerializationApi
@@ -40,7 +38,7 @@ public class ConfigService<T : Config>(
 
             val configurations = bootstrap["configurations"] as List<String>
 
-            val consul = bootstrap["consul"]?.let { Consul(httpClient, json.decodeFromAny(it)) }
+            val consulClient = bootstrap["consul"]?.let { ConsulClient(httpClient, json.decodeFromAny(it)) }
 
             listOf(
                 SHARED_CONFIG_NAME,
@@ -48,7 +46,7 @@ public class ConfigService<T : Config>(
             ).flatMap {
                 (listOf(it) + configurations.map { "$environment$it" })
             }.flatMap {
-                listOf(readFileConfig(it), consul?.readConsulConfig(it))
+                listOf(readFileConfig(it), consulClient?.readConsulConfig(it))
             }.filterNotNull().forEach {
                 it.copyTo(
                     this, { _, key -> key.toString().toCamelCase() },
@@ -66,7 +64,7 @@ public class ConfigService<T : Config>(
 
     @OptIn(InternalSerializationApi::class)
     @Suppress("UNCHECKED_CAST")
-    private suspend fun Consul.readConsulConfig(path: String) = kv.read(path)?.map(KVMetadata::value)?.fold(emptyMap<String, Any?>()) { acc, v -> json.decodeAnyFromString(JsonObject::class.serializer(), v.decodeBase64().decode()) as Map<String, Any?> }
+    private suspend fun ConsulClient.readConsulConfig(path: String) = kv.read(path)?.map(KVMetadata::value)?.fold(emptyMap<String, Any?>()) { acc, v -> json.decodeAnyFromString(JsonObject::class.serializer(), v.decodeBase64().decode()) as Map<String, Any?> }
 
     public companion object {
 

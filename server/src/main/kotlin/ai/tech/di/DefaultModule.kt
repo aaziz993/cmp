@@ -1,6 +1,6 @@
 package ai.tech.di
 
-import ai.tech.core.misc.consul.client.Consul
+import ai.tech.core.misc.consul.client.ConsulClient
 import ai.tech.core.misc.location.localization.AbstractLocalizationService
 import ai.tech.core.misc.location.localization.MapLocalizationService
 import ai.tech.core.misc.location.localization.weblate.WeblateClient
@@ -57,7 +57,7 @@ public class DefaultModule {
     public fun provideConsul(
         config: ServerConfig,
         httpClient: HttpClient,
-    ): Consul = Consul(httpClient, config.consul)
+    ): ConsulClient = ConsulClient(httpClient, config.consul)
 
     @Single
     public fun provideLocalizationProvider(

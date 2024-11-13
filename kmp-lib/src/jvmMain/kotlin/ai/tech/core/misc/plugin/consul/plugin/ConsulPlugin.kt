@@ -1,12 +1,10 @@
 package ai.tech.core.misc.plugin.consul.plugin
 
-import ai.tech.core.misc.consul.client.Consul
 import ai.tech.core.misc.consul.client.model.config.ConsulConfig
 import ai.tech.core.misc.plugin.consul.plugin.model.config.ConsulPluginConfig
 import io.ktor.client.HttpClient
 import io.ktor.server.application.ApplicationPlugin
 import io.ktor.server.application.createApplicationPlugin
-import kotlinx.coroutines.runBlocking
 
 @Suppress("FunctionName")
 public fun ConsulMicroservice(

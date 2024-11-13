@@ -9,15 +9,15 @@ import de.jensklingenberg.ktorfit.http.Streaming
 import io.ktor.client.statement.HttpStatement
 import kotlinx.serialization.json.JsonElement
 
-internal interface SnapshotClient {
+public interface SnapshotApi {
 
     @Streaming
     @GET("snapshot")
-    suspend fun generate(@QueryMap query: Map<String, String>): HttpStatement
+    public suspend fun generate(@QueryMap query: Map<String, String>): HttpStatement
 
     @PUT("snapshot")
     @Headers("Content-Type: application/binary")
-    suspend fun restore(
+    public suspend fun restore(
         @QueryMap query: Map<String, String>,
         @Body requestBody: JsonElement
     )

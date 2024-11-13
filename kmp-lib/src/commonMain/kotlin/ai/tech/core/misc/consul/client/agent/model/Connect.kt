@@ -1,6 +1,5 @@
 package ai.tech.core.misc.consul.client.agent.model
 
-import ai.tech.core.misc.consul.client.model.SidecarService
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 

@@ -2,7 +2,6 @@ package ai.tech.core.misc.consul.client.catalog.model
 
 import ai.tech.core.misc.consul.client.model.Check
 import ai.tech.core.misc.consul.client.model.Service
-import ai.tech.core.misc.consul.client.model.TaggedAddresses
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 

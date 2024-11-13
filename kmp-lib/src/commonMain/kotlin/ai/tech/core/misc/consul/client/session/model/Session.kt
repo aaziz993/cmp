@@ -1,6 +1,5 @@
 package ai.tech.core.misc.consul.client.session.model
 
-import ai.tech.core.misc.consul.client.model.Behavior
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
