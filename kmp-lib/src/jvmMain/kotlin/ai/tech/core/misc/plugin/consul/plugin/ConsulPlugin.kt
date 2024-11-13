@@ -16,26 +16,26 @@ public fun ConsulMicroservice(
     "ConsulPlugin",
     { ConsulPluginConfig(config) },
 ) {
-    val consul = Consul(httpClient, pluginConfig.config)
-
-    pluginConfig.service?.let {
-        runBlocking {
-            consul.agent.register(
-                it.name,
-                it.id,
-                it.tags,
-                it.address,
-                it.taggedAddress,
-                it.meta,
-                it.port,
-                it.kind,
-                it.proxy,
-                it.connect,
-                it.check,
-                it.enableTagOverride,
-                it.weights,
-                it.replaceExistingChecks,
-            )
-        }
-    }
+//    val consul = Consul(httpClient, pluginConfig.config)
+//
+//    pluginConfig.service?.let {
+//        runBlocking {
+//            consul.agent.register(
+//                it.name,
+//                it.id,
+//                it.tags,
+//                it.address,
+//                it.taggedAddress,
+//                it.meta,
+//                it.port,
+//                it.kind,
+//                it.proxy,
+//                it.connect,
+//                it.check,
+//                it.enableTagOverride,
+//                it.weights,
+//                it.replaceExistingChecks,
+//            )
+//        }
+//    }
 }

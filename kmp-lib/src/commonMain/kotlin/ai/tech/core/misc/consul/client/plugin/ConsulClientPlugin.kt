@@ -24,10 +24,10 @@ public fun ConsulClientPlugin(
     client.requestPipeline.intercept(HttpRequestPipeline.Render) {
         val consul = Consul(httpClient, address)
 
-        val nodes = consul.agent.healthByName(config.name).values
-        val selectedNode = checkNotNull(config.loadBalancer(nodes)) {
-            "Impossible to find available nodes of the ${config.name}"
-        }
+//        val nodes = consul.agent.healthByName(config.name).values
+//        val selectedNode = checkNotNull(config.loadBalancer(nodes)) {
+//            "Impossible to find available nodes of the ${config.name}"
+//        }
 
         config.address?.let { this.context.url.host = it }
         config.port?.let { this.context.url.port = it }
