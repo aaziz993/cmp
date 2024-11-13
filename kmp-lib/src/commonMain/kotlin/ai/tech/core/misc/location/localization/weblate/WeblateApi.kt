@@ -12,13 +12,11 @@ internal interface WeblateApi {
     suspend fun getTranslations(
         @QueryName format: String? = null,
         @QueryName page: Int? = null,
-        @Header("Authorization") authorization: String,
-    ): List<WeblateTranslationsResponse>
+    ): WeblateTranslationsResponse
 
     @GET("api/units/?format=json")
     suspend fun getUnits(
         @QueryName format: String? = null,
         @QueryName page: Int? = null,
-        @Header("Authorization") authorization: String,
-    ): List<WeblateUnitsResponse>
+    ): WeblateUnitsResponse
 }
