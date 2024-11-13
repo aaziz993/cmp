@@ -14,7 +14,7 @@ internal interface HealthClient {
     @GET("health/node/{node}")
     fun getNodeChecks(
         @Path("node") node: String,
-        @QueryMap query: Map<String, Any>,
+        @QueryMap query: Map<String, String>,
         @Query("tag") tag: List<String>,
         @Query("node-meta") nodeMeta: List<String>,
         @HeaderMap headers: Map<String, String>
@@ -23,7 +23,7 @@ internal interface HealthClient {
     @GET("health/checks/{service}")
     fun getServiceChecks(
         @Path("service") service: String,
-        @QueryMap query: Map<String, Any>,
+        @QueryMap query: Map<String, String>,
         @Query("tag") tag: List<String>,
         @Query("node-meta") nodeMeta: List<String>,
         @HeaderMap headers: Map<String, String>
@@ -32,7 +32,7 @@ internal interface HealthClient {
     @GET("health/state/{state}")
     fun getChecksByState(
         @Path("state") state: String,
-        @QueryMap query: Map<String, Any>,
+        @QueryMap query: Map<String, String>,
         @Query("tag") tag: List<String>,
         @Query("node-meta") nodeMeta: List<String>,
         @HeaderMap headers: Map<String, String>
@@ -41,7 +41,7 @@ internal interface HealthClient {
     @GET("health/service/{service}")
     fun getServiceInstances(
         @Path("service") service: String,
-        @QueryMap query: Map<String, Any>,
+        @QueryMap query: Map<String, String>,
         @Query("tag") tag: List<String>,
         @Query("node-meta") nodeMeta: List<String>,
         @HeaderMap headers: Map<String, String>

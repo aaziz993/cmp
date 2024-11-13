@@ -21,7 +21,7 @@ internal interface CatalogClient {
 
     @GET("catalog/nodes")
     fun getNodes(
-        @QueryMap query: Map<String, Any>,
+        @QueryMap query: Map<String, String>,
         @Query("tag") tag: List<String>,
         @Query("node-meta") nodeMeta: List<String>,
         @HeaderMap headers: Map<String, String>
@@ -30,7 +30,7 @@ internal interface CatalogClient {
     @GET("catalog/node/{node}")
     fun getNode(
         @Path("node") node: String,
-        @QueryMap query: Map<String, Any>,
+        @QueryMap query: Map<String, String>,
         @Query("tag") tag: List<String>,
         @Query("node-meta") nodeMeta: List<String>,
         @HeaderMap headers: Map<String, String>
@@ -38,7 +38,7 @@ internal interface CatalogClient {
 
     @GET("catalog/services")
     fun getServices(
-        @QueryMap query: Map<String, Any>,
+        @QueryMap query: Map<String, String>,
         @Query("tag") tag: List<String>,
         @Query("node-meta") nodeMeta: List<String>,
         @HeaderMap headers: Map<String, String>
@@ -47,7 +47,7 @@ internal interface CatalogClient {
     @GET("catalog/service/{service}")
     fun getService(
         @Path("service") service: String,
-        @QueryMap queryMeta: Map<String, Any>,
+        @QueryMap queryMeta: Map<String, String>,
         @Query("tag") tag: List<String>,
         @Query("node-meta") nodeMeta: List<String>,
         @HeaderMap headers: Map<String, String>
@@ -56,12 +56,12 @@ internal interface CatalogClient {
     @PUT("catalog/register")
     fun register(
         @Body registration: CatalogRegistration,
-        @QueryMap options: Map<String, Any>
+        @QueryMap options: Map<String, String>
     ): Call<Unit>
 
     @PUT("catalog/deregister")
     fun deregister(
         @Body deregistration: CatalogDeregistration,
-        @QueryMap options: Map<String, Any>
+        @QueryMap options: Map<String, String>
     ): Call<Unit>
 }

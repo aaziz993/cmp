@@ -16,38 +16,38 @@ internal interface KeyValueClient {
     @GET("kv/{key}")
     fun getValue(
         @Path("key") key: String,
-        @QueryMap query: Map<String, Any>
+        @QueryMap query: Map<String, String>
     ): Call<List<Value>>
 
     @GET("kv/{key}")
     fun getKeys(
         @Path("key") key: String,
-        @QueryMap query: Map<String, Any>
+        @QueryMap query: Map<String, String>
     ): Call<List<String>>
 
     @PUT("kv/{key}")
     fun putValue(
         @Path("key") key: String,
-        @QueryMap query: Map<String, Any>
+        @QueryMap query: Map<String, String>
     ): Call<Boolean>
 
     @PUT("kv/{key}")
     fun putValue(
         @Path("key") key: String,
         @Body data: RequestBody,
-        @QueryMap query: Map<String, Any>
+        @QueryMap query: Map<String, String>
     ): Call<Boolean>
 
     @DELETE("kv/{key}")
     fun deleteValues(
         @Path("key") key: String,
-        @QueryMap query: Map<String, Any>
+        @QueryMap query: Map<String, String>
     ): Call<Unit>
 
     @PUT("txn")
     @Headers("Content-Type: application/json")
     fun performTransaction(
         @Body body: RequestBody,
-        @QueryMap query: Map<String, Any>
+        @QueryMap query: Map<String, String>
     ): Call<TxResponse>
 }

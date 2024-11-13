@@ -6,9 +6,9 @@ import kotlinx.serialization.Serializable
 @Serializable
 public data class Agent(
     @SerialName("Config")
-val config: Config? = null,
+    val config: Config? = null,
     @SerialName("DebugConfig")
-val debugConfig: DebugConfig? = null,
+    val debugConfig: DebugConfig? = null,
     @SerialName("Member")
-val member: Member? = null
+    val member: Member? = null
 )

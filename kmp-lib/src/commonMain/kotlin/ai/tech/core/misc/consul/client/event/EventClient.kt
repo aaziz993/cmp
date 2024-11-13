@@ -14,15 +14,15 @@ internal interface EventClient {
     fun fire(
         @Path("name") name: String,
         @Body payload: RequestBody,
-        @QueryMap query: Map<String, Any>
+        @QueryMap query: Map<String, String>
     ): Call<Event>
 
     @PUT("event/fire/{name}")
     fun fire(
         @Path("name") name: String,
-        @QueryMap query: Map<String, Any>
+        @QueryMap query: Map<String, String>
     ): Call<Event>
 
     @GET("event/list")
-    fun list(@QueryMap query: Map<String, Any>): Call<List<Event>>
+    fun list(@QueryMap query: Map<String, String>): Call<List<Event>>
 }

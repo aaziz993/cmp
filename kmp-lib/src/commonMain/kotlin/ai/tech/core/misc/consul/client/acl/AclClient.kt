@@ -76,7 +76,7 @@ internal interface AclClient {
     fun updateToken(@Path("id") id: String, @Body token: Token): Call<TokenResponse>
 
     @GET("acl/tokens")
-    fun listTokens(@QueryMap query: Map<String, Any>): Call<List<TokenListResponse>>
+    fun listTokens(@QueryMap query: Map<String, String>): Call<List<TokenListResponse>>
 
     @DELETE("acl/token/{id}")
     fun deleteToken(@Path("id") id: String): Call<Unit>
@@ -97,6 +97,6 @@ internal interface AclClient {
     fun deleteRole(@Path("id") id: String): Call<Unit>
 
     @GET("acl/roles")
-    fun listRoles(@QueryMap query: Map<String, Any>): Call<List<RoleListResponse>>
+    fun listRoles(@QueryMap query: Map<String, String>): Call<List<RoleListResponse>>
 }
 

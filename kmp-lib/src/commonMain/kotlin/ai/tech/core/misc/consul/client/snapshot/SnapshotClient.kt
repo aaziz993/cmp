@@ -13,12 +13,12 @@ internal interface SnapshotClient {
 
     @Streaming
     @GET("snapshot")
-    suspend fun generate(@QueryMap query: Map<String, Any>): HttpStatement
+    suspend fun generate(@QueryMap query: Map<String, String>): HttpStatement
 
     @PUT("snapshot")
     @Headers("Content-Type: application/binary")
     suspend fun restore(
-        @QueryMap query: Map<String, Any>,
+        @QueryMap query: Map<String, String>,
         @Body requestBody: RequestBody
     ): Call<Unit>
 }
