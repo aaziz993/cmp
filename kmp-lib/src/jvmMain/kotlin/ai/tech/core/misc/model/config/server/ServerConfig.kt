@@ -1,6 +1,6 @@
 package ai.tech.core.misc.model.config.server
 
-import ai.tech.core.data.database.model.config.DatabaseProviderConfig
+import ai.tech.core.data.database.model.config.DBProviderConfig
 import ai.tech.core.misc.plugin.auth.model.config.AuthProvidersConfig
 import ai.tech.core.misc.model.config.Config
 import ai.tech.core.misc.model.config.di.KoinConfig
@@ -37,7 +37,7 @@ import ai.tech.core.misc.plugin.defaultheaders.model.config.DefaultHeadersConfig
 public interface ServerConfig : Config {
 
     public val koin: KoinConfig?
-    public val database: Map<String, DatabaseProviderConfig>?
+    public val database: Map<String, DBProviderConfig>?
     public val serialization: SerializationConfig?
     public val httpsRedirect: HTTPSRedirectConfig?
     public val routing: RoutingConfig?

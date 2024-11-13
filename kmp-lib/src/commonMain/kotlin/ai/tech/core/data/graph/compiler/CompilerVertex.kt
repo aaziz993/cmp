@@ -1,4 +1,4 @@
-package ai.tech.core.data.database.graph.compiler
+package ai.tech.core.data.graph.compiler
 
 import ai.tech.core.data.database.graph.Vertex
 

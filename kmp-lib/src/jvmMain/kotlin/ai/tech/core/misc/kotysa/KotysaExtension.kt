@@ -1,7 +1,7 @@
 package ai.tech.core.misc.kotysa
 
-import ai.tech.core.data.database.model.config.TableConfig
-import ai.tech.core.data.database.model.config.DatabaseProviderConfig
+import ai.tech.core.data.database.model.config.DBTableConfig
+import ai.tech.core.data.database.model.config.DBProviderConfig
 import ai.tech.core.data.database.model.config.TableCreation
 import ai.tech.core.misc.r2dbc.createR2dbcConnectionFactory
 import ai.tech.core.misc.type.multiple.whileIndexed
@@ -50,7 +50,7 @@ public fun <T : Any, U : Any> ForeignKey<T, U>.referencedTables(tables: List<Tab
     tables.single { table -> table.columns.contains(referencedColumn) }
 }
 
-public suspend fun createKotysaR2dbcSqlClient(config: DatabaseProviderConfig): R2dbcSqlClient {
+public suspend fun createKotysaR2dbcSqlClient(config: DBProviderConfig): R2dbcSqlClient {
     val r2dbcConnectionFactory = createR2dbcConnectionFactory(config.connection)
 
     val createTables: List<Pair<List<Table<*>>, TableCreation>>
@@ -109,7 +109,7 @@ public suspend fun createKotysaR2dbcSqlClient(config: DatabaseProviderConfig): R
 
 @Suppress("UNCHECKED_CAST")
 private fun <T : Table<*>> getTables(
-    config: TableConfig,
+    config: DBTableConfig,
     type: KClass<T>
 ): List<T> =
     config.packages.flatMap {
@@ -150,34 +150,34 @@ public fun <T : Table<*>> List<T>.sortedByDependencies(): List<T> {
     return tables
 }
 
-public fun getKotysaH2Tables(config: TableConfig): List<IH2Table<*>> =
+public fun getKotysaH2Tables(config: DBTableConfig): List<IH2Table<*>> =
     getTables(config, IH2Table::class) + getTables(
         config,
         GenericTable::class,
     )
 
-public fun getKotysaMariadbTables(config: TableConfig): List<MariadbTable<*>> =
+public fun getKotysaMariadbTables(config: DBTableConfig): List<MariadbTable<*>> =
     getTables(config, MariadbTable::class)
 
-public fun getKotysaMysqlTables(config: TableConfig): List<MysqlTable<*>> =
+public fun getKotysaMysqlTables(config: DBTableConfig): List<MysqlTable<*>> =
     getTables(config, MysqlTable::class)
 
-public fun getKotysaMssqlTables(config: TableConfig): List<IMssqlTable<*>> =
+public fun getKotysaMssqlTables(config: DBTableConfig): List<IMssqlTable<*>> =
     getTables(config, MssqlTable::class) + getTables(
         config,
         GenericTable::class,
     )
 
-public fun getKotysaPostgresqlTables(config: TableConfig): List<IPostgresqlTable<*>> =
+public fun getKotysaPostgresqlTables(config: DBTableConfig): List<IPostgresqlTable<*>> =
     getTables(config, PostgresqlTable::class) + getTables(
         config,
         GenericTable::class,
     )
 
-public fun getKotysaOracleTables(config: TableConfig): List<OracleTable<*>> =
+public fun getKotysaOracleTables(config: DBTableConfig): List<OracleTable<*>> =
     getTables(config, OracleTable::class)
 
-public fun getKotysaTables(config: DatabaseProviderConfig): List<Table<*>> =
+public fun getKotysaTables(config: DBProviderConfig): List<Table<*>> =
     when (config.connection.driver) {
         "h2" -> config.table.flatMap(::getKotysaH2Tables)
 

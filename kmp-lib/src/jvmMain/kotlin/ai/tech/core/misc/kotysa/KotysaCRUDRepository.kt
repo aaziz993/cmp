@@ -1,9 +1,9 @@
 package ai.tech.core.misc.kotysa
 
-import ai.tech.core.data.database.crud.CRUDRepository
-import ai.tech.core.data.database.crud.model.LimitOffset
-import ai.tech.core.data.database.crud.model.Order
-import ai.tech.core.data.database.crud.model.Page
+import ai.tech.core.data.crud.CRUDRepository
+import ai.tech.core.data.crud.model.LimitOffset
+import ai.tech.core.data.crud.model.Order
+import ai.tech.core.data.crud.model.Page
 import ai.tech.core.data.expression.AggregateExpression
 import ai.tech.core.data.expression.AggregateExpression.Companion.count
 import ai.tech.core.data.expression.And

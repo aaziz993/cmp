@@ -1,4 +1,4 @@
-package ai.tech.core.data.database.graph.compiler
+package ai.tech.core.data.graph.compiler
 
 public abstract class GraphCompiler<VID : Comparable<VID>, EID : Comparable<EID>>(
     public val graph: CompilerGraph<VID, EID>) {

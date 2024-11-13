@@ -1,6 +1,6 @@
 package ai.tech.core.misc.model.config
 
-import ai.tech.core.data.database.model.config.DatabaseProviderConfig
+import ai.tech.core.data.database.model.config.DBProviderConfig
 import ai.tech.core.misc.plugin.auth.model.config.AuthProvidersConfig
 import ai.tech.core.misc.consul.module.config.ConsulConfig
 import ai.tech.core.misc.location.localization.model.config.LocalizationConfig
@@ -45,7 +45,7 @@ public data class ServerConfig(
     override val koin: KoinConfig? = null,
     override val ktorClient: KtorClientConfig = KtorClientConfig(),
     override val consul: ConsulConfig? = null,
-    override val database: Map<String, DatabaseProviderConfig>? = null,
+    override val database: Map<String, DBProviderConfig>? = null,
     override val serialization: SerializationConfig? = null,
     override val httpsRedirect: HTTPSRedirectConfig? = null,
     override val routing: RoutingConfig? = null,

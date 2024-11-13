@@ -4,8 +4,8 @@ import ai.tech.core.misc.model.config.EnabledConfig
 import kotlinx.serialization.Serializable
 
 @Serializable
-public data class DatabaseProviderConfig(
+public data class DBProviderConfig(
     val connection: DatabaseConnectionConfig,
-    val table: List<TableConfig> = emptyList(),
+    val table: List<DBTableConfig> = emptyList(),
     override val enable: Boolean = true
 ) : EnabledConfig

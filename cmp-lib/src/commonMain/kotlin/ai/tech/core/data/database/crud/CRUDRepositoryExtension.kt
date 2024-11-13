@@ -1,8 +1,8 @@
 package ai.tech.core.data.database.crud
 
 import ai.tech.core.data.DataPagingSource
-import ai.tech.core.data.database.crud.model.LimitOffset
-import ai.tech.core.data.database.crud.model.Order
+import ai.tech.core.data.crud.model.LimitOffset
+import ai.tech.core.data.crud.model.Order
 import ai.tech.core.data.expression.BooleanVariable
 import ai.tech.core.data.expression.Variable
 import app.cash.paging.COUNT_UNDEFINED

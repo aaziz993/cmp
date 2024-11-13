@@ -1,12 +1,12 @@
 @file:OptIn(InternalAPI::class)
 
-package ai.tech.core.data.database.crud.http
+package ai.tech.core.data.crud.http
 
-import ai.tech.core.data.database.crud.CRUDRepository
-import ai.tech.core.data.database.crud.model.LimitOffset
-import ai.tech.core.data.database.crud.model.Order
-import ai.tech.core.data.database.crud.model.Page
-import ai.tech.core.data.database.model.config.CRUDRepositoryConfig
+import ai.tech.core.data.crud.CRUDRepository
+import ai.tech.core.data.crud.model.LimitOffset
+import ai.tech.core.data.crud.model.Order
+import ai.tech.core.data.crud.model.Page
+import ai.tech.core.data.crud.model.config.CRUDRepositoryConfig
 import ai.tech.core.data.expression.AggregateExpression
 import ai.tech.core.data.expression.BooleanVariable
 import ai.tech.core.data.expression.Variable

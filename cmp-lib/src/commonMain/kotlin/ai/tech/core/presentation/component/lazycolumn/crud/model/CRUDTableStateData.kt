@@ -1,6 +1,6 @@
 package ai.tech.core.presentation.component.lazycolumn.crud.model
 
-import ai.tech.core.data.database.crud.model.Order
+import ai.tech.core.data.crud.model.Order
 import ai.tech.core.presentation.component.textfield.search.model.SearchFieldStateData
 import kotlinx.serialization.Serializable
 

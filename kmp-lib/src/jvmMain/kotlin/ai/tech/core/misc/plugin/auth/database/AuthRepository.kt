@@ -1,6 +1,6 @@
 package ai.tech.core.misc.plugin.auth.database
 
-import ai.tech.core.data.database.crud.CRUDRepository
+import ai.tech.core.data.crud.CRUDRepository
 import ai.tech.core.data.expression.f
 import ai.tech.core.misc.auth.model.User
 import ai.tech.core.misc.plugin.auth.database.kotysa.principal.model.PrincipalEntity

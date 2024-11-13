@@ -1,6 +1,6 @@
-package ai.tech.core.data.database.graph
+package ai.tech.core.data.graph
 
-import ai.tech.core.data.database.crud.CRUDRepository
+import ai.tech.core.data.crud.CRUDRepository
 import ai.tech.core.data.expression.BooleanVariable
 import ai.tech.core.data.expression.f
 import kotlinx.coroutines.flow.firstOrNull

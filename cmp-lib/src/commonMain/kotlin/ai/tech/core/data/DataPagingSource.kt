@@ -1,7 +1,7 @@
 package ai.tech.core.data
 
-import ai.tech.core.data.database.crud.model.LimitOffset
-import ai.tech.core.data.database.crud.model.Page
+import ai.tech.core.data.crud.model.LimitOffset
+import ai.tech.core.data.crud.model.Page
 import app.cash.paging.PagingSource
 import app.cash.paging.PagingSourceLoadParams
 import app.cash.paging.PagingSourceLoadResult
