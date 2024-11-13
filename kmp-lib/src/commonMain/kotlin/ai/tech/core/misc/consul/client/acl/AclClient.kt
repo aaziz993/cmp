@@ -23,80 +23,80 @@ internal interface AclClient {
 
     @Deprecated("Use a different method")
     @PUT("acl/create")
-    fun create(@Body aclToken: AclToken): Call<AclTokenId>
+    suspend fun create(@Body aclToken: AclToken): AclTokenId
 
     @Deprecated("Use a different method")
     @PUT("acl/update")
-    fun update(@Body aclToken: AclToken): Call<Unit>
+    suspend fun update(@Body aclToken: AclToken)
 
     @Deprecated("Use a different method")
     @PUT("acl/destroy/{id}")
-    fun destroy(@Path("id") id: String): Call<Unit>
+    suspend fun destroy(@Path("id") id: String)
 
     @Deprecated("Use a different method")
     @GET("acl/info/{id}")
-    fun getInfo(@Path("id") id: String): Call<List<AclResponse>>
+    suspend fun getInfo(@Path("id") id: String): List<AclResponse>
 
     @Deprecated("Use a different method")
     @PUT("acl/clone/{id}")
-    fun clone(@Path("id") id: String): Call<AclTokenId>
+    suspend fun clone(@Path("id") id: String): AclTokenId
 
     @Deprecated("Use a different method")
     @GET("acl/list")
-    fun list(): Call<List<AclResponse>>
+    suspend fun list(): List<AclResponse>
 
     @PUT("acl/policy")
-    fun createPolicy(@Body policy: Policy): Call<PolicyResponse>
+    suspend fun createPolicy(@Body policy: Policy): PolicyResponse
 
     @GET("acl/policy/{id}")
-    fun readPolicy(@Path("id") id: String): Call<PolicyResponse>
+    suspend fun readPolicy(@Path("id") id: String): PolicyResponse
 
     @GET("acl/policy/name/{name}")
-    fun readPolicyByName(@Path("name") name: String): Call<PolicyResponse>
+    suspend fun readPolicyByName(@Path("name") name: String): PolicyResponse
 
     @PUT("acl/policy/{id}")
-    fun updatePolicy(@Path("id") id: String, @Body policy: Policy): Call<PolicyResponse>
+    suspend fun updatePolicy(@Path("id") id: String, @Body policy: Policy): PolicyResponse
 
     @DELETE("acl/policy/{id}")
-    fun deletePolicy(@Path("id") id: String): Call<Unit>
+    suspend fun deletePolicy(@Path("id") id: String)
 
     @GET("acl/policies")
-    fun listPolicies(): Call<List<PolicyResponse>>
+    suspend fun listPolicies(): List<PolicyResponse>
 
     @PUT("acl/token")
-    fun createToken(@Body token: Token): Call<TokenResponse>
+    suspend fun createToken(@Body token: Token): TokenResponse
 
     @PUT("acl/token/{id}/clone")
-    fun cloneToken(@Path("id") id: String, @Body token: Token): Call<TokenResponse>
+    suspend fun cloneToken(@Path("id") id: String, @Body token: Token): TokenResponse
 
     @GET("acl/token/{id}")
-    fun readToken(@Path("id") id: String): Call<TokenResponse>
+    suspend fun readToken(@Path("id") id: String): TokenResponse
 
     @PUT("acl/token/{id}")
-    fun updateToken(@Path("id") id: String, @Body token: Token): Call<TokenResponse>
+    suspend fun updateToken(@Path("id") id: String, @Body token: Token): TokenResponse
 
     @GET("acl/tokens")
-    fun listTokens(@QueryMap query: Map<String, String>): Call<List<TokenListResponse>>
+    suspend fun listTokens(@QueryMap query: Map<String, String>): List<TokenListResponse>
 
     @DELETE("acl/token/{id}")
-    fun deleteToken(@Path("id") id: String): Call<Unit>
+    suspend fun deleteToken(@Path("id") id: String)
 
     @PUT("acl/role")
-    fun createRole(@Body role: Role): Call<RoleResponse>
+    suspend fun createRole(@Body role: Role): RoleResponse
 
     @GET("acl/role/{id}")
-    fun readRole(@Path("id") id: String): Call<RoleResponse>
+    suspend fun readRole(@Path("id") id: String): RoleResponse
 
     @GET("acl/role/name/{name}")
-    fun readRoleByName(@Path("name") name: String): Call<RoleResponse>
+    suspend fun readRoleByName(@Path("name") name: String): RoleResponse
 
     @PUT("acl/role/{id}")
-    fun updateRole(@Path("id") id: String, @Body role: Role): Call<RoleResponse>
+    suspend fun updateRole(@Path("id") id: String, @Body role: Role): RoleResponse
 
     @DELETE("acl/role/{id}")
-    fun deleteRole(@Path("id") id: String): Call<Unit>
+    suspend fun deleteRole(@Path("id") id: String)
 
     @GET("acl/roles")
-    fun listRoles(@QueryMap query: Map<String, String>): Call<List<RoleListResponse>>
+    suspend fun listRoles(@QueryMap query: Map<String, String>): List<RoleListResponse>
 }
 

@@ -17,51 +17,51 @@ import de.jensklingenberg.ktorfit.http.QueryMap
 internal interface CatalogClient {
 
     @GET("catalog/datacenters")
-    fun getDatacenters(@HeaderMap headers: Map<String, String>): Call<List<String>>
+    suspend fun getDatacenters(@HeaderMap headers: Map<String, String>): List<String>
 
     @GET("catalog/nodes")
-    fun getNodes(
+    suspend fun getNodes(
         @QueryMap query: Map<String, String>,
         @Query("tag") tag: List<String>,
         @Query("node-meta") nodeMeta: List<String>,
         @HeaderMap headers: Map<String, String>
-    ): Call<List<Node>>
+    ): List<Node>
 
     @GET("catalog/node/{node}")
-    fun getNode(
+    suspend fun getNode(
         @Path("node") node: String,
         @QueryMap query: Map<String, String>,
         @Query("tag") tag: List<String>,
         @Query("node-meta") nodeMeta: List<String>,
         @HeaderMap headers: Map<String, String>
-    ): Call<CatalogNode>
+    ): CatalogNode
 
     @GET("catalog/services")
-    fun getServices(
+    suspend fun getServices(
         @QueryMap query: Map<String, String>,
         @Query("tag") tag: List<String>,
         @Query("node-meta") nodeMeta: List<String>,
         @HeaderMap headers: Map<String, String>
-    ): Call<Map<String, List<String>>>
+    ): Map<String, List<String>>
 
     @GET("catalog/service/{service}")
-    fun getService(
+    suspend fun getService(
         @Path("service") service: String,
         @QueryMap queryMeta: Map<String, String>,
         @Query("tag") tag: List<String>,
         @Query("node-meta") nodeMeta: List<String>,
         @HeaderMap headers: Map<String, String>
-    ): Call<List<CatalogService>>
+    ): List<CatalogService>
 
     @PUT("catalog/register")
-    fun register(
+    suspend fun register(
         @Body registration: CatalogRegistration,
         @QueryMap options: Map<String, String>
-    ): Call<Unit>
+    )
 
     @PUT("catalog/deregister")
-    fun deregister(
+    suspend fun deregister(
         @Body deregistration: CatalogDeregistration,
         @QueryMap options: Map<String, String>
-    ): Call<Unit>
+    )
 }

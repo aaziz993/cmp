@@ -13,18 +13,18 @@ import de.jensklingenberg.ktorfit.http.QueryMap
 internal interface SessionClient {
 
     @PUT("session/create")
-    fun create(@Body value: Session, @QueryMap query: Map<String, String>): Call<SessionCreatedResponse>
+    suspend fun create(@Body value: Session, @QueryMap query: Map<String, String>): SessionCreatedResponse
 
     @PUT("session/renew/{sessionId}")
-    fun renew(@Path("sessionId") sessionId: String, @Body body: Map<String, String>, @QueryMap query: Map<String, String>): Call<List<SessionInfo>>
+    suspend fun renew(@Path("sessionId") sessionId: String, @Body body: Map<String, String>, @QueryMap query: Map<String, String>): List<SessionInfo>
 
     @PUT("session/destroy/{sessionId}")
-    fun destroy(@Path("sessionId") sessionId: String, @QueryMap query: Map<String, String>): Call<Unit>
+    suspend fun destroy(@Path("sessionId") sessionId: String, @QueryMap query: Map<String, String>)
 
     @GET("session/info/{sessionId}")
-    fun getInfo(@Path("sessionId") sessionId: String, @QueryMap query: Map<String, String>): Call<List<SessionInfo>>
+    suspend fun getInfo(@Path("sessionId") sessionId: String, @QueryMap query: Map<String, String>): List<SessionInfo>
 
     @GET("session/list")
-    fun list(@QueryMap query: Map<String, String>): Call<List<SessionInfo>>
+    suspend fun list(@QueryMap query: Map<String, String>): List<SessionInfo>
 }
 

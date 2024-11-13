@@ -7,8 +7,8 @@ import de.jensklingenberg.ktorfit.http.QueryMap
 internal interface StatusClient {
 
     @GET("status/leader")
-    fun getLeader(@QueryMap options: Map<String, String>): Call<String>
+    suspend fun getLeader(@QueryMap options: Map<String, String>): String
 
     @GET("status/peers")
-    fun getPeers(@QueryMap options: Map<String, String>): Call<List<String>>
+    suspend fun getPeers(@QueryMap options: Map<String, String>): List<String>
 }

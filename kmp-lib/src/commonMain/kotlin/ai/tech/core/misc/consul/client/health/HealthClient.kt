@@ -12,40 +12,40 @@ import de.jensklingenberg.ktorfit.http.QueryMap
 internal interface HealthClient {
 
     @GET("health/node/{node}")
-    fun getNodeChecks(
+    suspend fun getNodeChecks(
         @Path("node") node: String,
         @QueryMap query: Map<String, String>,
         @Query("tag") tag: List<String>,
         @Query("node-meta") nodeMeta: List<String>,
         @HeaderMap headers: Map<String, String>
-    ): Call<List<HealthCheck>>
+    ): List<HealthCheck>
 
     @GET("health/checks/{service}")
-    fun getServiceChecks(
+    suspend fun getServiceChecks(
         @Path("service") service: String,
         @QueryMap query: Map<String, String>,
         @Query("tag") tag: List<String>,
         @Query("node-meta") nodeMeta: List<String>,
         @HeaderMap headers: Map<String, String>
-    ): Call<List<HealthCheck>>
+    ): List<HealthCheck>
 
     @GET("health/state/{state}")
-    fun getChecksByState(
+    suspend fun getChecksByState(
         @Path("state") state: String,
         @QueryMap query: Map<String, String>,
         @Query("tag") tag: List<String>,
         @Query("node-meta") nodeMeta: List<String>,
         @HeaderMap headers: Map<String, String>
-    ): Call<List<HealthCheck>>
+    ): List<HealthCheck>
 
     @GET("health/service/{service}")
-    fun getServiceInstances(
+    suspend fun getServiceInstances(
         @Path("service") service: String,
         @QueryMap query: Map<String, String>,
         @Query("tag") tag: List<String>,
         @Query("node-meta") nodeMeta: List<String>,
         @HeaderMap headers: Map<String, String>
-    ): Call<List<ServiceHealth>>
+    ): List<ServiceHealth>
 }
 
 

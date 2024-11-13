@@ -7,22 +7,23 @@ import de.jensklingenberg.ktorfit.http.GET
 import de.jensklingenberg.ktorfit.http.PUT
 import de.jensklingenberg.ktorfit.http.Path
 import de.jensklingenberg.ktorfit.http.QueryMap
+import kotlinx.serialization.json.JsonElement
 
 internal interface EventClient {
 
     @PUT("event/fire/{name}")
-    fun fire(
+    suspend fun fire(
         @Path("name") name: String,
-        @Body payload: RequestBody,
+        @Body payload: JsonElement,
         @QueryMap query: Map<String, String>
-    ): Call<Event>
+    ): Event
 
     @PUT("event/fire/{name}")
-    fun fire(
+    suspend fun fire(
         @Path("name") name: String,
         @QueryMap query: Map<String, String>
-    ): Call<Event>
+    ): Event
 
     @GET("event/list")
-    fun list(@QueryMap query: Map<String, String>): Call<List<Event>>
+    suspend fun list(@QueryMap query: Map<String, String>): List<Event>
 }

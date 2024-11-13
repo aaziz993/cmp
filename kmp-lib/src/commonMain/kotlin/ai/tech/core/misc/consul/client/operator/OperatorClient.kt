@@ -9,11 +9,11 @@ import de.jensklingenberg.ktorfit.http.QueryMap
 
 internal interface OperatorClient {
     @GET("operator/raft/configuration")
-    fun getConfiguration(@QueryMap query: Map<String, String>): Call<RaftConfiguration>
+    suspend fun getConfiguration(@QueryMap query: Map<String, String>): RaftConfiguration
 
     @DELETE("operator/raft/peer")
-    fun deletePeer(
+    suspend fun deletePeer(
         @Query("address") address: String,
         @QueryMap query: Map<String, String>
-    ): Call<Unit>
+    )
 }

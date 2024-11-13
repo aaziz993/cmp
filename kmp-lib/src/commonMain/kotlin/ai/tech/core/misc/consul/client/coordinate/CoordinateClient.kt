@@ -9,8 +9,8 @@ import de.jensklingenberg.ktorfit.http.QueryMap
 internal interface CoordinateClient {
 
     @GET("coordinate/datacenters")
-    fun getDatacenters(): Call<List<Datacenter>>
+    suspend fun getDatacenters(): List<Datacenter>
 
     @GET("coordinate/nodes")
-    fun getNodes(@QueryMap query: Map<String, String>): Call<List<Coordinate>>
+    suspend fun getNodes(@QueryMap query: Map<String, String>): List<Coordinate>
 }

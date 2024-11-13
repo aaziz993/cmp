@@ -10,44 +10,45 @@ import de.jensklingenberg.ktorfit.http.Headers
 import de.jensklingenberg.ktorfit.http.PUT
 import de.jensklingenberg.ktorfit.http.Path
 import de.jensklingenberg.ktorfit.http.QueryMap
+import kotlinx.serialization.json.JsonElement
 
 internal interface KeyValueClient {
 
     @GET("kv/{key}")
-    fun getValue(
+    suspend fun getValue(
         @Path("key") key: String,
         @QueryMap query: Map<String, String>
-    ): Call<List<Value>>
+    ): List<Value>
 
     @GET("kv/{key}")
-    fun getKeys(
+    suspend fun getKeys(
         @Path("key") key: String,
         @QueryMap query: Map<String, String>
-    ): Call<List<String>>
+    ): List<String>
 
     @PUT("kv/{key}")
-    fun putValue(
+    suspend fun putValue(
         @Path("key") key: String,
         @QueryMap query: Map<String, String>
-    ): Call<Boolean>
+    ): Boolean
 
     @PUT("kv/{key}")
-    fun putValue(
+    suspend fun putValue(
         @Path("key") key: String,
-        @Body data: RequestBody,
+        @Body data: JsonElement,
         @QueryMap query: Map<String, String>
-    ): Call<Boolean>
+    ): Boolean
 
     @DELETE("kv/{key}")
-    fun deleteValues(
+    suspend fun deleteValues(
         @Path("key") key: String,
         @QueryMap query: Map<String, String>
-    ): Call<Unit>
+    )
 
     @PUT("txn")
     @Headers("Content-Type: application/json")
-    fun performTransaction(
-        @Body body: RequestBody,
+    suspend fun performTransaction(
+        @Body body: JsonElement,
         @QueryMap query: Map<String, String>
-    ): Call<TxResponse>
+    ): TxResponse
 }

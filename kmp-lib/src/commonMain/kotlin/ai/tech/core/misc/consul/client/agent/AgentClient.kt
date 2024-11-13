@@ -18,67 +18,67 @@ import de.jensklingenberg.ktorfit.http.QueryName
 internal interface AgentClient {
 
     @PUT("agent/service/register")
-    fun register(
+    suspend fun register(
         @Body registration: Registration,
         @QueryMap options: Map<String, String>,
         @QueryName optionsParameters: List<String>
-    ): Call<Unit>
+    )
 
     @PUT("agent/service/deregister/{serviceId}")
-    fun deregister(
+    suspend fun deregister(
         @Path("serviceId") serviceId: String,
         @QueryMap options: Map<String, String>
-    ): Call<Unit>
+    )
 
     @PUT("agent/check/register")
-    fun registerCheck(@Body check: Check): Call<Unit>
+    suspend fun registerCheck(@Body check: Check)
 
     @PUT("agent/check/deregister/{checkId}")
-    fun deregisterCheck(@Path("checkId") checkId: String): Call<Unit>
+    suspend fun deregisterCheck(@Path("checkId") checkId: String)
 
     @GET("status/leader")
-    fun ping(): Call<Unit>
+    suspend fun ping()
 
     @GET("agent/self")
-    fun getSelf(): Call<Agent>
+    suspend fun getSelf(): Agent
 
     @GET("agent/checks")
-    fun getChecks(@QueryMap optionsParameters: Map<String, String>): Call<Map<String, HealthCheck>>
+    suspend fun getChecks(@QueryMap optionsParameters: Map<String, String>): Map<String, HealthCheck>
 
     @GET("agent/services")
-    fun getServices(@QueryMap query: Map<String, String>): Call<Map<String, Service>>
+    suspend fun getServices(@QueryMap query: Map<String, String>): Map<String, Service>
 
     @GET("agent/service/{serviceId}")
-    fun getService(
+    suspend fun getService(
         @Path("serviceId") id: String,
         @QueryMap query: Map<String, String>
-    ): Call<FullService>
+    ): FullService
 
     @GET("agent/members")
-    fun getMembers(@QueryMap query: Map<String, String>): Call<List<Member>>
+    suspend fun getMembers(@QueryMap query: Map<String, String>): List<Member>
 
     @PUT("agent/force-leave/{node}")
-    fun forceLeave(
+    suspend fun forceLeave(
         @Path("node") node: String,
         @QueryName optionsParameters: List<String>
-    ): Call<Unit>
+    )
 
     @PUT("agent/check/{state}/{checkId}")
-    fun check(
+    suspend fun check(
         @Path("state") state: String,
         @Path("checkId") checkId: String,
         @QueryMap query: Map<String, String>
-    ): Call<Unit>
+    )
 
     @PUT("agent/join/{address}")
-    fun join(
+    suspend fun join(
         @Path("address") address: String,
         @QueryMap query: Map<String, String>
-    ): Call<Unit>
+    )
 
     @PUT("agent/service/maintenance/{serviceId}")
-    fun toggleMaintenanceMode(
+    suspend fun toggleMaintenanceMode(
         @Path("serviceId") serviceId: String,
         @QueryMap query: Map<String, String>
-    ): Call<Unit>
+    )
 }
