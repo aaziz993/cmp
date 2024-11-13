@@ -28,7 +28,6 @@ public class WeblateClient(
     @OptIn(ExperimentalSerializationApi::class)
     private val httpClient: HttpClient = httpClient.config {
         defaultRequest {
-            url(config.address)
             header(HttpHeaders.ContentType, ContentType.Application.Json)
             header(HttpHeaders.Authorization, "Token  ${config.apiKey}")
         }
@@ -37,6 +36,7 @@ public class WeblateClient(
 
             json(
                 Json {
+                    isLenient = true
                     ignoreUnknownKeys = true
                     explicitNulls = false
                 },

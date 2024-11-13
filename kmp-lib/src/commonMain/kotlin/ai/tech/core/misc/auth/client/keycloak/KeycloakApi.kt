@@ -51,62 +51,63 @@ internal interface KeycloakApi {
     @Headers("Content-Type: application/json")
     @POST("/admin/realms/{realm}/users")
     suspend fun createUser(
+        @Header("Authorization") authorization: String,
         @Path("realm") realm: String,
         @Body userRepresentation: UserRepresentation,
-        @Header("Authorization") accessToken: String,
-    )
+
+        )
 
     @GET("/admin/realms/{realm}/users")
     suspend fun getUsers(
+        @Header("Authorization") authorization: String,
         @Path("realm") realm: String,
         @QueryMap parameters: Map<String, String>,
-        @Header("Authorization") accessToken: String,
     ): Set<UserRepresentation>
 
     @Headers("Content-Type: application/json")
     @PUT("/admin/realms/{realm}/users/{userId}")
     suspend fun updateUser(
+        @Header("Authorization") authorization: String,
         @Path("realm") realm: String,
         @Path("userId") userId: String,
         @Body userRepresentation: UserRepresentation,
-        @Header("Authorization") accessToken: String
     )
 
     @DELETE("/admin/realms/{realm}/users/{userId}")
     suspend fun deleteUser(
+        @Header("Authorization") authorization: String,
         @Path("realm") realm: String,
         @Path("userId") userId: String,
-        @Header("Authorization") accessToken: String,
     )
 
     @GET("/realms/{realm}/protocol/openid-connect/userinfo")
     suspend fun getUserInfo(
+        @Header("Authorization") authorization: String,
         @Path("realm") realm: String,
-        @Header("Authorization") accessToken: String
     ): UserInfo
 
     @GET("/admin/realms/{realm}/users/{userId}/role-mappings/realm")
     suspend fun getUserRealmRoles(
+        @Header("Authorization") authorization: String,
         @Path("realm") realm: String,
         @Path("userId") userId: String,
-        @Header("Authorization") accessToken: String,
     ): Set<RoleRepresentation>
 
     @Headers("Content-Type: application/json")
     @PUT("/admin/realms/{realm}/users/{userId}/reset-password")
     suspend fun resetPassword(
+        @Header("Authorization") authorization: String,
         @Path("realm") realm: String,
         @Path("userId") userId: String,
         @Body resetPassword: ResetPassword,
-        @Header("Authorization") accessToken: String
     )
 
     @Headers("Content-Type: application/json")
     @POST("/admin/realms/{realm}/users/{userId}/execute-actions-email")
     suspend fun updatePassword(
+        @Header("Authorization") authorization: String,
         @Path("realm") realm: String,
         @Path("userId") userId: String,
         @Body executeActionsEmail: ExecuteActionsEmail,
-        @Header("Authorization") accessToken: String
     )
 }
