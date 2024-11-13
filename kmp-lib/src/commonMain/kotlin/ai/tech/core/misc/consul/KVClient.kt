@@ -10,12 +10,31 @@ import io.ktor.client.request.get
 import io.ktor.client.request.parameter
 import io.ktor.client.request.put
 import io.ktor.client.request.setBody
+import io.ktor.client.statement.HttpResponse
 import io.ktor.client.statement.bodyAsText
 import kotlin.time.Duration
 import kotlin.time.DurationUnit
 import kotlin.time.toDuration
 
 public class KVClient internal constructor(private val client: HttpClient) {
+
+    private suspend fun readKey(
+        query: String,
+        key: String,
+        dc: String? = null,
+        recurse: Boolean? = null,
+        index: BigInteger? = null,
+        wait: String? = null,
+        timeout: Duration = 15.toDuration(DurationUnit.MINUTES)
+    ): HttpResponse = client.get("$PATH$key$query") {
+        parameter("dc", dc)
+        parameter("recurse", recurse)
+        parameter("index", index)
+        parameter("wait", wait)
+        timeout {
+            requestTimeoutMillis = timeout.inWholeMilliseconds
+        }
+    }
 
     public suspend fun read(
         key: String,
@@ -24,15 +43,25 @@ public class KVClient internal constructor(private val client: HttpClient) {
         index: BigInteger? = null,
         wait: String? = null,
         timeout: Duration = 15.toDuration(DurationUnit.MINUTES)
-    ): List<KVMetadata>? = client.get("$PATH$key") {
-        parameter("dc", dc)
-        parameter("recurse", recurse)
-        parameter("index", index)
-        parameter("wait", wait)
-        timeout {
-            requestTimeoutMillis = timeout.inWholeMilliseconds
-        }
-    }.body()
+    ): List<KVMetadata>? = readKey("", key, dc, recurse, index, wait, timeout).body()
+
+    public suspend fun readKeys(
+        key: String,
+        dc: String? = null,
+        recurse: Boolean? = null,
+        index: BigInteger? = null,
+        wait: String? = null,
+        timeout: Duration = 15.toDuration(DurationUnit.MINUTES)
+    ): List<String>? = readKey("keys", key, dc, recurse, index, wait, timeout).body()
+
+    public suspend fun readRaw(
+        key: String,
+        dc: String? = null,
+        recurse: Boolean? = null,
+        index: BigInteger? = null,
+        wait: String? = null,
+        timeout: Duration = 15.toDuration(DurationUnit.MINUTES)
+    ): String? = readKey("keys", key, dc, recurse, index, wait, timeout).body()
 
     public suspend fun write(
         key: String,
