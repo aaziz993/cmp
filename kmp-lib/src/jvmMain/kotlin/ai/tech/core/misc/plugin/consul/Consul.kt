@@ -1,18 +1,21 @@
 package ai.tech.core.misc.plugin.consul
 
-import ai.tech.core.misc.consul.Consul
-import ai.tech.core.misc.model.config.server.ServerConfig
+import ai.tech.core.misc.consul.module.config.ConsulConfig
+import ai.tech.core.misc.plugin.consul.plugin.ConsulMicroservice
 import io.ktor.client.HttpClient
 import io.ktor.server.application.Application
-import kotlinx.coroutines.runBlocking
+import io.ktor.server.application.install
+import io.ktor.utils.io.KtorDsl
 
+// Learn more: https://ktor.io/docs/custom-plugins.html#handle-app-events
+@KtorDsl
 public fun Application.configureConsul(
     httpClient: HttpClient,
-    config: ServerConfig
-) = config.consul?.let {
-    val consul = Consul(httpClient, it)
-
-    runBlocking {
-        consul.agent.register(config.project, address = config.ktor.deployment.httpURL)
+    config: ConsulConfig?,
+) = config?.let {
+    install(ConsulMicroservice(httpClient, config)) {
+        service {
+            name = ""
+        }
     }
 }

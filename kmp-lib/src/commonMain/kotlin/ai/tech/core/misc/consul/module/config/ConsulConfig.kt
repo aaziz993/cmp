@@ -4,5 +4,6 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 public data class ConsulConfig(
-    var address: String
+    val address: String,
+    val service: ConsulServiceConfig? = null
 )

@@ -4,7 +4,7 @@ import ai.tech.core.misc.consul.module.CatalogNode
 import ai.tech.core.misc.consul.module.CatalogService
 import ai.tech.core.misc.consul.module.Node
 import ai.tech.core.misc.consul.module.Service
-import ai.tech.core.misc.consul.module.ServiceCheck
+import ai.tech.core.misc.consul.module.ServiceHealth
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
 import io.ktor.client.request.get
@@ -24,7 +24,7 @@ public class CatalogClient internal constructor(private val client: HttpClient) 
         meta: Map<String, String>? = null,
         service: Service? = null,
         interval: String? = null,
-        check: ServiceCheck? = null,
+        check: ServiceHealth? = null,
         skipNodeUpdate: Boolean? = null,
         ns: String? = null
     ) {

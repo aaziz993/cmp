@@ -10,6 +10,8 @@ public data class KtorServerDeploymentConfig(
     val sslPort: Int? = null,
 ) {
 
+    val preferredSslPort: Int = sslPort ?: port!!
+
     @Transient
     val httpURL: String = sslPort?.let { "https://$host:$it" } ?: "http://$host:$port"
 

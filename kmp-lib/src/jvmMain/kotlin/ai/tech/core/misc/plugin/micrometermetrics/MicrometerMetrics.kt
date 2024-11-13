@@ -14,6 +14,7 @@ import io.micrometer.core.instrument.binder.jvm.JvmMemoryMetrics
 import io.micrometer.core.instrument.binder.jvm.JvmThreadMetrics
 import io.micrometer.core.instrument.binder.system.FileDescriptorMetrics
 import io.micrometer.core.instrument.binder.system.ProcessorMetrics
+import io.micrometer.core.instrument.binder.system.UptimeMetrics
 import io.micrometer.core.instrument.distribution.DistributionStatisticConfig
 import io.micrometer.prometheus.PrometheusConfig
 import io.micrometer.prometheus.PrometheusMeterRegistry
@@ -51,6 +52,7 @@ public fun Application.configureMicrometerMetrics(config: MicrometerMetricsConfi
                 if (it.processorMetrics == true) ProcessorMetrics() else null,
                 if (it.jvmThreadMetrics == true) JvmThreadMetrics() else null,
                 if (it.fileDescriptorMetrics == true) FileDescriptorMetrics() else null,
+                if (it.uptimeMetrics == true) UptimeMetrics() else null,
             )
 
             it.distributionStatistics?.takeIf(EnabledConfig::enable)?.let {

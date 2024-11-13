@@ -6,7 +6,7 @@ import ai.tech.core.misc.consul.module.FullService
 import ai.tech.core.misc.consul.module.HealthCheck
 import ai.tech.core.misc.consul.module.Member
 import ai.tech.core.misc.consul.module.Service
-import ai.tech.core.misc.consul.module.ServiceCheck
+import ai.tech.core.misc.consul.module.ServiceHealth
 import ai.tech.core.misc.consul.module.ServiceProxy
 import ai.tech.core.misc.consul.module.ServiceWeights
 import io.ktor.client.HttpClient
@@ -179,7 +179,6 @@ public class AgentClient internal constructor(private val client: HttpClient) {
         client.get("${PATH}health/service/id/$serviceId").bodyAsText()
 
     public suspend fun register(
-
         name: String,
         id: String? = null,
         tags: List<String>? = null,
@@ -190,7 +189,7 @@ public class AgentClient internal constructor(private val client: HttpClient) {
         kind: String? = null,
         proxy: ServiceProxy? = null,
         connect: Connect? = null,
-        check: ServiceCheck? = null,
+        check: ServiceHealth? = null,
         enableTagOverride: Boolean? = null,
         weights: ServiceWeights? = null,
         replaceExistingChecks: Boolean? = null
