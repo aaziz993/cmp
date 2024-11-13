@@ -32,7 +32,6 @@ internal class CMPPlugin(
 
                 extensions.configure<ComposeExtension>(::configureComposeExtension)
 
-
                 extensions.configure<KotlinMultiplatformExtension>(::configureComposeKotlinMultiplatformExtension)
 
                 dependencies.apply {
