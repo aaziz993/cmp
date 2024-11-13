@@ -1,14 +1,17 @@
 package ai.tech.core.misc.network.http.client
 
 import ai.tech.core.misc.network.http.client.model.Pin
+import ai.tech.core.misc.network.http.client.model.exception.errorHttpStatus
 import io.ktor.client.*
+import io.ktor.client.statement.HttpResponse
+import io.ktor.client.statement.bodyAsText
+import io.ktor.http.HttpStatusCode
 import io.ktor.http.URLBuilder
 import io.ktor.http.URLProtocol
 import io.ktor.http.Url
 import io.ktor.http.content.MultiPartData
 import io.ktor.http.content.PartData
 import io.ktor.http.content.forEachPart
-import io.ktor.http.content.readAllParts
 import io.ktor.http.encodedPath
 import io.ktor.http.path
 
@@ -54,3 +57,10 @@ public suspend fun MultiPartData.readParts(): List<PartData> {
 
 public suspend fun MultiPartData.readFormData(): Map<String?, String> = readParts().associate { it.name to (it as PartData.FormItem).value }
 
+public suspend fun HttpResponse.requireHttpStatus(checkStatus: (HttpStatusCode) -> Boolean = { it == HttpStatusCode.OK }): HttpResponse =
+    if (checkStatus(status)) {
+        this
+    }
+    else {
+        errorHttpStatus(status, bodyAsText())
+    }

@@ -14,6 +14,8 @@ import ai.tech.core.misc.type.single.toLongLSB
 import ai.tech.core.misc.type.single.toUIntLSB
 import ai.tech.core.misc.type.single.toULongLSB
 import ai.tech.core.misc.type.single.unsigned
+import kotlin.io.encoding.Base64
+import kotlin.io.encoding.ExperimentalEncodingApi
 
 public inline fun <reified T> merge(arrays: List<Array<T>>): Array<T> =
     Array(arrays.size * arrays[0].size) {
@@ -44,7 +46,7 @@ public inline fun merge(arrays: List<ByteArray>): ByteArray =
         arrays[it % arrays.size][it / arrays.size]
     }
 
-public  fun ByteArray.unmerge(step: Int): List<ByteArray> =
+public fun ByteArray.unmerge(step: Int): List<ByteArray> =
     List(step) { offset ->
         ByteArray(size / step) {
             this[offset + it * step]
@@ -125,7 +127,7 @@ public fun <T : Color> ByteArray.toColor(
                         .map { it.normalize() }
                         .toMutableList() +
                         (if (alpha) this[offset + 3].normalize() else 1f)
-                ).toFloatArray(),
+                    ).toFloatArray(),
             )
 
         Ansi16, Ansi256 ->
@@ -134,7 +136,7 @@ public fun <T : Color> ByteArray.toColor(
                     mutableListOf(
                         this[offset].unsigned().toFloat(),
                     ) + (if (alpha) this[offset + 1].normalize() else 1f)
-                ).toFloatArray(),
+                    ).toFloatArray(),
             )
 
         else -> {
@@ -147,7 +149,7 @@ public fun <T : Color> ByteArray.toColor(
                                 .map { array.toInt(it).normalize() }
                                 .toMutableList() +
                                 (if (alpha) this[offset + size].normalize() else 1f)
-                        ).toFloatArray()
+                            ).toFloatArray()
                     },
             )
         }
@@ -268,6 +270,13 @@ public fun ByteArray.toLong(
     (0 until size).forEach { value = value or (this[offset + it].toLongLSB() shl (it * 8)) }
     return value
 }
+
+// /////////////////////////////////////////////////////BASE64//////////////////////////////////////////////////////////
+@OptIn(ExperimentalEncodingApi::class)
+public fun ByteArray.encodeBase64(startIndex: Int = 0, endIndex: Int = size): String = Base64.encode(this, startIndex, endIndex)
+
+@OptIn(ExperimentalEncodingApi::class)
+public fun String.decodeBase64(startIndex: Int = 0, endIndex: Int = length): ByteArray = Base64.decode(this, startIndex, endIndex)
 
 // /////////////////////////////////////////////////////STRING//////////////////////////////////////////////////////////
 public expect fun ByteArray.decode(charset: Charset = Charset.UTF_8): String

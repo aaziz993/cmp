@@ -11,6 +11,7 @@ import ai.tech.core.data.expression.AggregateExpression
 import ai.tech.core.data.expression.BooleanVariable
 import ai.tech.core.data.expression.Variable
 import ai.tech.core.misc.auth.client.ClientAuthService
+import ai.tech.core.misc.network.http.client.requireHttpStatus
 import ai.tech.core.misc.type.decodeAnyFromJsonElement
 import ai.tech.core.misc.type.decodeAnyFromString
 import ai.tech.core.misc.type.json
@@ -67,19 +68,18 @@ public open class CRUDClient<T : Any>(
             header(HttpHeaders.ContentType, ContentType.Application.Json)
 
             setBody(entities)
-        }
+        }.requireHttpStatus()
     }
 
-    override suspend fun update(entities: List<T>): List<Boolean> =
-        httpClient.post("/updateTypeSafe") {
-            if (config?.updateAuth != null && authProvider in config.updateAuth.providers) {
-                authService!!.auth(this)
-            }
+    override suspend fun update(entities: List<T>): List<Boolean> = httpClient.post("/updateTypeSafe") {
+        if (config?.updateAuth != null && authProvider in config.updateAuth.providers) {
+            authService!!.auth(this)
+        }
 
-            header(HttpHeaders.ContentType, ContentType.Application.Json)
+        header(HttpHeaders.ContentType, ContentType.Application.Json)
 
-            setBody(Json.Default.encodeToString(entities))
-        }.body()
+        setBody(Json.Default.encodeToString(entities))
+    }.requireHttpStatus().body()
 
     override suspend fun update(entities: List<Map<String, Any?>>, predicate: BooleanVariable?): List<Long> =
         httpClient.post("/update") {
@@ -95,7 +95,7 @@ public open class CRUDClient<T : Any>(
                     },
                 ),
             )
-        }.body()
+        }.requireHttpStatus().body()
 
     override fun find(sort: List<Order>?, predicate: BooleanVariable?): Flow<T> =
         flow {
@@ -145,7 +145,7 @@ public open class CRUDClient<T : Any>(
             header(HttpHeaders.ContentType, ContentType.Application.Json)
 
             predicate?.let { setBody(Json.Default.encodeToString(it)) }
-        }.body()
+        }.requireHttpStatus().body()
 
     @Suppress("UNCHECKED_CAST")
     override suspend fun <T> aggregate(aggregate: AggregateExpression<T>, predicate: BooleanVariable?): T =
@@ -162,6 +162,8 @@ public open class CRUDClient<T : Any>(
                     },
                 ),
             )
+        }.requireHttpStatus {
+            it == HttpStatusCode.OK || it == HttpStatusCode.NoContent
         }.takeIf { it.status != HttpStatusCode.NoContent }?.let {
             json.decodeFromString(PolymorphicSerializer(Any::class), it.bodyAsText())
         } as T
@@ -187,5 +189,5 @@ public open class CRUDClient<T : Any>(
                     },
                 ),
             )
-        }
+        }.requireHttpStatus()
 }

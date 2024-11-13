@@ -44,13 +44,14 @@ public inline fun <reified T : Any> Routing.CrudRouting(
 
     auth(config?.updateAuth) {
         post("$path/updateTypeSafe") {
-            call.respond(repository.update(call.receive<T>()))
+            call.respond(HttpStatusCode.OK, repository.update(call.receive<T>()))
         }
 
         post("$path/update") {
             val form = call.receiveMultipart().readFormData()
 
             call.respond(
+                HttpStatusCode.OK,
                 repository.update(
                     Json.Default.decodeAnyFromString(
                         JsonArray::class.serializer(),
@@ -78,7 +79,7 @@ public inline fun <reified T : Any> Routing.CrudRouting(
             if (projections == null) {
                 if (limitOffset == null) {
                     repository.find(sort, predicate).let {
-                        call.respondBytesWriter(ContentType.parse("application/stream+json")) {
+                        call.respondBytesWriter(ContentType.parse("application/stream+json"), HttpStatusCode.OK) {
                             it.collect {
                                 writeStringUtf8("${Json.Default.encodeToString(it)}\n")
                                 flush()
@@ -87,13 +88,13 @@ public inline fun <reified T : Any> Routing.CrudRouting(
                     }
                 }
                 else {
-                    call.respond(repository.find(sort, predicate, limitOffset))
+                    call.respond(HttpStatusCode.OK, repository.find(sort, predicate, limitOffset))
                 }
             }
             else {
                 if (limitOffset == null) {
                     repository.find(projections, sort, predicate).let {
-                        call.respondBytesWriter(ContentType.parse("application/stream+json")) {
+                        call.respondBytesWriter(ContentType.parse("application/stream+json"), HttpStatusCode.OK) {
                             it.collect {
                                 writeStringUtf8("${Json.Default.encodeAnyToString(it)}\n")
                                 flush()
@@ -112,6 +113,7 @@ public inline fun <reified T : Any> Routing.CrudRouting(
                                 ),
                             ),
                         ),
+                        status = HttpStatusCode.OK,
                     )
                 }
             }
@@ -120,7 +122,7 @@ public inline fun <reified T : Any> Routing.CrudRouting(
 
     auth(config?.deleteAuth) {
         post("$path/delete") {
-            call.respond(repository.delete(call.receiveNullable()))
+            call.respond(HttpStatusCode.OK, repository.delete(call.receiveNullable()))
         }
     }
 
@@ -133,7 +135,7 @@ public inline fun <reified T : Any> Routing.CrudRouting(
                 Json.Default.decodeFromString<AggregateExpression<Nothing>>(form["aggregate"]!!) as AggregateExpression<Any?>,
                 form["predicate"]?.let { Json.Default.decodeFromString(it) },
             )?.let {
-                call.respondText(json.encodeToString(PolymorphicSerializer(Any::class), it))
+                call.respondText(json.encodeToString(PolymorphicSerializer(Any::class), it), status = HttpStatusCode.OK)
             } ?: call.respond(HttpStatusCode.NoContent)
 
         }
