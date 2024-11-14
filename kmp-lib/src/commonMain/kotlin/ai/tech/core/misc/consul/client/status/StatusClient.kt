@@ -17,7 +17,7 @@ public class StatusClient internal constructor(ktorfit: Ktorfit){
      *
      * @return The host/port of the leader.
      */
-    public fun getLeader(): String {
+    public suspend fun getLeader(): String {
         return getLeader(QueryOptions.BLANK)
     }
 
@@ -29,7 +29,7 @@ public class StatusClient internal constructor(ktorfit: Ktorfit){
      * @param queryOptions The Query Options to use.
      * @return The host/port of the leader.
      */
-    public fun getLeader(queryOptions: QueryOptions): String {
+    public suspend fun getLeader(queryOptions: QueryOptions): String {
         return http.extract(api.getLeader(queryOptions.toQuery())).replace("\"", "").trim()
     }
 
@@ -40,7 +40,7 @@ public class StatusClient internal constructor(ktorfit: Ktorfit){
      *
      * @return List of host/ports for raft peers.
      */
-    public fun getPeers(): List<String> {
+    public suspend fun getPeers(): List<String> {
         return getPeers(QueryOptions.BLANK)
     }
 
@@ -52,7 +52,7 @@ public class StatusClient internal constructor(ktorfit: Ktorfit){
      * @param queryOptions The Query Options to use.
      * @return List of host/ports for raft peers.
      */
-    public fun getPeers(queryOptions: QueryOptions): List<String> {
+    public suspend fun getPeers(queryOptions: QueryOptions): List<String> {
         return http.extract(api.getPeers(queryOptions.toQuery()))
     }
 }

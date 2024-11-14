@@ -20,22 +20,10 @@ public class CatalogClient internal constructor(ktorfit: Ktorfit) {
      * @param queryOptions
      * @return
      */
-    public fun getDatacenters(queryOptions: QueryOptions): List<String> {
+    public suspend fun getDatacenters(queryOptions: QueryOptions): List<String> {
         return api.getDatacenters(queryOptions.headers)
     }
 
-    /**
-     * Retrieves all nodes.
-     *
-     *
-     * GET /v1/catalog/nodes
-     *
-     * @return A [com.orbitz.consul.model.ConsulResponse] containing a list of
-     * [com.orbitz.consul.model.health.Node] objects.
-     */
-    public fun getNodes(): ConsulResponse<List<Node>> {
-        return getNodes(QueryOptions.BLANK)
-    }
 
     /**
      * Retrieves all nodes for a given datacenter with [com.orbitz.consul.option.QueryOptions].
@@ -47,14 +35,12 @@ public class CatalogClient internal constructor(ktorfit: Ktorfit) {
      * @return A [com.orbitz.consul.model.ConsulResponse] containing a list of
      * [com.orbitz.consul.model.health.Node] objects.
      */
-    public fun getNodes(queryOptions: QueryOptions): ConsulResponse<List<Node>> {
-        return http.extractConsulResponse(
-                api.getNodes(
+    public suspend fun getNodes(queryOptions: QueryOptions): ConsulResponse<List<Node>> {
+        return api.getNodes(
                         queryOptions.toQuery(),
                         queryOptions.getTag(), queryOptions.getNodeMeta(),
                         queryOptions.headers,
-                ),
-        )
+                )
     }
 
     /**
@@ -67,7 +53,7 @@ public class CatalogClient internal constructor(ktorfit: Ktorfit) {
      * @param callback     Callback implemented by callee to handle results.
      * [com.orbitz.consul.model.health.Node] objects.
      */
-    public fun getNodes(queryOptions: QueryOptions, callback: ConsulResponseCallback<List<Node>>) {
+    public suspend fun getNodes(queryOptions: QueryOptions, callback: ConsulResponseCallback<List<Node>>) {
         http.extractConsulResponse(
                 api.getNodes(
                         queryOptions.toQuery(), queryOptions.getTag(),
@@ -85,7 +71,7 @@ public class CatalogClient internal constructor(ktorfit: Ktorfit) {
      *
      * @return A [com.orbitz.consul.model.ConsulResponse] containing a map of service name to list of tags.
      */
-    public fun getServices(): ConsulResponse<Map<String, List<String>>> {
+    public suspend fun getServices(): ConsulResponse<Map<String, List<String>>> {
         return getServices(QueryOptions.BLANK)
     }
 
@@ -98,7 +84,7 @@ public class CatalogClient internal constructor(ktorfit: Ktorfit) {
      * @param callback     Callback implemented by callee to handle results.
      * @return A [com.orbitz.consul.model.ConsulResponse] containing a map of service name to list of tags.
      */
-    public fun getServices(callback: ConsulResponseCallback<Map<String, List<String>>>) {
+    public suspend fun getServices(callback: ConsulResponseCallback<Map<String, List<String>>>) {
         getServices(QueryOptions.BLANK, callback)
     }
 
@@ -111,7 +97,7 @@ public class CatalogClient internal constructor(ktorfit: Ktorfit) {
      * @param queryOptions The Query Options to use.
      * @return A [com.orbitz.consul.model.ConsulResponse] containing a map of service name to list of tags.
      */
-    public fun getServices(queryOptions: QueryOptions): ConsulResponse<Map<String, List<String>>> {
+    public suspend fun getServices(queryOptions: QueryOptions): ConsulResponse<Map<String, List<String>>> {
         return http.extractConsulResponse(
                 api.getServices(
                         queryOptions.toQuery(),
@@ -130,7 +116,7 @@ public class CatalogClient internal constructor(ktorfit: Ktorfit) {
      * @param callback     Callback implemented by callee to handle results.
      * @return A [com.orbitz.consul.model.ConsulResponse] containing a map of service name to list of tags.
      */
-    public fun getServices(
+    public suspend fun getServices(
         queryOptions: QueryOptions,
         callback: ConsulResponseCallback<Map<String, List<String>>>
     ) {
@@ -152,7 +138,7 @@ public class CatalogClient internal constructor(ktorfit: Ktorfit) {
      * @return A [com.orbitz.consul.model.ConsulResponse] containing
      * [com.orbitz.consul.model.catalog.CatalogService] objects.
      */
-    public fun getService(service: String): ConsulResponse<List<CatalogService>> {
+    public suspend fun getService(service: String): ConsulResponse<List<CatalogService>> {
         return getService(service, QueryOptions.BLANK)
     }
 
@@ -166,7 +152,7 @@ public class CatalogClient internal constructor(ktorfit: Ktorfit) {
      * @return A [com.orbitz.consul.model.ConsulResponse] containing
      * [com.orbitz.consul.model.catalog.CatalogService] objects.
      */
-    public fun getService(service: String, queryOptions: QueryOptions): ConsulResponse<List<CatalogService>> {
+    public suspend fun getService(service: String, queryOptions: QueryOptions): ConsulResponse<List<CatalogService>> {
         return http.extractConsulResponse(
                 api.getService(
                         service, queryOptions.toQuery(),
@@ -186,7 +172,7 @@ public class CatalogClient internal constructor(ktorfit: Ktorfit) {
      * @return A [com.orbitz.consul.model.ConsulResponse] containing
      * [com.orbitz.consul.model.catalog.CatalogService] objects.
      */
-    public fun getService(
+    public suspend fun getService(
         service: String,
         queryOptions: QueryOptions,
         callback: ConsulResponseCallback<List<CatalogService>>
@@ -208,7 +194,7 @@ public class CatalogClient internal constructor(ktorfit: Ktorfit) {
      *
      * @return A list of matching [com.orbitz.consul.model.catalog.CatalogService] objects.
      */
-    public fun getNode(node: String): ConsulResponse<CatalogNode> {
+    public suspend fun getNode(node: String): ConsulResponse<CatalogNode> {
         return getNode(node, QueryOptions.BLANK)
     }
 
@@ -221,7 +207,7 @@ public class CatalogClient internal constructor(ktorfit: Ktorfit) {
      * @param queryOptions The Query Options to use.
      * @return A list of matching [com.orbitz.consul.model.catalog.CatalogService] objects.
      */
-    public fun getNode(node: String, queryOptions: QueryOptions): ConsulResponse<CatalogNode> {
+    public suspend fun getNode(node: String, queryOptions: QueryOptions): ConsulResponse<CatalogNode> {
         return http.extractConsulResponse(
                 api.getNode(
                         node, queryOptions.toQuery(),
@@ -239,7 +225,7 @@ public class CatalogClient internal constructor(ktorfit: Ktorfit) {
      * @param queryOptions The Query Options to use.
      * @param callback     Callback implemented by callee to handle results.
      */
-    public fun getNode(node: String, queryOptions: QueryOptions, callback: ConsulResponseCallback<CatalogNode>) {
+    public suspend fun getNode(node: String, queryOptions: QueryOptions, callback: ConsulResponseCallback<CatalogNode>) {
         http.extractConsulResponse(
                 api.getNode(
                         node, queryOptions.toQuery(),
@@ -257,7 +243,7 @@ public class CatalogClient internal constructor(ktorfit: Ktorfit) {
      *
      * @param registration A [CatalogRegistration]
      */
-    public fun register(registration: CatalogRegistration) {
+    public suspend fun register(registration: CatalogRegistration) {
         register(registration, QueryOptions.BLANK)
     }
 
@@ -269,7 +255,7 @@ public class CatalogClient internal constructor(ktorfit: Ktorfit) {
      *
      * @param registration A [CatalogRegistration]
      */
-    public fun register(registration: CatalogRegistration, options: QueryOptions) {
+    public suspend fun register(registration: CatalogRegistration, options: QueryOptions) {
         api.register(registration, options.toQuery())
     }
 
@@ -281,7 +267,7 @@ public class CatalogClient internal constructor(ktorfit: Ktorfit) {
      *
      * @param deregistration A [CatalogDeregistration]
      */
-    public fun deregister(deregistration: CatalogDeregistration) {
+    public suspend fun deregister(deregistration: CatalogDeregistration) {
         deregister(deregistration, QueryOptions.BLANK)
     }
 
@@ -293,7 +279,7 @@ public class CatalogClient internal constructor(ktorfit: Ktorfit) {
      *
      * @param deregistration A [CatalogDeregistration]
      */
-    public fun deregister(deregistration: CatalogDeregistration, options: QueryOptions) {
+    public suspend fun deregister(deregistration: CatalogDeregistration, options: QueryOptions) {
         api.deregister(deregistration, options.toQuery())
     }
 }

@@ -1,21 +1,19 @@
-package plugin.cmp
+package plugin.multiplatform.cmp
 
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.kotlin.dsl.configure
-import org.gradle.kotlin.dsl.getByType
 import org.jetbrains.compose.ComposeExtension
 import org.jetbrains.compose.ExperimentalComposeLibrary
 import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
-import plugin.cmp.extension.config.configureComposeExtension
-import plugin.extension.bundle
 import plugin.extension.composeDeps
-import plugin.extension.config.androidTestImplementation
-import plugin.extension.config.configureComposeKotlinMultiplatformExtension
+import plugin.multiplatform.extension.config.androidTestImplementation
+import plugin.multiplatform.extension.config.configureComposeKotlinMultiplatformExtension
 import plugin.extension.config.debugImplementation
 import plugin.extension.id
 import plugin.extension.lib
-import plugin.kmp.KMPPlugin
+import plugin.multiplatform.cmp.extension.config.configureComposeExtension
+import plugin.multiplatform.kmp.KMPPlugin
 
 internal class CMPPlugin(
     private val androidPluginId: String,

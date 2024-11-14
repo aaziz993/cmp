@@ -24,7 +24,7 @@ public class HealthClient internal constructor(ktorfit: Ktorfit){
      * @return A [com.orbitz.consul.model.ConsulResponse] containing a list of
      * [com.orbitz.consul.model.health.HealthCheck] objects.
      */
-    public fun getNodeChecks(node: String): ConsulResponse<List<HealthCheck>> {
+    public suspend fun getNodeChecks(node: String): ConsulResponse<List<HealthCheck>> {
         return getNodeChecks(node, QueryOptions.BLANK)
     }
 
@@ -39,7 +39,7 @@ public class HealthClient internal constructor(ktorfit: Ktorfit){
      * @return A [com.orbitz.consul.model.ConsulResponse] containing a list of
      * [com.orbitz.consul.model.health.HealthCheck] objects.
      */
-    public fun getNodeChecks(
+    public suspend fun getNodeChecks(
         node: String,
         queryOptions: QueryOptions
     ): ConsulResponse<List<HealthCheck>> {
@@ -60,7 +60,7 @@ public class HealthClient internal constructor(ktorfit: Ktorfit){
      * @return A [com.orbitz.consul.model.ConsulResponse] containing a list of
      * [com.orbitz.consul.model.health.HealthCheck] objects.
      */
-    public fun getServiceChecks(service: String): ConsulResponse<List<HealthCheck>> {
+    public suspend fun getServiceChecks(service: String): ConsulResponse<List<HealthCheck>> {
         return getServiceChecks(service, QueryOptions.BLANK)
     }
 
@@ -74,7 +74,7 @@ public class HealthClient internal constructor(ktorfit: Ktorfit){
      * @return A [com.orbitz.consul.model.ConsulResponse] containing a list of
      * [com.orbitz.consul.model.health.HealthCheck] objects.
      */
-    public fun getServiceChecks(
+    public suspend fun getServiceChecks(
         service: String,
         queryOptions: QueryOptions
     ): ConsulResponse<List<HealthCheck>> {
@@ -98,7 +98,7 @@ public class HealthClient internal constructor(ktorfit: Ktorfit){
      * @param callback     Callback implemented by callee to handle results.
      * [com.orbitz.consul.model.health.HealthCheck] objects.
      */
-    public fun getServiceChecks(
+    public suspend fun getServiceChecks(
         service: String,
         queryOptions: QueryOptions,
         callback: ConsulResponseCallback<List<HealthCheck>>
@@ -121,7 +121,7 @@ public class HealthClient internal constructor(ktorfit: Ktorfit){
      * @return A [com.orbitz.consul.model.ConsulResponse] containing a list of
      * [com.orbitz.consul.model.health.HealthCheck] objects.
      */
-    public fun getChecksByState(state: State): ConsulResponse<List<HealthCheck>> {
+    public suspend fun getChecksByState(state: State): ConsulResponse<List<HealthCheck>> {
         return getChecksByState(state, QueryOptions.BLANK)
     }
 
@@ -136,7 +136,7 @@ public class HealthClient internal constructor(ktorfit: Ktorfit){
      * @return A [com.orbitz.consul.model.ConsulResponse] containing a list of
      * [com.orbitz.consul.model.health.HealthCheck] objects.
      */
-    public fun getChecksByState(
+    public suspend fun getChecksByState(
         state: State,
         queryOptions: QueryOptions
     ): ConsulResponse<List<HealthCheck>> {
@@ -160,7 +160,7 @@ public class HealthClient internal constructor(ktorfit: Ktorfit){
      * @return A [com.orbitz.consul.model.ConsulResponse] containing a list of
      * [com.orbitz.consul.model.health.HealthCheck] objects.
      */
-    public fun getChecksByState(
+    public suspend fun getChecksByState(
         state: State, queryOptions: QueryOptions,
         callback: ConsulResponseCallback<List<HealthCheck>>
     ) {
@@ -182,7 +182,7 @@ public class HealthClient internal constructor(ktorfit: Ktorfit){
      * @return A [com.orbitz.consul.model.ConsulResponse] containing a list of
      * [com.orbitz.consul.model.health.HealthCheck] objects.
      */
-    public fun getHealthyServiceInstances(service: String): ConsulResponse<List<ServiceHealth>> {
+    public suspend fun getHealthyServiceInstances(service: String): ConsulResponse<List<ServiceHealth>> {
         return getHealthyServiceInstances(service, QueryOptions.BLANK)
     }
 
@@ -198,7 +198,7 @@ public class HealthClient internal constructor(ktorfit: Ktorfit){
      * @return A [com.orbitz.consul.model.ConsulResponse] containing a list of
      * [com.orbitz.consul.model.health.HealthCheck] objects.
      */
-    public fun getHealthyServiceInstances(
+    public suspend fun getHealthyServiceInstances(
         service: String,
         queryOptions: QueryOptions
     ): ConsulResponse<List<ServiceHealth>> {
@@ -229,7 +229,7 @@ public class HealthClient internal constructor(ktorfit: Ktorfit){
      * @param queryOptions The Query Options to use.
      * @param callback     Callback implemented by callee to handle results.
      */
-    public fun getHealthyServiceInstances(
+    public suspend fun getHealthyServiceInstances(
         service: String, queryOptions: QueryOptions,
         callback: ConsulResponseCallback<List<ServiceHealth>>
     ) {
@@ -255,7 +255,7 @@ public class HealthClient internal constructor(ktorfit: Ktorfit){
      * @return A [com.orbitz.consul.model.ConsulResponse] containing a list of
      * [com.orbitz.consul.model.health.HealthCheck] objects.
      */
-    public fun getAllServiceInstances(service: String): ConsulResponse<List<ServiceHealth>> {
+    public suspend fun getAllServiceInstances(service: String): ConsulResponse<List<ServiceHealth>> {
         return getAllServiceInstances(service, QueryOptions.BLANK)
     }
 
@@ -271,7 +271,7 @@ public class HealthClient internal constructor(ktorfit: Ktorfit){
      * @return A [com.orbitz.consul.model.ConsulResponse] containing a list of
      * [com.orbitz.consul.model.health.HealthCheck] objects.
      */
-    public fun getAllServiceInstances(
+    public suspend fun getAllServiceInstances(
         service: String,
         queryOptions: QueryOptions
     ): ConsulResponse<List<ServiceHealth>> {
@@ -297,7 +297,7 @@ public class HealthClient internal constructor(ktorfit: Ktorfit){
      * @param queryOptions The Query Options to use.
      * @param callback     Callback implemented by callee to handle results.
      */
-    public fun getAllServiceInstances(
+    public suspend fun getAllServiceInstances(
         service: String, queryOptions: QueryOptions,
         callback: ConsulResponseCallback<List<ServiceHealth>>
     ) {

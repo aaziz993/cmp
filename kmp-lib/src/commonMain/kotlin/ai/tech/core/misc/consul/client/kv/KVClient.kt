@@ -25,7 +25,7 @@ public class KVClient(ktorfit: Ktorfit) {
          * @param key The key to retrieve.
          * @return An [Optional] containing the value or [Optional.empty]
          */
-    public fun getValue(key: String): Optional<Value> {
+    public suspend fun getValue(key: String): Optional<Value> {
         return getValue(key, QueryOptions.BLANK)
     }
 
@@ -36,7 +36,7 @@ public class KVClient(ktorfit: Ktorfit) {
      * @param key The key to retrieve
      * @return An [Optional] containing the [ConsulResponse] or [Optional.empty]
      */
-    public fun getConsulResponseWithValue(key: String): Optional<ConsulResponse<Value>> {
+    public suspend fun getConsulResponseWithValue(key: String): Optional<ConsulResponse<Value>> {
         return getConsulResponseWithValue(key, QueryOptions.BLANK)
     }
 
@@ -50,7 +50,7 @@ public class KVClient(ktorfit: Ktorfit) {
      * @param queryOptions The query options.
      * @return An [Optional] containing the value or [Optional.empty]
      */
-    public fun getValue(key: String, queryOptions: QueryOptions): Optional<Value> {
+    public suspend fun getValue(key: String, queryOptions: QueryOptions): Optional<Value> {
         try {
             return getSingleValue(
                     http.extract(
@@ -81,7 +81,7 @@ public class KVClient(ktorfit: Ktorfit) {
      * @param queryOptions The query options.
      * @return An [Optional] containing the ConsulResponse or [Optional.empty]
      */
-    public fun getConsulResponseWithValue(key: String, queryOptions: QueryOptions): Optional<ConsulResponse<Value>> {
+    public suspend fun getConsulResponseWithValue(key: String, queryOptions: QueryOptions): Optional<ConsulResponse<Value>> {
         try {
             val consulResponse: ConsulResponse<List<Value>> =
                 http.extractConsulResponse(
@@ -118,10 +118,10 @@ public class KVClient(ktorfit: Ktorfit) {
      * @param queryOptions The query options.
      * @param callback Callback implemented by callee to handle results.
      */
-    public fun getValue(key: String, queryOptions: QueryOptions, callback: ConsulResponseCallback<Optional<Value>>) {
+    public suspend fun getValue(key: String, queryOptions: QueryOptions, callback: ConsulResponseCallback<Optional<Value>>) {
         val wrapper: ConsulResponseCallback<List<Value>> = object : ConsulResponseCallback<List<Value>>() {
             @Override
-            public fun onComplete(consulResponse: ConsulResponse<List<Value>>) {
+            public suspend fun onComplete(consulResponse: ConsulResponse<List<Value>>) {
                 callback.onComplete(
                         ConsulResponse(
                                 getSingleValue(consulResponse.getResponse()),
@@ -133,7 +133,7 @@ public class KVClient(ktorfit: Ktorfit) {
             }
 
             @Override
-            public fun onFailure(throwable: Throwable) {
+            public suspend fun onFailure(throwable: Throwable) {
                 callback.onFailure(throwable)
             }
         }
@@ -158,7 +158,7 @@ public class KVClient(ktorfit: Ktorfit) {
      * @param key The key to retrieve.
      * @return A list of zero to many [com.orbitz.consul.model.kv.Value] objects.
      */
-    public fun getValues(key: String): List<Value> {
+    public suspend fun getValues(key: String): List<Value> {
         return getValues(key, QueryOptions.BLANK)
     }
 
@@ -172,7 +172,7 @@ public class KVClient(ktorfit: Ktorfit) {
      * @return A [ConsulResponse] with a list of zero to many [Value] objects and
      * consul response headers.
      */
-    public fun getConsulResponseWithValues(key: String): ConsulResponse<List<Value>> {
+    public suspend fun getConsulResponseWithValues(key: String): ConsulResponse<List<Value>> {
         return getConsulResponseWithValues(key, QueryOptions.BLANK)
     }
 
@@ -186,7 +186,7 @@ public class KVClient(ktorfit: Ktorfit) {
      * @param queryOptions The query options.
      * @return A list of zero to many [com.orbitz.consul.model.kv.Value] objects.
      */
-    public fun getValues(key: String, queryOptions: QueryOptions): List<Value> {
+    public suspend fun getValues(key: String, queryOptions: QueryOptions): List<Value> {
         val query: Map<String, Object> = queryOptions.toQuery()
 
         query.put("recurse", "true")
@@ -210,7 +210,7 @@ public class KVClient(ktorfit: Ktorfit) {
      * @return A [ConsulResponse] with a list of zero to many [Value] objects and
      * consul response headers.
      */
-    public fun getConsulResponseWithValues(key: String, queryOptions: QueryOptions): ConsulResponse<List<Value>> {
+    public suspend fun getConsulResponseWithValues(key: String, queryOptions: QueryOptions): ConsulResponse<List<Value>> {
         val query: Map<String, Object> = queryOptions.toQuery()
 
         query.put("recurse", "true")
@@ -231,7 +231,7 @@ public class KVClient(ktorfit: Ktorfit) {
      * @param queryOptions The query options.
      * @param callback Callback implemented by callee to handle results.
      */
-    public fun getValues(key: String, queryOptions: QueryOptions, callback: ConsulResponseCallback<List<Value>>) {
+    public suspend fun getValues(key: String, queryOptions: QueryOptions, callback: ConsulResponseCallback<List<Value>>) {
         val query: Map<String, Object> = queryOptions.toQuery()
 
         query.put("recurse", "true")
@@ -252,7 +252,7 @@ public class KVClient(ktorfit: Ktorfit) {
      * @return An [Optional] containing the value as a string or
      * [Optional.empty]
      */
-    public fun getValueAsString(key: String): Optional<String> {
+    public suspend fun getValueAsString(key: String): Optional<String> {
         return getValueAsString(key, Charset.defaultCharset())
     }
 
@@ -266,7 +266,7 @@ public class KVClient(ktorfit: Ktorfit) {
      * @return An [Optional] containing the value as a string or
      * [Optional.empty]
      */
-    public fun getValueAsString(key: String, charset: Charset): Optional<String> {
+    public suspend fun getValueAsString(key: String, charset: Charset): Optional<String> {
         return getValue(key).flatMap({ v -> v.getValueAsString(charset) })
     }
 
@@ -279,7 +279,7 @@ public class KVClient(ktorfit: Ktorfit) {
      * @param key The key to retrieve.
      * @return A list of zero to many string values.
      */
-    public fun getValuesAsString(key: String): List<String> {
+    public suspend fun getValuesAsString(key: String): List<String> {
         return getValuesAsString(key, Charset.defaultCharset())
     }
 
@@ -293,7 +293,7 @@ public class KVClient(ktorfit: Ktorfit) {
      * @param charset The charset of the value
      * @return A list of zero to many string values.
      */
-    public fun getValuesAsString(key: String, charset: Charset): List<String> {
+    public suspend fun getValuesAsString(key: String, charset: Charset): List<String> {
         val result: List<String> = ArrayList()
 
         for (value in getValues(key)!!) {
@@ -309,7 +309,7 @@ public class KVClient(ktorfit: Ktorfit) {
      * @param key The key to use as index.
      * @return `true` if the value was successfully indexed.
      */
-    public fun putValue(key: String): Boolean {
+    public suspend fun putValue(key: String): Boolean {
         return putValue(key, null, 0L, PutOptions.BLANK, Charset.defaultCharset())
     }
 
@@ -320,7 +320,7 @@ public class KVClient(ktorfit: Ktorfit) {
      * @param value The value to index.
      * @return `true` if the value was successfully indexed.
      */
-    public fun putValue(key: String, value: String): Boolean {
+    public suspend fun putValue(key: String, value: String): Boolean {
         return putValue(key, value, 0L, PutOptions.BLANK)
     }
 
@@ -331,7 +331,7 @@ public class KVClient(ktorfit: Ktorfit) {
      * @param value The value to index.
      * @return `true` if the value was successfully indexed.
      */
-    public fun putValue(key: String, value: String, charset: Charset): Boolean {
+    public suspend fun putValue(key: String, value: String, charset: Charset): Boolean {
         return putValue(key, value, 0L, PutOptions.BLANK, charset)
     }
 
@@ -343,7 +343,7 @@ public class KVClient(ktorfit: Ktorfit) {
      * @param flags The flags for this key.
      * @return `true` if the value was successfully indexed.
      */
-    public fun putValue(key: String, value: String, flags: Long): Boolean {
+    public suspend fun putValue(key: String, value: String, flags: Long): Boolean {
         return putValue(key, value, flags, PutOptions.BLANK)
     }
 
@@ -355,7 +355,7 @@ public class KVClient(ktorfit: Ktorfit) {
      * @param flags The flags for this key.
      * @return `true` if the value was successfully indexed.
      */
-    public fun putValue(key: String, value: String, flags: Long, charset: Charset): Boolean {
+    public suspend fun putValue(key: String, value: String, flags: Long, charset: Charset): Boolean {
         return putValue(key, value, flags, PutOptions.BLANK, charset)
     }
 
@@ -367,7 +367,7 @@ public class KVClient(ktorfit: Ktorfit) {
      * @param putOptions PUT options (e.g. wait, acquire).
      * @return `true` if the value was successfully indexed.
      */
-    public fun putValue(key: String, value: String, flags: Long, putOptions: PutOptions): Boolean {
+    public suspend fun putValue(key: String, value: String, flags: Long, putOptions: PutOptions): Boolean {
         return putValue(key, value, flags, putOptions, Charset.defaultCharset())
     }
 
@@ -379,7 +379,7 @@ public class KVClient(ktorfit: Ktorfit) {
      * @param putOptions PUT options (e.g. wait, acquire).
      * @return `true` if the value was successfully indexed.
      */
-    public fun putValue(key: String, value: String, flags: Long, putOptions: PutOptions, charset: Charset): Boolean {
+    public suspend fun putValue(key: String, value: String, flags: Long, putOptions: PutOptions, charset: Charset): Boolean {
         checkArgument(StringUtils.isNotEmpty(key), "Key must be defined")
         val query: Map<String, Object> = putOptions.toQuery()
 
@@ -413,7 +413,7 @@ public class KVClient(ktorfit: Ktorfit) {
      * @param putOptions PUT options (e.g. wait, acquire).
      * @return `true` if the value was successfully indexed.
      */
-    public fun putValue(key: String, value: ByteArray, flags: Long, putOptions: PutOptions): Boolean {
+    public suspend fun putValue(key: String, value: ByteArray, flags: Long, putOptions: PutOptions): Boolean {
         checkArgument(StringUtils.isNotEmpty(key), "Key must be defined")
         val query: Map<String, Object> = putOptions.toQuery()
 
@@ -447,7 +447,7 @@ public class KVClient(ktorfit: Ktorfit) {
      * @param key The key to retrieve.
      * @return A list of zero to many keys.
      */
-    public fun getKeys(key: String): List<String> {
+    public suspend fun getKeys(key: String): List<String> {
         return getKeys(key, QueryOptions.BLANK)
     }
 
@@ -460,7 +460,7 @@ public class KVClient(ktorfit: Ktorfit) {
      * @param queryOptions The query options.
      * @return A list of zero to many keys.
      */
-    public fun getKeys(key: String, queryOptions: QueryOptions): List<String> {
+    public suspend fun getKeys(key: String, queryOptions: QueryOptions): List<String> {
         return getKeys(key, null, queryOptions)
     }
 
@@ -474,7 +474,7 @@ public class KVClient(ktorfit: Ktorfit) {
      * @param separator The separator used to limit the prefix of keys returned.
      * @return A list of zero to many keys.
      */
-    public fun getKeys(key: String, separator: String): List<String> {
+    public suspend fun getKeys(key: String, separator: String): List<String> {
         return getKeys(key, separator, QueryOptions.BLANK)
     }
 
@@ -488,7 +488,7 @@ public class KVClient(ktorfit: Ktorfit) {
      * @param queryOptions The query options.
      * @return A list of zero to many keys.
      */
-    public fun getKeys(key: String, separator: String, queryOptions: QueryOptions): List<String> {
+    public suspend fun getKeys(key: String, separator: String, queryOptions: QueryOptions): List<String> {
         val query: Map<String, Object> = queryOptions.toQuery()
         query.put("keys", "true")
         if (separator != null) {
@@ -509,7 +509,7 @@ public class KVClient(ktorfit: Ktorfit) {
      *
      * @param key The key to delete.
      */
-    public fun deleteKey(key: String) {
+    public suspend fun deleteKey(key: String) {
         deleteKey(key, DeleteOptions.BLANK)
     }
 
@@ -520,7 +520,7 @@ public class KVClient(ktorfit: Ktorfit) {
      *
      * @param key The key to delete.
      */
-    public fun deleteKeys(key: String) {
+    public suspend fun deleteKeys(key: String) {
         deleteKey(key, DeleteOptions.RECURSE)
     }
 
@@ -532,7 +532,7 @@ public class KVClient(ktorfit: Ktorfit) {
      * @param key The key to delete.
      * @param deleteOptions DELETE options (e.g. recurse, cas)
      */
-    public fun deleteKey(key: String, deleteOptions: DeleteOptions) {
+    public suspend fun deleteKey(key: String, deleteOptions: DeleteOptions) {
         checkArgument(StringUtils.isNotEmpty(key), "Key must be defined")
         val query: Map<String, Object> = deleteOptions.toQuery()
 
@@ -548,7 +548,7 @@ public class KVClient(ktorfit: Ktorfit) {
      * @param session The session to acquire lock.
      * @return true if the lock is acquired successfully, false otherwise.
      */
-    public fun acquireLock(key: String, session: String): Boolean {
+    public suspend fun acquireLock(key: String, session: String): Boolean {
         return acquireLock(key, "", session)
     }
 
@@ -562,7 +562,7 @@ public class KVClient(ktorfit: Ktorfit) {
      * @param value key value (usually - application specific info about the lock requester)
      * @return true if the lock is acquired successfully, false otherwise.
      */
-    public fun acquireLock(key: String, value: String, session: String): Boolean {
+    public suspend fun acquireLock(key: String, value: String, session: String): Boolean {
         return putValue(key, value, 0, ImmutablePutOptions.builder().acquire(session).build())
     }
 
@@ -575,7 +575,7 @@ public class KVClient(ktorfit: Ktorfit) {
      * @return An [Optional] containing the value as a string or
      * [Optional.empty]
      */
-    public fun getSession(key: String): Optional<String> {
+    public suspend fun getSession(key: String): Optional<String> {
         return getValue(key).flatMap(Value::getSession)
     }
 
@@ -589,7 +589,7 @@ public class KVClient(ktorfit: Ktorfit) {
      *
      * @return [SessionInfo].
      */
-    public fun releaseLock(key: String, sessionId: String): Boolean {
+    public suspend fun releaseLock(key: String, sessionId: String): Boolean {
         return putValue(key, "", 0, ImmutablePutOptions.builder().release(sessionId).build())
     }
 
@@ -601,7 +601,7 @@ public class KVClient(ktorfit: Ktorfit) {
      * @param operations A list of KV operations.
      * @return A [ConsulResponse] containing results and potential errors.
      */
-    public fun performTransaction(vararg operations: Operation): ConsulResponse<TxResponse> {
+    public suspend fun performTransaction(vararg operations: Operation): ConsulResponse<TxResponse> {
         val immutableTransactionOptions: ImmutableTransactionOptions =
             ImmutableTransactionOptions.builder().consistencyMode(ConsistencyMode.DEFAULT).build()
         return performTransaction(immutableTransactionOptions, operations)
@@ -622,7 +622,7 @@ public class KVClient(ktorfit: Ktorfit) {
 
       """,
     )
-    public fun performTransaction(
+    public suspend fun performTransaction(
         consistency: ConsistencyMode,
         vararg operations: Operation
     ): ConsulResponse<TxResponse> {
@@ -656,7 +656,7 @@ public class KVClient(ktorfit: Ktorfit) {
      * @param operations A list of KV operations.
      * @return A [ConsulResponse] containing results and potential errors.
      */
-    public fun performTransaction(
+    public suspend fun performTransaction(
         transactionOptions: TransactionOptions,
         vararg operations: Operation
     ): ConsulResponse<TxResponse> {

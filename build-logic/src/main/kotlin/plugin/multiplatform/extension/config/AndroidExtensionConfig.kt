@@ -1,6 +1,6 @@
 @file:Suppress("UnstableApiUsage", "DSL_SCOPE_VIOLATION")
 
-package plugin.extension.config
+package plugin.multiplatform.extension.config
 
 import ANDROID_JAVA_SOURCE_VERSION
 import ANDROID_JAVA_TARGET_VERSION
@@ -9,12 +9,11 @@ import com.android.build.gradle.AppExtension
 import com.android.build.gradle.BaseExtension
 import com.android.build.gradle.LibraryExtension
 import com.android.build.gradle.internal.dsl.BaseAppModuleExtension
-import java.util.*
-import org.gradle.api.JavaVersion
 import org.gradle.api.Project
 import org.gradle.api.artifacts.Dependency
 import org.gradle.api.artifacts.dsl.DependencyHandler
 import org.gradle.kotlin.dsl.get
+import plugin.extension.config.toJavaVersion
 import plugin.extension.version
 
 internal fun Project.configureBaseExtension(

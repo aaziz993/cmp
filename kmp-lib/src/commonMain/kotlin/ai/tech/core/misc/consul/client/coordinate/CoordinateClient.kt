@@ -17,15 +17,15 @@ public class CoordinateClient internal constructor(ktorfit: Ktorfit) {
      */
     private val api: CoordinateApi = ktorfit.createCoordinateApi()
 
-    public fun getDatacenters(): List<Datacenter> {
+    public suspend fun getDatacenters(): List<Datacenter> {
         return api.getDatacenters()
     }
 
-    public fun getNodes(dc: String): List<Coordinate> {
+    public suspend fun getNodes(dc: String): List<Coordinate> {
         return api.getNodes(dcQuery(dc))
     }
 
-    public fun getNodes(): List<Coordinate> {
+    public suspend fun getNodes(): List<Coordinate> {
         return getNodes(null)
     }
 

@@ -1,4 +1,4 @@
-package plugin.cmp.extension.config
+package plugin.multiplatform.cmp.extension.config
 
 import plugin.extension.settings
 import plugin.extension.version

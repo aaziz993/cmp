@@ -26,7 +26,7 @@ public class EventClient internal constructor(ktorfit: Ktorfit){
      * @param payload Optional string payload.
      * @return The newly created [com.orbitz.consul.model.event.Event].
      */
-    public fun fireEvent(name: String, eventOptions: EventOptions, payload: String): Event {
+    public suspend fun fireEvent(name: String, eventOptions: EventOptions, payload: String): Event {
         return http.extract(
             api.fireEvent(
                 name,
@@ -44,7 +44,7 @@ public class EventClient internal constructor(ktorfit: Ktorfit){
      * @param name The name of the event.
      * @return The newly created [com.orbitz.consul.model.event.Event].
      */
-    public fun fireEvent(name: String): Event {
+    public suspend fun fireEvent(name: String): Event {
         return fireEvent(name, EventOptions.BLANK)
     }
 
@@ -57,7 +57,7 @@ public class EventClient internal constructor(ktorfit: Ktorfit){
      * @param eventOptions The event specific options to use.
      * @return The newly created [com.orbitz.consul.model.event.Event].
      */
-    public fun fireEvent(name: String, eventOptions: EventOptions): Event {
+    public suspend fun fireEvent(name: String, eventOptions: EventOptions): Event {
         return api.fireEvent(name, eventOptions.toQuery())
     }
 
@@ -70,7 +70,7 @@ public class EventClient internal constructor(ktorfit: Ktorfit){
      * @param payload Optional string payload.
      * @return The newly created [com.orbitz.consul.model.event.Event].
      */
-    public fun fireEvent(name: String, payload: String): Event {
+    public suspend fun fireEvent(name: String, payload: String): Event {
         return fireEvent(name, EventOptions.BLANK, payload)
     }
 
@@ -84,7 +84,7 @@ public class EventClient internal constructor(ktorfit: Ktorfit){
      * @return A [com.orbitz.consul.model.ConsulResponse] object containing
      * a list of [com.orbitz.consul.model.event.Event] objects.
      */
-    public fun listEvents(name: String, queryOptions: QueryOptions): EventResponse {
+    public suspend fun listEvents(name: String, queryOptions: QueryOptions): EventResponse {
         val query: Map<String, Object> = queryOptions.toQuery()
         if (StringUtils.isNotEmpty(name)) {
             query.put("name", name)
@@ -103,7 +103,7 @@ public class EventClient internal constructor(ktorfit: Ktorfit){
      * @return A [com.orbitz.consul.model.ConsulResponse] object containing
      * a list of [com.orbitz.consul.model.event.Event] objects.
      */
-    public fun listEvents(name: String): EventResponse {
+    public suspend fun listEvents(name: String): EventResponse {
         return listEvents(name, QueryOptions.BLANK)
     }
 
@@ -116,7 +116,7 @@ public class EventClient internal constructor(ktorfit: Ktorfit){
      * @return A [com.orbitz.consul.model.ConsulResponse] object containing
      * a list of [com.orbitz.consul.model.event.Event] objects.
      */
-    public fun listEvents(queryOptions: QueryOptions): EventResponse {
+    public suspend fun listEvents(queryOptions: QueryOptions): EventResponse {
         return listEvents(null, queryOptions)
     }
 
@@ -128,7 +128,7 @@ public class EventClient internal constructor(ktorfit: Ktorfit){
      * @return A [com.orbitz.consul.model.ConsulResponse] object containing
      * a list of [com.orbitz.consul.model.event.Event] objects.
      */
-    public fun listEvents(): EventResponse {
+    public suspend fun listEvents(): EventResponse {
         return listEvents(null, QueryOptions.BLANK)
     }
 
@@ -141,7 +141,7 @@ public class EventClient internal constructor(ktorfit: Ktorfit){
      * @param queryOptions The query options to use.
      * @param callback The callback to asynchronously process the result.
      */
-    public fun listEvents(name: String, queryOptions: QueryOptions, callback: EventResponseCallback) {
+    public suspend fun listEvents(name: String, queryOptions: QueryOptions, callback: EventResponseCallback) {
         val query: Map<String, Object> = queryOptions.toQuery()
         if (StringUtils.isNotEmpty(name)) {
             query.put("name", name)
@@ -153,12 +153,12 @@ public class EventClient internal constructor(ktorfit: Ktorfit){
     private fun createConsulResponseCallbackWrapper(callback: EventResponseCallback): ConsulResponseCallback<List<Event>> {
         return object : ConsulResponseCallback<List<Event>>() {
             @Override
-            public fun onComplete(response: ConsulResponse<List<Event>>) {
+            public suspend fun onComplete(response: ConsulResponse<List<Event>>) {
                 callback.onComplete(ImmutableEventResponse.of(response.getResponse(), response.getIndex()))
             }
 
             @Override
-            public fun onFailure(throwable: Throwable) {
+            public suspend fun onFailure(throwable: Throwable) {
                 callback.onFailure(throwable)
             }
         }
@@ -172,7 +172,7 @@ public class EventClient internal constructor(ktorfit: Ktorfit){
      * @param queryOptions The query options to use.
      * @param callback The callback to asynchronously process the result.
      */
-    public fun listEvents(queryOptions: QueryOptions, callback: EventResponseCallback) {
+    public suspend fun listEvents(queryOptions: QueryOptions, callback: EventResponseCallback) {
         listEvents(null, queryOptions, callback)
     }
 
@@ -183,7 +183,7 @@ public class EventClient internal constructor(ktorfit: Ktorfit){
      *
      * @param callback The callback to asynchronously process the result.
      */
-    public fun listEvents(callback: EventResponseCallback) {
+    public suspend fun listEvents(callback: EventResponseCallback) {
         listEvents(null, QueryOptions.BLANK, callback)
     }
 }

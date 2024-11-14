@@ -24,7 +24,7 @@ public class SessionClient internal constructor(ktorfit: Ktorfit){
      * @param value The session to create.
      * @return ID of the newly created session .
      */
-    public fun createSession(value: Session): SessionCreatedResponse {
+    public suspend fun createSession(value: Session): SessionCreatedResponse {
         return createSession(value, null)
     }
 
@@ -37,7 +37,7 @@ public class SessionClient internal constructor(ktorfit: Ktorfit){
      * @param dc    The data center.
      * @return Response containing the session ID.
      */
-    public fun createSession(value: Session, dc: String): SessionCreatedResponse {
+    public suspend fun createSession(value: Session, dc: String): SessionCreatedResponse {
         return api.createSession(value, dcQuery(dc))
     }
 
@@ -45,7 +45,7 @@ public class SessionClient internal constructor(ktorfit: Ktorfit){
         return if (dc != null) ImmutableMap.of("dc", dc) else Collections.emptyMap()
     }
 
-    public fun renewSession(sessionId: String): Optional<SessionInfo> {
+    public suspend fun renewSession(sessionId: String): Optional<SessionInfo> {
         return renewSession(null, sessionId)
     }
 
@@ -56,7 +56,7 @@ public class SessionClient internal constructor(ktorfit: Ktorfit){
      * @param sessionId The session ID to renew.
      * @return The [SessionInfo] object for the renewed session.
      */
-    public fun renewSession(dc: String, sessionId: String): Optional<SessionInfo> {
+    public suspend fun renewSession(dc: String, sessionId: String): Optional<SessionInfo> {
         val sessionInfo: List<SessionInfo> = http.extract(
             api.renewSession(
                 sessionId,
@@ -74,7 +74,7 @@ public class SessionClient internal constructor(ktorfit: Ktorfit){
      *
      * @param sessionId The session ID to destroy.
      */
-    public fun destroySession(sessionId: String) {
+    public suspend fun destroySession(sessionId: String) {
         destroySession(sessionId, null)
     }
 
@@ -86,7 +86,7 @@ public class SessionClient internal constructor(ktorfit: Ktorfit){
      * @param sessionId The session ID to destroy.
      * @param dc        The data center.
      */
-    public fun destroySession(sessionId: String, dc: String) {
+    public suspend fun destroySession(sessionId: String, dc: String) {
         api.destroySession(sessionId, dcQuery(dc))
     }
 
@@ -98,7 +98,7 @@ public class SessionClient internal constructor(ktorfit: Ktorfit){
      * @param sessionId
      * @return [SessionInfo].
      */
-    public fun getSessionInfo(sessionId: String): Optional<SessionInfo> {
+    public suspend fun getSessionInfo(sessionId: String): Optional<SessionInfo> {
         return getSessionInfo(sessionId, null)
     }
 
@@ -111,7 +111,7 @@ public class SessionClient internal constructor(ktorfit: Ktorfit){
      * @param dc        Data center
      * @return [SessionInfo].
      */
-    public fun getSessionInfo(sessionId: String, dc: String): Optional<SessionInfo> {
+    public suspend fun getSessionInfo(sessionId: String, dc: String): Optional<SessionInfo> {
         val sessionInfo: List<SessionInfo> = api.getSessionInfo(sessionId, dcQuery(dc))
 
         return if (sessionInfo == null || sessionInfo.isEmpty()) Optional.empty() else Optional.of(sessionInfo.get(0))
@@ -125,7 +125,7 @@ public class SessionClient internal constructor(ktorfit: Ktorfit){
      * @param dc The data center.
      * @return A list of available sessions.
      */
-    public fun listSessions(dc: String): List<SessionInfo> {
+    public suspend fun listSessions(dc: String): List<SessionInfo> {
         return api.listSessions(dcQuery(dc))
     }
 
@@ -136,7 +136,7 @@ public class SessionClient internal constructor(ktorfit: Ktorfit){
      *
      * @return A list of available sessions.
      */
-    public fun listSessions(): List<SessionInfo> {
+    public suspend fun listSessions(): List<SessionInfo> {
         return listSessions(null)
     }
 }

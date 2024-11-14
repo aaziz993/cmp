@@ -23,12 +23,12 @@ public class SnapshotClient internal constructor(ktorfit: Ktorfit){
      * @param queryOptions query options. Only a subset of the QueryOptions is supported: datacenter, consistencymode, and token.
      * @param callback callback called once the operation is over. It the save operation is successful, the X-Consul-Index is send.
      */
-    public fun save(destinationFile: File, queryOptions: QueryOptions, callback: Callback<BigInteger>) {
+    public suspend fun save(destinationFile: File, queryOptions: QueryOptions, callback: Callback<BigInteger>) {
         http.extractConsulResponse(
             api.generateSnapshot(queryOptions.toQuery()),
             object : ConsulResponseCallback<ResponseBody>() {
                 @Override
-                public fun onComplete(consulResponse: ConsulResponse<ResponseBody>) {
+                public suspend fun onComplete(consulResponse: ConsulResponse<ResponseBody>) {
                     // Note that response.body() and response.body().byteStream() should be closed.
                     // see: https://square.github.io/okhttp/3.x/okhttp/okhttp3/ResponseBody.html
                     try {
@@ -44,7 +44,7 @@ public class SnapshotClient internal constructor(ktorfit: Ktorfit){
                 }
 
                 @Override
-                public fun onFailure(t: Throwable) {
+                public suspend fun onFailure(t: Throwable) {
                     callback.onFailure(t)
                 }
             })
@@ -56,7 +56,7 @@ public class SnapshotClient internal constructor(ktorfit: Ktorfit){
      * @param queryOptions query options. Only a subset of the QueryOptions is supported: datacenter, token.
      * @param callback callback called once the operation is over.
      */
-    public fun restore(sourceFile: File, queryOptions: QueryOptions, callback: Callback<Void>) {
+    public suspend fun restore(sourceFile: File, queryOptions: QueryOptions, callback: Callback<Void>) {
         val requestBody: RequestBody = RequestBody.create(MediaType.parse("application/binary"), sourceFile)
         http.extractBasicResponse(api.restoreSnapshot(queryOptions.toQuery(), requestBody), callback)
     }

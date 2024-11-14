@@ -1,10 +1,8 @@
 @file:Suppress("DSL_SCOPE_VIOLATION")
 
-import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 import java.util.Properties
 import kotlin.apply
-import org.gradle.kotlin.dsl.support.kotlinCompilerOptions
-import org.jetbrains.kotlin.gradle.tasks.KotlinCompilationTask
+import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
     `java-gradle-plugin`
@@ -169,7 +167,7 @@ gradlePlugin {
                 libs.plugins.kmp.lib.convention
                     .get()
                     .pluginId
-            implementationClass = "plugin.kmp.KMPLibPlugin"
+            implementationClass = "plugin.multiplatform.kmp.KMPLibPlugin"
         }
 
         register("CMPLibPlugin") {
@@ -177,7 +175,7 @@ gradlePlugin {
                 libs.plugins.cmp.lib.convention
                     .get()
                     .pluginId
-            implementationClass = "plugin.cmp.CMPLibPlugin"
+            implementationClass = "plugin.cmp.multiplatform.CMPLibPlugin"
         }
         register("CMPAppPlugin") {
             id =

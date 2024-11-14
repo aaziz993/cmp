@@ -11,15 +11,15 @@ public class OperatorClient internal constructor(ktorfit: Ktorfit){
      */
     private val api: OperatorApi = ktorfit.createOperatorApi()
 
-    public fun getRaftConfiguration(): RaftConfiguration {
+    public suspend fun getRaftConfiguration(): RaftConfiguration {
         return api.getConfiguration(ImmutableMap.of())
     }
 
-    public fun getRaftConfiguration(datacenter: String): RaftConfiguration {
+    public suspend fun getRaftConfiguration(datacenter: String): RaftConfiguration {
         return api.getConfiguration(ImmutableMap.of("dc", datacenter))
     }
 
-    public fun getStaleRaftConfiguration(datacenter: String): RaftConfiguration {
+    public suspend fun getStaleRaftConfiguration(datacenter: String): RaftConfiguration {
         return http.extract(
             api.getConfiguration(
                 ImmutableMap.of(
@@ -29,7 +29,7 @@ public class OperatorClient internal constructor(ktorfit: Ktorfit){
         )
     }
 
-    public fun getStaleRaftConfiguration(): RaftConfiguration {
+    public suspend fun getStaleRaftConfiguration(): RaftConfiguration {
         return http.extract(
             api.getConfiguration(
                 ImmutableMap.of(
@@ -39,11 +39,11 @@ public class OperatorClient internal constructor(ktorfit: Ktorfit){
         )
     }
 
-    public fun deletePeer(address: String) {
+    public suspend fun deletePeer(address: String) {
         api.deletePeer(address, ImmutableMap.of())
     }
 
-    public fun deletePeer(address: String, datacenter: String) {
+    public suspend fun deletePeer(address: String, datacenter: String) {
         api.deletePeer(address, ImmutableMap.of("dc", datacenter))
     }
 }

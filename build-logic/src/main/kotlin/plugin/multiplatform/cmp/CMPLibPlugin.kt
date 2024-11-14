@@ -1,4 +1,4 @@
-package plugin.cmp
+package plugin.multiplatform.cmp
 
 import plugin.extension.id
 import org.gradle.api.Plugin

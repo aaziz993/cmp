@@ -1,4 +1,4 @@
-package plugin.cmp.extension.config
+package plugin.multiplatform.cmp.extension.config
 
 import org.gradle.api.Project
 import org.gradle.kotlin.dsl.configure
