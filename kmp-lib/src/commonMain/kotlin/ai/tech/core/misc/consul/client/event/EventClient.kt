@@ -1,8 +1,8 @@
 package ai.tech.core.misc.consul.client.event
 
 import ai.tech.core.misc.consul.client.event.model.Event
-import ai.tech.core.misc.consul.model.option.EventParameters
-import ai.tech.core.misc.consul.model.option.QueryParameters
+import ai.tech.core.misc.consul.model.parameter.EventParameters
+import ai.tech.core.misc.consul.model.parameter.QueryParameters
 import de.jensklingenberg.ktorfit.Ktorfit
 import kotlinx.serialization.json.JsonPrimitive
 

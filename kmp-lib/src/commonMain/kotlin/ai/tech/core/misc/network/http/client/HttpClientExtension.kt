@@ -28,6 +28,9 @@ public val String.isValidHttpUrl: Boolean
         false
     }
 
+public val String.httpUrl: Url
+    get() = Url(this)
+
 public val String.encodedHttpUrl: String
     get() =
         URLBuilder()

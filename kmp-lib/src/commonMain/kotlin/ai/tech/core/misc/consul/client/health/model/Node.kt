@@ -11,7 +11,7 @@ public data class Node(
     @SerialName("Address")
     val address: String,
     @SerialName("Datacenter")
-    val datacenter: String,
+    val datacenter: String? = null,
     @SerialName("TaggedAddresses")
     val taggedAddresses: TaggedAddresses? = null,
     @SerialName("Meta")

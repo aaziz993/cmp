@@ -1,4 +1,4 @@
-package ai.tech.core.misc.consul.model.option
+package ai.tech.core.misc.consul.model.parameter
 
 import arrow.core.fold
 import kotlinx.serialization.Serializable

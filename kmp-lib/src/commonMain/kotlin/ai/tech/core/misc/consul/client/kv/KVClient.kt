@@ -3,11 +3,11 @@ package ai.tech.core.misc.consul.client.kv
 import ai.tech.core.misc.consul.client.kv.model.Operation
 import ai.tech.core.misc.consul.client.kv.model.TxResponse
 import ai.tech.core.misc.consul.client.kv.model.Value
-import ai.tech.core.misc.consul.model.option.ConsistencyMode
-import ai.tech.core.misc.consul.model.option.DeleteParameters
-import ai.tech.core.misc.consul.model.option.PutParameters
-import ai.tech.core.misc.consul.model.option.QueryParameters
-import ai.tech.core.misc.consul.model.option.TransactionParameters
+import ai.tech.core.misc.consul.model.parameter.ConsistencyMode
+import ai.tech.core.misc.consul.model.parameter.DeleteParameters
+import ai.tech.core.misc.consul.model.parameter.PutParameters
+import ai.tech.core.misc.consul.model.parameter.QueryParameters
+import ai.tech.core.misc.consul.model.parameter.TransactionParameters
 import de.jensklingenberg.ktorfit.Ktorfit
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonElement

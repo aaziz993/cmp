@@ -5,7 +5,7 @@ import ai.tech.core.misc.consul.client.catalog.model.CatalogNode
 import ai.tech.core.misc.consul.client.catalog.model.CatalogRegistration
 import ai.tech.core.misc.consul.client.catalog.model.CatalogService
 import ai.tech.core.misc.consul.client.health.model.Node
-import ai.tech.core.misc.consul.model.option.QueryParameters
+import ai.tech.core.misc.consul.model.parameter.QueryParameters
 import de.jensklingenberg.ktorfit.Ktorfit
 
 /**

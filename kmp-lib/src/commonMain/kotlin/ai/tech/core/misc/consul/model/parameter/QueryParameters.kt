@@ -1,4 +1,4 @@
-package ai.tech.core.misc.consul.model.option
+package ai.tech.core.misc.consul.model.parameter
 
 import ai.tech.core.misc.type.serializer.bignum.BigIntegerSerial
 import kotlinx.serialization.Serializable

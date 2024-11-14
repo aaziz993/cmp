@@ -1,6 +1,6 @@
 package ai.tech.core.misc.consul.client.status
 
-import ai.tech.core.misc.consul.model.option.QueryParameters
+import ai.tech.core.misc.consul.model.parameter.QueryParameters
 import de.jensklingenberg.ktorfit.Ktorfit
 
 public class StatusClient internal constructor(ktorfit: Ktorfit) {

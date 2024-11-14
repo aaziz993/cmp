@@ -8,8 +8,8 @@ import ai.tech.core.misc.consul.client.acl.model.RoleResponse
 import ai.tech.core.misc.consul.client.acl.model.Token
 import ai.tech.core.misc.consul.client.acl.model.TokenListResponse
 import ai.tech.core.misc.consul.client.acl.model.TokenResponse
-import ai.tech.core.misc.consul.model.option.RoleParameters
-import ai.tech.core.misc.consul.model.option.TokenQueryParameters
+import ai.tech.core.misc.consul.model.parameter.RoleParameters
+import ai.tech.core.misc.consul.model.parameter.TokenQueryParameters
 import de.jensklingenberg.ktorfit.Ktorfit
 
 public class AclClient internal constructor(ktorfit: Ktorfit) {

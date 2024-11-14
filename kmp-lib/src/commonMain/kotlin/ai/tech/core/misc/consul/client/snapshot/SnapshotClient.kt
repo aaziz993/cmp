@@ -2,7 +2,7 @@ package ai.tech.core.misc.consul.client.snapshot
 
 import ai.tech.core.data.filesystem.fsPathRead
 import ai.tech.core.data.filesystem.fsPathWrite
-import ai.tech.core.misc.consul.model.option.QueryParameters
+import ai.tech.core.misc.consul.model.parameter.QueryParameters
 import ai.tech.core.misc.type.multiple.asyncIterator
 import ai.tech.core.misc.type.multiple.toList
 import de.jensklingenberg.ktorfit.Ktorfit

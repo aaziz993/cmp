@@ -3,7 +3,7 @@ package ai.tech.core.misc.consul.client.health
 import ai.tech.core.misc.consul.client.health.model.HealthCheck
 import ai.tech.core.misc.consul.client.health.model.ServiceHealth
 import ai.tech.core.misc.consul.client.model.State
-import ai.tech.core.misc.consul.model.option.QueryParameters
+import ai.tech.core.misc.consul.model.parameter.QueryParameters
 import de.jensklingenberg.ktorfit.Ktorfit
 
 /**
@@ -53,7 +53,7 @@ public class HealthClient internal constructor(ktorfit: Ktorfit) {
      */
     public suspend fun getServiceChecks(
         service: String,
-        queryParameters: QueryParameters
+        queryParameters: QueryParameters = QueryParameters()
     ): List<HealthCheck> =
         api.getServiceChecks(
             service,
@@ -76,7 +76,7 @@ public class HealthClient internal constructor(ktorfit: Ktorfit) {
      */
     public suspend fun getChecksByState(
         state: State,
-        queryParameters: QueryParameters
+        queryParameters: QueryParameters = QueryParameters()
     ): List<HealthCheck> =
         api.getChecksByState(
             state.name.lowercase(),
@@ -100,7 +100,7 @@ public class HealthClient internal constructor(ktorfit: Ktorfit) {
      */
     public suspend fun getHealthyServiceInstances(
         service: String,
-        queryParameters: QueryParameters
+        queryParameters: QueryParameters = QueryParameters()
     ): List<ServiceHealth> =
         api.getServiceInstances(
             service,
@@ -124,7 +124,7 @@ public class HealthClient internal constructor(ktorfit: Ktorfit) {
      */
     public suspend fun getAllServiceInstances(
         service: String,
-        queryParameters: QueryParameters
+        queryParameters: QueryParameters = QueryParameters()
     ): List<ServiceHealth> =
         api.getServiceInstances(
             service,

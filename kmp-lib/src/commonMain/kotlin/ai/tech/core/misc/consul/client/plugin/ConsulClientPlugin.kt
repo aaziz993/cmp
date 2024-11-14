@@ -3,6 +3,7 @@ package ai.tech.core.misc.consul.client.plugin
 import ai.tech.core.misc.consul.client.ConsulClient
 import ai.tech.core.misc.consul.client.agent.model.Registration
 import ai.tech.core.misc.consul.model.config.LoadBalancer
+import ai.tech.core.misc.network.http.client.httpUrl
 import io.ktor.client.plugins.api.ClientPlugin
 import io.ktor.client.plugins.api.createClientPlugin
 import io.ktor.client.request.HttpRequestPipeline
@@ -18,20 +19,18 @@ public fun ConsulClientPlugin(
     { config },
 ) {
 
-    val httpClient = client
+    val consulClient = ConsulClient(client, address)
 
     client.requestPipeline.intercept(HttpRequestPipeline.Render) {
-        val consulClient = ConsulClient(httpClient, address)
 
-        val nodes = consulClient.health.getServiceInstances(config.name)
+        val nodes = consulClient.health.getHealthyServiceInstances(config.name)
         val selectedNode = checkNotNull(loadBalancer(nodes)) {
             "Impossible to find available nodes of the ${config.name}"
         }
 
-        context.url {
-//            selectedNode.service.address host =
-//            port = selectedNode.service.port
-        }
+        val serviceHost = selectedNode.service.address.httpUrl.host
+        this.context.url.host = serviceHost
+        this.context.url.port = selectedNode.service.port
 
     }
 }

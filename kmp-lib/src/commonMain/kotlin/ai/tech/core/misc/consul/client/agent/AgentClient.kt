@@ -8,8 +8,8 @@ import ai.tech.core.misc.consul.client.agent.model.Registration
 import ai.tech.core.misc.consul.client.health.model.HealthCheck
 import ai.tech.core.misc.consul.client.health.model.Service
 import ai.tech.core.misc.consul.client.model.State
-import ai.tech.core.misc.consul.model.option.QueryParameterParameters
-import ai.tech.core.misc.consul.model.option.QueryParameters
+import ai.tech.core.misc.consul.model.parameter.QueryParameterParameters
+import ai.tech.core.misc.consul.model.parameter.QueryParameters
 import de.jensklingenberg.ktorfit.Ktorfit
 
 /**

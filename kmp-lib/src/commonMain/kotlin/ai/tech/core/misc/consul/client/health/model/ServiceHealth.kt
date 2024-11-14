@@ -6,9 +6,9 @@ import kotlinx.serialization.Serializable
 @Serializable
 public data class ServiceHealth(
     @SerialName("Service")
-    val service: Service? = null,
+    val service: Service,
     @SerialName("Checks")
-    val checks: List<HealthCheck> = listOf(),
+    val checks: List<HealthCheck>,
     @SerialName("Node")
-    val node: Node? = null
+    val node: Node
 )

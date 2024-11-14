@@ -7,19 +7,19 @@ import kotlinx.serialization.Serializable
 @Serializable
 public data class Service(
     @SerialName("Address")
-    val address: String? = null,
+    val address: String,
     @SerialName("ID")
-    val id: String? = null,
+    val id: String,
     @SerialName("Port")
-    val port: Int? = null,
+    val port: Int,
     @SerialName("Service")
     val service: String? = null,
     @SerialName("EnableTagOverride")
-    val enableTagOverride: Boolean = false,
+    val enableTagOverride: Boolean? = null,
     @SerialName("Tags")
-    val tags: List<String> = listOf(),
+    val tags: List<String>,
     @SerialName("Meta")
-    val meta: List<String> = listOf(),
+    val meta: Map<String, String>,
     @SerialName("Weights")
     val weights: ServiceWeights? = null
 )
