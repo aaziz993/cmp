@@ -40,13 +40,13 @@ public class WeblateClient(
         },
     ).baseUrl(config.address).build()
 
-    private val weblateApi = ktorfit.createWeblateApi()
+    private val api = ktorfit.createWeblateApi()
 
     public val translations: AsyncIterator<WeblateTranslationsResponse>
-        get() = WeblateResponseAsyncIterator { weblateApi.getTranslations("json", it) }
+        get() = WeblateResponseAsyncIterator { api.getTranslations("json", it) }
 
     public val units: AsyncIterator<WeblateUnitsResponse>
-        get() = WeblateResponseAsyncIterator { weblateApi.getUnits("json", it) }
+        get() = WeblateResponseAsyncIterator { api.getUnits("json", it) }
 }
 
 private class WeblateResponseAsyncIterator<T : WeblateResponse<*>>(

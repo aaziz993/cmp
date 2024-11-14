@@ -36,7 +36,7 @@ public class KeycloakClient(
         },
     ).baseUrl(config.address).build()
 
-    private val keycloakApi = ktorfit.createKeycloakApi()
+    private val api = ktorfit.createKeycloakApi()
 
     @OptIn(ExperimentalSerializationApi::class)
     private val json = Json {
@@ -45,24 +45,24 @@ public class KeycloakClient(
     }
 
     public suspend fun getToken(username: String, password: String): TokenResponse =
-        keycloakApi.getToken(config.realm, username, password, config.clientId)
+        api.getToken(config.realm, username, password, config.clientId)
 
     public suspend fun getTokenByRefreshToken(refreshToken: String): TokenResponse =
-        keycloakApi.getTokenByRefreshToken(config.realm, refreshToken, config.clientId)
+        api.getTokenByRefreshToken(config.realm, refreshToken, config.clientId)
 
     public suspend fun getTokenByClientSecret(clientSecret: String): TokenResponse =
-        keycloakApi.getTokenByClientSecret(config.realm, clientSecret, config.clientId)
+        api.getTokenByClientSecret(config.realm, clientSecret, config.clientId)
 
     public suspend fun createUser(
         accessToken: String,
         userRepresentation: UserRepresentation,
-    ): Unit = keycloakApi.createUser("Bearer $accessToken", config.realm, userRepresentation)
+    ): Unit = api.createUser("Bearer $accessToken", config.realm, userRepresentation)
 
     public suspend fun getUsers(
         accessToken: String,
         userRepresentation: UserRepresentation? = null,
         exact: Boolean? = null,
-    ): Set<UserRepresentation> = keycloakApi.getUsers(
+    ): Set<UserRepresentation> = api.getUsers(
         "Bearer $accessToken",
         config.realm,
         userRepresentation?.let {
@@ -80,30 +80,30 @@ public class KeycloakClient(
     public suspend fun updateUser(
         accessToken: String,
         userRepresentation: UserRepresentation
-    ): Unit = keycloakApi.updateUser("Bearer $accessToken", config.realm, userRepresentation.id!!, userRepresentation)
+    ): Unit = api.updateUser("Bearer $accessToken", config.realm, userRepresentation.id!!, userRepresentation)
 
     public suspend fun deleteUser(
         accessToken: String,
         userId: String,
-    ): Unit = keycloakApi.deleteUser("Bearer $accessToken", config.realm, userId)
+    ): Unit = api.deleteUser("Bearer $accessToken", config.realm, userId)
 
     public suspend fun getUserInfo(accessToken: String): UserInfo =
-        keycloakApi.getUserInfo("Bearer $accessToken", config.realm)
+        api.getUserInfo("Bearer $accessToken", config.realm)
 
     public suspend fun getUserRealmRoles(
         accessToken: String,
         userId: String,
-    ): Set<RoleRepresentation> = keycloakApi.getUserRealmRoles("Bearer $accessToken", config.realm, userId)
+    ): Set<RoleRepresentation> = api.getUserRealmRoles("Bearer $accessToken", config.realm, userId)
 
     public suspend fun resetPassword(
         accessToken: String,
         userId: String,
         resetPassword: ResetPassword
-    ): Unit = keycloakApi.resetPassword("Bearer $accessToken", config.realm, userId, resetPassword)
+    ): Unit = api.resetPassword("Bearer $accessToken", config.realm, userId, resetPassword)
 
     public suspend fun executeActionsEmail(
         accessToken: String,
         userId: String,
         executeActionsEmail: ExecuteActionsEmail
-    ): Unit = keycloakApi.updatePassword("Bearer $accessToken", config.realm, userId, executeActionsEmail)
+    ): Unit = api.updatePassword("Bearer $accessToken", config.realm, userId, executeActionsEmail)
 }

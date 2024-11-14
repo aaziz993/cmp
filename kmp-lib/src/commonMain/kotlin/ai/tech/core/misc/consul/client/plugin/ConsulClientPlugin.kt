@@ -1,7 +1,8 @@
 package ai.tech.core.misc.consul.client.plugin
 
 import ai.tech.core.misc.consul.client.ConsulClient
-import ai.tech.core.misc.consul.client.plugin.model.config.ConsulPluginServiceConfig
+import ai.tech.core.misc.consul.client.agent.model.Registration
+import ai.tech.core.misc.consul.model.config.LoadBalancer
 import io.ktor.client.plugins.api.ClientPlugin
 import io.ktor.client.plugins.api.createClientPlugin
 import io.ktor.client.request.HttpRequestPipeline
@@ -9,9 +10,10 @@ import io.ktor.client.request.HttpRequestPipeline
 @Suppress("FunctionName")
 public fun ConsulClientPlugin(
     address: String,
-    config: ConsulPluginServiceConfig,
-
-    ): ClientPlugin<ConsulPluginServiceConfig> = createClientPlugin(
+    consulAddress: String,
+    config: Registration,
+    loadBalancer: LoadBalancer,
+): ClientPlugin<Registration> = createClientPlugin(
     "ConsulClientPlugin",
     { config },
 ) {
@@ -22,13 +24,13 @@ public fun ConsulClientPlugin(
         val consulClient = ConsulClient(httpClient, address)
 
         val nodes = consulClient.health.getServiceInstances(config.name)
-        val selectedNode = checkNotNull(config.loadBalancer(nodes)) {
+        val selectedNode = checkNotNull(loadBalancer(nodes)) {
             "Impossible to find available nodes of the ${config.name}"
         }
 
         context.url {
-            host = ""
-            port = 0
+            selectedNode.service.address host =
+            port = selectedNode.service.port
         }
 
     }

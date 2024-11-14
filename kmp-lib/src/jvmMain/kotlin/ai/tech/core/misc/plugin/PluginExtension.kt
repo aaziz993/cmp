@@ -96,10 +96,7 @@ public fun Application.configure(
     shutdownBlock: (ShutDownUrl.Config.() -> Unit)? = null
 ) = with(config) {
     // Configure consul
-    configureConsul(
-        httpClient,
-        consul,
-    )
+    configureConsul(httpClient, consul)
 
     // Configure the Serialization plugin
     configureSerialization(serialization, serializationBlock)

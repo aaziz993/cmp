@@ -1,6 +1,6 @@
-package ai.tech.core.misc.consul.client.model.config
+package ai.tech.core.misc.consul.model.config
 
-import ai.tech.core.misc.consul.client.model.ServiceHealth
+import ai.tech.core.misc.consul.client.health.model.ServiceHealth
 import kotlin.also
 import kotlin.collections.all
 import kotlin.collections.firstOrNull
@@ -25,4 +25,9 @@ public fun roundRobin(): LoadBalancer {
             index = (index + 1) % size
         }
     }
+}
+
+public fun loadBalancer(type: LoadBalancerType): LoadBalancer = when (type) {
+    LoadBalancerType.FIRST_HEALTHY -> takeFirstHealthy()
+    LoadBalancerType.ROUND_ROBIN -> roundRobin()
 }

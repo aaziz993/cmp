@@ -1,7 +1,7 @@
 package ai.tech.core.misc.plugin.consul
 
-import ai.tech.core.misc.consul.module.config.ConsulConfig
-import ai.tech.core.misc.plugin.consul.plugin.ConsulMicroservice
+import ai.tech.core.misc.consul.model.config.ConsulConfig
+import ai.tech.core.misc.consul.server.plugin.Consul
 import io.ktor.client.HttpClient
 import io.ktor.server.application.Application
 import io.ktor.server.application.install
@@ -13,9 +13,5 @@ public fun Application.configureConsul(
     httpClient: HttpClient,
     config: ConsulConfig?,
 ) = config?.let {
-    install(ConsulMicroservice(httpClient, config)) {
-        service {
-            name = ""
-        }
-    }
+    it.registration?.let { install(Consul(httpClient, config.address, it)) }
 }
