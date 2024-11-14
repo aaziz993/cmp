@@ -6,7 +6,10 @@ import kotlin.collections.all
 import kotlin.collections.firstOrNull
 import kotlin.collections.getOrNull
 
-public typealias LoadBalancer = List<ServiceHealth>.() -> ServiceHealth?
+public enum class LoadBalancer {
+    FIRST_HEALTHY,
+    ROUND_ROBIN,
+}
 
 public fun isHealthy(health: ServiceHealth): Boolean {
     return health.checks.all { check ->
@@ -14,11 +17,11 @@ public fun isHealthy(health: ServiceHealth): Boolean {
     }
 }
 
-public fun takeFirstHealthy(): LoadBalancer = {
+public fun takeFirstHealthy():  List<ServiceHealth>.() -> ServiceHealth? = {
     firstOrNull(::isHealthy)
 }
 
-public fun roundRobin(): LoadBalancer {
+public fun roundRobin():  List<ServiceHealth>.() -> ServiceHealth? {
     var index = 0
     return {
         getOrNull(index)?.also {
@@ -27,7 +30,7 @@ public fun roundRobin(): LoadBalancer {
     }
 }
 
-public fun loadBalancer(type: LoadBalancerType): LoadBalancer = when (type) {
-    LoadBalancerType.FIRST_HEALTHY -> takeFirstHealthy()
-    LoadBalancerType.ROUND_ROBIN -> roundRobin()
+public fun loadBalancer(type: LoadBalancer):  List<ServiceHealth>.() -> ServiceHealth? = when (type) {
+    LoadBalancer.FIRST_HEALTHY -> takeFirstHealthy()
+    LoadBalancer.ROUND_ROBIN -> roundRobin()
 }

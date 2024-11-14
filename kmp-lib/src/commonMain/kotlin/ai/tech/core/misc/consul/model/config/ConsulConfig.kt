@@ -6,6 +6,7 @@ import kotlinx.serialization.Serializable
 @Serializable
 public data class ConsulConfig(
     val address: String,
+    val loadBalancer: LoadBalancer = LoadBalancer.FIRST_HEALTHY,
     val registration: Registration? = null,
     val config: ConsulConfigConfig? = null,
 )
