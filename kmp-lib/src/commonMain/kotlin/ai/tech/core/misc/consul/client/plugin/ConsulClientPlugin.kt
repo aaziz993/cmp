@@ -11,11 +11,10 @@ import io.ktor.client.request.HttpRequestPipeline
 @Suppress("FunctionName")
 public fun ConsulClientPlugin(
     address: String,
-    consulAddress: String,
     config: Registration,
     loadBalancer: LoadBalancer,
 ): ClientPlugin<Registration> = createClientPlugin(
-    "ConsulClientPlugin",
+    "ConsulClient",
     { config },
 ) {
 
@@ -31,6 +30,5 @@ public fun ConsulClientPlugin(
         val serviceHost = selectedNode.service.address.httpUrl.host
         this.context.url.host = serviceHost
         this.context.url.port = selectedNode.service.port
-
     }
 }

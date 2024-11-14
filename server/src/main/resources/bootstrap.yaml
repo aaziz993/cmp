@@ -1,0 +1,10 @@
+application:
+  name: server
+
+environment: dev
+
+consul:
+  registration:
+    name: ${application.name}
+    port: ${server.port}
+  config:

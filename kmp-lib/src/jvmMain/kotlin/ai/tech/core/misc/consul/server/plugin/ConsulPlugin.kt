@@ -10,13 +10,13 @@ import kotlinx.coroutines.runBlocking
 @Suppress("FunctionName")
 public fun Consul(
     httpClient: HttpClient,
-    consulAddress: String,
+    address: String,
     config: Registration,
 ): ApplicationPlugin<Registration> = createApplicationPlugin(
     "Consul",
     { config },
 ) {
-    val consulClient = ConsulClient(httpClient, consulAddress)
+    val consulClient = ConsulClient(httpClient, address)
 
     runBlocking {
         consulClient.agent.register(config)
