@@ -14,69 +14,69 @@ import de.jensklingenberg.ktorfit.http.Path
 import de.jensklingenberg.ktorfit.http.QueryMap
 import de.jensklingenberg.ktorfit.http.QueryName
 
-public interface AgentApi {
+internal interface AgentApi {
 
     @PUT("agent/service/register")
-    public suspend fun register(
+    suspend fun register(
         @Body registration: Registration,
-        @QueryMap options: Map<String, String> = emptyMap(),
+        @QueryMap parameters: Map<String, String> = emptyMap(),
         @QueryName optionsParameters: List<String> = emptyList()
     )
 
     @PUT("agent/service/deregister/{serviceId}")
-    public suspend fun deregister(
+    suspend fun deregister(
         @Path("serviceId") serviceId: String,
-        @QueryMap options: Map<String, String> = emptyMap()
+        @QueryMap parameters: Map<String, String> = emptyMap()
     )
 
     @PUT("agent/check/register")
-    public suspend fun registerCheck(@Body check: Check)
+    suspend fun registerCheck(@Body check: Check)
 
     @PUT("agent/check/deregister/{checkId}")
-    public suspend fun deregisterCheck(@Path("checkId") checkId: String)
+    suspend fun deregisterCheck(@Path("checkId") checkId: String)
 
     @GET("status/leader")
-    public suspend fun ping()
+    suspend fun ping()
 
     @GET("agent/self")
-    public suspend fun getSelf(): Agent
+    suspend fun getSelf(): Agent
 
     @GET("agent/checks")
-    public suspend fun getChecks(@QueryMap optionsParameters: Map<String, String> = emptyMap()): Map<String, HealthCheck>
+    suspend fun getChecks(@QueryMap optionsParameters: Map<String, String> = emptyMap()): Map<String, HealthCheck>
 
     @GET("agent/services")
-    public suspend fun getServices(@QueryMap query: Map<String, String> = emptyMap()): Map<String, Service>
+    suspend fun getServices(@QueryMap query: Map<String, String> = emptyMap()): Map<String, Service>
 
     @GET("agent/service/{serviceId}")
-    public suspend fun getService(
+    suspend fun getService(
         @Path("serviceId") id: String,
         @QueryMap query: Map<String, String> = emptyMap()
     ): FullService
 
     @GET("agent/members")
-    public suspend fun getMembers(@QueryMap query: Map<String, String> = emptyMap()): List<Member>
+    suspend fun getMembers(@QueryMap query: Map<String, String> = emptyMap()): List<Member>
 
     @PUT("agent/force-leave/{node}")
-    public suspend fun forceLeave(
+    suspend fun forceLeave(
         @Path("node") node: String,
         @QueryName optionsParameters: List<String> = emptyList()
     )
 
     @PUT("agent/check/{state}/{checkId}")
-    public suspend fun check(
+    suspend fun check(
         @Path("state") state: String,
         @Path("checkId") checkId: String,
         @QueryMap query: Map<String, String> = emptyMap()
     )
 
     @PUT("agent/join/{address}")
-    public suspend fun join(
+    suspend fun join(
         @Path("address") address: String,
         @QueryMap query: Map<String, String> = emptyMap()
     )
 
     @PUT("agent/service/maintenance/{serviceId}")
-    public suspend fun toggleMaintenanceMode(
+    suspend fun toggleMaintenanceMode(
         @Path("serviceId") serviceId: String,
         @QueryMap query: Map<String, String> = emptyMap()
     )

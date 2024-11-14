@@ -1,6 +1,8 @@
 package ai.tech.core.misc.consul.client.agent.model
+
 import ai.tech.core.misc.consul.client.catalog.model.ServiceWeights
 import ai.tech.core.misc.consul.client.health.model.ServiceHealth
+import kotlin.time.Duration
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
@@ -45,9 +47,9 @@ public data class Registration(
         @SerialName("Args")
         val args: List<String>? = null,
         @SerialName("Interval")
-        val interval: String? = null,
+        val interval: Duration? = null,
         @SerialName("TTL")
-        val ttl: String? = null,
+        val ttl: Duration? = null,
         @SerialName("HTTP")
         val http: String? = null,
         @SerialName("TCP")

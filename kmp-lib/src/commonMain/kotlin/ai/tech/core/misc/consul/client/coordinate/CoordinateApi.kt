@@ -5,11 +5,11 @@ import ai.tech.core.misc.consul.client.coordinate.model.Datacenter
 import de.jensklingenberg.ktorfit.http.GET
 import de.jensklingenberg.ktorfit.http.QueryMap
 
-public interface CoordinateApi {
+internal interface CoordinateApi {
 
     @GET("coordinate/datacenters")
-    public suspend fun getDatacenters(): List<Datacenter>
+    suspend fun getDatacenters(): List<Datacenter>
 
     @GET("coordinate/nodes")
-    public suspend fun getNodes(@QueryMap query: Map<String, String> = emptyMap()): List<Coordinate>
+    suspend fun getNodes(@QueryMap query: Map<String, String> = emptyMap()): List<Coordinate>
 }

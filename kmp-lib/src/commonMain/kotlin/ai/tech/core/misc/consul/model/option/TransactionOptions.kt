@@ -8,16 +8,11 @@ public data class TransactionOptions(
     val dc: String? = null,
     @Transient
     val consistencyMode: ConsistencyMode = ConsistencyMode.DEFAULT
-) : ParamAdder() {
+) : ParamAdder {
 
-    override val query: Map<String, String>
-        get() = super.query + consistencyMode.param?.let { mapOf(it to "") }.orEmpty()
+    @Transient
+    override val query: Map<String, String> = super.query + consistencyMode.param?.let { mapOf(it to "") }.orEmpty()
 
-    override val headers: Map<String, String>
-        get() = consistencyMode.additionalHeaders
-
-    public companion object {
-
-        public val BLANK: TransactionOptions = TransactionOptions()
-    }
+    @Transient
+    override val headers: Map<String, String> = consistencyMode.additionalHeaders
 }

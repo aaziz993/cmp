@@ -9,10 +9,4 @@ public data class PutOptions(
     val release: String? = null,
     val dc: String? = null,
     val token: String? = null,
-) : ParamAdder() {
-
-    public companion object {
-
-        public val BLANK: PutOptions = PutOptions()
-    }
-}
+) : ParamAdder

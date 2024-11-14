@@ -8,10 +8,4 @@ public data class EventOptions(
     val node: String? = null,
     val service: String? = null,
     val tag: String? = null,
-) : ParamAdder() {
-
-    public companion object {
-
-        public val BLANK: EventOptions = EventOptions()
-    }
-}
+) : ParamAdder

@@ -12,10 +12,4 @@ public data class TokenQueryOptions(
     @SerialName("authmethod-ns")
     val authMethodNamespace: String? = null,
     val ns: String? = null,
-) : ParamAdder() {
-
-    public companion object {
-
-        public val BLANK: TokenQueryOptions = TokenQueryOptions()
-    }
-}
+) : ParamAdder

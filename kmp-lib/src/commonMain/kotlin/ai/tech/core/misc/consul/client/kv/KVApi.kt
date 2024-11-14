@@ -11,42 +11,42 @@ import de.jensklingenberg.ktorfit.http.Path
 import de.jensklingenberg.ktorfit.http.QueryMap
 import kotlinx.serialization.json.JsonElement
 
-public interface KVApi {
+internal interface KVApi {
 
     @GET("kv/{key}")
-    public suspend fun getValue(
+    suspend fun getValue(
         @Path("key") key: String,
         @QueryMap query: Map<String, String> = emptyMap()
     ): List<Value>
 
     @GET("kv/{key}")
-    public suspend fun getKeys(
+    suspend fun getKeys(
         @Path("key") key: String,
         @QueryMap query: Map<String, String> = emptyMap()
     ): List<String>
 
     @PUT("kv/{key}")
-    public suspend fun putValue(
+    suspend fun putValue(
         @Path("key") key: String,
         @QueryMap query: Map<String, String> = emptyMap()
     ): Boolean
 
     @PUT("kv/{key}")
-    public suspend fun putValue(
+    suspend fun putValue(
         @Path("key") key: String,
         @Body data: JsonElement,
         @QueryMap query: Map<String, String> = emptyMap()
     ): Boolean
 
     @DELETE("kv/{key}")
-    public suspend fun deleteValues(
+    suspend fun deleteValues(
         @Path("key") key: String,
         @QueryMap query: Map<String, String> = emptyMap()
     )
 
     @PUT("txn")
     @Headers("Content-Type: application/json")
-    public suspend fun performTransaction(
+    suspend fun performTransaction(
         @Body body: JsonElement,
         @QueryMap query: Map<String, String> = emptyMap()
     ): TxResponse

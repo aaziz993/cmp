@@ -1,26 +1,12 @@
 package ai.tech.core.misc.consul.model.option
 
-import ai.tech.core.misc.type.encodeAnyToString
-import ai.tech.core.misc.type.encodeToAny
-import kotlinx.serialization.Serializable
-import kotlinx.serialization.Transient
-import kotlinx.serialization.json.Json
+import ai.tech.core.misc.network.http.client.model.QueryAccessible
 
-@Serializable
-public abstract class ParamAdder {
+public interface ParamAdder : QueryAccessible {
 
-    @Transient
-    private val json = Json {
-        explicitNulls = false
-    }
+    public val queryParameters: List<String>
+        get() = emptyList()
 
-    @Suppress("UNCHECKED_CAST")
-    @Transient
-    public open val query: Map<String, String> = (json.encodeToAny(this) as Map<String, Any>).map { (k, v) ->
-        k to json.encodeAnyToString(v)
-    }.toMap()
-
-    public open val queryParameters: List<String> = emptyList()
-
-    public open val headers: Map<String, String> = emptyMap()
+    public val headers: Map<String, String>
+        get() = emptyMap()
 }

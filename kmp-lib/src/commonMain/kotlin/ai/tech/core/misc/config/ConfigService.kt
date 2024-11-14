@@ -1,6 +1,7 @@
 package ai.tech.core.misc.config
 
 import ai.tech.core.misc.consul.client.ConsulClient
+import ai.tech.core.misc.consul.client.kv.model.Value
 import ai.tech.core.misc.consul.client.model.KVMetadata
 import ai.tech.core.misc.model.config.Config
 import ai.tech.core.misc.type.decodeFromAny
@@ -64,7 +65,7 @@ public class ConfigService<T : Config>(
 
     @OptIn(InternalSerializationApi::class)
     @Suppress("UNCHECKED_CAST")
-    private suspend fun ConsulClient.readConsulConfig(path: String) = kv.read(path)?.map(KVMetadata::value)?.fold(emptyMap<String, Any?>()) { acc, v -> json.decodeAnyFromString(JsonObject::class.serializer(), v.decodeBase64().decode()) as Map<String, Any?> }
+    private suspend fun ConsulClient.readConsulConfig(path: String) = kv.getValue(path).map(Value::value).fold(emptyMap<String, Any?>()) { acc, v -> json.decodeAnyFromString(JsonObject::class.serializer(), v!!.decodedValue) as Map<String, Any?> }
 
     public companion object {
 

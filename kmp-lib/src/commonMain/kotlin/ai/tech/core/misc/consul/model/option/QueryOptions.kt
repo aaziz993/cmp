@@ -23,7 +23,7 @@ public data class QueryOptions(
     val tag: List<String>? = null,
     @Transient
     val consistencyMode: ConsistencyMode = ConsistencyMode.DEFAULT
-) : ParamAdder() {
+) : ParamAdder {
 
     init {
         if (wait != null) {
@@ -32,14 +32,9 @@ public data class QueryOptions(
         }
     }
 
-    override val query: Map<String, String>
-        get() = super.query + consistencyMode.param?.let { mapOf(it to "") }.orEmpty()
+    @Transient
+    override val query: Map<String, String> = super.query + consistencyMode.param?.let { mapOf(it to "") }.orEmpty()
 
-    override val headers: Map<String, String>
-        get() = consistencyMode.additionalHeaders
-
-    public companion object {
-
-        public val BLANK: QueryOptions = QueryOptions()
-    }
+    @Transient
+    override val headers: Map<String, String> = consistencyMode.additionalHeaders
 }

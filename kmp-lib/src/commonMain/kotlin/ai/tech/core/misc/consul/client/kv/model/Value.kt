@@ -26,6 +26,6 @@ public data class Value(
 ) {
 
     @Transient
-    val decodedValue: String? = value?.decodeBase64()?.decode()
+    public val decodedValue: String? = value?.decodeBase64()?.decode()
 }
 

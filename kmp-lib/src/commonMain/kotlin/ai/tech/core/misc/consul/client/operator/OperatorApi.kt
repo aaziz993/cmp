@@ -6,12 +6,13 @@ import de.jensklingenberg.ktorfit.http.GET
 import de.jensklingenberg.ktorfit.http.Query
 import de.jensklingenberg.ktorfit.http.QueryMap
 
-public interface OperatorApi {
+internal interface OperatorApi {
+
     @GET("operator/raft/configuration")
-    public suspend fun getConfiguration(@QueryMap query: Map<String, String> = emptyMap()): RaftConfiguration
+    suspend fun getConfiguration(@QueryMap query: Map<String, String> = emptyMap()): RaftConfiguration
 
     @DELETE("operator/raft/peer")
-    public suspend fun deletePeer(
+    suspend fun deletePeer(
         @Query("address") address: String,
         @QueryMap query: Map<String, String> = emptyMap()
     )
