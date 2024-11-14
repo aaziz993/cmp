@@ -8,8 +8,8 @@ import ai.tech.core.misc.consul.client.acl.model.RoleResponse
 import ai.tech.core.misc.consul.client.acl.model.Token
 import ai.tech.core.misc.consul.client.acl.model.TokenListResponse
 import ai.tech.core.misc.consul.client.acl.model.TokenResponse
-import ai.tech.core.misc.consul.model.option.RoleOptions
-import ai.tech.core.misc.consul.model.option.TokenQueryOptions
+import ai.tech.core.misc.consul.model.option.RoleParameters
+import ai.tech.core.misc.consul.model.option.TokenQueryParameters
 import de.jensklingenberg.ktorfit.Ktorfit
 
 public class AclClient internal constructor(ktorfit: Ktorfit) {
@@ -53,8 +53,8 @@ public class AclClient internal constructor(ktorfit: Ktorfit) {
     public suspend fun updateToken(id: String, token: Token): TokenResponse =
         api.updateToken(id, token)
 
-    public suspend fun listTokens(queryOptions: TokenQueryOptions = TokenQueryOptions()): List<TokenListResponse> =
-        api.listTokens(queryOptions.query)
+    public suspend fun listTokens(queryParameters: TokenQueryParameters = TokenQueryParameters()): List<TokenListResponse> =
+        api.listTokens(queryParameters.query)
 
     public suspend fun deleteToken(id: String): Unit =
         api.deleteToken(id)
@@ -71,8 +71,8 @@ public class AclClient internal constructor(ktorfit: Ktorfit) {
     public suspend fun updateRole(id: String, role: Role): RoleResponse =
         api.updateRole(id, role)
 
-    public suspend fun listRoles(roleOptions: RoleOptions = RoleOptions()): List<RoleListResponse> =
-        api.listRoles(roleOptions.query)
+    public suspend fun listRoles(roleParameters: RoleParameters = RoleParameters()): List<RoleListResponse> =
+        api.listRoles(roleParameters.query)
 
     public suspend fun deleteRole(id: String): Unit =
         api.deleteRole(id)

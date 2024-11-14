@@ -1,18 +1,22 @@
 package ai.tech.core.misc.consul.client.event
 
-import com.orbitz.consul.async.ConsulResponseCallback
+import ai.tech.core.misc.consul.client.event.model.Event
+import ai.tech.core.misc.consul.model.option.EventParameters
+import ai.tech.core.misc.consul.model.option.QueryParameters
 import de.jensklingenberg.ktorfit.Ktorfit
+import kotlinx.serialization.json.JsonPrimitive
 
 /**
  * HTTP Client for /v1/event/ endpoints.
  *
  * @see [The Consul API Docs](http://www.consul.io/docs/agent/http.html.event)
  */
-public class EventClient internal constructor(ktorfit: Ktorfit){
+public class EventClient internal constructor(ktorfit: Ktorfit) {
+
     /**
      * Constructs an instance of this class.
      *
-     * @param retrofit The [Retrofit] to build a client from.
+     * @param ktorfit The [Ktorfit] to build a client from.
      */
     private val api: EventApi = ktorfit.createEventApi()
 
@@ -22,19 +26,16 @@ public class EventClient internal constructor(ktorfit: Ktorfit){
      * PUT /v1/event/fire/{name}
      *
      * @param name The name of the event.
-     * @param eventOptions The event specific options to use.
+     * @param eventParameters The event specific options to use.
      * @param payload Optional string payload.
-     * @return The newly created [com.orbitz.consul.model.event.Event].
+     * @return The newly created [Event].
      */
-    public suspend fun fireEvent(name: String, eventOptions: EventOptions, payload: String): Event {
-        return http.extract(
-            api.fireEvent(
-                name,
-                RequestBody.create(MediaType.parse("text/plain"), payload),
-                eventOptions.toQuery()
-            )
+    public suspend fun fire(name: String, eventParameters: EventParameters, payload: String): Event =
+        api.fire(
+            name,
+            JsonPrimitive(payload),
+            eventParameters.query,
         )
-    }
 
     /**
      * Fires a Consul event.
@@ -42,37 +43,10 @@ public class EventClient internal constructor(ktorfit: Ktorfit){
      * PUT /v1/event/fire/{name}
      *
      * @param name The name of the event.
-     * @return The newly created [com.orbitz.consul.model.event.Event].
+     * @param eventParameters The event specific options to use.
+     * @return The newly created [Event].
      */
-    public suspend fun fireEvent(name: String): Event {
-        return fireEvent(name, EventOptions.BLANK)
-    }
-
-    /**
-     * Fires a Consul event.
-     *
-     * PUT /v1/event/fire/{name}
-     *
-     * @param name The name of the event.
-     * @param eventOptions The event specific options to use.
-     * @return The newly created [com.orbitz.consul.model.event.Event].
-     */
-    public suspend fun fireEvent(name: String, eventOptions: EventOptions): Event {
-        return api.fireEvent(name, eventOptions.toQuery())
-    }
-
-    /**
-     * Fires a Consul event.
-     *
-     * PUT /v1/event/fire/{name}
-     *
-     * @param name The name of the event.
-     * @param payload Optional string payload.
-     * @return The newly created [com.orbitz.consul.model.event.Event].
-     */
-    public suspend fun fireEvent(name: String, payload: String): Event {
-        return fireEvent(name, EventOptions.BLANK, payload)
-    }
+    public suspend fun fire(name: String, eventParameters: EventParameters): Event = api.fire(name, eventParameters.query)
 
     /**
      * Lists events for the Consul agent.
@@ -80,110 +54,9 @@ public class EventClient internal constructor(ktorfit: Ktorfit){
      * GET /v1/event/listname={name}
      *
      * @param name Event name to filter.
-     * @param queryOptions The query options to use.
-     * @return A [com.orbitz.consul.model.ConsulResponse] object containing
-     * a list of [com.orbitz.consul.model.event.Event] objects.
+     * @param queryParameters The query options to use.
+     * @return A [List] object containing [Event] objects.
      */
-    public suspend fun listEvents(name: String, queryOptions: QueryOptions): EventResponse {
-        val query: Map<String, Object> = queryOptions.toQuery()
-        if (StringUtils.isNotEmpty(name)) {
-            query.put("name", name)
-        }
-
-        val response: ConsulResponse<List<Event>> = http.extractConsulResponse(api.listEvents(query))
-        return ImmutableEventResponse.of(response.getResponse(), response.getIndex())
-    }
-
-    /**
-     * Lists events for the Consul agent.
-     *
-     * GET /v1/event/listname={name}
-     *
-     * @param name Event name to filter.
-     * @return A [com.orbitz.consul.model.ConsulResponse] object containing
-     * a list of [com.orbitz.consul.model.event.Event] objects.
-     */
-    public suspend fun listEvents(name: String): EventResponse {
-        return listEvents(name, QueryOptions.BLANK)
-    }
-
-    /**
-     * Lists events for the Consul agent.
-     *
-     * GET /v1/event/list
-     *
-     * @param queryOptions The query options to use.
-     * @return A [com.orbitz.consul.model.ConsulResponse] object containing
-     * a list of [com.orbitz.consul.model.event.Event] objects.
-     */
-    public suspend fun listEvents(queryOptions: QueryOptions): EventResponse {
-        return listEvents(null, queryOptions)
-    }
-
-    /**
-     * Lists events for the Consul agent.
-     *
-     * GET /v1/event/list
-     *
-     * @return A [com.orbitz.consul.model.ConsulResponse] object containing
-     * a list of [com.orbitz.consul.model.event.Event] objects.
-     */
-    public suspend fun listEvents(): EventResponse {
-        return listEvents(null, QueryOptions.BLANK)
-    }
-
-    /**
-     * Asynchronously lists events for the Consul agent.
-     *
-     * GET /v1/event/listname={name}
-     *
-     * @param name Event name to filter.
-     * @param queryOptions The query options to use.
-     * @param callback The callback to asynchronously process the result.
-     */
-    public suspend fun listEvents(name: String, queryOptions: QueryOptions, callback: EventResponseCallback) {
-        val query: Map<String, Object> = queryOptions.toQuery()
-        if (StringUtils.isNotEmpty(name)) {
-            query.put("name", name)
-        }
-
-        http.extractConsulResponse(api.listEvents(query), createConsulResponseCallbackWrapper(callback))
-    }
-
-    private fun createConsulResponseCallbackWrapper(callback: EventResponseCallback): ConsulResponseCallback<List<Event>> {
-        return object : ConsulResponseCallback<List<Event>>() {
-            @Override
-            public suspend fun onComplete(response: ConsulResponse<List<Event>>) {
-                callback.onComplete(ImmutableEventResponse.of(response.getResponse(), response.getIndex()))
-            }
-
-            @Override
-            public suspend fun onFailure(throwable: Throwable) {
-                callback.onFailure(throwable)
-            }
-        }
-    }
-
-    /**
-     * Asynchronously lists events for the Consul agent.
-     *
-     * GET /v1/event/list
-     *
-     * @param queryOptions The query options to use.
-     * @param callback The callback to asynchronously process the result.
-     */
-    public suspend fun listEvents(queryOptions: QueryOptions, callback: EventResponseCallback) {
-        listEvents(null, queryOptions, callback)
-    }
-
-    /**
-     * Asynchronously lists events for the Consul agent.
-     *
-     * GET /v1/event/list
-     *
-     * @param callback The callback to asynchronously process the result.
-     */
-    public suspend fun listEvents(callback: EventResponseCallback) {
-        listEvents(null, QueryOptions.BLANK, callback)
-    }
+    public suspend fun list(name: String? = null, queryParameters: QueryParameters = QueryParameters()): List<Event> =
+        api.list(name?.let { mapOf("name" to name) }.orEmpty() + queryParameters.query)
 }

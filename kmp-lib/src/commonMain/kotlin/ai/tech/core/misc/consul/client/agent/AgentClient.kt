@@ -5,14 +5,12 @@ import ai.tech.core.misc.consul.client.agent.model.Check
 import ai.tech.core.misc.consul.client.agent.model.FullService
 import ai.tech.core.misc.consul.client.agent.model.Member
 import ai.tech.core.misc.consul.client.agent.model.Registration
-import ai.tech.core.misc.consul.client.agent.model.Registration.RegCheck
 import ai.tech.core.misc.consul.client.health.model.HealthCheck
 import ai.tech.core.misc.consul.client.health.model.Service
-import ai.tech.core.misc.consul.model.option.QueryOptions
-import ai.tech.core.misc.consul.model.option.QueryParameterOptions
+import ai.tech.core.misc.consul.client.model.State
+import ai.tech.core.misc.consul.model.option.QueryParameterParameters
+import ai.tech.core.misc.consul.model.option.QueryParameters
 import de.jensklingenberg.ktorfit.Ktorfit
-import io.ktor.http.Url
-import kotlin.time.Duration
 
 /**
  * HTTP Client for /v1/agent/ endpoints.
@@ -46,19 +44,19 @@ public class AgentClient internal constructor(ktorfit: Ktorfit) {
      * the use of checks.
      *
      * @param registration The registration payload.
-     * @param options An optional QueryOptions instance.
-     * @param queryParameterOptions The Query Parameter Options to use.
+     * @param options An optional QueryParameters instance.
+     * @param queryParameterParameters The Query Parameter Options to use.
      */
     public suspend fun register(
         registration: Registration,
-        options: QueryOptions = QueryOptions(),
-        queryParameterOptions: QueryParameterOptions = QueryParameterOptions()
-    ): Unit = api.register(registration, options.query, queryParameterOptions.queryParameters)
+        options: QueryParameters = QueryParameters(),
+        queryParameterParameters: QueryParameterParameters = QueryParameterParameters()
+    ): Unit = api.register(registration, options.query, queryParameterParameters.queryParameters)
 
     /**
      * De-register a particular service from the Consul Agent.
      */
-    public suspend fun deregister(serviceId: String, options: QueryOptions = QueryOptions()): Unit = api.deregister(serviceId, options.query)
+    public suspend fun deregister(serviceId: String, options: QueryParameters = QueryParameters()): Unit = api.deregister(serviceId, options.query)
 
     /**
      * Registers a Health Check with the Agent.
@@ -90,10 +88,10 @@ public class AgentClient internal constructor(ktorfit: Ktorfit) {
      *
      * GET /v1/agent/checks
      *
-     * @param queryOptions The Query Options to use.
+     * @param queryParameters The Query Options to use.
      * @return Map of Check ID to Checks.
      */
-    public suspend fun getChecks(queryOptions: QueryOptions = QueryOptions()): Map<String, HealthCheck> = api.getChecks(queryOptions.query)
+    public suspend fun getChecks(queryParameters: QueryParameters = QueryParameters()): Map<String, HealthCheck> = api.getChecks(queryParameters.query)
 
     /**
      * Retrieves all services registered with the Agent.
@@ -101,10 +99,10 @@ public class AgentClient internal constructor(ktorfit: Ktorfit) {
      *
      * GET /v1/agent/services
      *
-     * @param queryOptions The Query Options to use.
+     * @param queryParameters The Query Options to use.
      * @return Map of Service ID to Services.
      */
-    public suspend fun getServices(queryOptions: QueryOptions = QueryOptions()): Map<String, Service> = api.getServices(queryOptions.query)
+    public suspend fun getServices(queryParameters: QueryParameters = QueryParameters()): Map<String, Service> = api.getServices(queryParameters.query)
 
     /**
      * Retrieves all information about a service.
@@ -113,11 +111,11 @@ public class AgentClient internal constructor(ktorfit: Ktorfit) {
      * GET /v1/agent/service/:service_id
      *
      * @param id           The service id.
-     * @param queryOptions The Query Options to use.
-     * @return A [com.orbitz.consul.model.ConsulResponse] containing [FullService] object.
+     * @param queryParameters The Query Options to use.
+     * @return A [FullService] object.
      */
 
-    public suspend fun getService(id: String, queryOptions: QueryOptions = QueryOptions()): FullService = api.getService(id, queryOptions.query)
+    public suspend fun getService(id: String, queryParameters: QueryParameters = QueryParameters()): FullService = api.getService(id, queryParameters.query)
 
     /**
      * Retrieves all members that the Agent can see in the gossip pool.
@@ -125,10 +123,10 @@ public class AgentClient internal constructor(ktorfit: Ktorfit) {
      *
      * GET /v1/agent/members
      *
-     * @param queryOptions The Query Options to use.
+     * @param queryParameters The Query Options to use.
      * @return List of Members.
      */
-    public suspend fun getMembers(queryOptions: QueryOptions = QueryOptions()): List<Member> = api.getMembers(queryOptions.query)
+    public suspend fun getMembers(queryParameters: QueryParameters = QueryParameters()): List<Member> = api.getMembers(queryParameters.query)
 
     /**
      * GET /v1/agent/force-leave/{node}
@@ -137,9 +135,9 @@ public class AgentClient internal constructor(ktorfit: Ktorfit) {
      * Instructs the agent to force a node into the "left" state.
      *
      * @param node Node name
-     * @param queryParameterOptions The Query Parameters Options to use.
+     * @param queryParameterParameters The Query Parameters Options to use.
      */
-    public suspend fun forceLeave(node: String, queryParameterOptions: QueryParameterOptions = QueryParameterOptions()): Unit = api.forceLeave(node, queryParameterOptions.queryParameters)
+    public suspend fun forceLeave(node: String, queryParameterParameters: QueryParameterParameters = QueryParameterParameters()): Unit = api.forceLeave(node, queryParameterParameters.queryParameters)
 
     /**
      * Checks in with Consul.
@@ -149,24 +147,24 @@ public class AgentClient internal constructor(ktorfit: Ktorfit) {
      * @param note    Any note to associate with the Check.
      */
 
-    public suspend fun check(state: String, checkId: String, queryOptions: QueryOptions = QueryOptions()): Unit = api.check(state, checkId, queryOptions.query)
+    public suspend fun check(state: State, checkId: String, queryParameters: QueryParameters = QueryParameters()): Unit = api.check(state.name.lowercase(), checkId, queryParameters.query)
 
     /**
-     * GET /v1/agent/join/{address}`queryOptions`
+     * GET /v1/agent/join/{address}`queryParameters`
      *
      * Instructs the agent to join a node.
      *
      * @param address The address to join.
-     * @param queryOptions The Query Options to use.
+     * @param queryParameters The Query Options to use.
      * @return `true` if successful, otherwise `false`.
      */
-    public suspend fun join(address: String, queryOptions: QueryOptions = QueryOptions()): Unit = api.join(address, queryOptions.query)
+    public suspend fun join(address: String, queryParameters: QueryParameters = QueryParameters()): Unit = api.join(address, queryParameters.query)
 
     /**
      * Toggles maintenance mode for a service ID.
      *
      * @param serviceId The service ID.
-     * @param queryOptions The Query Options to use.
+     * @param queryParameters The Query Options to use.
      */
-    public suspend fun toggleMaintenanceMode(serviceId: String, queryOptions: QueryOptions = QueryOptions()): Unit = api.toggleMaintenanceMode(serviceId, queryOptions.query)
+    public suspend fun toggleMaintenanceMode(serviceId: String, queryParameters: QueryParameters = QueryParameters()): Unit = api.toggleMaintenanceMode(serviceId, queryParameters.query)
 }

@@ -12,8 +12,8 @@ import ai.tech.core.misc.consul.client.event.EventApi
 import ai.tech.core.misc.consul.client.event.createEventApi
 import ai.tech.core.misc.consul.client.health.HealthApi
 import ai.tech.core.misc.consul.client.health.createHealthApi
-import ai.tech.core.misc.consul.client.kv.KVApi
 import ai.tech.core.misc.consul.client.keyvalue.createKVApi
+import ai.tech.core.misc.consul.client.kv.KVApi
 import ai.tech.core.misc.consul.client.operator.OperatorApi
 import ai.tech.core.misc.consul.client.operator.createOperatorApi
 import ai.tech.core.misc.consul.client.session.SessionApi

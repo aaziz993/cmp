@@ -5,11 +5,11 @@ import kotlinx.serialization.Serializable
 import kotlinx.serialization.Transient
 
 @Serializable
-public data class QueryParameterOptions(
+public data class QueryParameterParameters(
     @SerialName("replace-existing-checks")
     val replaceExistingChecks: Boolean? = null,
     val prune: Boolean? = null
-) : ParamAdder {
+) : Parameters {
 
     @Transient
     override val queryParameters: List<String> = listOfNotNull(

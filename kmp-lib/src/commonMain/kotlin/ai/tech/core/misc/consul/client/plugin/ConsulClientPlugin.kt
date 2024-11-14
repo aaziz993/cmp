@@ -29,8 +29,8 @@ public fun ConsulClientPlugin(
         }
 
         context.url {
-            selectedNode.service.address host =
-            port = selectedNode.service.port
+//            selectedNode.service.address host =
+//            port = selectedNode.service.port
         }
 
     }

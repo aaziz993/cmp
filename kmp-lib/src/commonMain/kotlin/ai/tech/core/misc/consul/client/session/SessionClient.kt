@@ -1,6 +1,8 @@
 package ai.tech.core.misc.consul.client.session
 
-import com.google.common.collect.ImmutableMap
+import ai.tech.core.misc.consul.client.session.model.Session
+import ai.tech.core.misc.consul.client.session.model.SessionCreatedResponse
+import ai.tech.core.misc.consul.client.session.model.SessionInfo
 import de.jensklingenberg.ktorfit.Ktorfit
 
 /**
@@ -8,25 +10,14 @@ import de.jensklingenberg.ktorfit.Ktorfit
  *
  * @see [The Consul API Docs](http://www.consul.io/docs/agent/http.html.session)
  */
-public class SessionClient internal constructor(ktorfit: Ktorfit){
+public class SessionClient internal constructor(ktorfit: Ktorfit) {
+
     /**
      * Constructs an instance of this class.
      *
-     * @param retrofit The [Retrofit] to build a client from.
+     * @param ktorfit The [Ktorfit] to build a client from.
      */
     private val api: SessionApi = ktorfit.createSessionApi()
-
-    /**
-     * Create Session.
-     *
-     * PUT /v1/session/create
-     *
-     * @param value The session to create.
-     * @return ID of the newly created session .
-     */
-    public suspend fun createSession(value: Session): SessionCreatedResponse {
-        return createSession(value, null)
-    }
 
     /**
      * Create Session.
@@ -37,17 +28,8 @@ public class SessionClient internal constructor(ktorfit: Ktorfit){
      * @param dc    The data center.
      * @return Response containing the session ID.
      */
-    public suspend fun createSession(value: Session, dc: String): SessionCreatedResponse {
-        return api.createSession(value, dcQuery(dc))
-    }
-
-    private fun dcQuery(dc: String): Map<String, String> {
-        return if (dc != null) ImmutableMap.of("dc", dc) else Collections.emptyMap()
-    }
-
-    public suspend fun renewSession(sessionId: String): Optional<SessionInfo> {
-        return renewSession(null, sessionId)
-    }
+    public suspend fun create(value: Session, dc: String? = null): SessionCreatedResponse =
+        api.create(value, dc?.let { mapOf("dc" to dc) }.orEmpty())
 
     /**
      * Renews a session.
@@ -56,27 +38,8 @@ public class SessionClient internal constructor(ktorfit: Ktorfit){
      * @param sessionId The session ID to renew.
      * @return The [SessionInfo] object for the renewed session.
      */
-    public suspend fun renewSession(dc: String, sessionId: String): Optional<SessionInfo> {
-        val sessionInfo: List<SessionInfo> = http.extract(
-            api.renewSession(
-                sessionId,
-                ImmutableMap.of(), dcQuery(dc)
-            )
-        )
-
-        return if (sessionInfo == null || sessionInfo.isEmpty()) Optional.empty() else Optional.of(sessionInfo.get(0))
-    }
-
-    /**
-     * Destroys a session.
-     *
-     * PUT /v1/session/destroy/{sessionId}
-     *
-     * @param sessionId The session ID to destroy.
-     */
-    public suspend fun destroySession(sessionId: String) {
-        destroySession(sessionId, null)
-    }
+    public suspend fun renew(sessionId: String, dc: String? = null): SessionInfo? =
+        api.renew(sessionId, query = dc?.let { mapOf("dc" to dc) }.orEmpty()).singleOrNull()
 
     /**
      * Destroys a session.
@@ -86,21 +49,8 @@ public class SessionClient internal constructor(ktorfit: Ktorfit){
      * @param sessionId The session ID to destroy.
      * @param dc        The data center.
      */
-    public suspend fun destroySession(sessionId: String, dc: String) {
-        api.destroySession(sessionId, dcQuery(dc))
-    }
-
-    /**
-     * Retrieves session info.
-     *
-     * GET /v1/session/info/{sessionId}
-     *
-     * @param sessionId
-     * @return [SessionInfo].
-     */
-    public suspend fun getSessionInfo(sessionId: String): Optional<SessionInfo> {
-        return getSessionInfo(sessionId, null)
-    }
+    public suspend fun destroy(sessionId: String, dc: String? = null): Unit =
+        api.destroy(sessionId, dc?.let { mapOf("dc" to dc) }.orEmpty())
 
     /**
      * Retrieves session info.
@@ -111,11 +61,8 @@ public class SessionClient internal constructor(ktorfit: Ktorfit){
      * @param dc        Data center
      * @return [SessionInfo].
      */
-    public suspend fun getSessionInfo(sessionId: String, dc: String): Optional<SessionInfo> {
-        val sessionInfo: List<SessionInfo> = api.getSessionInfo(sessionId, dcQuery(dc))
-
-        return if (sessionInfo == null || sessionInfo.isEmpty()) Optional.empty() else Optional.of(sessionInfo.get(0))
-    }
+    public suspend fun getInfo(sessionId: String, dc: String? = null): SessionInfo? =
+        api.getInfo(sessionId, dc?.let { mapOf("dc" to dc) }.orEmpty()).singleOrNull()
 
     /**
      * Lists all sessions.
@@ -125,18 +72,6 @@ public class SessionClient internal constructor(ktorfit: Ktorfit){
      * @param dc The data center.
      * @return A list of available sessions.
      */
-    public suspend fun listSessions(dc: String): List<SessionInfo> {
-        return api.listSessions(dcQuery(dc))
-    }
-
-    /**
-     * Lists all sessions.
-     *
-     * GET /v1/session/list
-     *
-     * @return A list of available sessions.
-     */
-    public suspend fun listSessions(): List<SessionInfo> {
-        return listSessions(null)
-    }
+    public suspend fun list(dc: String? = null): List<SessionInfo> =
+        api.list(dc?.let { mapOf("dc" to dc) }.orEmpty())
 }

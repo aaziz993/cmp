@@ -1,49 +1,40 @@
 package ai.tech.core.misc.consul.client.operator
 
-import com.google.common.collect.ImmutableMap
+import ai.tech.core.misc.consul.client.operator.model.RaftConfiguration
 import de.jensklingenberg.ktorfit.Ktorfit
 
-public class OperatorClient internal constructor(ktorfit: Ktorfit){
+public class OperatorClient internal constructor(ktorfit: Ktorfit) {
+
     /**
      * Constructs an instance of this class.
      *
-     * @param retrofit The [Retrofit] to build a client from.
+     * @param ktorfit The [Ktorfit] to build a client from.
      */
     private val api: OperatorApi = ktorfit.createOperatorApi()
 
-    public suspend fun getRaftConfiguration(): RaftConfiguration {
-        return api.getConfiguration(ImmutableMap.of())
-    }
+    public suspend fun getRaftConfiguration(): RaftConfiguration =
+        api.getConfiguration()
 
-    public suspend fun getRaftConfiguration(datacenter: String): RaftConfiguration {
-        return api.getConfiguration(ImmutableMap.of("dc", datacenter))
-    }
+    public suspend fun getRaftConfiguration(datacenter: String): RaftConfiguration =
+        api.getConfiguration(mapOf("dc" to datacenter))
 
-    public suspend fun getStaleRaftConfiguration(datacenter: String): RaftConfiguration {
-        return http.extract(
-            api.getConfiguration(
-                ImmutableMap.of(
-                    "dc", datacenter, "stale", "true"
-                )
-            )
+    public suspend fun getStaleRaftConfiguration(datacenter: String): RaftConfiguration =
+        api.getConfiguration(
+            mapOf(
+                "dc" to datacenter,
+                "stale" to "true",
+            ),
         )
-    }
 
-    public suspend fun getStaleRaftConfiguration(): RaftConfiguration {
-        return http.extract(
-            api.getConfiguration(
-                ImmutableMap.of(
-                    "stale", "true"
-                )
-            )
+    public suspend fun getStaleRaftConfiguration(): RaftConfiguration =
+        api.getConfiguration(
+            mapOf(
+                "stale" to "true",
+            ),
         )
-    }
 
-    public suspend fun deletePeer(address: String) {
-        api.deletePeer(address, ImmutableMap.of())
-    }
+    public suspend fun deletePeer(address: String): Unit = api.deletePeer(address)
 
-    public suspend fun deletePeer(address: String, datacenter: String) {
-        api.deletePeer(address, ImmutableMap.of("dc", datacenter))
-    }
+    public suspend fun deletePeer(address: String, datacenter: String): Unit =
+        api.deletePeer(address, mapOf("dc" to datacenter))
 }

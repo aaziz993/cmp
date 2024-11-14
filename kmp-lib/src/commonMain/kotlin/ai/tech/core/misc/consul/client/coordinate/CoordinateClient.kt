@@ -1,6 +1,7 @@
 package ai.tech.core.misc.consul.client.coordinate
 
-import com.google.common.collect.ImmutableMap
+import ai.tech.core.misc.consul.client.coordinate.model.Coordinate
+import ai.tech.core.misc.consul.client.coordinate.model.Datacenter
 import de.jensklingenberg.ktorfit.Ktorfit
 
 /**
@@ -13,23 +14,11 @@ public class CoordinateClient internal constructor(ktorfit: Ktorfit) {
     /**
      * Constructs an instance of this class.
      *
-     * @param retrofit The [Retrofit] to build a client from.
+     * @param ktorfit The [Ktorfit] to build a client from.
      */
     private val api: CoordinateApi = ktorfit.createCoordinateApi()
 
-    public suspend fun getDatacenters(): List<Datacenter> {
-        return api.getDatacenters()
-    }
+    public suspend fun getDatacenters(): List<Datacenter> = api.getDatacenters()
 
-    public suspend fun getNodes(dc: String): List<Coordinate> {
-        return api.getNodes(dcQuery(dc))
-    }
-
-    public suspend fun getNodes(): List<Coordinate> {
-        return getNodes(null)
-    }
-
-    private fun dcQuery(dc: String): Map<String, String> {
-        return if (dc != null) ImmutableMap.of("dc", dc) else Collections.emptyMap()
-    }
+    public suspend fun getNodes(dc: String?=null): List<Coordinate> =api.getNodes(dc?.let { mapOf("dc" to dc) }.orEmpty())
 }

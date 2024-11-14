@@ -4,7 +4,7 @@ import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 @Serializable
-public data class TokenQueryOptions(
+public data class TokenQueryParameters(
     val policy: String? = null,
     val role: String? = null,
     @SerialName("authmethod")
@@ -12,4 +12,4 @@ public data class TokenQueryOptions(
     @SerialName("authmethod-ns")
     val authMethodNamespace: String? = null,
     val ns: String? = null,
-) : ParamAdder
+) : Parameters

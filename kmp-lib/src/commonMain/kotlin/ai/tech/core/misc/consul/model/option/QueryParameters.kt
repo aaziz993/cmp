@@ -5,7 +5,7 @@ import kotlinx.serialization.Serializable
 import kotlinx.serialization.Transient
 
 @Serializable
-public data class QueryOptions(
+public data class QueryParameters(
     val wait: String? = null,
     val token: String? = null,
     val hash: String? = null,
@@ -19,11 +19,13 @@ public data class QueryOptions(
     val note: String? = null,
     val enable: Boolean? = null,
     val reason: String? = null,
+    @Transient
     val nodeMeta: List<String>? = null,
+    @Transient
     val tag: List<String>? = null,
     @Transient
     val consistencyMode: ConsistencyMode = ConsistencyMode.DEFAULT
-) : ParamAdder {
+) : Parameters {
 
     init {
         if (wait != null) {

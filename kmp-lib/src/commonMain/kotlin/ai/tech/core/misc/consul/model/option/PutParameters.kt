@@ -3,8 +3,10 @@ package ai.tech.core.misc.consul.model.option
 import kotlinx.serialization.Serializable
 
 @Serializable
-public data class DeleteOptions(
+public data class PutParameters(
     val cas: Long? = null,
-    val recurse: Boolean? = null,
+    val acquire: String? = null,
+    val release: String? = null,
     val dc: String? = null,
-) : ParamAdder
+    val token: String? = null,
+) : Parameters
