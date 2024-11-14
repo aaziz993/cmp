@@ -1,10 +1,12 @@
 application:
   name: server
-
-environment: dev
+  environment: dev
 
 consul:
+  enable: true
   registration:
+    enable: true
     name: ${application.name}
     port: ${server.port}
   config:
+    enable: true

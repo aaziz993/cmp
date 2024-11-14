@@ -1,6 +1,7 @@
 package ai.tech.core.data.database.crud
 
 import ai.tech.core.data.DataPagingSource
+import ai.tech.core.data.crud.CRUDRepository
 import ai.tech.core.data.crud.model.LimitOffset
 import ai.tech.core.data.crud.model.Order
 import ai.tech.core.data.expression.BooleanVariable

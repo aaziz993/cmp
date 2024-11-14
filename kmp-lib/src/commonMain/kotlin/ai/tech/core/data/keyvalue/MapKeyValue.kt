@@ -1,7 +1,7 @@
 package ai.tech.core.data.keyvalue
 
 import ai.tech.core.misc.type.contains
-import ai.tech.core.misc.type.decodeFromAny
+import ai.tech.core.misc.type.serializer.decodeFromAny
 import ai.tech.core.misc.type.get
 import ai.tech.core.misc.type.model.Entry
 import ai.tech.core.misc.type.remove

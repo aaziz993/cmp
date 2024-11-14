@@ -1,6 +1,7 @@
 package ai.tech.core.misc.consul.model.config
 
 import kotlinx.serialization.Serializable
+import kotlinx.serialization.Transient
 
 @Serializable
 public data class ConsulConfigConfig(

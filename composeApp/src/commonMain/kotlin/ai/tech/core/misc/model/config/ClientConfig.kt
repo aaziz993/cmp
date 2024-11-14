@@ -11,7 +11,7 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 public data class ClientConfig(
-    override val project: String,
+    override val application: ApplicationConfig,
     override val ktorClient: KtorClientConfig = KtorClientConfig(),
     override val consul: ConsulConfig? = null,
     override val localization: LocalizationConfig,

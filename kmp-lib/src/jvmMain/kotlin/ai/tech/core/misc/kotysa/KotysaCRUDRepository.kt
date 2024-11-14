@@ -30,7 +30,7 @@ import ai.tech.core.data.expression.Sum
 import ai.tech.core.data.expression.Value
 import ai.tech.core.data.expression.Variable
 import ai.tech.core.misc.kotysa.model.KotysaTable
-import ai.tech.core.misc.type.copy
+import ai.tech.core.misc.type.serializer.copy
 import ai.tech.core.misc.type.kClass
 import kotlin.reflect.KClass
 import kotlin.reflect.KTypeParameter
@@ -41,7 +41,6 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.toList
 import kotlinx.datetime.TimeZone
 import kotlinx.serialization.InternalSerializationApi
-import kotlinx.serialization.KSerializer
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.serializer
 import org.slf4j.LoggerFactory

@@ -1,6 +1,6 @@
 package ai.tech.core.misc.type.accessor.model;
 
-import ai.tech.core.misc.type.encodeToAny
+import ai.tech.core.misc.type.serializer.encodeToAny
 import kotlinx.serialization.json.Json
 
 public interface Accessible {

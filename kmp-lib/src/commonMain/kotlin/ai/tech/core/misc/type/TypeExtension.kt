@@ -6,6 +6,8 @@ import ai.tech.core.misc.type.accessor.Accessor
 import ai.tech.core.misc.type.accessor.ListAccessor
 import ai.tech.core.misc.type.accessor.MapLikeAccessor
 import ai.tech.core.misc.type.multiple.depthIterator
+import ai.tech.core.misc.type.serializer.encodeToAny
+import ai.tech.core.misc.type.serializer.json
 import ai.tech.core.misc.type.single.parseOrNull
 import ai.tech.core.misc.type.single.uuidFromOrNull
 import com.benasher44.uuid.Uuid
@@ -444,6 +446,8 @@ public fun <T : Any> Any.copyTo(
     accessor: (List<Accessor>, key: Any?, value: Any?) -> Accessor? = { _, key, value -> value?.accessor(key) },
 ) {
 }
+
+public fun List<Map<String,Any?>>.deepMerge(): Map<String,Any?> = emptyMap()
 
 @Suppress("UNCHECKED_CAST")
 public fun <T : Any> T.eval(

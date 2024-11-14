@@ -7,8 +7,8 @@ import ai.tech.core.misc.auth.client.keycloak.model.TokenResponse
 import ai.tech.core.misc.auth.client.keycloak.model.UserInfo
 import ai.tech.core.misc.auth.client.keycloak.model.UserRepresentation
 import ai.tech.core.misc.auth.client.model.config.oauth.ClientOAuthConfig
-import ai.tech.core.misc.type.encodeAnyToString
-import ai.tech.core.misc.type.encodeToAny
+import ai.tech.core.misc.type.serializer.encodeAnyToString
+import ai.tech.core.misc.type.serializer.encodeToAny
 import de.jensklingenberg.ktorfit.Ktorfit
 import io.ktor.client.*
 import io.ktor.client.plugins.contentnegotiation.*

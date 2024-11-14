@@ -8,17 +8,15 @@ import io.ktor.server.application.createApplicationPlugin
 import kotlinx.coroutines.runBlocking
 
 @Suppress("FunctionName")
-public fun Consul(
+public fun ConsulService(
     httpClient: HttpClient,
     address: String,
     config: Registration,
 ): ApplicationPlugin<Registration> = createApplicationPlugin(
-    "Consul",
+    "ConsulService",
     { config },
 ) {
-    val consulClient = ConsulClient(httpClient, address)
-
     runBlocking {
-        consulClient.agent.register(config)
+        ConsulClient(httpClient, address).agent.register(config)
     }
 }

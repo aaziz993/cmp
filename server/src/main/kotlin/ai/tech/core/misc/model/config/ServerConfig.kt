@@ -42,6 +42,7 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 public data class ServerConfig(
+    override val application: ApplicationConfig,
     override val koin: KoinConfig? = null,
     override val ktorClient: KtorClientConfig = KtorClientConfig(),
     override val consul: ConsulConfig? = null,
@@ -76,7 +77,6 @@ public data class ServerConfig(
     override val micrometerMetrics: MicrometerMetricsConfig? = null,
     override val dropwizardMetrics: DropwizardMetricsConfig? = null,
     override val shutdown: ShutDownConfig? = null,
-    override val project: String,
     override val localization: LocalizationConfig,
     override val validator: ValidatorConfig,
     override val ktor: KtorServerConfig,

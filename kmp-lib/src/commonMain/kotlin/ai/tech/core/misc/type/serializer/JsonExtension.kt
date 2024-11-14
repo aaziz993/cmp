@@ -1,11 +1,9 @@
 @file:OptIn(ExperimentalSerializationApi::class, InternalSerializationApi::class)
 
-package ai.tech.core.misc.type
+package ai.tech.core.misc.type.serializer
 
-import ai.tech.core.misc.type.serializer.UuidSerializer
 import ai.tech.core.misc.type.serializer.bignum.BigDecimalSerializer
 import ai.tech.core.misc.type.serializer.bignum.BigIntegerSerializer
-import ai.tech.core.misc.type.serializer.primitive
 import com.benasher44.uuid.Uuid
 import com.ionspin.kotlin.bignum.decimal.BigDecimal
 import com.ionspin.kotlin.bignum.integer.BigInteger
@@ -121,7 +119,15 @@ public fun Json.encodeAnyToString(value: Any?): String = encodeToString(encodeAn
 public fun Json.decodeAnyFromString(deserializer: DeserializationStrategy<JsonElement>, value: String): Any? =
     decodeAnyFromJsonElement(decodeFromString(deserializer, value))
 
-public fun Json.decodeAnyFromString(value: String): Any? = decodeAnyFromString(serializersModule.serializer(), value)
+public fun Json.decodeAnyFromString(value: String): Any? = decodeAnyFromString(JsonElement::class.serializer(), value)
+
+@Suppress("UNCHECKED_CAST")
+public fun Json.decodeListFromString(value: String): List<Any?> =
+    decodeAnyFromJsonElement(decodeFromString(JsonArray::class.serializer(), value)) as List<Any?>
+
+@Suppress("UNCHECKED_CAST")
+public fun Json.decodeMapFromString(value: String): Map<String, Any?> =
+    decodeAnyFromJsonElement(decodeFromString(JsonObject::class.serializer(), value)) as Map<String, Any?>
 
 // Make deep copy of an object
 @OptIn(InternalSerializationApi::class)

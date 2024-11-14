@@ -7,7 +7,7 @@ import ai.tech.core.misc.model.config.server.KtorServerConfig
 
 public interface Config {
 
-    public val project: String
+    public val application: ApplicationConfig
 
     public val ktorClient: KtorClientConfig
 
