@@ -1,27 +1,16 @@
 package ai.tech.core.misc.consul.client
 
-import ai.tech.core.misc.consul.client.acl.AclApi
-import ai.tech.core.misc.consul.client.acl.createAclApi
-import ai.tech.core.misc.consul.client.agent.AgentApi
-import ai.tech.core.misc.consul.client.agent.createAgentApi
-import ai.tech.core.misc.consul.client.catalog.CatalogApi
-import ai.tech.core.misc.consul.client.catalog.createCatalogApi
-import ai.tech.core.misc.consul.client.coordinate.CoordinateApi
-import ai.tech.core.misc.consul.client.coordinate.createCoordinateApi
-import ai.tech.core.misc.consul.client.event.EventApi
-import ai.tech.core.misc.consul.client.event.createEventApi
-import ai.tech.core.misc.consul.client.health.HealthApi
-import ai.tech.core.misc.consul.client.health.createHealthApi
-import ai.tech.core.misc.consul.client.keyvalue.createKVApi
-import ai.tech.core.misc.consul.client.kv.KVApi
-import ai.tech.core.misc.consul.client.operator.OperatorApi
-import ai.tech.core.misc.consul.client.operator.createOperatorApi
-import ai.tech.core.misc.consul.client.session.SessionApi
-import ai.tech.core.misc.consul.client.session.createSessionApi
-import ai.tech.core.misc.consul.client.snapshot.SnapshotApi
-import ai.tech.core.misc.consul.client.snapshot.createSnapshotApi
-import ai.tech.core.misc.consul.client.status.StatusApi
-import ai.tech.core.misc.consul.client.status.createStatusApi
+import ai.tech.core.misc.consul.client.acl.AclClient
+import ai.tech.core.misc.consul.client.agent.AgentClient
+import ai.tech.core.misc.consul.client.catalog.CatalogClient
+import ai.tech.core.misc.consul.client.coordinate.CoordinateClient
+import ai.tech.core.misc.consul.client.event.EventClient
+import ai.tech.core.misc.consul.client.health.HealthClient
+import ai.tech.core.misc.consul.client.kv.KVClient
+import ai.tech.core.misc.consul.client.operator.OperatorClient
+import ai.tech.core.misc.consul.client.session.SessionClient
+import ai.tech.core.misc.consul.client.snapshot.SnapshotClient
+import ai.tech.core.misc.consul.client.status.StatusClient
 import de.jensklingenberg.ktorfit.Ktorfit
 import io.ktor.client.HttpClient
 import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
@@ -47,17 +36,17 @@ public class ConsulClient(
         },
     ).baseUrl(address).build()
 
-    public val acl: AclApi = ktorfit.createAclApi()
-    public val agent: AgentApi = ktorfit.createAgentApi()
-    public val catalog: CatalogApi = ktorfit.createCatalogApi()
-    public val coordinate: CoordinateApi = ktorfit.createCoordinateApi()
-    public val event: EventApi = ktorfit.createEventApi()
-    public val health: HealthApi = ktorfit.createHealthApi()
-    public val kv: KVApi = ktorfit.createKVApi()
-    public val `operator`: OperatorApi = ktorfit.createOperatorApi()
-    public val session: SessionApi = ktorfit.createSessionApi()
-    public val snapshot: SnapshotApi = ktorfit.createSnapshotApi()
-    public val status: StatusApi = ktorfit.createStatusApi()
+    public val acl: AclClient = AclClient(ktorfit)
+    public val agent: AgentClient = AgentClient(ktorfit)
+    public val catalog: CatalogClient = CatalogClient(ktorfit)
+    public val coordinate: CoordinateClient = CoordinateClient(ktorfit)
+    public val event: EventClient = EventClient(ktorfit)
+    public val health: HealthClient = HealthClient(ktorfit)
+    public val kv: KVClient = KVClient(ktorfit)
+    public val `operator`: OperatorClient = OperatorClient(ktorfit)
+    public val session: SessionClient = SessionClient(ktorfit)
+    public val snapshot: SnapshotClient = SnapshotClient(ktorfit)
+    public val status: StatusClient = StatusClient(ktorfit)
 }
 
 
