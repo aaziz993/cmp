@@ -25,7 +25,7 @@ public class CatalogClient internal constructor(ktorfit: Ktorfit) {
      * @param queryParameters
      * @return
      */
-    public suspend fun getDatacenters(queryParameters: QueryParameters): List<String> = api.getDatacenters(queryParameters.headers)
+    public suspend fun getDatacenters(queryParameters: QueryParameters = QueryParameters()): List<String> = api.getDatacenters(queryParameters.headers)
 
     /**
      * Retrieves all nodes for a given datacenter with [QueryParameters].
@@ -36,7 +36,7 @@ public class CatalogClient internal constructor(ktorfit: Ktorfit) {
      * @param queryParameters The Query Options to use.
      * @return A [List] containing [Node] objects.
      */
-    public suspend fun getNodes(queryParameters: QueryParameters): List<Node> = api.getNodes(
+    public suspend fun getNodes(queryParameters: QueryParameters = QueryParameters()): List<Node> = api.getNodes(
         queryParameters.query,
         queryParameters.tag.orEmpty(),
         queryParameters.nodeMeta.orEmpty(),
@@ -52,7 +52,7 @@ public class CatalogClient internal constructor(ktorfit: Ktorfit) {
      * @param queryParameters The Query Options to use.
      * @return A [Map] containing service name to list of tags.
      */
-    public suspend fun getServices(queryParameters: QueryParameters): Map<String, List<String>> =
+    public suspend fun getServices(queryParameters: QueryParameters = QueryParameters()): Map<String, List<String>> =
         api.getServices(
             queryParameters.query,
             queryParameters.tag.orEmpty(), queryParameters.nodeMeta.orEmpty(),
@@ -69,7 +69,7 @@ public class CatalogClient internal constructor(ktorfit: Ktorfit) {
      * @return A [List] containing
      * [CatalogService] objects.
      */
-    public suspend fun getService(service: String, queryParameters: QueryParameters): List<CatalogService> =
+    public suspend fun getService(service: String, queryParameters: QueryParameters = QueryParameters()): List<CatalogService> =
         api.getService(
             service,
             queryParameters.query,
@@ -87,7 +87,7 @@ public class CatalogClient internal constructor(ktorfit: Ktorfit) {
      * @param queryParameters The Query Options to use.
      * @return A [CatalogService] object.
      */
-    public suspend fun getNode(node: String, queryParameters: QueryParameters): CatalogNode =
+    public suspend fun getNode(node: String, queryParameters: QueryParameters = QueryParameters()): CatalogNode =
         api.getNode(
             node,
             queryParameters.query,
@@ -104,7 +104,7 @@ public class CatalogClient internal constructor(ktorfit: Ktorfit) {
      *
      * @param registration A [CatalogRegistration]
      */
-    public suspend fun register(registration: CatalogRegistration, options: QueryParameters = QueryParameters()): Unit =api.register(registration, options.query)
+    public suspend fun register(registration: CatalogRegistration, queryParameters: QueryParameters = QueryParameters()): Unit = api.register(registration, queryParameters.query)
 
     /**
      * Deregisters a service or node.
@@ -114,5 +114,5 @@ public class CatalogClient internal constructor(ktorfit: Ktorfit) {
      *
      * @param deregistration A [CatalogDeregistration]
      */
-    public suspend fun deregister(deregistration: CatalogDeregistration, options: QueryParameters= QueryParameters()): Unit =api.deregister(deregistration, options.query)
+    public suspend fun deregister(deregistration: CatalogDeregistration, queryParameters: QueryParameters = QueryParameters()): Unit = api.deregister(deregistration, queryParameters.query)
 }

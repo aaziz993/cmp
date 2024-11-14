@@ -49,14 +49,14 @@ public class AgentClient internal constructor(ktorfit: Ktorfit) {
      */
     public suspend fun register(
         registration: Registration,
-        options: QueryParameters = QueryParameters(),
+        queryParameters: QueryParameters = QueryParameters(),
         queryParameterParameters: QueryParameterParameters = QueryParameterParameters()
-    ): Unit = api.register(registration, options.query, queryParameterParameters.queryParameters)
+    ): Unit = api.register(registration, queryParameters.query, queryParameterParameters.queryParameters)
 
     /**
      * De-register a particular service from the Consul Agent.
      */
-    public suspend fun deregister(serviceId: String, options: QueryParameters = QueryParameters()): Unit = api.deregister(serviceId, options.query)
+    public suspend fun deregister(serviceId: String, queryParameters: QueryParameters = QueryParameters()): Unit = api.deregister(serviceId, queryParameters.query)
 
     /**
      * Registers a Health Check with the Agent.
@@ -80,7 +80,7 @@ public class AgentClient internal constructor(ktorfit: Ktorfit) {
      *
      * @return The Agent information.
      */
-    public suspend fun getSelf(): Agent = api.getSelf()
+    public suspend fun get(): Agent = api.getSelf()
 
     /**
      * Retrieves all checks registered with the Agent.
@@ -110,7 +110,7 @@ public class AgentClient internal constructor(ktorfit: Ktorfit) {
      *
      * GET /v1/agent/service/:service_id
      *
-     * @param id           The service id.
+     * @param id The service id.
      * @param queryParameters The Query Options to use.
      * @return A [FullService] object.
      */
