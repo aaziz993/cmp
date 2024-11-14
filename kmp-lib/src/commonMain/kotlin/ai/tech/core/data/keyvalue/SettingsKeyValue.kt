@@ -103,7 +103,7 @@ public class SettingsKeyValue(
 
     override suspend fun flush(): Unit = Unit
 
-    override suspend fun size(): Int = settings.size
+    override suspend fun size(): Long = settings.size.toLong()
 
     private fun List<String>.toKey() = reduce { acc, v -> "$acc$keyDelimiter$v" }
 }

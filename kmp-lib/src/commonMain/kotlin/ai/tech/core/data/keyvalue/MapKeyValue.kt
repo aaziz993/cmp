@@ -48,5 +48,5 @@ public open class MapKeyValue(
 
     override suspend fun flush(): Unit = Unit
 
-    override suspend fun size(): Int = map.size
+    override suspend fun size(): Long = map.size.toLong()
 }

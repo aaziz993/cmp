@@ -59,7 +59,7 @@ public class RoomKeyValue(private val database: KeyValueDatabase) : AbstractKeyV
 
     override suspend fun flush(): Unit = Unit
 
-    override suspend fun size(): Int = dao.count()
+    override suspend fun size(): Long = dao.count()
 
     private fun List<String>.toKey() = reduce { acc, v -> "$acc$KEY_DELIMITER$v}" }
 

@@ -175,14 +175,14 @@ gradlePlugin {
                 libs.plugins.cmp.lib.convention
                     .get()
                     .pluginId
-            implementationClass = "plugin.cmp.multiplatform.CMPLibPlugin"
+            implementationClass = "plugin.multiplatform.cmp.CMPLibPlugin"
         }
         register("CMPAppPlugin") {
             id =
                 libs.plugins.cmp.app.convention
                     .get()
                     .pluginId
-            implementationClass = "plugin.cmp.CMPAppPlugin"
+            implementationClass = "plugin.multiplatform.cmp.CMPAppPlugin"
         }
     }
 }

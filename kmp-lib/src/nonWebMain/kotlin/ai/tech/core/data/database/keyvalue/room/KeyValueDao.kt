@@ -30,5 +30,5 @@ public interface KeyValueDao {
     public suspend fun exists(key: String): Boolean
 
     @Query("SELECT COUNT(*) FROM key_values")
-    public suspend fun count(): Int
+    public suspend fun count(): Long
 }

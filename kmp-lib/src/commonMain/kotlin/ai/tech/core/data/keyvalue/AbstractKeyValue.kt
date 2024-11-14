@@ -48,7 +48,7 @@ public abstract class AbstractKeyValue {
 
     public abstract suspend fun flush()
 
-    public abstract suspend fun size(): Int
+    public abstract suspend fun size(): Long
 }
 
 public suspend inline fun <reified T> AbstractKeyValue.get(keys: List<String>, defaultValue: T? = null): T =

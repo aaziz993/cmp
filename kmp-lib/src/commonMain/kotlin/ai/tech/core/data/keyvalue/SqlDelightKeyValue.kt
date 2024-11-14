@@ -59,7 +59,7 @@ public class SqlDelightKeyValue(private val queries: KeyValueQueries, public val
 
     override suspend fun flush(): Unit = Unit
 
-    override suspend fun size(): Int = queries.count()
+    override suspend fun size(): Long = queries.count().executeAsOne()
 
     private fun List<String>.toKey() = reduce { acc, v -> "$acc$keyDelimiter$v}" }
 }
