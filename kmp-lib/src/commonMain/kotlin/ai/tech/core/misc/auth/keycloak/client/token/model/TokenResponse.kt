@@ -1,4 +1,4 @@
-package ai.tech.core.misc.auth.client.keycloak.token.model
+package ai.tech.core.misc.auth.keycloak.client.token.model
 
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable

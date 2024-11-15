@@ -6,6 +6,7 @@ import ai.tech.core.misc.type.multiple.filterValuesNotNull
 import ai.tech.core.misc.type.serializableProperties
 import ai.tech.core.misc.type.serializer.encodeAnyToString
 import io.ktor.client.*
+import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
 import io.ktor.client.statement.HttpResponse
 import io.ktor.client.statement.bodyAsText
 import io.ktor.http.HttpStatusCode
@@ -17,6 +18,7 @@ import io.ktor.http.content.PartData
 import io.ktor.http.content.forEachPart
 import io.ktor.http.encodedPath
 import io.ktor.http.path
+import io.ktor.serialization.kotlinx.json.json
 import kotlinx.serialization.json.Json
 
 private val httpPR: Regex = "^https?://.*".toRegex(RegexOption.IGNORE_CASE)
@@ -74,3 +76,17 @@ public suspend fun HttpResponse.requireHttpStatus(checkStatus: (HttpStatusCode) 
     else {
         errorHttpStatus(status, bodyAsText())
     }
+
+public fun HttpClient.apiClient(block: HttpClientConfig<*>.() -> Unit = {}): HttpClient = config {
+    block()
+
+    install(ContentNegotiation) {
+        json(
+            Json {
+                isLenient = true
+                ignoreUnknownKeys = true
+                explicitNulls = false
+            },
+        )
+    }
+}

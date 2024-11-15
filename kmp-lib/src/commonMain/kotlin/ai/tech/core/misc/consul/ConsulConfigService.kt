@@ -1,5 +1,6 @@
-package ai.tech.core.misc.config
+package ai.tech.core.misc.consul
 
+import ai.tech.core.misc.config.AbstractConfigService
 import ai.tech.core.misc.consul.client.ConsulClient
 import ai.tech.core.misc.consul.client.kv.model.Value
 import ai.tech.core.misc.consul.model.config.ConsulConfig

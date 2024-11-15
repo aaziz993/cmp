@@ -4,6 +4,7 @@ import ai.tech.core.misc.location.localization.weblate.model.WeblateConfig
 import ai.tech.core.misc.location.localization.weblate.model.WeblateResponse
 import ai.tech.core.misc.location.localization.weblate.model.WeblateTranslationsResponse
 import ai.tech.core.misc.location.localization.weblate.model.WeblateUnitsResponse
+import ai.tech.core.misc.network.http.client.apiClient
 import ai.tech.core.misc.type.multiple.model.AbstractAsyncIterator
 import ai.tech.core.misc.type.multiple.model.AsyncIterator
 import de.jensklingenberg.ktorfit.Ktorfit
@@ -23,19 +24,9 @@ public class WeblateClient(
 
     @OptIn(ExperimentalSerializationApi::class)
     private val ktorfit = Ktorfit.Builder().httpClient(
-        httpClient.config {
+        httpClient.apiClient {
             defaultRequest {
                 header(HttpHeaders.Authorization, "Token  ${config.apiKey}")
-            }
-
-            install(ContentNegotiation) {
-                json(
-                    Json {
-                        isLenient = true
-                        ignoreUnknownKeys = true
-                        explicitNulls = false
-                    },
-                )
             }
         },
     ).baseUrl(config.address).build()

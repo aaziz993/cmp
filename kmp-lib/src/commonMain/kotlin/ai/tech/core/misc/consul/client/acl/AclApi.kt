@@ -1,8 +1,5 @@
 package ai.tech.core.misc.consul.client.acl
 
-import ai.tech.core.misc.consul.client.acl.model.AclResponse
-import ai.tech.core.misc.consul.client.acl.model.AclToken
-import ai.tech.core.misc.consul.client.acl.model.AclTokenId
 import ai.tech.core.misc.consul.client.acl.model.Policy
 import ai.tech.core.misc.consul.client.acl.model.PolicyResponse
 import ai.tech.core.misc.consul.client.acl.model.Role
@@ -19,30 +16,6 @@ import de.jensklingenberg.ktorfit.http.Path
 import de.jensklingenberg.ktorfit.http.QueryMap
 
 internal interface AclApi {
-
-    @Deprecated("Use a different method")
-    @PUT("acl/create")
-    suspend fun create(@Body aclToken: AclToken): AclTokenId
-
-    @Deprecated("Use a different method")
-    @PUT("acl/update")
-    suspend fun update(@Body aclToken: AclToken)
-
-    @Deprecated("Use a different method")
-    @PUT("acl/destroy/{id}")
-    suspend fun destroy(@Path("id") id: String)
-
-    @Deprecated("Use a different method")
-    @GET("acl/info/{id}")
-    suspend fun getInfo(@Path("id") id: String): List<AclResponse>
-
-    @Deprecated("Use a different method")
-    @PUT("acl/clone/{id}")
-    suspend fun clone(@Path("id") id: String): AclTokenId
-
-    @Deprecated("Use a different method")
-    @GET("acl/list")
-    suspend fun list(): List<AclResponse>
 
     @PUT("acl/policy")
     suspend fun createPolicy(@Body policy: Policy): PolicyResponse

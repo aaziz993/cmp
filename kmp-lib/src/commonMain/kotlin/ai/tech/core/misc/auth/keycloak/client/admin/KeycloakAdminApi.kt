@@ -1,10 +1,10 @@
-package ai.tech.core.misc.auth.client.keycloak.admin
+package ai.tech.core.misc.auth.keycloak.client.admin
 
-import ai.tech.core.misc.auth.client.keycloak.admin.model.ExecuteActionsEmail
-import ai.tech.core.misc.auth.client.keycloak.admin.model.ResetPassword
-import ai.tech.core.misc.auth.client.keycloak.admin.model.RoleRepresentation
-import ai.tech.core.misc.auth.client.keycloak.admin.model.UserInfo
-import ai.tech.core.misc.auth.client.keycloak.admin.model.UserRepresentation
+import ai.tech.core.misc.auth.keycloak.client.admin.model.ExecuteActionsEmail
+import ai.tech.core.misc.auth.keycloak.client.admin.model.ResetPassword
+import ai.tech.core.misc.auth.keycloak.client.admin.model.RoleRepresentation
+import ai.tech.core.misc.auth.keycloak.client.admin.model.UserInfo
+import ai.tech.core.misc.auth.keycloak.client.admin.model.UserRepresentation
 import de.jensklingenberg.ktorfit.http.Body
 import de.jensklingenberg.ktorfit.http.DELETE
 import de.jensklingenberg.ktorfit.http.GET

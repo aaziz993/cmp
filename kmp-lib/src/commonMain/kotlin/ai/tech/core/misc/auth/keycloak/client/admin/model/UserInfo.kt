@@ -1,4 +1,4 @@
-package ai.tech.core.misc.auth.client.keycloak.admin.model
+package ai.tech.core.misc.auth.keycloak.client.admin.model
 
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable

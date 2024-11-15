@@ -1,6 +1,6 @@
-package ai.tech.core.misc.auth.client.keycloak.token
+package ai.tech.core.misc.auth.keycloak.client.token
 
-import ai.tech.core.misc.auth.client.keycloak.token.model.TokenResponse
+import ai.tech.core.misc.auth.keycloak.client.token.model.TokenResponse
 import de.jensklingenberg.ktorfit.http.FieldMap
 import de.jensklingenberg.ktorfit.http.FormUrlEncoded
 import de.jensklingenberg.ktorfit.http.POST
