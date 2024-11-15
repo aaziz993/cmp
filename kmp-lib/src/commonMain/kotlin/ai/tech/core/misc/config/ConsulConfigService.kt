@@ -4,6 +4,7 @@ import ai.tech.core.misc.consul.client.ConsulClient
 import ai.tech.core.misc.consul.client.kv.model.Value
 import ai.tech.core.misc.consul.model.config.ConsulConfig
 import ai.tech.core.misc.model.config.ApplicationConfig
+import ai.tech.core.misc.type.multiple.filterValuesNotEmpty
 import ai.tech.core.misc.type.serializer.decodeFromAny
 import io.ktor.client.HttpClient
 import kotlinx.serialization.InternalSerializationApi
@@ -11,27 +12,28 @@ import kotlinx.serialization.json.Json
 
 public class ConsulConfigService(
     public val httpClient: HttpClient,
+    name: String = "application",
     formats: List<String> = listOf("properties", "yaml", "yml", "json"),
     readFile: suspend (path: String) -> String?,
-) : AbstractConfigService(formats, readFile) {
+) : AbstractConfigService(name, formats, readFile) {
 
     override suspend fun readConfigs(): Map<String, Map<String, Any?>> {
-        val baseConfig = readBaseConfig()
+        val config = readFileConfig()
 
-        val applicationConfig: ApplicationConfig = Json.Default.decodeFromAny(baseConfig["application"])
+        val applicationConfig: ApplicationConfig = Json.Default.decodeFromAny(config["application"])
 
-        val consulConfig: ConsulConfig? = baseConfig["consul"]?.let(Json.Default::decodeFromAny)
+        val consulConfig: ConsulConfig? = config["consul"]?.let(Json.Default::decodeFromAny)
 
         if (consulConfig?.config == null) {
             return emptyMap()
         }
 
-        val consulClient = ConsulClient(httpClient, consulConfig.address)
-
         return with(consulConfig.config) {
-            generateKeys(applicationConfig.configurations).associateWith {
-                consulClient.readConsulConfig("$it/${applicationConfig.environment}", format)
-            }.filterValues(Map<*, *>::isEmpty)
+            val consulClient = ConsulClient(httpClient, consulConfig.address, aclToken)
+
+            generateKeys(applicationConfig.name, applicationConfig.configurations.map { "$it/${applicationConfig.environment}" }).associateWith {
+                consulClient.readConsulConfig(it, format)
+            }.filterValuesNotEmpty()
         }
     }
 

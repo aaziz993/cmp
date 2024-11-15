@@ -5,6 +5,7 @@ import kotlinx.serialization.InternalSerializationApi
 import ai.tech.core.misc.type.deepMerge
 
 public abstract class AbstractConfigService(
+    public val name: String = "application",
     public val formats: List<String> = listOf("properties", "yaml", "yml", "json"),
     private val readFile: suspend (String) -> String?,
 ) {
@@ -18,17 +19,12 @@ public abstract class AbstractConfigService(
             readFile("$path.$format")?.let(decoders[format]!!::invoke)
         }.deepMerge()
 
-    protected suspend fun readBaseConfig(): Map<String, Any?> = readFileConfig(BASE_CONFIG_NAME, formats)
+    protected suspend fun readFileConfig(): Map<String, Any?> = readFileConfig(name, formats)
 
     public abstract suspend fun readConfigs(): Map<String, Map<String, Any?>>
 
     @Suppress("UNCHECKED_CAST")
     private fun decoder(format: String): (String) -> Map<String, Any?> = {
         decoderMapFromString(format)(it) as Map<String, Any?>
-    }
-
-    public companion object {
-
-        public const val BASE_CONFIG_NAME: String = "application"
     }
 }

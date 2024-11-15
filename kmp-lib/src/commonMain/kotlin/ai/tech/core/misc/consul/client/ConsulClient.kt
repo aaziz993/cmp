@@ -1,6 +1,7 @@
 package ai.tech.core.misc.consul.client
 
 import ai.tech.core.misc.consul.client.acl.AclClient
+import ai.tech.core.misc.consul.client.acl.model.AclToken
 import ai.tech.core.misc.consul.client.agent.AgentClient
 import ai.tech.core.misc.consul.client.catalog.CatalogClient
 import ai.tech.core.misc.consul.client.coordinate.CoordinateClient
@@ -14,16 +15,25 @@ import ai.tech.core.misc.consul.client.status.StatusClient
 import de.jensklingenberg.ktorfit.Ktorfit
 import io.ktor.client.HttpClient
 import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
+import io.ktor.client.plugins.defaultRequest
+import io.ktor.client.request.header
+import io.ktor.http.HttpHeaders
 import io.ktor.serialization.kotlinx.json.json
 import kotlinx.serialization.json.Json
 
 public class ConsulClient(
     httpClient: HttpClient,
     public val address: String,
+    public val aclToken: String? = null
 ) {
 
     private val ktorfit = Ktorfit.Builder().httpClient(
         httpClient.config {
+            if(aclToken != null) {
+                defaultRequest {
+                    header(HttpHeaders.Authorization, "Bearer $aclToken")
+                }
+            }
             install(ContentNegotiation) {
                 json(
                     Json {

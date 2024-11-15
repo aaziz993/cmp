@@ -35,7 +35,7 @@ public data class Registration(
     @SerialName("EnableTagOverride")
     val enableTagOverride: Boolean? = null,
     @SerialName("Weights")
-    val ServiceWeights: ServiceWeights? = null,
+    val serviceWeights: ServiceWeights? = null,
 ) {
 
     @Serializable
@@ -72,5 +72,21 @@ public data class Registration(
         val successBeforePassing: Int? = null,
         @SerialName("FailuresBeforeCritical")
         val failuresBeforeCritical: Int? = null,
-    )
+    ) {
+
+        init {
+            require(
+                !(http == null && ttl == null &&
+                    args == null && tcp == null && grpc == null),
+            ) {
+                "Check must specify either http, tcp, ttl, grpc or args"
+            }
+
+            if (!(http == null && args == null && tcp == null && grpc == null)) {
+                require(interval != null) {
+                    "Interval must be set if check type is http, tcp, grpc or args"
+                }
+            }
+        }
+    }
 }

@@ -3,12 +3,16 @@ package ai.tech.core.misc.auth.client.keycloak
 import ai.tech.core.data.keyvalue.AbstractKeyValue
 import ai.tech.core.data.keyvalue.get
 import ai.tech.core.misc.auth.client.ClientAuthService
-import ai.tech.core.misc.auth.client.keycloak.model.ExecuteActionsEmail
-import ai.tech.core.misc.auth.client.keycloak.model.ResetPassword
-import ai.tech.core.misc.auth.client.keycloak.model.TokenResponse
-import ai.tech.core.misc.auth.client.keycloak.model.UserInfo
-import ai.tech.core.misc.auth.client.keycloak.model.UserRepresentation
+import ai.tech.core.misc.auth.client.keycloak.admin.KeycloakAdminClient
+import ai.tech.core.misc.auth.client.keycloak.admin.model.ExecuteActionsEmail
+import ai.tech.core.misc.auth.client.keycloak.admin.model.ResetPassword
+import ai.tech.core.misc.auth.client.keycloak.token.model.TokenResponse
+import ai.tech.core.misc.auth.client.keycloak.admin.model.UserInfo
+import ai.tech.core.misc.auth.client.keycloak.admin.model.UserRepresentation
+import ai.tech.core.misc.auth.client.keycloak.token.KeycloakTokenClient
+import ai.tech.core.misc.auth.client.model.config.oauth.ClientOAuthConfig
 import ai.tech.core.misc.auth.model.User
+import io.ktor.client.HttpClient
 import io.ktor.client.request.*
 import io.ktor.http.*
 import kotlinx.atomicfu.locks.reentrantLock
@@ -16,110 +20,126 @@ import kotlinx.atomicfu.locks.withLock
 import kotlinx.datetime.Clock
 
 public class KeycloakService(
-    public val client: KeycloakClient,
+    private val httpClient: HttpClient,
+    public val config: ClientOAuthConfig,
     public val keyValue: AbstractKeyValue,
 ) : ClientAuthService {
 
+    private val tokenClient = KeycloakTokenClient(httpClient, config)
+    private lateinit var adminClient: KeycloakAdminClient
+
     private val lock = reentrantLock()
 
-    override suspend fun signIn(username: String, password: String): Unit = setToken(client.getToken(username, password))
+    override suspend fun signIn(username: String, password: String): Unit = lock.withLock {
+        setToken(tokenClient.getToken(username, password))
+    }
 
-    override suspend fun signOut(): Unit = removeToken()
+    override suspend fun signOut(): Unit = lock.withLock {
+        removeToken()
+    }
 
-    override suspend fun getUser(): User? = getOrRefreshToken()?.let(TokenResponse::accessToken)?.let { accessToken ->
+    override suspend fun getUser(): User? = lock.withLock {
+        getOrRefreshToken()
 
-        val userId = client.getUserInfo(accessToken).let(UserInfo::sub)
+        if (adminClient == null) return null
 
-        return client.getUsers(accessToken, UserRepresentation(id = userId), true).singleOrNull()?.let {
+        val userId = adminClient.getUserInfo().let(UserInfo::sub)
 
-            val roles = client.getUserRealmRoles(userId, accessToken)
+        return adminClient.getUsers(UserRepresentation(id = userId), true).singleOrNull()?.let {
+
+            val roles = adminClient.getUserRealmRoles(userId)
 
             it.copy(realmRoles = roles.map { it.name!! }.toSet()).toUser()
         }
     }
 
-    override suspend fun getUsers(): Set<User> = getOrRefreshToken()!!.let(TokenResponse::accessToken).let {
-        client.getUsers(accessToken = it).map(UserRepresentation::toUser).toSet()
+    override suspend fun getUsers(): Set<User> = lock.withLock {
+        getOrRefreshToken()
+
+        return adminClient.getUsers().map(UserRepresentation::toUser).toSet()
     }
 
-    override suspend fun createUsers(users: Set<User>, password: String): Unit = getOrRefreshToken()!!.let(TokenResponse::accessToken).let { accessToken ->
-        users.forEach {
-            client.createUser(accessToken, UserRepresentation(it))
-        }
+    override suspend fun createUsers(users: Set<User>, password: String): Unit = lock.withLock {
+        getOrRefreshToken()
+
+        users.forEach { adminClient.createUser(UserRepresentation(it)) }
     }
 
-    override suspend fun updateUsers(users: Set<User>, password: String): Unit = getOrRefreshToken()!!.let(TokenResponse::accessToken).let { accessToken ->
+    override suspend fun updateUsers(users: Set<User>, password: String): Unit = lock.withLock {
+        getOrRefreshToken()
+
         users.forEach { user ->
-            val userId = client.getUsers(accessToken, UserRepresentation(username = user.username), true).single().let(UserRepresentation::id)
+            val userId = adminClient.getUsers(UserRepresentation(username = user.username), true).single().let(UserRepresentation::id)
 
-            client.updateUser(accessToken, UserRepresentation(user, userId))
+            adminClient.updateUser(UserRepresentation(user, userId))
         }
     }
 
-    override suspend fun deleteUsers(usernames: Set<String>, password: String): Unit = getOrRefreshToken()!!.let(TokenResponse::accessToken).let { accessToken ->
+    override suspend fun deleteUsers(usernames: Set<String>, password: String): Unit = lock.withLock {
+        getOrRefreshToken()
+
         usernames.forEach {
-            val userId = client.getUsers(accessToken, UserRepresentation(username = it), true).single().let(UserRepresentation::id)!!
+            val userId = adminClient.getUsers(UserRepresentation(username = it), true).single().let(UserRepresentation::id)!!
 
-            client.deleteUser(userId, accessToken)
+            adminClient.deleteUser(userId)
         }
     }
 
-    override suspend fun resetPassword(password: String, newPassword: String): Unit = getOrRefreshToken()!!.let(TokenResponse::accessToken).let { accessToken ->
-        val userId = client.getUserInfo(accessToken).let(UserInfo::sub)
+    override suspend fun resetPassword(password: String, newPassword: String): Unit = lock.withLock {
+        getOrRefreshToken()
 
-        client.resetPassword(accessToken, userId, ResetPassword(newPassword))
+        val userId = adminClient.getUserInfo().let(UserInfo::sub)
+
+        adminClient.resetPassword(userId, ResetPassword(newPassword))
     }
 
-    public override suspend fun forgotPassword(username: String): Unit = getOrRefreshToken()!!.let(TokenResponse::accessToken).let { accessToken ->
-        val userId = client.getUserInfo(accessToken).let(UserInfo::sub)
+    public override suspend fun forgotPassword(username: String): Unit = lock.withLock {
+        getOrRefreshToken()
 
-        client.executeActionsEmail(accessToken, userId, ExecuteActionsEmail(listOf("UPDATE_PASSWORD")))
+        val userId = adminClient.getUserInfo().let(UserInfo::sub)
+
+        adminClient.executeActionsEmail(userId, ExecuteActionsEmail(listOf("UPDATE_PASSWORD")))
     }
 
-    override suspend fun isSignedIn(): Boolean = getToken()?.let {
-        val passedEpochSeconds: Long = Clock.System.now().epochSeconds - keyValue.get<Long>(TOKEN_EPOCH_SECONDS_KEY)
+    override suspend fun isSignedIn(): Boolean = lock.withLock {
+        getToken()?.let {
+            val passedEpochSeconds: Long = Clock.System.now().epochSeconds - keyValue.get<Long>(TOKEN_EPOCH_SECONDS_KEY)
 
-        it.refreshExpiresIn == null || passedEpochSeconds <= it.refreshExpiresIn
-    } == true
+            it.refreshExpiresIn == null || passedEpochSeconds <= it.refreshExpiresIn
+        } == true
+    }
 
-    override suspend fun auth(httpRequestBuilder: HttpRequestBuilder) {
+    override suspend fun auth(httpRequestBuilder: HttpRequestBuilder): Unit = lock.withLock {
         getOrRefreshToken()?.let {
             httpRequestBuilder.header(HttpHeaders.Authorization, "Bearer ${it.accessToken}")
         }
     }
 
-    private suspend fun getOrRefreshToken(): TokenResponse? = lock.withLock {
+    private suspend fun getOrRefreshToken(): TokenResponse? =
         getToken()?.let {
             val passedEpochSeconds: Long = Clock.System.now().epochSeconds - keyValue.get<Long>(TOKEN_EPOCH_SECONDS_KEY)
 
             if (passedEpochSeconds > it.expiresIn) {
                 if (it.refreshExpiresIn != null && passedEpochSeconds > it.refreshExpiresIn) {
                     removeToken()
-                    return@withLock null
+                    return null
                 }
-
-                return client.getTokenByRefreshToken(it.refreshToken).also {
-                    setToken(it)
-                }
+                return tokenClient.getTokenByRefreshToken(it.refreshToken).also { setToken(it) }
             }
-
             it
         }
-    }
 
-    private suspend fun setToken(token: TokenResponse) = lock.withLock {
+    private suspend fun setToken(token: TokenResponse) {
         keyValue.set(TOKEN_KEY, token)
 
-        val epochSeconds = Clock.System.now().epochSeconds
+        keyValue.set(TOKEN_EPOCH_SECONDS_KEY, Clock.System.now().epochSeconds)
 
-        keyValue.set(TOKEN_EPOCH_SECONDS_KEY, epochSeconds)
+        adminClient = KeycloakAdminClient(httpClient, config, token.accessToken)
     }
 
     private suspend fun getToken() = keyValue.get<TokenResponse?>(TOKEN_KEY)
 
-    private suspend fun removeToken() = lock.withLock {
-        keyValue.remove(TOKEN_KEY)
-    }
+    private suspend fun removeToken() = keyValue.remove(TOKEN_KEY)
 
     public companion object {
 

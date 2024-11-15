@@ -9,9 +9,9 @@ public data class Check(
     @SerialName("Name")
     val name: String,
     @SerialName("Args")
-    val args: List<String>,
-    @SerialName("Id")
-    val id: String? = null,
+    val args: List<String>? = null,
+    @SerialName("ID")
+    val id: String,
     @SerialName("Interval")
     val interval: String? = null,
     @SerialName("Notes")
@@ -40,13 +40,15 @@ public data class Check(
     val timeout: Duration? = null,
     @SerialName("OutputMaxSize")
     val outputMaxSize: Int? = null,
+    @SerialName("Output")
+    val output: String? = null,
     @SerialName("TLSSkipVerify")
     val tlsSkipVerify: Boolean? = null,
     @SerialName("TCP")
     val tcp: String? = null,
     @SerialName("TTL")
     val ttl: String? = null,
-    @SerialName("ServiceId")
+    @SerialName("ServiceID")
     val serviceId: String? = null,
     @SerialName("Status")
     val status: String? = null,
@@ -54,4 +56,22 @@ public data class Check(
     val successBeforePassing: Int? = null,
     @SerialName("FailureBeforeCritical")
     val failureBeforeCritical: Int? = null,
-)
+    @SerialName("ServiceTags")
+    val serviceTags: List<String>
+) {
+
+    init {
+        require(
+            !(http == null && ttl == null &&
+                args == null && tcp == null && grpc == null),
+        ) {
+            "Check must specify either http, tcp, ttl, grpc or args"
+        }
+
+        if (!(http == null && args == null && tcp == null && grpc == null)) {
+            require(interval != null) {
+                "Interval must be set if check type is http, tcp, grpc or args"
+            }
+        }
+    }
+}

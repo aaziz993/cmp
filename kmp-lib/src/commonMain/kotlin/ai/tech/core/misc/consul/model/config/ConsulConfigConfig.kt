@@ -15,11 +15,13 @@ public data class ConsulConfigConfig(
     val aclToken: String? = null,
 ) {
 
-    public fun generateKeys(profiles: List<String> = emptyList()): List<String> {
+    public fun generateKeys(applicationName: String, profiles: List<String> = emptyList()): List<String> {
         val dataKeyPart = dataKey.orEmpty()
 
-        return profiles.map { "$prefix/$name$profileSeparator$it/$dataKeyPart" } + listOf(
-            "$prefix/$name/$dataKeyPart",
+        val namePart = name ?: applicationName
+
+        return profiles.map { "$prefix/$namePart$profileSeparator$it/$dataKeyPart" } + listOf(
+            "$prefix/$namePart/$dataKeyPart",
             "$prefix/$defaultContext$dataKeyPart",
         )
     }

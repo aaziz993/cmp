@@ -7,7 +7,8 @@ public inline fun <T, R : Any> Iterable<T>.firstNotThrowOf(transform: (T) -> R?)
     for (element in this) {
         try {
             return transform(element)
-        } catch (t: Throwable) {
+        }
+        catch (t: Throwable) {
             throwable = t
         }
     }
@@ -31,7 +32,8 @@ public inline fun <T> MutableList<T>.removeLast(predicate: (T) -> Boolean): Int 
 public inline fun <T> MutableList<T>.removeLast(n: Int): List<T> =
     if (isEmpty()) {
         throw NoSuchElementException("List is empty.")
-    } else {
+    }
+    else {
         (0..n).map {
             removeAt(lastIndex - n + 1 + it)
         }
@@ -44,7 +46,8 @@ public inline fun <T> MutableList<T>.replaceFirst(
     indexOfFirst(predicate).let {
         if (it == -1) {
             false
-        } else {
+        }
+        else {
             this[it] = this[it].replacement()
             true
         }
@@ -54,9 +57,11 @@ public inline fun <T> MutableList<T>.replace(
     elements: Collection<T>,
     equator: (T, T) -> Boolean,
 ): Unit = elements.forEach { e ->
-    replaceFirst({
-        equator(it, e)
-    }) { e }
+    replaceFirst(
+            {
+                equator(it, e)
+            },
+    ) { e }
 }
 
 public inline fun <T> MutableList<T>.whileIndexed(block: MutableList<T>.(Int, T) -> Unit) {
@@ -95,7 +100,8 @@ public fun <T> Collection<T>.replaceAt(index: Int, item: T.() -> T): List<T> = i
     List(size) {
         if (it == index) {
             iterator.next().item()
-        } else {
+        }
+        else {
             iterator.next()
         }
     }
@@ -110,6 +116,10 @@ public fun <T> List<T>.unmerge(step: Int): List<List<T>> =
     List(step) { offset ->
         (indices step step).map { this[offset + it] }
     }
+
+public fun <T : List<*>> List<T>.filterNotEmpty(): List<T> = filterNot(List<*>::isEmpty)
+
+public fun <T : Map<*, *>> List<T>.filterNotEmpty(): List<T> = filterNot(Map<*, *>::isEmpty)
 
 public val Iterable<Boolean>.all: Boolean
     get() = all { it }

@@ -1,6 +1,6 @@
 package ai.tech.core.misc.type.serializer
 
-import ai.tech.core.misc.type.multiple.toNestedKey
+import ai.tech.core.misc.type.multiple.splitNestedKey
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.properties.Properties
 
@@ -13,4 +13,4 @@ public fun Properties.decodeMapFromString(value: String): Map<String, String> = 
     }.toMap()
 
 @OptIn(ExperimentalSerializationApi::class)
-public fun Properties.decodeNestedMapFromString(value: String): Map<String, Any?> = decodeMapFromString(value).toNestedKey(".")
+public fun Properties.decodeNestedMapFromString(value: String): Map<String, Any?> = decodeMapFromString(value).splitNestedKey(".")

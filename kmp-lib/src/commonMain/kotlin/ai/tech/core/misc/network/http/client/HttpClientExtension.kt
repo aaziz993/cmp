@@ -2,6 +2,9 @@ package ai.tech.core.misc.network.http.client
 
 import ai.tech.core.misc.network.http.client.model.Pin
 import ai.tech.core.misc.network.http.client.model.exception.errorHttpStatus
+import ai.tech.core.misc.type.multiple.filterValuesNotNull
+import ai.tech.core.misc.type.serializableProperties
+import ai.tech.core.misc.type.serializer.encodeAnyToString
 import io.ktor.client.*
 import io.ktor.client.statement.HttpResponse
 import io.ktor.client.statement.bodyAsText
@@ -14,6 +17,7 @@ import io.ktor.http.content.PartData
 import io.ktor.http.content.forEachPart
 import io.ktor.http.encodedPath
 import io.ktor.http.path
+import kotlinx.serialization.json.Json
 
 private val httpPR: Regex = "^https?://.*".toRegex(RegexOption.IGNORE_CASE)
 
@@ -44,6 +48,9 @@ public val String.decodedHttpUrl: String
             .apply {
                 path(this@decodedHttpUrl)
             }.buildString()
+
+public val Any.serializableQueryParameters
+    get() = serializableProperties.filterValuesNotNull().mapValues { Json.Default.encodeAnyToString(it.value) }
 
 public expect fun createHttpClient(
     pins: List<Pin> = emptyList(),
