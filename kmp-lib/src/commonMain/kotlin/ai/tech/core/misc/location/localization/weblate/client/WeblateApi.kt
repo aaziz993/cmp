@@ -1,7 +1,7 @@
-package ai.tech.core.misc.location.localization.weblate
+package ai.tech.core.misc.location.localization.weblate.client
 
-import ai.tech.core.misc.location.localization.weblate.model.WeblateTranslationsResponse
-import ai.tech.core.misc.location.localization.weblate.model.WeblateUnitsResponse
+import ai.tech.core.misc.location.localization.weblate.client.model.WeblateTranslationsResponse
+import ai.tech.core.misc.location.localization.weblate.client.model.WeblateUnitsResponse
 import de.jensklingenberg.ktorfit.http.GET
 import de.jensklingenberg.ktorfit.http.QueryName
 

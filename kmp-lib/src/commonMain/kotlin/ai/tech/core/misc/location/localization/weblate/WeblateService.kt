@@ -1,6 +1,7 @@
 package ai.tech.core.misc.location.localization.weblate
 
 import ai.tech.core.misc.location.localization.AbstractLocalizationService
+import ai.tech.core.misc.location.localization.weblate.client.WeblateClient
 import ai.tech.core.misc.location.model.Language
 import ai.tech.core.misc.type.multiple.toList
 import io.ktor.http.Url
@@ -28,16 +29,16 @@ public class WeblateService(
     override suspend fun localize(language: Language) {
         super.localize(language)
 
-        val (regionLanguageCodes, languageCodes) = ai.tech.core.misc.location.model.languages.entries.partition { it.key.contains("-") }
+        val (languageWithRegionCodes, languageCodes) = ai.tech.core.misc.location.model.languages.entries.partition { it.key.contains("-") }
 
         languages = client.translations.toList().flatMap {
             it.results.filter { project == it.component.project.name }.mapNotNull {
-                val (weblateRegionLanguageCodes, weblateLanguageCodes) = (it.language.aliases + it.language.code).partition { it.contains("_") }
+                val (weblateLanguageWithCodes, weblateLanguageCodes) = (it.language.aliases + it.language.code).partition { it.contains("_") }
 
-                (weblateRegionLanguageCodes.map { it.split("_", limit = 2) }
+                (weblateLanguageWithCodes.map { it.split("_", limit = 2) }
                     .sortedByDescending { it[0].length }
                     .firstNotNullOfOrNull { (weblateLanguage, weblateRegion) ->
-                        regionLanguageCodes.find {
+                        languageWithRegionCodes.find {
                             it.key.split("-")
                                 .let { it[0].startsWith(weblateLanguage) && it[1] == weblateRegion }
                         }
