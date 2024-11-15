@@ -1,7 +1,7 @@
 package ai.tech.core.misc.plugin.auth.jwt
 
 import ai.tech.core.misc.plugin.auth.AuthProvider
-import ai.tech.core.misc.plugin.auth.AbstractChallengeAuthProvider
+import ai.tech.core.misc.plugin.auth.ChallengeAuthProvider
 import ai.tech.core.misc.plugin.auth.ValidateAuthProvider
 import ai.tech.core.misc.plugin.auth.jwt.model.JWTConfig
 import com.auth0.jwt.interfaces.Claim
@@ -12,10 +12,10 @@ import io.ktor.server.auth.jwt.*
 import io.ktor.server.sessions.*
 import java.util.*
 
-public abstract class AbstractJWTAuthService<out T : JWTConfig>(public override val name: String, public val config: T) :
+public abstract class AbstractJWTAuthService<out T : JWTConfig>(override val name: String, override val config: T) :
     AuthProvider,
     ValidateAuthProvider<JWTCredential>,
-    AbstractChallengeAuthProvider(config) {
+    ChallengeAuthProvider {
 
     override suspend fun validate(call: ApplicationCall, credential: JWTCredential): JWTPrincipal? =
         if (

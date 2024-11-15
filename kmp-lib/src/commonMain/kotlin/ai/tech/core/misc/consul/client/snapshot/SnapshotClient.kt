@@ -29,7 +29,7 @@ public class SnapshotClient internal constructor(ktorfit: Ktorfit) {
      * Only a subset of the QueryParameters is supported: datacenter, consistencymode, and token.
      * @param destinationFile file in which the snapshot is to be saved.
      * @param queryParameters query options. Only a subset of the QueryParameters is supported: datacenter, consistencymode, and token.
-     * @param callback callback called once the operation is over. It the save operation is successful, the X-Consul-Index is send.
+ It the save operation is successful, the X-Consul-Index is send.
      */
     public suspend fun generate(filePath: String, queryParameters: QueryParameters = QueryParameters()): Unit =
         filePath.fsPathWrite(api.generate(queryParameters.query).execute().bodyAsChannel().asyncIterator())
@@ -38,8 +38,7 @@ public class SnapshotClient internal constructor(ktorfit: Ktorfit) {
      * Restores a snapshot stored in a file.
      * @param sourceFile source file where the snapshot is stored.
      * @param queryParameters query options. Only a subset of the QueryParameters is supported: datacenter, token.
-     * @param callback callback called once the operation is over.
      */
     public suspend fun restore(filePath: String, queryParameters: QueryParameters = QueryParameters()): Unit =
-        api.restore(queryParameters.query, Json.Default.encodeToJsonElement(filePath.fsPathRead().toList().fold(byteArrayOf()) { acc, v -> acc + v }))
+        api.restore(queryParameters.query, filePath.fsPathRead().toList().fold(byteArrayOf()) { acc, v -> acc + v })
 }

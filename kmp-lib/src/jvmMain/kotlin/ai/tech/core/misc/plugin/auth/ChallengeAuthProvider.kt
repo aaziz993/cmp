@@ -6,7 +6,7 @@ import io.ktor.http.*
 import io.ktor.server.application.*
 import io.ktor.server.response.*
 
-public interface AbstractChallengeAuthProvider {
+public interface ChallengeAuthProvider {
 
     public val config: ChallengeAuthProviderConfig
 

@@ -9,10 +9,14 @@ import ai.tech.core.misc.plugin.auth.oauth.model.config.ServerOAuthConfig
 import ai.tech.core.misc.plugin.auth.rbac.rbac
 import ai.tech.core.misc.model.config.EnabledConfig
 import ai.tech.core.misc.plugin.auth.basic.BasicAuthService
+import ai.tech.core.misc.plugin.auth.basic.model.config.BaseBasicAuthConfig
 import ai.tech.core.misc.plugin.auth.database.AuthRepository
 import ai.tech.core.misc.plugin.auth.digest.DigestAuthService
+import ai.tech.core.misc.plugin.auth.digest.model.config.BaseDigestAuthConfig
 import ai.tech.core.misc.plugin.auth.form.FormAuthService
+import ai.tech.core.misc.plugin.auth.form.model.config.BaseFormAuthConfig
 import ai.tech.core.misc.plugin.auth.ldap.LDAPAuthService
+import ai.tech.core.misc.plugin.auth.model.config.RealmAuthProviderConfig
 import ai.tech.core.misc.plugin.auth.session.SessionAuthService
 import ai.tech.core.misc.plugin.auth.session.model.UserSession
 import io.ktor.client.*
@@ -36,100 +40,17 @@ public fun Application.configureAuth(
 ) = authentication {
     config?.let {
 
-        it.basic.forEach { (name, config) ->
-            val service = BasicAuthService(
-                name,
-                config,
-                getRepository,
-            )
+        it.basic.forEach { (name, config) -> configureBasic(name, config, BasicAuthService(name, config, getRepository)) }
 
-            basic(name) {
-                config.realm?.let { realm = it }
+        it.digest.forEach { (name, config) -> configureDigest(name, config, DigestAuthService(name, config, getRepository)) }
 
-                config.charset?.let { charset = Charset.forName(it) }
+        it.form.forEach { (name, config) -> configureForm(name, config, FormAuthService(name, config, getRepository)) }
 
-                validate { service.validate(this, it) }
+        it.ldapBasic.forEach { (name, config) -> configureBasic(name, config, LDAPAuthService(name, config)) }
 
-                skipWhen(service::skip)
-            }
+        it.ldapDigest.forEach { (name, config) -> }
 
-            rbac(name) { roleExtractor = service::roles }
-        }
-
-        it.digest.forEach { (name, config) ->
-            val service = DigestAuthService(
-                name,
-                config,
-                getRepository,
-            )
-
-            digest(name) {
-                config.realm?.let { realm = it }
-
-                config.algorithmName?.let { algorithmName = it }
-
-                digestProvider(service::digestProvider)
-
-                validate { service.validate(this, it) }
-
-                skipWhen(service::skip)
-            }
-
-            rbac(name) { roleExtractor = service::roles }
-        }
-
-        it.form.forEach { (name, config) ->
-            val service = FormAuthService(
-                name,
-                config,
-                getRepository,
-            )
-
-            form(name) {
-                config.userParamName?.let { userParamName = it }
-
-                config.passwordParamName?.let { passwordParamName = it }
-
-                challenge { service.challenge(call) }
-
-                validate { service.validate(this, it) }
-
-                skipWhen(service::skip)
-            }
-
-            rbac(name) { roleExtractor = service::roles }
-        }
-
-        it.session.forEach { (name, config) ->
-            val service = SessionAuthService(name, config)
-
-            session<UserSession>(name) {
-                challenge { service.challenge(call) }
-
-                validate { service.validate(this, it) }
-
-                skipWhen(service::skip)
-            }
-
-            rbac(name) { roleExtractor = service::roles }
-        }
-
-        it.ldap.forEach { (name, config) ->
-            val service = LDAPAuthService(name, config)
-
-            basic(name) {
-
-                config.realm?.let { realm = it }
-
-                config.charset?.let { charset = Charset.forName(it) }
-
-                validate { service.validate(this, it) }
-
-                skipWhen(service::skip)
-            }
-
-            rbac(name) { roleExtractor = service::roles }
-        }
+        it.ldapForm.forEach { (name, config) -> }
 
         it.jwtHs256.filterValues(EnabledConfig::enable).forEach { (name, config) ->
             val service = JWTHS256AuthService(name, config)
@@ -179,9 +100,81 @@ public fun Application.configureAuth(
                 config,
             )
         }
+
+        it.session.forEach { (name, config) ->
+            val service = SessionAuthService(name, config)
+
+            session<UserSession>(name) {
+                challenge { service.challenge(call) }
+
+                validate { service.validate(this, it) }
+
+                skipWhen(service::skip)
+            }
+
+            rbac(name) { roleExtractor = service::roles }
+        }
     }
 
     block?.invoke(this)
+}
+
+private fun <C, S> AuthenticationConfig.configureBasic(
+    name: String,
+    config: C,
+    service: S,
+) where C : BaseBasicAuthConfig, C : RealmAuthProviderConfig, S : AuthProvider, S : ValidateAuthProvider<UserPasswordCredential> {
+    basic(name) {
+        config.realm?.let { realm = it }
+
+        config.charset?.let { charset = Charset.forName(it) }
+
+        validate { service.validate(this, it) }
+
+        skipWhen(service::skip)
+    }
+
+    rbac(name) { roleExtractor = service::roles }
+}
+
+private fun <C, S> AuthenticationConfig.configureDigest(
+    name: String,
+    config: C,
+    service: S,
+) where C : BaseDigestAuthConfig, C : RealmAuthProviderConfig, S : DigestAuthService {
+    digest(name) {
+        config.realm?.let { realm = it }
+
+        config.algorithmName?.let { algorithmName = it }
+
+        digestProvider(service::digestProvider)
+
+        validate { service.validate(this, it) }
+
+        skipWhen(service::skip)
+    }
+
+    rbac(name) { roleExtractor = service::roles }
+}
+
+private fun <C, S> AuthenticationConfig.configureForm(
+    name: String,
+    config: C,
+    service: S,
+) where C : BaseFormAuthConfig, S : AuthProvider, S : ValidateAuthProvider<UserPasswordCredential>, S : ChallengeAuthProvider {
+    form(name) {
+        config.userParamName?.let { userParamName = it }
+
+        config.passwordParamName?.let { passwordParamName = it }
+
+        challenge { service.challenge(call) }
+
+        validate { service.validate(this, it) }
+
+        skipWhen(service::skip)
+    }
+
+    rbac(name) { roleExtractor = service::roles }
 }
 
 private fun AuthenticationConfig.configureJWT(

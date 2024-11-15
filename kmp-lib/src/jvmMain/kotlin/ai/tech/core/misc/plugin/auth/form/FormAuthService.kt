@@ -1,7 +1,7 @@
 package ai.tech.core.misc.plugin.auth.form
 
 import ai.tech.core.misc.auth.model.User
-import ai.tech.core.misc.plugin.auth.AbstractChallengeAuthProvider
+import ai.tech.core.misc.plugin.auth.ChallengeAuthProvider
 import ai.tech.core.misc.plugin.auth.AuthProvider
 import ai.tech.core.misc.plugin.auth.DigestAuthProvider
 import ai.tech.core.misc.plugin.auth.StoreAuthProvider
@@ -19,7 +19,7 @@ public class FormAuthService(
     DigestAuthProvider,
     StoreAuthProvider,
     ValidateAuthProvider<UserPasswordCredential>,
-    AbstractChallengeAuthProvider {
+    ChallengeAuthProvider {
 
     private val digester = getDigester()
 

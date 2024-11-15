@@ -19,6 +19,6 @@ internal interface SnapshotApi {
     @Headers("Content-Type: application/binary")
     suspend fun restore(
         @QueryMap query: Map<String, String> = emptyMap(),
-        @Body requestBody: JsonElement
+        @Body requestBody: ByteArray
     )
 }
