@@ -13,7 +13,6 @@ import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.foundation.lazy.LazyListState
-import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Text
@@ -41,9 +40,12 @@ public fun <T : Any> LazyPagingColumn(
     horizontalAlignment: Alignment.Horizontal = Alignment.CenterHorizontally,
     flingBehavior: FlingBehavior = ScrollableDefaults.flingBehavior(),
     userScrollEnabled: Boolean = true,
-    beforeData: LazyListScope.() -> Unit = {},
-    afterData: LazyListScope.() -> Unit = {},
-    afterLoadState: LazyListScope.() -> Unit = {},
+    beforePrepend: LazyListScope.() -> Unit = {},
+    beforeItems: LazyListScope.() -> Unit = {},
+    afterItems: LazyListScope.() -> Unit = {},
+    afterAppend: LazyListScope.() -> Unit = {},
+    getRefreshErrorMsg: (Throwable) -> String? = { null },
+    getAddErrorMsg: (Throwable) -> String? = { null },
     data: LazyPagingItems<T>,
     itemKey: ((T) -> Any)? = null,
     itemContentType: ((item: @JvmSuppressWildcards T) -> Any?)? = null,
@@ -60,6 +62,7 @@ public fun <T : Any> LazyPagingColumn(
         flingBehavior,
         userScrollEnabled,
     ) {
+        beforePrepend()
         when (data.loadState.prepend) {
             LoadStateLoading -> {
                 item {
@@ -73,7 +76,7 @@ public fun <T : Any> LazyPagingColumn(
             }
 
             is LoadStateError -> {
-                localization.addError?.let { text ->
+                getAddErrorMsg((data.loadState.prepend as LoadStateError).error)?.let { text ->
                     item {
                         ErrorItem(
                             message = text,
@@ -86,27 +89,32 @@ public fun <T : Any> LazyPagingColumn(
             else -> Unit
         }
 
-        items(
-            data.itemCount,
-            itemKey?.let(data::itemKey),
-            data.itemContentType(itemContentType),
-        ) { index ->
-            data[index]?.let { content(it) }
-        }
+        beforeItems()
 
         when (data.loadState.refresh) {
-            is LoadStateNotLoading if data.itemCount < 1 -> {
-                localization.notLoading?.let { text ->
-                    item {
-                        Box(
-                            modifier = Modifier.fillMaxWidth(1f),
-                            contentAlignment = Alignment.Center,
-                        ) {
-                            Text(
-                                text = text,
-                                modifier = Modifier.align(Alignment.Center),
-                                textAlign = TextAlign.Center,
-                            )
+            is LoadStateNotLoading -> {
+                if (data.itemCount > 0) {
+                    items(
+                        data.itemCount,
+                        itemKey?.let(data::itemKey),
+                        data.itemContentType(itemContentType),
+                    ) { index ->
+                        data[index]?.let { content(it) }
+                    }
+                }
+                else {
+                    localization.noItems?.let { text ->
+                        item {
+                            Box(
+                                modifier = Modifier.fillMaxWidth(1f),
+                                contentAlignment = Alignment.Center,
+                            ) {
+                                Text(
+                                    text = text,
+                                    modifier = Modifier.align(Alignment.Center),
+                                    textAlign = TextAlign.Center,
+                                )
+                            }
                         }
                     }
                 }
@@ -126,7 +134,7 @@ public fun <T : Any> LazyPagingColumn(
             }
 
             is LoadStateError -> {
-                localization.refreshError?.let { text ->
+                getRefreshErrorMsg((data.loadState.refresh as LoadStateError).error)?.let { text ->
                     item {
                         ErrorView(
                             message = text,
@@ -139,6 +147,8 @@ public fun <T : Any> LazyPagingColumn(
 
             else -> Unit
         }
+
+        afterItems()
 
         when (data.loadState.append) {
             LoadStateLoading -> {
@@ -153,7 +163,7 @@ public fun <T : Any> LazyPagingColumn(
             }
 
             is LoadStateError -> {
-                localization.addError?.let { text ->
+                getAddErrorMsg((data.loadState.append as LoadStateError).error)?.let { text ->
                     item {
                         ErrorItem(
                             message = text,
@@ -166,6 +176,6 @@ public fun <T : Any> LazyPagingColumn(
             else -> Unit
         }
 
-        afterLoadState()
+        afterAppend()
     }
 }
