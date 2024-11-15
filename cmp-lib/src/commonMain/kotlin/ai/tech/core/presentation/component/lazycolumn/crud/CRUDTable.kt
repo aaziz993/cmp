@@ -1,185 +1,78 @@
 package ai.tech.core.presentation.component.lazycolumn.crud
 
 import ai.tech.core.data.crud.CRUDRepository
-import ai.tech.core.data.crud.model.Entity
-import ai.tech.core.data.crud.model.LimitOffset
 import ai.tech.core.data.database.crud.findPager
+import ai.tech.core.data.expression.Equals
+import ai.tech.core.presentation.component.lazycolumn.LazyPagingColumn
+import ai.tech.core.presentation.component.lazycolumn.crud.model.CRUDTableLocalization
 import ai.tech.core.presentation.component.lazycolumn.crud.model.CRUDTableState
+import androidx.compose.foundation.gestures.FlingBehavior
+import androidx.compose.foundation.gestures.ScrollableDefaults
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.wrapContentWidth
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.OutlinedButton
-import androidx.compose.material3.Text
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.layout.onPlaced
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import app.cash.paging.LoadState
-import app.cash.paging.LoadStateError
-import app.cash.paging.LoadStateLoading
-import app.cash.paging.LoadStateNotLoading
 import app.cash.paging.compose.collectAsLazyPagingItems
-import org.jetbrains.compose.resources.ThemeQualifier
+import compose.icons.SimpleIcons
+import compose.icons.simpleicons.Microsoftexcel
+import androidx.compose.material3.Icon
+import arrow.core.prependTo
 
 @Composable
-public fun <ID : Comparable<ID>, T : Entity<ID>> CRUDTable(
-    modifier: Modifier = Modifier,
-    paddingValues: PaddingValues = PaddingValues(16.dp),
-    verticalArrangement: Arrangement.Vertical = Arrangement.spacedBy(8.dp),
+public fun <ID : Any, T : Any> CRUDTable(
+    modifier: Modifier = Modifier.fillMaxSize(),
     state: CRUDTableState,
-    repository: CRUDRepository<T>
+    contentPadding: PaddingValues = PaddingValues(16.dp),
+    reverseLayout: Boolean = false,
+    verticalArrangement: Arrangement.Vertical = Arrangement.spacedBy(8.dp),
+    horizontalAlignment: Alignment.Horizontal = Alignment.CenterHorizontally,
+    flingBehavior: FlingBehavior = ScrollableDefaults.flingBehavior(),
+    userScrollEnabled: Boolean = true,
+    title: String? = null,
+    downloadIcon: @Composable () -> Unit = { Icon(SimpleIcons.Microsoftexcel, null, tint = Color(0xFF33A852)) },
+    downloadAllIcon: @Composable () -> Unit = { Icon(SimpleIcons.Microsoftexcel, null, tint = Color(0xFF33A852)) },
+    getItemId: (T) -> ID,
+    getProperties: (T) -> List<String> = { it::class.ser },
+    getValues: (T) -> List<Any?>,
+    repository: CRUDRepository<T>,
+    localization: CRUDTableLocalization = CRUDTableLocalization(),
+    onDownload: ((List<T>) -> Unit)? = null,
+    onUpload: (() -> Unit)? = null,
+    onSave: (insert: List<T>, update: List<T>) -> Unit,
+    onDelete: (List<Equals>) -> Unit,
 ) {
-    val data = repository.findPager(limitOffset = LimitOffset(0, 10)).flow.collectAsLazyPagingItems()
+    val data by rememberUpdatedState(repository.findPager(state.sort, state.predicate(), state.limitOffset).flow.collectAsLazyPagingItems())
 
-    LazyColumn(
-        modifier = modifier
-            .fillMaxSize(),
-        verticalArrangement = verticalArrangement,
-        horizontalAlignment = Alignment.CenterHorizontally,
-        contentPadding = paddingValues,
-    ) {
-        // Header row
-        item {
-            HeaderRow()
-        }
+    val scope = rememberCoroutineScope()
 
-        // Data row
-        items(data.itemCount, { data[it]!!.id as Any }) { index ->
-            DataRow(data[index]!!)
-        }
-
-        // State row
-        data.loadState.apply {
-            when {
-                refresh is LoadStateNotLoading && data.itemCount < 1 -> {
-                    item {
-                        Box(
-                            modifier = Modifier.fillParentMaxSize(),
-                            contentAlignment = Alignment.Center,
-                        ) {
-                            Text(
-                                text = "No Items",
-                                modifier = Modifier.align(Alignment.Center),
-                                textAlign = TextAlign.Center,
-                            )
-                        }
-                    }
-                }
-
-                refresh is LoadStateLoading -> {
-                    item {
-                        Box(
-                            modifier = Modifier.fillParentMaxSize(),
-                            contentAlignment = Alignment.Center,
-                        ) {
-                            CircularProgressIndicator(
-                                modifier.align(Alignment.Center),
-                            )
-                        }
-                    }
-                }
-
-                append is LoadStateLoading -> {
-                    item {
-                        CircularProgressIndicator(
-                            modifier = Modifier.fillMaxWidth()
-                                .padding(16.dp)
-                                .wrapContentWidth(Alignment.CenterHorizontally),
-                        )
-                    }
-                }
-
-                refresh is LoadStateError -> {
-                    item {
-                        ErrorView(
-                            message = "No Internet Connection",
-                            onClickRetry = { data.retry() },
-                            modifier = Modifier.fillParentMaxSize(),
-                        )
-                    }
-                }
-
-                append is LoadStateError -> {
-                    item {
-                        ErrorItem(
-                            message = "No Internet Connection",
-                            onClickRetry = { data.retry() },
-                        )
-                    }
-                }
+    LazyPagingColumn(
+        modifier,
+        rememberLazyListState(),
+        contentPadding,
+        reverseLayout,
+        verticalArrangement,
+        horizontalAlignment,
+        flingBehavior,
+        userScrollEnabled,
+        beforeData = {
+            item {
+                title?.let { TitleRow(contentPadding, it) }
+                OptionRow(state, contentPadding, localization)
+                HeaderRow()
             }
-        }
-    }
-}
-
-@Composable
-private fun HeaderRow() {
-}
-
-@Composable
-private fun <ID : Comparable<ID>, T : Entity<ID>> DataRow(item: T) {
-}
-
-@Composable
-private fun ErrorItem(
-    message: String,
-    modifier: Modifier = Modifier,
-    onClickRetry: () -> Unit
-) {
-    Row(
-        modifier = modifier.padding(16.dp),
-        horizontalArrangement = Arrangement.SpaceBetween,
-        verticalAlignment = Alignment.CenterVertically,
-    ) {
-        Text(
-            text = message,
-            maxLines = 1,
-            modifier = Modifier.weight(1f),
-            color = Color.Red,
-        )
-        OutlinedButton(onClick = onClickRetry) {
-            Text(text = "Try again")
-        }
-    }
-}
-
-@Composable
-private fun ErrorView(
-    message: String,
-    modifier: Modifier = Modifier,
-    onClickRetry: () -> Unit
-) {
-    Column(
-        modifier = modifier.padding(16.dp).onPlaced { _ ->
         },
-        verticalArrangement = Arrangement.Center,
-        horizontalAlignment = Alignment.CenterHorizontally,
+        data = data,
     ) {
-        Text(
-            text = message,
-            maxLines = 1,
-            modifier = Modifier.align(Alignment.CenterHorizontally),
-            color = Color.Red,
-        )
-        OutlinedButton(
-            onClick = onClickRetry,
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(16.dp)
-                .wrapContentWidth(Alignment.CenterHorizontally),
-        ) {
-            Text(text = "Try again")
-        }
+        DataRow(it)
     }
 }
+
+

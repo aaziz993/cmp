@@ -30,5 +30,5 @@ public class DataPagingSource<Value : Any>(private val fetchData: suspend (Limit
         } as PagingSourceLoadResult<Long, Value>
     }
 
-    override fun getRefreshKey(state: PagingState<Long, Value>): Long? = null
+    override fun getRefreshKey(state: PagingState<Long, Value>): Long? = state.anchorPosition?.toLong()
 }

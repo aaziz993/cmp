@@ -30,6 +30,7 @@ import kotlinx.datetime.format.DateTimeFormat
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.descriptors.SerialDescriptor
 import kotlinx.serialization.descriptors.SerialKind
+import kotlinx.serialization.json.Json
 
 public const val BOOLEAN_DEFAULT: Boolean = false
 
@@ -383,13 +384,25 @@ public val SerialDescriptor.primeType: KType
 public val SerialDescriptor.isEnum: Boolean
     get() = kind == SerialKind.ENUM
 
+// ////////////////////////////////////////////////////////METHODS///////////////////////////////////////////////////////
+public fun <T : Any> T?.ifNull(block: () -> T): T = if (this == null) {
+    block()
+}
+else {
+    this
+}
+
 // ///////////////////////////////////////////////////////ACCESSOR///////////////////////////////////////////////////////
+@Suppress("UNCHECKED_CAST")
+public val Any.serializableProperties: Map<String, Any?>
+    get() = Json.Default.encodeToAny(this) as Map<String, *>
+
 internal fun Any.accessor(parentKey: Any? = null) = when (this) {
     is List<*> -> ListAccessor(this, parentKey)
 
     is Map<*, *> -> MapLikeAccessor(this, this, parentKey)
 
-    else -> MapLikeAccessor(this, json.encodeToAny(this) as Map<*, *>, parentKey)
+    else -> MapLikeAccessor(this, serializableProperties, parentKey)
 }
 
 public fun <T : Any> T.accessorOrNull(
@@ -447,7 +460,7 @@ public fun <T : Any> Any.copyTo(
 ) {
 }
 
-public fun List<Map<String,Any?>>.deepMerge(): Map<String,Any?> = emptyMap()
+public fun List<Map<String, Any?>>.deepMerge(): Map<String, Any?> = emptyMap()
 
 @Suppress("UNCHECKED_CAST")
 public fun <T : Any> T.eval(

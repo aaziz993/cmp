@@ -5,10 +5,22 @@ import kotlinx.serialization.Transient
 
 @Serializable
 public data class ConsulConfigConfig(
-    val format: String = "YAML",
-    val aclToken: String,
+    val prefix: String = "config",
+    // defaults to the value of the application.name property
+    val name: String?,
+    val profileSeparator: String = ",",
     val defaultContext: String = "application",
-    val prefix: String = "config/",
-    val name: String = "application",
-    val dataKey: String = "data/properties"
-)
+    val dataKey: String? = null,
+    val format: String = "yaml",
+    val aclToken: String? = null,
+) {
+
+    public fun generateKeys(profiles: List<String> = emptyList()): List<String> {
+        val dataKeyPart = dataKey.orEmpty()
+
+        return profiles.map { "$prefix/$name$profileSeparator$it/$dataKeyPart" } + listOf(
+            "$prefix/$name/$dataKeyPart",
+            "$prefix/$defaultContext$dataKeyPart",
+        )
+    }
+}

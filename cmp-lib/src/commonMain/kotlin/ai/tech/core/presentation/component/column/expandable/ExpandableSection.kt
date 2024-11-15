@@ -1,4 +1,4 @@
-package ai.tech.core.presentation.component.expandable
+package ai.tech.core.presentation.component.column.expandable
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.background

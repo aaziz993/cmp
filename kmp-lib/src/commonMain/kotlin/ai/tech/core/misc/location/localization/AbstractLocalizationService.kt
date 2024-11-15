@@ -1,10 +1,17 @@
 package ai.tech.core.misc.location.localization
 
 import ai.tech.core.misc.location.model.Language
+import ai.tech.core.misc.type.ifNull
 import ai.tech.core.misc.type.multiple.replaceWithArgs
-import kotlin.toString
+import dev.jordond.compass.exception.NotFoundException
+import org.lighthousegames.logging.KmLog
+import org.lighthousegames.logging.KmLogging
+
+private val km = KmLogging
 
 public abstract class AbstractLocalizationService {
+
+    protected val logger: KmLog = KmLog(this::class.simpleName!!)
 
     public open lateinit var languages: List<Language>
         protected set
@@ -21,9 +28,17 @@ public abstract class AbstractLocalizationService {
         this.language = language
     }
 
-    public fun translate(key: String, quantity: Int = 0, vararg formatArgs: Any): String = translations[key]?.let {
+    public fun translateOrNull(key: String, quantity: Int = 0, vararg formatArgs: Any): String? = translations[key]?.let {
         it[quantity].replaceWithArgs(formatArgs.map { it.toString() })
-    } ?: key
+    }
+
+    public fun translate(key: String, quantity: Int = 0, vararg formatArgs: Any): String =
+        translateOrNull(key, quantity, *formatArgs).ifNull {
+            logger.warn {
+                "Translation for key \"$key\" not found in language: $language"
+            }
+            key
+        }
 }
 
 

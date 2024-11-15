@@ -3,9 +3,9 @@
 package ai.tech.core.presentation.viewmodel
 
 import ai.tech.core.data.crud.CRUDRepository
-import ai.tech.core.data.crud.findPager
 import ai.tech.core.data.crud.model.LimitOffset
 import ai.tech.core.data.crud.model.Order
+import ai.tech.core.data.database.crud.findPager
 import ai.tech.core.data.expression.BooleanVariable
 import ai.tech.core.data.expression.Variable
 import ai.tech.core.misc.type.multiple.model.OnetimeWhileSubscribed
@@ -55,22 +55,20 @@ public abstract class AbstractViewModel<A : Any> : ViewModel(), KoinComponent {
         toFailure(exceptionTransform(e))
     }
 
-    public suspend fun <T : Any> ViewModelState<T>.mapResult(
-        block: suspend () -> Result<T>): ViewModelState<T> = block().fold(
-        onSuccess = { Success(it) },
-        onFailure = { toFailure(exceptionTransform(it)) },
-    )
+    public suspend fun <T : Any> ViewModelState<T>.mapResult(block: suspend () -> Result<T>): ViewModelState<T> =
+        block().fold(
+            onSuccess = { Success(it) },
+            onFailure = { toFailure(exceptionTransform(it)) },
+        )
 
-    public suspend fun <T : Any> ViewModelState<T>.mapEither(
-        block: suspend () -> Either<Throwable, T>
-    ): ViewModelState<T> = block().fold(
-        ifLeft = { toFailure(exceptionTransform(it)) },
-        ifRight = { Success(it) },
-    )
+    public suspend fun <T : Any> ViewModelState<T>.mapEither(block: suspend () -> Either<Throwable, T>): ViewModelState<T> =
+        block().fold(
+            ifLeft = { toFailure(exceptionTransform(it)) },
+            ifRight = { Success(it) },
+        )
 
-    public suspend fun <T : Any> ViewModelState<T>.mapRaise(
-        block: suspend Raise<Throwable>.() -> T
-    ): ViewModelState<T> = mapEither { either<Throwable, T> { block() } }
+    public suspend fun <T : Any> ViewModelState<T>.mapRaise(block: suspend Raise<Throwable>.() -> T): ViewModelState<T> =
+        mapEither { either<Throwable, T> { block() } }
 
     public abstract fun action(action: A): Boolean
 
