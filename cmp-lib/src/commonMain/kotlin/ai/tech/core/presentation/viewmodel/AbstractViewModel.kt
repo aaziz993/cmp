@@ -2,9 +2,10 @@
 
 package ai.tech.core.presentation.viewmodel
 
+import ai.tech.core.data.crud.CRUDRepository
+import ai.tech.core.data.crud.client.findPager
 import ai.tech.core.data.crud.model.LimitOffset
 import ai.tech.core.data.crud.model.Order
-import ai.tech.core.data.database.crud.PagingCRUDRepository
 import ai.tech.core.data.expression.BooleanVariable
 import ai.tech.core.data.expression.Variable
 import ai.tech.core.misc.type.multiple.model.OnetimeWhileSubscribed
@@ -16,6 +17,7 @@ import ai.tech.core.presentation.viewmodel.model.exception.ViewModelStateExcepti
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import app.cash.paging.ExperimentalPagingApi
 import app.cash.paging.PagingData
 import app.cash.paging.cachedIn
 import arrow.core.Either
@@ -84,13 +86,15 @@ public abstract class AbstractViewModel<A : Any>(protected val savedStateHandle:
         }
     }
 
-    public fun <T : Any> PagingCRUDRepository<T>.viewModelPagingDataFlow(
+    @OptIn(ExperimentalPagingApi::class)
+    public fun <T : Any> CRUDRepository<T>.viewModelPagingDataFlow(
         sort: List<Order>? = null,
         predicate: BooleanVariable? = null,
         limitOffset: LimitOffset
     ): Flow<PagingData<T>> = findPager(sort, predicate, limitOffset).flow.cachedIn(viewModelScope)
 
-    public fun <T : Any> PagingCRUDRepository<T>.viewModelPagingDataFlow(
+    @OptIn(ExperimentalPagingApi::class)
+    public fun <T : Any> CRUDRepository<T>.viewModelPagingDataFlow(
         projections: List<Variable>,
         sort: List<Order>? = null,
         predicate: BooleanVariable? = null,

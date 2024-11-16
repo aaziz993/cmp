@@ -1,6 +1,6 @@
 package ai.tech.core.presentation.component.lazycolumn.crud.viewmodel
 
-import ai.tech.core.data.database.crud.PagingCRUDRepository
+import ai.tech.core.data.crud.CRUDRepository
 import ai.tech.core.data.expression.BooleanVariable
 import ai.tech.core.data.expression.f
 import ai.tech.core.presentation.component.lazycolumn.crud.model.EntityProperty
@@ -10,85 +10,95 @@ import ai.tech.core.presentation.viewmodel.AbstractViewModel
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
 import app.cash.paging.PagingData
-import app.cash.paging.compose.LazyPagingItems
-import app.cash.paging.filter
 import app.cash.paging.insertFooterItem
 import app.cash.paging.map
 import kotlin.collections.filter
+import kotlin.collections.filterNot
 import kotlin.collections.map
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 public class CRUDViewModel<T : Any>(
-    private val repository: PagingCRUDRepository<T>,
+    private val repository: CRUDRepository<T>,
     private val properties: List<EntityProperty>,
-    private val getEntityId: (T) -> Any,
-    private val getEntityValues: (T) -> List<Any?>,
-    private val newEntity: () -> T,
+    private val id: String,
+    private val getValues: (T) -> List<Any?>,
+    private val new: () -> T,
     savedStateHandle: SavedStateHandle
-) : AbstractViewModel<CRUDAction<T>>(savedStateHandle) {
+) : AbstractViewModel<CRUDAction>(savedStateHandle) {
 
     public val state: MutableStateFlow<PagingData<Item<T>>>
         field = MutableStateFlow()
 
     private val items = MutableStateFlow<List<Item<T>>>(emptyList())
 
-    override fun action(action: CRUDAction<T>) {
+    override fun action(action: CRUDAction) {
         when (action) {
             is CRUDAction.Find -> {
                 combine(repository.viewModelPagingDataFlow(action.sort, action.searchFieldStates.predicate(), action.limitOffset), items) { pagingData, items ->
                     val modifiedPagingData = pagingData.map(::entityToItem).map { pagingItem ->
                         items.findLast { !it.append && it.id == pagingItem.id } ?: pagingItem
                     }
+
                     items.filter(Item<*>::append).fold(modifiedPagingData) { acc, v -> acc.insertFooterItem(item = v) }
                 }.onEach { pagingData -> state.update { pagingData } }.launchIn(viewModelScope)
             }
 
             is CRUDAction.Delete -> {
                 viewModelScope.launch {
-                    items.value.filter { it.id in action.ids }.map { "id".f eq it.id }.forEach {
-                        repository.delete(it)
+                    items.update {
+                        val (delete, left) = it.partition { it.id in action.ids }
+
+                        repository.delete(delete.filterNot(Item<*>::append).map { (id.f eq it.id) as BooleanVariable }.reduce { acc, v -> acc.or(v) })
+
+                        left
                     }
                 }
             }
 
-            is CRUDAction.Append -> items.update { it + entityToItem(newEntity()) }
+            is CRUDAction.Append -> items.update { it + entityToItem(new()) }
 
-            is CRUDAction.Edit -> items.update {
-                it.map {
-                    if (it.id in action.ids) {
-                        if (it.edit) {
-                            return@map it.copy(values = getEntityValues(it.entity), edit = false)
-                        }
+            is CRUDAction.Edit -> items.update { it.edit(action.ids) }
 
-                        return@map it.copy(edit = true)
-                    }
-                    it
-                }
+            is CRUDAction.Copy -> items.update {
+                it + it.filter { it.id in action.ids }.map { it.copy(values = getValues(it.entity), append = true) }
             }
 
-            is CRUDAction.Copy -> appendedItems.update {
-                it + items.value.filter { it.id in action.ids }.map { it.copy(values = getEntityValues(it.entity), edit = true) }
-            }
-
-            is CRUDAction.Select -> items.update { it.select(action.ids) }
+            is CRUDAction.Select -> items.update { it.select(action.id) }
 
             CRUDAction.SelectAll -> items.update { it.selectAll() }
         }
     }
 
-    private fun entityToItem(entity: T): Item<T> = Item(entity, getEntityId(entity), getEntityValues(entity))
+    private fun entityToItem(entity: T): Item<T> = Item(entity, getEntityId(entity), getValues(entity))
 
     private fun List<SearchFieldState>.predicate(): BooleanVariable? =
         withIndex().filter { (_, value) -> value.query.isNotEmpty() }
             .map { (index, value) -> properties[index].predicate(value) }.filterNotNull().reduce { acc, v -> acc.and(v) }
 
-    private fun List<Item<T>>.select(ids: List<Any>): List<Item<T>> = filter { it.id in ids }.map { it.copy(select = !it.select) }.filter { }
+    private fun List<Item<T>>.edit(ids: List<Any>) = map {
+        if (it.id in ids) {
+            if (it.edit) {
+                return@map it.copy(values = getValues(it.entity), edit = false)
+            }
 
-    private fun List<Item<T>>.selectAll(): List<Item<T>> = map { it.copy(select = !it.select) }
+            return@map it.copy(edit = true)
+        }
+        it
+    }.filterNot(Item<*>::modify)
+
+    private fun List<Item<T>>.select(id: Any) = map {
+        if (it.id == id) {
+            it.copy(select = !it.select)
+        }
+        else {
+            it
+        }
+    }.filterNot(Item<*>::modify)
+
+    private fun List<Item<T>>.selectAll() = map { it.copy(select = !it.select) }.filterNot(Item<*>::modify)
 }

@@ -7,4 +7,7 @@ public data class Item<T : Any>(
     val append: Boolean = false,
     val edit: Boolean = append,
     val select: Boolean = false,
-)
+) {
+
+    val modify: Boolean = select || edit || append
+}
