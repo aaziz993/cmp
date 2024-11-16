@@ -18,6 +18,7 @@ import kotlin.collections.filter
 import kotlin.collections.map
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.update
@@ -33,7 +34,7 @@ public class CRUDViewModel<T : Any>(
 ) : AbstractViewModel<CRUDAction<T>>(savedStateHandle) {
 
     public val state: MutableStateFlow<PagingData<Item<T>>>
-        field =
+        field = MutableStateFlow()
 
     private val items = MutableStateFlow<List<Item<T>>>(emptyList())
 

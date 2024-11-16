@@ -41,3 +41,6 @@ publish: checkup # 🚀 Publish to Space Packages, GitHub Packages and Maven.
 
 clean: # Clean all.
 	./script/clean.sh
+
+server-auto-reload: # Server application hot reload
+  ./script/server-auto-reload.sh
