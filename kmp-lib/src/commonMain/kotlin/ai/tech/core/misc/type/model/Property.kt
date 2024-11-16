@@ -4,9 +4,10 @@ import ai.tech.core.data.validator.Validator
 import ai.tech.core.misc.type.validator
 import kotlinx.serialization.descriptors.SerialDescriptor
 
-public data class Property(
-    val name: String,
-    val descriptor: SerialDescriptor,
-    val readOnly: Boolean = false,
-    val validator: Validator? = descriptor.validator(),
-)
+public interface Property {
+
+    public val name: String
+    public val descriptor: SerialDescriptor
+    public val readOnly: Boolean
+    public val validator: Validator?
+}

@@ -15,7 +15,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.runtime.toMutableStateList
 
-public class CRUDTableState<ID : Any>(
+public class CRUDTableState(
     public val searchFieldStates: List<SearchFieldState>,
     sort: List<Order> = emptyList(),
     limitOffset: LimitOffset = LimitOffset(0, 10),
@@ -63,7 +63,7 @@ public class CRUDTableState<ID : Any>(
     public companion object {
 
         @Suppress("UNCHECKED_CAST")
-        public fun <ID : Any> Saver(): Saver<CRUDTableState<ID>, *> = listSaver(
+        public fun Saver(): Saver<CRUDTableState, *> = listSaver(
             save = {
                 listOf(
                     it.searchFieldStates,
@@ -95,14 +95,14 @@ public class CRUDTableState<ID : Any>(
 }
 
 @Composable
-public fun <ID : Any> rememberCRUDTableState(state: CRUDTableState<ID>): CRUDTableState<ID> =
+public fun rememberCRUDTableState(state: CRUDTableState): CRUDTableState =
     rememberSaveable(saver = CRUDTableState.Saver()) { state }
 
 @Composable
-public fun <ID : Any> rememberCRUDTableState(
+public fun rememberCRUDTableState(
     properties: List<String>,
     data: CRUDTableStateData,
-): CRUDTableState<ID> =
+): CRUDTableState =
     rememberCRUDTableState(
         CRUDTableState(
             properties.map { property ->

@@ -26,22 +26,12 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.FlowCollector
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
-import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.update
 import org.koin.core.component.KoinComponent
 
 public abstract class AbstractViewModel<A : Any>(protected val savedStateHandle: SavedStateHandle) : ViewModel(), KoinComponent {
-
-    public val state: StateFlow<ViewModelState<Int>>
-        field = viewModelMutableStateFlow {
-            success(1)
-        }
-
-    public val state1: StateFlow<ViewModelState<Int>> = viewModelStateFlow {
-        emit(success(80))
-    }
 
     public open fun exceptionTransform(exception: Throwable): ViewModelStateException = ViewModelStateException(exception)
 
