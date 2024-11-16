@@ -12,6 +12,7 @@ import kotlinx.serialization.DeserializationStrategy
 import kotlinx.serialization.InternalSerializationApi
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.encodeToString
+import kotlinx.serialization.json.Json
 
 @Suppress("UNCHECKED_CAST")
 public class SqlDelightKeyValue(private val queries: KeyValueQueries, public val keyDelimiter: Char = '.') : AbstractKeyValue() {
@@ -30,7 +31,7 @@ public class SqlDelightKeyValue(private val queries: KeyValueQueries, public val
     @OptIn(InternalSerializationApi::class)
     override suspend fun <T> set(keys: List<String>, value: T): Unit = lock.withLock {
         keys.toKey().let { key ->
-            queries.insert(key, value?.let { json.encodeToString(it) })
+            queries.insert(key, value?.let(json::encodeToString))
             stateFlow.update { Entry(key, value) }
         }
     }
@@ -40,7 +41,8 @@ public class SqlDelightKeyValue(private val queries: KeyValueQueries, public val
         deserializer: DeserializationStrategy<T>,
         defaultValue: T?
     ): T = keys.toKey().let {
-        (queries.select(it).executeAsOne().value_?.let { json.decodeFromString(deserializer, it) } ?: defaultValue) as T
+        (queries.select(it).executeAsOne().value_?.let { json.decodeFromString(deserializer, it) }
+            ?: defaultValue) as T
     }
 
     override suspend fun <T> getFlow(

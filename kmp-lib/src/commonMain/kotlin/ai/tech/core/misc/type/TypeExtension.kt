@@ -406,14 +406,6 @@ public fun SerialDescriptor.validator(
     floatPatternMessage: String = "value_is_not_float",
 ): Validator? = validatorRules(uIntPatternMessage, intPatternMessage, floatPatternMessage).takeNotEmpty()?.let { Validator(type, it + additionalRules, !isNullable) }
 
-// ////////////////////////////////////////////////////////METHODS///////////////////////////////////////////////////////
-public fun <T : Any> T?.ifNull(block: () -> T): T = if (this == null) {
-    block()
-}
-else {
-    this
-}
-
 // ///////////////////////////////////////////////////////ACCESSOR///////////////////////////////////////////////////////
 @Suppress("UNCHECKED_CAST")
 public val Any.serializablePropertyValues: Map<String, Any?>

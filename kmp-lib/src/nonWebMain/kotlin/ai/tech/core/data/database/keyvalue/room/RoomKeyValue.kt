@@ -32,7 +32,7 @@ public class RoomKeyValue(private val database: KeyValueDatabase) : AbstractKeyV
     @OptIn(InternalSerializationApi::class)
     override suspend fun <T> set(keys: List<String>, value: T): Unit = lock.withLock {
         keys.toKey().let { key ->
-            dao.insert(KeyValue(key = key, value = value?.let { json.encodeToString(it) }))
+            dao.insert(KeyValue(key = key, value = value?.let(json::encodeToString)))
             stateFlow.update { Entry(key, value) }
         }
     }

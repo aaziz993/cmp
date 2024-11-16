@@ -19,6 +19,8 @@ import kotlinx.serialization.DeserializationStrategy
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.descriptors.capturedKClass
+import kotlinx.serialization.encodeToString
+import kotlinx.serialization.json.Json
 import kotlinx.serialization.serializer
 
 @Suppress("UNCHECKED_CAST")
@@ -42,7 +44,7 @@ public class SettingsKeyValue(
             is Float -> settings.putFloat(key, value)
             is Double -> settings.putDouble(key, value)
             is String -> settings.putString(key, value)
-            else -> settings.putString(key, value?.let { json.encodeToString(serializer(), it) } ?: nullValue)
+            else -> settings.putString(key, value?.let(json::encodeToString) ?: nullValue)
         }
     }
 
@@ -59,7 +61,7 @@ public class SettingsKeyValue(
                     null
                 }
                 else {
-                    json.decodeFromString(deserializer, it)
+                    json.decodeFromString(it)
                 }
             }
         } ?: defaultValue) as T

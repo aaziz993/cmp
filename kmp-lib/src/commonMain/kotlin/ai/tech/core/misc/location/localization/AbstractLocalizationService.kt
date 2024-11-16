@@ -1,13 +1,9 @@
 package ai.tech.core.misc.location.localization
 
 import ai.tech.core.misc.location.model.Language
-import ai.tech.core.misc.type.ifNull
 import ai.tech.core.misc.type.multiple.replaceWithArgs
 import org.lighthousegames.logging.KmLog
-import org.lighthousegames.logging.KmLogging
 import org.lighthousegames.logging.logging
-
-private val km = KmLogging
 
 public abstract class AbstractLocalizationService {
 
@@ -31,7 +27,7 @@ public abstract class AbstractLocalizationService {
     }
 
     public fun translate(key: String, quantity: Int = 0, vararg formatArgs: Any): String =
-        translateOrNull(key, quantity, *formatArgs).ifNull {
+        translateOrNull(key, quantity, *formatArgs) ?: run {
             log.w { "Translation for key \"$key\" not found in language: $language" }
             key
         }
