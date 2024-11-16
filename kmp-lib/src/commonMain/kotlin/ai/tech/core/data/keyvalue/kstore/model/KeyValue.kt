@@ -1,4 +1,4 @@
-package ai.tech.core.data.keyvalue.kstore.model;
+package ai.tech.core.data.keyvalue.kstore.model
 
 import kotlinx.serialization.Serializable
 

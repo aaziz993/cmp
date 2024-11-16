@@ -1,4 +1,4 @@
-package ai.tech.core.misc.cryptography.model;
+package ai.tech.core.misc.cryptography.model
 
 import kotlinx.serialization.Serializable
 

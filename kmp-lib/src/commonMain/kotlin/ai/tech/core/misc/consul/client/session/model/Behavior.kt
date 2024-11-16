@@ -1,4 +1,4 @@
-package ai.tech.core.misc.consul.client.session.model;
+package ai.tech.core.misc.consul.client.session.model
 
 import kotlinx.serialization.Serializable
 

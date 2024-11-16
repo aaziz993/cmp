@@ -6,7 +6,7 @@ import ai.tech.core.misc.plugin.auth.rbac.RBACPlugin
 import io.ktor.server.auth.*
 import io.ktor.server.routing.*
 
-public fun Route.auth(
+public fun Route.authOpt(
     auth: AuthResource?,
     optional: Boolean = false,
     build: Route.() -> Unit

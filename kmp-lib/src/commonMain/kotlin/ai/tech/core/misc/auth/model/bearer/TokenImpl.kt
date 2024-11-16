@@ -1,4 +1,4 @@
-package ai.tech.core.misc.auth.model.bearer;
+package ai.tech.core.misc.auth.model.bearer
 
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable

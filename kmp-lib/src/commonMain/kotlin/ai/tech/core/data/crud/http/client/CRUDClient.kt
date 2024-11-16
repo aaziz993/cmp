@@ -16,6 +16,7 @@ import ai.tech.core.misc.type.serializer.decodeAnyFromString
 import ai.tech.core.misc.type.serializer.json
 import de.jensklingenberg.ktorfit.Ktorfit
 import io.ktor.client.*
+import io.ktor.client.plugins.HttpResponseValidator
 import io.ktor.client.request.forms.*
 import io.ktor.client.statement.*
 import io.ktor.http.*
@@ -40,7 +41,15 @@ public open class CRUDClient<T : Any>(
     public val authService: ClientAuthService? = null,
 ) : CRUDRepository<T> {
 
-    private val ktorfit = Ktorfit.Builder().httpClient(httpClient).baseUrl(path).build()
+    private val ktorfit = Ktorfit.Builder().httpClient(httpClient.config {
+        HttpResponseValidator {
+            validateResponse { response ->
+                when (response.status.value) {
+
+                }
+            }
+        }
+    }).baseUrl(path).build()
 
     private val api = ktorfit.createCRUDApi()
 

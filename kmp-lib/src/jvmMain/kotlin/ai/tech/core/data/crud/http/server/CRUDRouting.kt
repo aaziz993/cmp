@@ -1,4 +1,4 @@
-package ai.tech.core.data.database.http
+package ai.tech.core.data.crud.http.server
 
 import ai.tech.core.data.crud.CRUDRepository
 import ai.tech.core.data.crud.model.LimitOffset
@@ -7,9 +7,10 @@ import ai.tech.core.data.crud.model.config.CRUDRepositoryConfig
 import ai.tech.core.data.expression.AggregateExpression
 import ai.tech.core.data.expression.BooleanVariable
 import ai.tech.core.data.expression.Variable
+import ai.tech.core.misc.auth.model.AuthResource
 import ai.tech.core.misc.network.http.client.readFormData
 import ai.tech.core.misc.network.http.server.handleHttpRequest
-import ai.tech.core.misc.plugin.auth.auth
+import ai.tech.core.misc.plugin.auth.authOpt
 import ai.tech.core.misc.type.serializer.decodeAnyFromString
 import ai.tech.core.misc.type.serializer.encodeAnyToJsonElement
 import ai.tech.core.misc.type.serializer.encodeAnyToString
@@ -33,9 +34,12 @@ import kotlinx.serialization.serializer
 public inline fun <reified T : Any> Routing.CrudRouting(
     path: String,
     repository: CRUDRepository<T>,
-    config: CRUDRepositoryConfig? = null,
+    readAuth: AuthResource? = null,
+    saveAuth: AuthResource? = readAuth,
+    updateAuth: AuthResource? = readAuth,
+    deleteAuth: AuthResource? = readAuth,
 ) {
-    auth(config?.saveAuth) {
+    authOpt(saveAuth) {
         put("$path/insert") {
             handleHttpRequest {
                 repository.insert(call.receive<List<T>>())
@@ -45,7 +49,7 @@ public inline fun <reified T : Any> Routing.CrudRouting(
     }
 
 
-    auth(config?.updateAuth) {
+    authOpt(updateAuth) {
         post("$path/updateTypeSafe") {
             handleHttpRequest {
                 call.respond(HttpStatusCode.OK, repository.update(call.receive<T>()))
@@ -70,7 +74,7 @@ public inline fun <reified T : Any> Routing.CrudRouting(
         }
     }
 
-    auth(config?.readAuth) {
+    authOpt(readAuth) {
         post("$path/find") {
             handleHttpRequest {
                 val form = call.receiveMultipart().readFormData()
@@ -129,7 +133,7 @@ public inline fun <reified T : Any> Routing.CrudRouting(
         }
     }
 
-    auth(config?.deleteAuth) {
+    authOpt(deleteAuth) {
         post("$path/delete") {
             handleHttpRequest {
                 call.respond(HttpStatusCode.OK, repository.delete(call.receiveNullable()))
@@ -137,7 +141,7 @@ public inline fun <reified T : Any> Routing.CrudRouting(
         }
     }
 
-    auth(config?.readAuth) {
+    authOpt(readAuth) {
         post("$path/aggregate") {
             handleHttpRequest {
                 val form = call.receiveMultipart().readFormData()

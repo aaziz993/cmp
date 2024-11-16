@@ -1,4 +1,4 @@
-package ai.tech.core.misc.network.http.client.model.exception;
+package ai.tech.core.misc.network.http.client.model.exception
 
 import kotlinx.serialization.Serializable
 

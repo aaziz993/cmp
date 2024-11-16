@@ -1,4 +1,4 @@
-package ai.tech.core.misc.type.multiple.model;
+package ai.tech.core.misc.type.multiple.model
 
 import kotlinx.coroutines.flow.*
 

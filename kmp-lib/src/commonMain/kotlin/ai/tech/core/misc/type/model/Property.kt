@@ -1,4 +1,4 @@
-package ai.tech.core.misc.type.model;
+package ai.tech.core.misc.type.model
 
 import ai.tech.core.data.validator.Validator
 import ai.tech.core.misc.type.validator

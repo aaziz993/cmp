@@ -1,4 +1,4 @@
-package ai.tech.core.presentation.component.lazycolumn.crud.model.config;
+package ai.tech.core.presentation.component.lazycolumn.crud.model.config
 
 import ai.tech.core.data.crud.model.config.CRUDRepositoryConfig
 import ai.tech.core.presentation.component.lazycolumn.crud.model.CRUDTableStateData

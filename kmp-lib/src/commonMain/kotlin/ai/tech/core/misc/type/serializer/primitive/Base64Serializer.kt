@@ -1,4 +1,4 @@
-package ai.tech.core.misc.type.serializer.primitive;
+package ai.tech.core.misc.type.serializer.primitive
 
 import ai.tech.core.misc.type.multiple.decode
 import ai.tech.core.misc.type.multiple.decodeBase64
