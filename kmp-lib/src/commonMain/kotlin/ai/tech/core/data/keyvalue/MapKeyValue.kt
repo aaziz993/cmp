@@ -5,6 +5,7 @@ import ai.tech.core.misc.type.serializer.decodeFromAny
 import ai.tech.core.misc.type.get
 import ai.tech.core.misc.type.model.Entry
 import ai.tech.core.misc.type.remove
+import ai.tech.core.misc.type.serializer.encodeToAny
 import ai.tech.core.misc.type.set
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -23,8 +24,10 @@ public open class MapKeyValue(
     override suspend fun contains(keys: List<String>): Boolean = map.contains(keys)
 
     override suspend fun <T> set(keys: List<String>, value: T) {
-        map.set(keys, value)
-        stateFlow.update { Entry(keys, value) }
+        value?.let(json::encodeToAny).let { encodedValue ->
+            map.set(keys, encodedValue)
+            stateFlow.update { Entry(keys, encodedValue) }
+        }
     }
 
     override suspend fun <T> get(

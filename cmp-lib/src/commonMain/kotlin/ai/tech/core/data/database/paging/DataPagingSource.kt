@@ -1,4 +1,4 @@
-package ai.tech.core.data
+package ai.tech.core.data.database.paging
 
 import ai.tech.core.data.crud.model.LimitOffset
 import ai.tech.core.data.crud.model.Page
