@@ -15,7 +15,7 @@ import java.io.File
 public fun Application.configureRouting(config: RoutingConfig?, block: (Routing.() -> Unit)? = null) = routing {
     config?.takeIf(EnabledConfig::enable)?.let {
 
-        it.staticRootPath?.let { staticRootFolder = File("static") }
+        it.staticRootPath?.let { staticRootFolder = File(it) }
 
         it.staticFiles?.takeIf(EnabledConfig::enable)?.let {
             staticFiles(it.remotePath, File(it.pathName), it.index) {

@@ -8,7 +8,7 @@ import de.jensklingenberg.ktorfit.http.Path
 
 internal interface KeycloakTokenApi {
 
-    @POST("/realms/{realm}/protocol/openid-connect/token")
+    @POST("realms/{realm}/protocol/openid-connect/token")
     @FormUrlEncoded
     suspend fun getToken(
         @Path("realm") realm: String,

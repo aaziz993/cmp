@@ -1,6 +1,5 @@
 package ai.tech.core.misc.auth.keycloak.client.admin
 
-import ai.tech.core.misc.auth.client.keycloak.createKeycloakAdminApi
 import ai.tech.core.misc.auth.keycloak.client.admin.model.ExecuteActionsEmail
 import ai.tech.core.misc.auth.keycloak.client.admin.model.ResetPassword
 import ai.tech.core.misc.auth.keycloak.client.admin.model.RoleRepresentation
@@ -13,7 +12,7 @@ import kotlin.collections.orEmpty
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.json.Json
 
-public class KeycloakAdminClient(ktorfit: Ktorfit,public val realm: String) {
+public class KeycloakAdminClient(ktorfit: Ktorfit, public val realm: String) {
 
     private val api = ktorfit.createKeycloakAdminApi()
 
@@ -24,10 +23,10 @@ public class KeycloakAdminClient(ktorfit: Ktorfit,public val realm: String) {
     }
 
     public suspend fun createUser(userRepresentation: UserRepresentation): Unit =
-        KeycloakAdminClient.api.createUser(realm, userRepresentation)
+        api.createUser(realm, userRepresentation)
 
     public suspend fun getUsers(userRepresentation: UserRepresentation? = null, exact: Boolean? = null): Set<UserRepresentation> =
-        KeycloakAdminClient.api.getUsers(
+        api.getUsers(
             realm,
             userRepresentation?.let {
                 listOfNotNull(
@@ -43,18 +42,18 @@ public class KeycloakAdminClient(ktorfit: Ktorfit,public val realm: String) {
         )
 
     public suspend fun updateUser(userRepresentation: UserRepresentation): Unit =
-        KeycloakAdminClient.api.updateUser(realm, userRepresentation.id!!, userRepresentation)
+        api.updateUser(realm, userRepresentation.id!!, userRepresentation)
 
-    public suspend fun deleteUser(userId: String): Unit = KeycloakAdminClient.api.deleteUser(realm, userId)
+    public suspend fun deleteUser(userId: String): Unit = api.deleteUser(realm, userId)
 
-    public suspend fun getUserInfo(): UserInfo = KeycloakAdminClient.api.getUserInfo(realm)
+    public suspend fun getUserInfo(): UserInfo = api.getUserInfo(realm)
 
     public suspend fun getUserRealmRoles(userId: String): Set<RoleRepresentation> =
-        KeycloakAdminClient.api.getUserRealmRoles(realm, userId)
+        api.getUserRealmRoles(realm, userId)
 
     public suspend fun resetPassword(userId: String, resetPassword: ResetPassword): Unit =
-        KeycloakAdminClient.api.resetPassword(realm, userId, resetPassword)
+        api.resetPassword(realm, userId, resetPassword)
 
     public suspend fun executeActionsEmail(userId: String, executeActionsEmail: ExecuteActionsEmail): Unit =
-        KeycloakAdminClient.api.updatePassword(realm, userId, executeActionsEmail)
+        api.updatePassword(realm, userId, executeActionsEmail)
 }

@@ -36,7 +36,7 @@ public inline fun <reified T : Any> Routing.CrudRouting(
     config: CRUDRepositoryConfig? = null,
 ) {
     auth(config?.saveAuth) {
-        post("$path/insert") {
+        put("$path/insert") {
             handleHttpRequest {
                 repository.insert(call.receive<List<T>>())
                 call.respondText("Inserted", status = HttpStatusCode.OK)

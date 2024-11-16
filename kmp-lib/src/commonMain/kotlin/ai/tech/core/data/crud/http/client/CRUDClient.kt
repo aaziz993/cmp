@@ -1,24 +1,21 @@
 @file:OptIn(InternalAPI::class)
 
-package ai.tech.core.data.crud.http
+package ai.tech.core.data.crud.http.client
 
 import ai.tech.core.data.crud.CRUDRepository
+import ai.tech.core.data.crud.http.createCRUDApi
 import ai.tech.core.data.crud.model.LimitOffset
 import ai.tech.core.data.crud.model.Order
 import ai.tech.core.data.crud.model.Page
-import ai.tech.core.data.crud.model.config.CRUDRepositoryConfig
 import ai.tech.core.data.expression.AggregateExpression
 import ai.tech.core.data.expression.BooleanVariable
 import ai.tech.core.data.expression.Variable
 import ai.tech.core.misc.auth.client.ClientAuthService
-import ai.tech.core.misc.network.http.client.requireHttpStatus
 import ai.tech.core.misc.type.serializer.decodeAnyFromJsonElement
 import ai.tech.core.misc.type.serializer.decodeAnyFromString
 import ai.tech.core.misc.type.serializer.json
+import de.jensklingenberg.ktorfit.Ktorfit
 import io.ktor.client.*
-import io.ktor.client.call.*
-import io.ktor.client.plugins.defaultRequest
-import io.ktor.client.request.*
 import io.ktor.client.request.forms.*
 import io.ktor.client.statement.*
 import io.ktor.http.*
@@ -40,16 +37,12 @@ public open class CRUDClient<T : Any>(
     public val serializer: KSerializer<T>,
     httpClient: HttpClient,
     public val path: String,
-    public val config: CRUDRepositoryConfig? = null,
-    public val authProvider: String? = null,
     public val authService: ClientAuthService? = null,
 ) : CRUDRepository<T> {
 
-    public val httpClient: HttpClient = httpClient.config {
-        defaultRequest {
-            url(path)
-        }
-    }
+    private val ktorfit = Ktorfit.Builder().httpClient(httpClient).baseUrl(path).build()
+
+    private val api = ktorfit.createCRUDApi()
 
     private val jsonHeader = Headers.build {
         append(HttpHeaders.ContentType, ContentType.Application.Json)
@@ -59,43 +52,19 @@ public open class CRUDClient<T : Any>(
         throw UnsupportedOperationException("Not supported by remote client")
     }
 
-    override suspend fun insert(entities: List<T>) {
-        httpClient.post("/insert") {
-            if (config?.saveAuth != null && authProvider in config.saveAuth.providers) {
-                authService!!.auth(this)
-            }
+    override suspend fun insert(entities: List<T>): Unit = api.insert(entities)
 
-            header(HttpHeaders.ContentType, ContentType.Application.Json)
-
-            setBody(entities)
-        }.requireHttpStatus()
-    }
-
-    override suspend fun update(entities: List<T>): List<Boolean> = httpClient.post("/updateTypeSafe") {
-        if (config?.updateAuth != null && authProvider in config.updateAuth.providers) {
-            authService!!.auth(this)
-        }
-
-        header(HttpHeaders.ContentType, ContentType.Application.Json)
-
-        setBody(Json.Default.encodeToString(entities))
-    }.requireHttpStatus().body()
+    override suspend fun update(entities: List<T>): List<Boolean> = api.update(entities)
 
     override suspend fun update(entities: List<Map<String, Any?>>, predicate: BooleanVariable?): List<Long> =
-        httpClient.post("/update") {
-            if (config?.updateAuth != null && authProvider in config.updateAuth.providers) {
-                authService!!.auth(this)
-            }
-
-            setBody(
-                MultiPartFormDataContent(
-                    formData {
-                        append("entities", Json.Default.encodeToString(entities), jsonHeader)
-                        predicate?.let { append("predicate", it, jsonHeader) }
-                    },
-                ),
-            )
-        }.requireHttpStatus().body()
+        api.update(
+            MultiPartFormDataContent(
+                formData {
+                    append("entities", Json.Default.encodeToString(entities), jsonHeader)
+                    predicate?.let { append("predicate", it, jsonHeader) }
+                },
+            ),
+        )
 
     override fun find(sort: List<Order>?, predicate: BooleanVariable?): Flow<T> =
         flow {
@@ -137,57 +106,32 @@ public open class CRUDClient<T : Any>(
         }
 
     override suspend fun delete(predicate: BooleanVariable?): Long =
-        httpClient.post("/delete") {
-            if (config?.deleteAuth != null && authProvider in config.deleteAuth.providers) {
-                authService!!.auth(this)
-            }
-
-            header(HttpHeaders.ContentType, ContentType.Application.Json)
-
-            predicate?.let { setBody(Json.Default.encodeToString(it)) }
-        }.requireHttpStatus().body()
+        api.delete(predicate)
 
     @Suppress("UNCHECKED_CAST")
     override suspend fun <T> aggregate(aggregate: AggregateExpression<T>, predicate: BooleanVariable?): T =
-        httpClient.post("/aggregate") {
-            if (config?.readAuth != null && authProvider in config.readAuth.providers) {
-                authService!!.auth(this)
-            }
-
-            setBody(
-                MultiPartFormDataContent(
-                    formData {
-                        append("aggregate", aggregate, jsonHeader)
-                        predicate?.let { append("predicate", it, jsonHeader) }
-                    },
-                ),
-            )
-        }.requireHttpStatus {
-            it == HttpStatusCode.OK || it == HttpStatusCode.NoContent
-        }.takeIf { it.status != HttpStatusCode.NoContent }?.let {
-            json.decodeFromString(PolymorphicSerializer(Any::class), it.bodyAsText())
-        } as T
+        api.aggregate(
+            MultiPartFormDataContent(
+                formData {
+                    append("aggregate", aggregate, jsonHeader)
+                    predicate?.let { append("predicate", it, jsonHeader) }
+                },
+            ),
+        ).execute().takeIf { it.status != HttpStatusCode.NoContent }?.let { json.decodeFromString(PolymorphicSerializer(Any::class), it.bodyAsText()) } as T
 
     private suspend fun findHelper(
         projections: List<Variable>?,
         sort: List<Order>?,
         predicate: BooleanVariable?,
         limitOffset: LimitOffset?
-    ): HttpResponse =
-        httpClient.post("/find") {
-            if (config?.readAuth != null && authProvider in config.readAuth.providers) {
-                authService!!.auth(this)
+    ): HttpResponse = api.find(
+        MultiPartFormDataContent(
+            formData {
+                projections?.let { append("projections", it, jsonHeader) }
+                sort?.let { append("sort", it, jsonHeader) }
+                predicate?.let { append("predicate", it, jsonHeader) }
+                limitOffset?.let { append("limitOffset", it, jsonHeader) }
             }
-
-            setBody(
-                MultiPartFormDataContent(
-                    formData {
-                        projections?.let { append("projections", it, jsonHeader) }
-                        sort?.let { append("sort", it, jsonHeader) }
-                        predicate?.let { append("predicate", it, jsonHeader) }
-                        limitOffset?.let { append("limitOffset", it, jsonHeader) }
-                    },
-                ),
-            )
-        }.requireHttpStatus()
+        ),
+    ).execute()
 }

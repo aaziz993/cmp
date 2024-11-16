@@ -1,24 +1,27 @@
 package ai.tech.core.misc.auth.keycloak.client.token.model
 
+import ai.tech.core.misc.auth.model.bearer.Token
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 @Serializable
 public data class TokenResponse(
     @SerialName("access_token")
-val accessToken: String,
+    override val accessToken: String,
     @SerialName("expires_in")
-val expiresIn: Int,
+    override val expiresIn: Int,
     @SerialName("refresh_expires_in")
-val refreshExpiresIn: Int?,
+    override val refreshExpiresIn: Int?,
     @SerialName("refresh_token")
-val refreshToken: String,
+    override val refreshToken: String,
     @SerialName("token_type")
-val tokenType: String,
+    override val tokenType: String,
     @SerialName("not-before-policy")
-val notBeforePolicy: Int?,
+    val notBeforePolicy: Int?,
     @SerialName("session_state")
-val sessionState: String?,
+    val sessionState: String?,
     @SerialName("scope")
-val scope: String,
-)
+    override val scope: String,
+    @SerialName("id_token")
+    override val idToken: String? = null
+) : Token

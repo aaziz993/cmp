@@ -1,13 +1,14 @@
 package ai.tech.core.misc.auth.client
 
 import ai.tech.core.misc.auth.model.User
-import io.ktor.client.request.*
 
 public interface ClientAuthService {
 
-    public suspend fun signIn(username: String, password: String)
+    public val name: String
 
-    public suspend fun signOut()
+    public suspend fun authIn(username: String, password: String)
+
+    public suspend fun authOut()
 
     public suspend fun getUser(): User?
 
@@ -21,9 +22,7 @@ public interface ClientAuthService {
 
     public suspend fun resetPassword(password: String, newPassword: String)
 
-    public suspend fun forgotPassword(username: String)
+    public suspend fun forgotPassword()
 
-    public suspend fun isSignedIn(): Boolean
-
-    public suspend fun auth(httpRequestBuilder: HttpRequestBuilder)
+    public suspend fun isAuth(): Boolean
 }

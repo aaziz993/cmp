@@ -7,7 +7,6 @@ import ai.tech.core.misc.type.accessor.ListAccessor
 import ai.tech.core.misc.type.accessor.MapLikeAccessor
 import ai.tech.core.misc.type.multiple.depthIterator
 import ai.tech.core.misc.type.serializer.encodeToAny
-import ai.tech.core.misc.type.serializer.json
 import ai.tech.core.misc.type.single.parseOrNull
 import ai.tech.core.misc.type.single.uuidFromOrNull
 import com.benasher44.uuid.Uuid
@@ -394,7 +393,7 @@ else {
 
 // ///////////////////////////////////////////////////////ACCESSOR///////////////////////////////////////////////////////
 @Suppress("UNCHECKED_CAST")
-public val Any.serializableProperties: Map<String, Any?>
+public val Any.serializablePropertyValues: Map<String, Any?>
     get() = Json.Default.encodeToAny(this) as Map<String, *>
 
 internal fun Any.accessor(parentKey: Any? = null) = when (this) {
@@ -402,7 +401,7 @@ internal fun Any.accessor(parentKey: Any? = null) = when (this) {
 
     is Map<*, *> -> MapLikeAccessor(this, this, parentKey)
 
-    else -> MapLikeAccessor(this, serializableProperties, parentKey)
+    else -> MapLikeAccessor(this, serializablePropertyValues, parentKey)
 }
 
 public fun <T : Any> T.accessorOrNull(

@@ -21,8 +21,8 @@ public class DataPagingSource<Value : Any>(private val fetchData: suspend (Limit
 
             PagingSourceLoadResultPage(
                 page.entities,
-                (offset - 1).takeIf { it >= initialOffset },
-                (offset + 1).takeIf { it < page.totalCount },
+                offset.dec().takeIf { it >= initialOffset },
+                offset.inc().takeIf { it < page.totalCount },
             )
         }
         catch (e: Exception) {
@@ -30,5 +30,10 @@ public class DataPagingSource<Value : Any>(private val fetchData: suspend (Limit
         } as PagingSourceLoadResult<Long, Value>
     }
 
-    override fun getRefreshKey(state: PagingState<Long, Value>): Long? = state.anchorPosition?.toLong()
+    override fun getRefreshKey(state: PagingState<Long, Value>): Long? {
+        return state.anchorPosition?.let { anchorPosition ->
+            state.closestPageToPosition(anchorPosition)?.prevKey?.plus(1)
+                ?: state.closestPageToPosition(anchorPosition)?.nextKey?.minus(1)
+        }
+    }
 }

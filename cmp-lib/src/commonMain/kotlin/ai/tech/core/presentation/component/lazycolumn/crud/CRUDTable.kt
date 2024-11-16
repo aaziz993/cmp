@@ -24,12 +24,15 @@ import app.cash.paging.compose.collectAsLazyPagingItems
 import compose.icons.SimpleIcons
 import compose.icons.simpleicons.Microsoftexcel
 import androidx.compose.material3.Icon
+import androidx.compose.runtime.LaunchedEffect
 import arrow.core.prependTo
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
 @Composable
 public fun <ID : Any, T : Any> CRUDTable(
     modifier: Modifier = Modifier.fillMaxSize(),
-    state: CRUDTableState,
+    state: CRUDTableState<ID>,
     contentPadding: PaddingValues = PaddingValues(16.dp),
     reverseLayout: Boolean = false,
     verticalArrangement: Arrangement.Vertical = Arrangement.spacedBy(8.dp),
@@ -72,6 +75,12 @@ public fun <ID : Any, T : Any> CRUDTable(
         data = data,
     ) {
         DataRow(it)
+    }
+
+    LaunchedEffect(key1 = Unit) {
+        launch(Dispatchers.Main) {
+            data.refresh()
+        }
     }
 }
 
