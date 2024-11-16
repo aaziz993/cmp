@@ -117,6 +117,8 @@ public fun <T> List<T>.unmerge(step: Int): List<List<T>> =
         (indices step step).map { this[offset + it] }
     }
 
+public fun <T> List<T>.takeNotEmpty(): List<T>? = takeIf(List<*>::isNotEmpty)
+
 public fun <T : List<*>> List<T>.filterNotEmpty(): List<T> = filterNot(List<*>::isEmpty)
 
 public fun <T : Map<*, *>> List<T>.filterNotEmpty(): List<T> = filterNot(Map<*, *>::isEmpty)

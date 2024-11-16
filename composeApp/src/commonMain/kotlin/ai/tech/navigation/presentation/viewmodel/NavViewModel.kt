@@ -10,8 +10,8 @@ import org.koin.android.annotation.KoinViewModel
 @KoinViewModel
 public class NavViewModel(
     public val navigator: Navigator<Destination>,
-    override val savedStateHandle: SavedStateHandle
-) : AbstractViewModel<NavigationAction>() {
+    savedStateHandle: SavedStateHandle
+) : AbstractViewModel<NavigationAction>(savedStateHandle) {
 
-    override fun action(action: NavigationAction): Boolean = navigator.navigate(action)
+    override fun action(action: NavigationAction) = navigator.navigate(action)
 }

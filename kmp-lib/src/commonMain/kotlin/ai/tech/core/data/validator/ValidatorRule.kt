@@ -112,6 +112,11 @@ public data class ValidatorRule(
             message = message
         )
 
+        public fun uIntValue(message: String): ValidatorRule = ValidatorRule(
+            """[^-]?\d+""",
+            message = message
+        )
+
         public fun floatValue(message: String): ValidatorRule = ValidatorRule(
             """[+-]?\d+\.\d+""",
             message = message

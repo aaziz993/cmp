@@ -2,10 +2,9 @@
 
 package ai.tech.core.presentation.viewmodel
 
-import ai.tech.core.data.crud.CRUDRepository
 import ai.tech.core.data.crud.model.LimitOffset
 import ai.tech.core.data.crud.model.Order
-import ai.tech.core.data.database.crud.findPager
+import ai.tech.core.data.database.crud.PagingCRUDRepository
 import ai.tech.core.data.expression.BooleanVariable
 import ai.tech.core.data.expression.Variable
 import ai.tech.core.misc.type.multiple.model.OnetimeWhileSubscribed
@@ -33,9 +32,7 @@ import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.update
 import org.koin.core.component.KoinComponent
 
-public abstract class AbstractViewModel<A : Any> : ViewModel(), KoinComponent {
-
-    public abstract val savedStateHandle: SavedStateHandle
+public abstract class AbstractViewModel<A : Any>(protected val savedStateHandle: SavedStateHandle) : ViewModel(), KoinComponent {
 
     public val state: StateFlow<ViewModelState<Int>>
         field = viewModelMutableStateFlow {
@@ -70,7 +67,7 @@ public abstract class AbstractViewModel<A : Any> : ViewModel(), KoinComponent {
     public suspend fun <T : Any> ViewModelState<T>.mapRaise(block: suspend Raise<Throwable>.() -> T): ViewModelState<T> =
         mapEither { either<Throwable, T> { block() } }
 
-    public abstract fun action(action: A): Boolean
+    public abstract fun action(action: A)
 
     protected fun <T : Any> viewModelStateFlow(
         initialValue: ViewModelState<T> = idle(),
@@ -97,13 +94,13 @@ public abstract class AbstractViewModel<A : Any> : ViewModel(), KoinComponent {
         }
     }
 
-    public fun <T : Any> CRUDRepository<T>.viewModelPagingDataFlow(
+    public fun <T : Any> PagingCRUDRepository<T>.viewModelPagingDataFlow(
         sort: List<Order>? = null,
         predicate: BooleanVariable? = null,
         limitOffset: LimitOffset
     ): Flow<PagingData<T>> = findPager(sort, predicate, limitOffset).flow.cachedIn(viewModelScope)
 
-    public fun <T : Any> CRUDRepository<T>.viewModelPagingDataFlow(
+    public fun <T : Any> PagingCRUDRepository<T>.viewModelPagingDataFlow(
         projections: List<Variable>,
         sort: List<Order>? = null,
         predicate: BooleanVariable? = null,

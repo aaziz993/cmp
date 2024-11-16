@@ -6,6 +6,7 @@ import ai.tech.core.data.expression.Equals
 import ai.tech.core.presentation.component.lazycolumn.LazyPagingColumn
 import ai.tech.core.presentation.component.lazycolumn.crud.model.CRUDTableLocalization
 import ai.tech.core.presentation.component.lazycolumn.crud.model.CRUDTableState
+import ai.tech.core.presentation.component.lazycolumn.crud.viewmodel.CRUDViewModel
 import androidx.compose.foundation.gestures.FlingBehavior
 import androidx.compose.foundation.gestures.ScrollableDefaults
 import androidx.compose.foundation.layout.Arrangement
@@ -25,7 +26,6 @@ import compose.icons.SimpleIcons
 import compose.icons.simpleicons.Microsoftexcel
 import androidx.compose.material3.Icon
 import androidx.compose.runtime.LaunchedEffect
-import arrow.core.prependTo
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
@@ -45,13 +45,14 @@ public fun <ID : Any, T : Any> CRUDTable(
     getItemId: (T) -> ID,
     getProperties: (T) -> List<String> = { it::class.ser },
     getValues: (T) -> List<Any?>,
-    repository: CRUDRepository<T>,
+    crudViewModel: CRUDViewModel<T>,
     localization: CRUDTableLocalization = CRUDTableLocalization(),
     onDownload: ((List<T>) -> Unit)? = null,
     onUpload: (() -> Unit)? = null,
     onSave: (insert: List<T>, update: List<T>) -> Unit,
     onDelete: (List<Equals>) -> Unit,
 ) {
+
     val data by rememberUpdatedState(repository.findPager(state.sort, state.predicate(), state.limitOffset).flow.collectAsLazyPagingItems())
 
     val scope = rememberCoroutineScope()
