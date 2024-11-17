@@ -2,6 +2,7 @@
 
 package ai.tech.core.presentation.viewmodel
 
+import ai.tech.core.misc.type.multiple.mapState
 import ai.tech.core.misc.type.multiple.model.OnetimeWhileSubscribed
 import ai.tech.core.misc.type.multiple.model.RestartableMutableStateFlow
 import ai.tech.core.misc.type.multiple.model.RestartableStateFlow
@@ -16,15 +17,20 @@ import app.cash.paging.cachedIn
 import arrow.core.Either
 import arrow.core.raise.Raise
 import arrow.core.raise.either
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.ExperimentalForInheritanceCoroutinesApi
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.FlowCollector
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.mapLatest
 import kotlinx.coroutines.flow.onStart
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import org.koin.core.component.KoinComponent
 
@@ -90,10 +96,17 @@ public abstract class AbstractViewModel<A : Any>(protected val savedStateHandle:
         }
     }
 
+    protected fun <T, R> StateFlow<T>.mapState(transform: (data: T) -> R): StateFlow<R> =
+        mapState(scope = viewModelScope, transform)
+
+    @OptIn(ExperimentalCoroutinesApi::class)
+    public fun <T, R> StateFlow<T>.mapState(initialValue: R, transform: suspend (data: T) -> R): StateFlow<R> =
+        mapState(viewModelScope, initialValue, transform)
+
     protected val <T : Any> Flow<PagingData<T>>.cached: Flow<PagingData<T>>
         get() = cachedIn(viewModelScope)
 
-    protected val <T : Any> Flow<T>.launch: Job
+    protected val <T> Flow<T>.launch: Job
         get() = launchIn(viewModelScope)
 
     public companion object {

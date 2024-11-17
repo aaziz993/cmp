@@ -11,7 +11,10 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.withContext
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.mapLatest
 import kotlinx.coroutines.flow.stateIn
 
 public fun <T> Flow<T>.restartableStateIn(
@@ -25,6 +28,21 @@ public fun <T> Flow<T>.restartableStateIn(
         override fun restart() = sharingRestartable.restart()
     }
 }
+
+@OptIn(ExperimentalCoroutinesApi::class)
+public fun <T, R> StateFlow<T>.mapState(
+    scope: CoroutineScope,
+    transform: (data: T) -> R
+): StateFlow<R> = mapLatest {
+    transform(it)
+}.stateIn(scope, SharingStarted.Eagerly, transform(value))
+
+@OptIn(ExperimentalCoroutinesApi::class)
+public fun <T, R> StateFlow<T>.mapState(
+    scope: CoroutineScope,
+    initialValue: R,
+    transform: suspend (data: T) -> R
+): StateFlow<R> = mapLatest(transform).stateIn(scope, SharingStarted.Eagerly, initialValue)
 
 @Composable
 public fun <T> Flow<T>.toLaunchedEffect(
