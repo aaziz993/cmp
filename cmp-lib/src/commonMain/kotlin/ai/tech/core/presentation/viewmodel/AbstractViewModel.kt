@@ -2,12 +2,6 @@
 
 package ai.tech.core.presentation.viewmodel
 
-import ai.tech.core.data.crud.CRUDRepository
-import ai.tech.core.data.crud.client.findPager
-import ai.tech.core.data.crud.model.LimitOffset
-import ai.tech.core.data.crud.model.Order
-import ai.tech.core.data.expression.BooleanVariable
-import ai.tech.core.data.expression.Variable
 import ai.tech.core.misc.type.multiple.model.OnetimeWhileSubscribed
 import ai.tech.core.misc.type.multiple.model.RestartableMutableStateFlow
 import ai.tech.core.misc.type.multiple.model.RestartableStateFlow
@@ -17,18 +11,19 @@ import ai.tech.core.presentation.viewmodel.model.exception.ViewModelStateExcepti
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import app.cash.paging.ExperimentalPagingApi
 import app.cash.paging.PagingData
 import app.cash.paging.cachedIn
 import arrow.core.Either
 import arrow.core.raise.Raise
 import arrow.core.raise.either
 import kotlinx.coroutines.ExperimentalForInheritanceCoroutinesApi
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.FlowCollector
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.update
 import org.koin.core.component.KoinComponent
@@ -61,11 +56,20 @@ public abstract class AbstractViewModel<A : Any>(protected val savedStateHandle:
 
     public abstract fun action(action: A)
 
+    protected fun <T> Flow<T>.viewModelScopeFlow(
+        initialValue: T,
+        started: SharingStarted = SharingStarted.OnetimeWhileSubscribed(STATE_STARTED_STOP_TIMEOUT_MILLIS),
+    ): RestartableStateFlow<T> = restartableStateIn(
+        started,
+        viewModelScope,
+        initialValue,
+    )
+
     protected fun <T : Any> viewModelStateFlow(
         initialValue: ViewModelState<T> = idle(),
         started: SharingStarted = SharingStarted.OnetimeWhileSubscribed(STATE_STARTED_STOP_TIMEOUT_MILLIS),
         block: suspend FlowCollector<ViewModelState<T>>.(ViewModelState<T>) -> Unit
-    ): RestartableStateFlow<ViewModelState<T>> = flow { block(initialValue) }.viewModelStateFlow(initialValue, started)
+    ): RestartableStateFlow<ViewModelState<T>> = flow { block(initialValue) }.viewModelScopeFlow(initialValue, started)
 
     protected fun <T : Any> viewModelMutableStateFlow(
         initialValue: ViewModelState<T> = idle(),
@@ -79,36 +83,18 @@ public abstract class AbstractViewModel<A : Any>(protected val savedStateHandle:
         }
         else {
             mutableStateFlow.onStart { mutableStateFlow.update { mutableStateFlow.block(it) } }
-        }.viewModelStateFlow(initialValue, started)
+        }.viewModelScopeFlow(initialValue, started)
 
         return object : RestartableMutableStateFlow<ViewModelState<T>> by restartableStateFlow {
             override fun restart() = restartableStateFlow.restart()
         }
     }
 
-    @OptIn(ExperimentalPagingApi::class)
-    public fun <T : Any> CRUDRepository<T>.viewModelPagingDataFlow(
-        sort: List<Order>? = null,
-        predicate: BooleanVariable? = null,
-        limitOffset: LimitOffset
-    ): Flow<PagingData<T>> = findPager(sort, predicate, limitOffset).flow.cachedIn(viewModelScope)
+    protected val <T : Any> Flow<PagingData<T>>.cached: Flow<PagingData<T>>
+        get() = cachedIn(viewModelScope)
 
-    @OptIn(ExperimentalPagingApi::class)
-    public fun <T : Any> CRUDRepository<T>.viewModelPagingDataFlow(
-        projections: List<Variable>,
-        sort: List<Order>? = null,
-        predicate: BooleanVariable? = null,
-        limitOffset: LimitOffset
-    ): Flow<PagingData<List<Any?>>> = findPager(projections, sort, predicate, limitOffset).flow.cachedIn(viewModelScope)
-
-    private fun <T : ViewModelState<*>> Flow<T>.viewModelStateFlow(
-        initialValue: T,
-        started: SharingStarted = SharingStarted.OnetimeWhileSubscribed(STATE_STARTED_STOP_TIMEOUT_MILLIS),
-    ): RestartableStateFlow<T> = restartableStateIn(
-        started,
-        viewModelScope,
-        initialValue,
-    )
+    protected val <T : Any> Flow<T>.launch: Job
+        get() = launchIn(viewModelScope)
 
     public companion object {
 

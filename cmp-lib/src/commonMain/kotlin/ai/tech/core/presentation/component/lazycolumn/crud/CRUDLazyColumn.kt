@@ -1,29 +1,33 @@
 package ai.tech.core.presentation.component.lazycolumn.crud
 
+import ai.tech.core.data.crud.model.LimitOffset
 import ai.tech.core.data.expression.Equals
 import ai.tech.core.presentation.component.lazycolumn.LazyPagingColumn
 import ai.tech.core.presentation.component.lazycolumn.crud.model.CRUDTableLocalization
 import ai.tech.core.presentation.component.lazycolumn.crud.model.CRUDTableState
+import ai.tech.core.presentation.component.lazycolumn.crud.model.Item
+import ai.tech.core.presentation.component.lazycolumn.crud.viewmodel.CRUDAction
 import ai.tech.core.presentation.component.lazycolumn.crud.viewmodel.CRUDViewModel
 import androidx.compose.foundation.gestures.FlingBehavior
 import androidx.compose.foundation.gestures.ScrollableDefaults
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import app.cash.paging.compose.LazyPagingItems
 import app.cash.paging.compose.collectAsLazyPagingItems
 import compose.icons.SimpleIcons
 import compose.icons.simpleicons.Microsoftexcel
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
 
 @Composable
 public fun <T : Any> CRUDTable(
@@ -35,26 +39,52 @@ public fun <T : Any> CRUDTable(
     horizontalAlignment: Alignment.Horizontal = Alignment.CenterHorizontally,
     flingBehavior: FlingBehavior = ScrollableDefaults.flingBehavior(),
     userScrollEnabled: Boolean = true,
+    readOnly: Boolean = false,
     title: String? = null,
     downloadIcon: @Composable () -> Unit = { Icon(SimpleIcons.Microsoftexcel, null, tint = Color(0xFF33A852)) },
     downloadAllIcon: @Composable () -> Unit = { Icon(SimpleIcons.Microsoftexcel, null, tint = Color(0xFF33A852)) },
-    getItemId: (T) -> Any,
-    getProperties: (T) -> List<String>,
-    getValues: (T) -> List<Any?>,
-    crudViewModel: CRUDViewModel<T>,
+    getHeader: (String) -> String = { it },
+    viewModel: CRUDViewModel<T>,
     localization: CRUDTableLocalization = CRUDTableLocalization(),
     onDownload: ((List<T>) -> Unit)? = null,
     onUpload: (() -> Unit)? = null,
     onSave: (insert: List<T>, update: List<T>) -> Unit,
     onDelete: (List<Equals>) -> Unit,
-) {
+): Unit = Column(modifier, horizontalAlignment = Alignment.CenterHorizontally) {
+    title?.let { TitleRow(contentPadding, it) }
 
-    val data = crudViewModel.state.collectAsLazyPagingItems()
+    Spacer(modifier = Modifier.height(10.dp))
 
-    val scope = rememberCoroutineScope()
+    val data = viewModel.state.collectAsLazyPagingItems()
+
+    val items = (0 until data.itemCount).map { data[it] }.filterNotNull()
+
+    ActionRow(
+        contentPadding,
+        readOnly,
+        downloadAllIcon,
+        viewModel.properties,
+        items,
+        localization,
+        onDownload?.let { { it(items.filter { it.isSelected && !it.isNew }.map(Item<T>::entity)) } },
+        onUpload,
+        { viewModel.action(CRUDAction.EditSelected) },
+        { viewModel.action(CRUDAction.New) },
+        { viewModel.action(CRUDAction.CopySelected) },
+        { viewModel.action(CRUDAction.Save) },
+    ) { viewModel.action(CRUDAction.DeleteSelected) }
+
+    HeaderRow(
+        contentPadding,
+        state,
+        viewModel.properties,
+        items,
+        localization,
+        { viewModel.action(CRUDAction.SelectAll) },
+    ) { viewModel.action(CRUDAction.Find(state.sort, state.searchFieldStates, LimitOffset(0, 10))) }
 
     LazyPagingColumn(
-        modifier,
+        Modifier.fillMaxSize(),
         rememberLazyListState(),
         contentPadding,
         reverseLayout,
@@ -62,23 +92,8 @@ public fun <T : Any> CRUDTable(
         horizontalAlignment,
         flingBehavior,
         userScrollEnabled,
-        beforeItems = {
-            item {
-                title?.let { TitleRow(contentPadding, it) }
-                OptionRow(state, contentPadding, localization)
-                HeaderRow()
-            }
-        },
         data = data,
-    ) {
-        DataRow(it)
-    }
-
-    LaunchedEffect(key1 = Unit) {
-        launch(Dispatchers.Main) {
-            data.refresh()
-        }
-    }
+    ) { DataRow(it) }
 }
 
 

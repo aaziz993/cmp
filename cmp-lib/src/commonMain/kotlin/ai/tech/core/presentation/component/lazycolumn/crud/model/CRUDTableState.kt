@@ -3,6 +3,9 @@ package ai.tech.core.presentation.component.lazycolumn.crud.model
 import ai.tech.core.data.crud.model.LimitOffset
 import ai.tech.core.data.crud.model.Order
 import ai.tech.core.data.expression.BooleanVariable
+import ai.tech.core.misc.type.multiple.removeFirst
+import ai.tech.core.misc.type.multiple.replaceFirst
+import ai.tech.core.misc.type.multiple.replaceWith
 import ai.tech.core.presentation.component.textfield.search.model.SearchFieldState
 import ai.tech.core.presentation.component.textfield.search.model.rememberSearchFieldState
 import androidx.compose.runtime.Composable
@@ -19,7 +22,8 @@ public class CRUDTableState(
     public val searchFieldStates: List<SearchFieldState>,
     sort: List<Order> = emptyList(),
     limitOffset: LimitOffset = LimitOffset(0, 10),
-    liveSearch: Boolean = true,
+    isMultiSort: Boolean = true,
+    isLiveSearch: Boolean = true,
     showActions: Boolean = true,
     showPagination: Boolean = true,
     showSelect: Boolean = true,
@@ -44,7 +48,9 @@ public class CRUDTableState(
 
     public var sort: SnapshotStateList<Order> = sort.toMutableStateList()
 
-    public var liveSearch: Boolean by mutableStateOf(liveSearch)
+    public var isMultiSort: Boolean by mutableStateOf(isMultiSort)
+
+    public var isLiveSearch: Boolean by mutableStateOf(isLiveSearch)
 
     public var showActions: Boolean by mutableStateOf(showActions)
 
@@ -58,6 +64,28 @@ public class CRUDTableState(
 
     public var limitOffset: LimitOffset by mutableStateOf(limitOffset)
 
+    public fun getOrder(property: EntityColumn): IndexedValue<Order>? =
+        sort.withIndex().find { (_, order) -> order.name == property.name }
+
+    public fun order(property: EntityColumn) {
+        val order = getOrder(property)?.value
+
+        when {
+            order == null -> Order(property.name).let {
+                if (isMultiSort) {
+                    sort += it
+                }
+                else {
+                    sort.replaceWith(listOf(it))
+                }
+            }
+
+            order.ascending -> sort.replaceFirst({ it.name == property.name }) { Order(name, false) }
+
+            else -> sort.removeFirst { it.name == property.name }
+        }
+    }
+
     public fun predicate(): BooleanVariable? = null
 
     public companion object {
@@ -68,7 +96,8 @@ public class CRUDTableState(
                 listOf(
                     it.searchFieldStates,
                     it.sort,
-                    it.liveSearch,
+                    it.isMultiSort,
+                    it.isLiveSearch,
                     it.showActions,
                     it.showPagination,
                     it.showSelect,
@@ -88,6 +117,7 @@ public class CRUDTableState(
                     it[6] as Boolean,
                     it[7] as Boolean,
                     it[8] as Boolean,
+                    it[9] as Boolean,
                 )
             },
         )

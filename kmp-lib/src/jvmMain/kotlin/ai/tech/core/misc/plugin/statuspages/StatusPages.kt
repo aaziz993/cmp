@@ -33,6 +33,10 @@ public fun Application.configureStatusPages(config: StatusPagesConfig?, block: (
                 call.respond(HttpStatusCode.Forbidden, cause.message.toString())
             }
 
+            exception<Throwable> { call, cause ->
+                call.respond(HttpStatusCode.InternalServerError, cause.message.toString())
+            }
+
             it.status?.filter(EnabledConfig::enable)?.forEach {
                 status(*it.codes.toTypedArray()) { call, status ->
                     call.respondText(text = it.text, status = status)

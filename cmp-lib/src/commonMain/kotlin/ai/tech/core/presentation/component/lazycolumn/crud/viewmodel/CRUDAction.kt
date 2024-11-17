@@ -11,15 +11,25 @@ public sealed class CRUDAction {
         val limitOffset: LimitOffset
     ) : CRUDAction()
 
-    public data class Delete(val ids: List<Any>) : CRUDAction()
+    public data object New : CRUDAction()
 
-    public data object Append : CRUDAction()
+    public data class Copy(val id: Any) : CRUDAction()
 
-    public data class Edit(val ids: List<Any>) : CRUDAction()
+    public data class Edit(val id: Any) : CRUDAction()
 
-    public data class Copy(val ids: List<Any>) : CRUDAction()
+    public data object EditSelected : CRUDAction()
+
+    public data object CopySelected : CRUDAction()
+
+    public data object Save : CRUDAction()
+
+    public data class Delete(val id: Any) : CRUDAction()
+
+    public data object DeleteSelected : CRUDAction()
 
     public data class Select(val id: Any) : CRUDAction()
 
     public data object SelectAll : CRUDAction()
+
+//    public data object Refresh : CRUDAction()
 }

@@ -8,7 +8,7 @@ public fun <K, V> Map<K, V>.filterKeys(keys: List<K>): Map<K, V> = filterKeys(ke
 
 public fun <K, V> Map<K, V>.filterKeys(vararg key: K): Map<K, V> = filterKeys(key::contains)
 
-public fun <K, V> Map<K, V>.takeNotEmpty(): Map<K, V>? = takeIf(Map<*, *>::isNotEmpty)
+public fun <K, V> Map<K, V>.takeNotEmpty(): Map<K, V>? = takeIf(Map<K, V>::isNotEmpty)
 
 public fun <K, V : List<*>> Map<K, V>.filterValuesNotEmpty(): Map<K, V> = filterValues(List<*>::isNotEmpty)
 

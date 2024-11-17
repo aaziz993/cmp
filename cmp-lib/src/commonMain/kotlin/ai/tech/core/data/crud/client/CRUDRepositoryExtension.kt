@@ -17,7 +17,7 @@ import app.cash.paging.RemoteMediator
 public fun <T : Any> CRUDRepository<T>.findPager(
     sort: List<Order>? = null,
     predicate: BooleanVariable? = null,
-    limitOffset: LimitOffset,
+    limitOffset: LimitOffset = LimitOffset(),
     firstItemOffset: Int = 0,
     prefetchDistance: Int = 10,
     enablePlaceholders: Boolean = true,
@@ -37,7 +37,7 @@ public fun <T : Any> CRUDRepository<T>.findPager(
     projections: List<Variable>,
     sort: List<Order>? = null,
     predicate: BooleanVariable? = null,
-    limitOffset: LimitOffset,
+    limitOffset: LimitOffset = LimitOffset(),
     firstItemOffset: Int = 0,
     prefetchDistance: Int = 10,
     enablePlaceholders: Boolean = true,

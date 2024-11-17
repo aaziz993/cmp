@@ -5,5 +5,5 @@ import kotlinx.serialization.Serializable
 @Serializable
 public data class LimitOffset(
     public val offset: Long = 0,
-    public val limit: Long = 1,
+    public val limit: Long = 10,
 )
