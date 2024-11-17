@@ -12,7 +12,7 @@ import io.ktor.server.auth.jwt.*
 import io.ktor.server.sessions.*
 import java.util.*
 
-public abstract class AbstractJWTAuthService<out T : JWTConfig>(override val name: String, override val config: T) :
+public abstract class AbstractJWTAuthService<out T : JWTConfig>(override val name: String, public val config: T) :
     AuthProvider,
     ValidateAuthProvider<JWTCredential>,
     ChallengeAuthProvider {

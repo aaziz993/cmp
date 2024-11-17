@@ -10,7 +10,7 @@ import io.ktor.server.application.ApplicationCall
 public class SessionAuthService(
     override val name: String,
     public val config: SessionAuthConfig,
-) : ChallengeAuthProvider(config), AuthProvider, ValidateAuthProvider<UserSession> {
+) : AuthProvider, ValidateAuthProvider<UserSession>, ChallengeAuthProvider {
 
     override suspend fun validate(call: ApplicationCall, session: UserSession): Any? = session
 

@@ -16,6 +16,8 @@ import ai.tech.core.misc.plugin.auth.digest.model.config.BaseDigestAuthConfig
 import ai.tech.core.misc.plugin.auth.form.FormAuthService
 import ai.tech.core.misc.plugin.auth.form.model.config.BaseFormAuthConfig
 import ai.tech.core.misc.plugin.auth.ldap.LDAPAuthService
+import ai.tech.core.misc.plugin.auth.ldap.LDAPDigestAuthService
+import ai.tech.core.misc.plugin.auth.ldap.LDAPFormAuthService
 import ai.tech.core.misc.plugin.auth.model.config.RealmAuthProviderConfig
 import ai.tech.core.misc.plugin.auth.session.SessionAuthService
 import ai.tech.core.misc.plugin.auth.session.model.UserSession
@@ -48,9 +50,9 @@ public fun Application.configureAuth(
 
         it.ldapBasic.forEach { (name, config) -> configureBasic(name, config, LDAPAuthService(name, config)) }
 
-        it.ldapDigest.forEach { (name, config) -> }
+        it.ldapDigest.forEach { (name, config) -> configureDigest(name, config, LDAPDigestAuthService(name, config)) }
 
-        it.ldapForm.forEach { (name, config) -> }
+        it.ldapForm.forEach { (name, config) -> configureForm(name, config, LDAPFormAuthService(name, config)) }
 
         it.jwtHs256.filterValues(EnabledConfig::enable).forEach { (name, config) ->
             val service = JWTHS256AuthService(name, config)
@@ -141,7 +143,7 @@ private fun <C, S> AuthenticationConfig.configureDigest(
     name: String,
     config: C,
     service: S,
-) where C : BaseDigestAuthConfig, C : RealmAuthProviderConfig, S : DigestAuthService {
+) where C : BaseDigestAuthConfig, C : RealmAuthProviderConfig, S : AuthProvider, S : DigestAuthProvider, S : ValidateAuthProvider<DigestCredential> {
     digest(name) {
         config.realm?.let { realm = it }
 

@@ -13,7 +13,9 @@ import ai.tech.core.presentation.viewmodel.AbstractViewModel
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
 import app.cash.paging.ExperimentalPagingApi
+import app.cash.paging.PagingConfig
 import app.cash.paging.PagingData
+import app.cash.paging.createPagingConfig
 import app.cash.paging.insertFooterItem
 import app.cash.paging.map
 import com.benasher44.uuid.uuid4
@@ -48,7 +50,7 @@ public class CRUDViewModel<T : Any>(
     override fun action(action: CRUDAction) {
         when (action) {
             is CRUDAction.Find -> {
-                combine(repository.findPager(action.sort, action.searchFieldStates.predicate(), action.limitOffset).flow.cached, items) { pagingData, items ->
+                combine(repository.findPager(action.sort, action.searchFieldStates.predicate(), createPagingConfig(10)).flow.cached, items) { pagingData, items ->
                     val modifiedPagingData = pagingData.map(::toItem).map { pagingItem ->
                         items.findLast { !it.isNew && it.id == pagingItem.id } ?: pagingItem
                     }

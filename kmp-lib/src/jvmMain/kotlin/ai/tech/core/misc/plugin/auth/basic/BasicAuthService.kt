@@ -2,7 +2,7 @@ package ai.tech.core.misc.plugin.auth.basic
 
 import ai.tech.core.misc.auth.model.User
 import ai.tech.core.misc.plugin.auth.AuthProvider
-import ai.tech.core.misc.plugin.auth.DigestAuthProvider
+import ai.tech.core.misc.plugin.auth.DigesterAuthProvider
 import ai.tech.core.misc.plugin.auth.StoreAuthProvider
 import ai.tech.core.misc.plugin.auth.ValidateAuthProvider
 import ai.tech.core.misc.plugin.auth.basic.model.config.BasicAuthConfig
@@ -16,7 +16,7 @@ public class BasicAuthService(
     override val config: BasicAuthConfig,
     override val getRepository: (provider: String, database: String?, userTable: String?, roleTable: String?) -> AuthRepository?,
 ) : AuthProvider,
-    DigestAuthProvider,
+    DigesterAuthProvider,
     StoreAuthProvider,
     ValidateAuthProvider<UserPasswordCredential> {
 

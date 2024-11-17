@@ -2,6 +2,7 @@ package ai.tech.core.misc.plugin.auth.digest
 
 import ai.tech.core.misc.auth.model.User
 import ai.tech.core.misc.plugin.auth.AuthProvider
+import ai.tech.core.misc.plugin.auth.DigestAuthProvider
 import ai.tech.core.misc.plugin.auth.StoreAuthProvider
 import ai.tech.core.misc.plugin.auth.ValidateAuthProvider
 import ai.tech.core.misc.plugin.auth.database.AuthRepository
@@ -13,13 +14,13 @@ public class DigestAuthService(
     override val name: String,
     override val config: DigestAuthConfig,
     override val getRepository: (provider: String, database: String?, userTable: String?, roleTable: String?) -> AuthRepository?,
-) : AuthProvider, StoreAuthProvider, ValidateAuthProvider<DigestCredential> {
+) : AuthProvider, DigestAuthProvider, StoreAuthProvider, ValidateAuthProvider<DigestCredential> {
 
     private val userTable = getUserTable()
 
     private val repository = getRepository()
 
-    public suspend fun digestProvider(userName: String, realm: String): ByteArray? =
+    override suspend fun digestProvider(userName: String, realm: String): ByteArray? =
         userTable[userName] ?: repository?.getPrincipal(userName)?.password?.let(String::toByteArray)
 
     override suspend fun validate(call: ApplicationCall, credential: DigestCredential): Any? =
