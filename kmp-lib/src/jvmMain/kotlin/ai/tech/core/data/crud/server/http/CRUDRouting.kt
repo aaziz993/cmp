@@ -78,36 +78,23 @@ public inline fun <reified T : Any> Routing.CrudRouting(
 
 
             if (projections == null) {
-                if (limitOffset == null) {
-                    repository.find(sort, predicate).let {
-                        call.respondBytesWriter(ContentType.parse("application/stream+json"), HttpStatusCode.OK) {
-                            it.collect {
-                                writeStringUtf8("${Json.Default.encodeToString(it)}\n")
-                                flush()
-                            }
+                repository.find(sort, predicate, limitOffset).let {
+                    call.respondBytesWriter(ContentType.parse("application/stream+json"), HttpStatusCode.OK) {
+                        it.collect {
+                            writeStringUtf8("${Json.Default.encodeToString(it)}\n")
+                            flush()
                         }
                     }
-                }
-                else {
-                    call.respond(HttpStatusCode.OK, repository.find(sort, predicate, limitOffset))
                 }
             }
             else {
-                if (limitOffset == null) {
-                    repository.find(projections, sort, predicate).let {
-                        call.respondBytesWriter(ContentType.parse("application/stream+json"), HttpStatusCode.OK) {
-                            it.collect {
-                                writeStringUtf8("${Json.Default.encodeAnyToString(it)}\n")
-                                flush()
-                            }
+                repository.find(projections, sort, predicate, limitOffset).let {
+                    call.respondBytesWriter(ContentType.parse("application/stream+json"), HttpStatusCode.OK) {
+                        it.collect {
+                            writeStringUtf8("${Json.Default.encodeAnyToString(it)}\n")
+                            flush()
                         }
                     }
-                }
-                else {
-                    call.respondText(
-                        Json.Default.encodeAnyToString(repository.find(projections, sort, predicate, limitOffset)),
-                        status = HttpStatusCode.OK,
-                    )
                 }
             }
         }
