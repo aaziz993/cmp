@@ -1,5 +1,6 @@
 package ai.tech.core.presentation.component.lazycolumn.crud
 
+import ai.tech.core.misc.type.isEnum
 import ai.tech.core.misc.type.primeTypeOrNull
 import ai.tech.core.presentation.component.lazycolumn.crud.model.CRUDTableLocalization
 import ai.tech.core.presentation.component.lazycolumn.crud.model.CRUDLazyColumnState
@@ -7,6 +8,7 @@ import ai.tech.core.presentation.component.lazycolumn.crud.model.EntityColumn
 import ai.tech.core.presentation.component.lazycolumn.crud.model.Item
 import ai.tech.core.presentation.component.textfield.model.TextField
 import ai.tech.core.presentation.component.textfield.search.AdvancedSearchField
+import ai.tech.core.presentation.component.textfield.search.model.SearchFieldCompare
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -21,6 +23,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -32,11 +35,16 @@ import compose.icons.evaicons.outline.Search
 import compose.icons.lineawesomeicons.SortDownSolid
 import compose.icons.lineawesomeicons.SortSolid
 import compose.icons.lineawesomeicons.SortUpSolid
+import kotlin.reflect.KClass
 import kotlin.reflect.typeOf
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.LocalDateTime
 import kotlinx.datetime.LocalTime
+import kotlinx.serialization.ExperimentalSerializationApi
+import kotlinx.serialization.descriptors.capturedKClass
+import kotlinx.serialization.descriptors.elementNames
 
+@OptIn(ExperimentalSerializationApi::class)
 @Composable
 internal fun <T : Any> HeaderRow(
     contentPadding: PaddingValues,
@@ -96,8 +104,8 @@ internal fun <T : Any> HeaderRow(
                     val searchFieldState = state.searchFieldStates[index]
 
                     if (state.showSearch) {
-                        when {
-                            property.descriptor.primeTypeOrNull == typeOf<String>() -> AdvancedSearchField(
+                        when (val textField = TextField(property.descriptor)) {
+                            TextField.Text -> AdvancedSearchField(
                                 searchFieldState,
                                 Modifier.padding(start = searchLeftPadding, end = searchRightPadding).fillMaxWidth(),
                                 placeholder = {
@@ -109,10 +117,10 @@ internal fun <T : Any> HeaderRow(
                                 },
                                 singleLine = true,
                                 outlined = true,
-                                wordMatcher = searchFieldState.compareMatch != -3,
-                                caseMatcher = !(searchFieldState.compareMatch == -3 || searchFieldState.wordMatch),
+                                wordMatcher = searchFieldState.compareMatch != SearchFieldCompare.NOT_EQUAL,
+                                caseMatcher = !(searchFieldState.compareMatch == SearchFieldCompare.NOT_EQUAL || searchFieldState.wordMatch),
                                 regexMatcher = false,
-                                compareMatchers = listOf(0, -3),
+                                compareMatchers = listOf(SearchFieldCompare.EQUALS, SearchFieldCompare.NOT_EQUAL),
                             )
 
                             else -> AdvancedSearchField(
@@ -126,12 +134,7 @@ internal fun <T : Any> HeaderRow(
                                     )
                                 },
                                 singleLine = true,
-                                type = when (property.descriptor.primeTypeOrNull) {
-                                    typeOf<LocalTime>() -> TextField.LocalTime
-                                    typeOf<LocalDate>() -> TextField.LocalDate
-                                    typeOf<LocalDateTime>() -> TextField.LocalDateTime
-                                    else -> TextField.Text
-                                },
+                                type = textField,
                                 outlined = true,
                                 caseMatcher = false,
                                 wordMatcher = false,

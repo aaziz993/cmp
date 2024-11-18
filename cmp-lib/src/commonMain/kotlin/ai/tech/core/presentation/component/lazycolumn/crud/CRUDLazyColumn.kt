@@ -8,6 +8,7 @@ import ai.tech.core.presentation.component.lazycolumn.crud.model.CRUDLazyColumnS
 import ai.tech.core.presentation.component.lazycolumn.crud.model.Item
 import ai.tech.core.presentation.component.lazycolumn.crud.viewmodel.CRUDAction
 import ai.tech.core.presentation.component.lazycolumn.crud.viewmodel.CRUDViewModel
+import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.gestures.FlingBehavior
 import androidx.compose.foundation.gestures.ScrollableDefaults
 import androidx.compose.foundation.layout.Arrangement
@@ -26,6 +27,7 @@ import androidx.compose.ui.unit.dp
 import app.cash.paging.compose.collectAsLazyPagingItems
 import compose.icons.SimpleIcons
 import compose.icons.simpleicons.Microsoftexcel
+import kotlin.enums.enumEntries
 
 @Composable
 public fun <T : Any> CRUDLazyColumn(

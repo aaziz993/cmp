@@ -10,6 +10,7 @@ import ai.tech.core.presentation.component.lazycolumn.crud.model.isSelectedAllEx
 import ai.tech.core.presentation.component.lazycolumn.crud.model.selected
 import ai.tech.core.presentation.component.textfield.search.model.SearchFieldState
 import ai.tech.core.presentation.viewmodel.AbstractViewModel
+import androidx.compose.runtime.collectAsState
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
 import app.cash.paging.ExperimentalPagingApi
@@ -29,7 +30,7 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalPagingApi::class)
-public class CRUDViewModel<T : Any> (
+public class CRUDViewModel<T : Any>(
     private val repository: CRUDRepository<T>,
     public val config: PagingConfig = createPagingConfig(10),
     public val initialKey: Int? = null,
@@ -66,9 +67,7 @@ public class CRUDViewModel<T : Any> (
 
             is CRUDAction.Add -> items.update { it + newItem(getNew(uuid4())) }
 
-            is CRUDAction.Copy -> {
-//                state.update { data -> data  }
-            }
+            is CRUDAction.Copy -> items.update { it + action.item }
 
             CRUDAction.CopySelected -> items.update { it + it.selected.map(::copyItem) }
 

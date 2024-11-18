@@ -1,5 +1,6 @@
 package ai.tech.core.presentation.component.lazycolumn.crud
 
+import ai.tech.core.misc.type.isEnum
 import ai.tech.core.misc.type.primeTypeOrNull
 import ai.tech.core.presentation.component.lazycolumn.crud.model.CRUDLazyColumnState
 import ai.tech.core.presentation.component.lazycolumn.crud.model.EntityColumn
@@ -34,6 +35,7 @@ import kotlin.reflect.typeOf
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.LocalDateTime
 import kotlinx.datetime.LocalTime
+import ai.tech.core.misc.type.multiple.all
 
 @Composable
 internal fun <T : Any> DataRow(
@@ -50,9 +52,7 @@ internal fun <T : Any> DataRow(
     onValueChange: (index: Int, value: String) -> Unit,
     onSave: () -> Unit,
     onDelete: () -> Unit,
-) = Row(
-    Modifier.fillMaxWidth().animateItem(), verticalAlignment = Alignment.CenterVertically,
-) {
+) = Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
     if (state.showSelect) {
         Checkbox(item.isSelected, { onSelect() })
     }
@@ -63,31 +63,12 @@ internal fun <T : Any> DataRow(
     item.values.forEachIndexed { index, value ->
         val property = properties[index]
 
-        val textField = when (property.descriptor.primeTypeOrNull) {
-            typeOf<LocalTime>() -> TextField.LocalTime
-            typeOf<LocalDate>() -> TextField.LocalDate
-            typeOf<LocalDateTime>() -> TextField.LocalDateTime
-            else -> TextField.Text
-        }
-
-        when (textField) {
-            TextField.LocalTime, TextField.LocalDate, TextField.LocalDateTime -> {
-                AdvancedTextField(
-                    value?.toString().orEmpty(),
-                    { onValueChange(index, it) },
-                    Modifier.weight(1f).padding(4.dp),
-                    readOnly = readOnly || property.isReadOnly || property.isReadOnly,
-                    singleLine = true,
-                    type = textField,
-                    outlined = true,
-                )
-            }
-
-            else -> AdvancedTextField(
+        when (val textField = TextField(property.descriptor)) {
+            TextField.Text -> AdvancedTextField(
                 value?.toString().orEmpty(),
                 { onValueChange(index, it) },
                 Modifier.weight(1f).padding(4.dp),
-                readOnly = readOnly || property.isReadOnly || property.isReadOnly,
+                readOnly = readOnly || property.isReadOnly || item.isReadOnly,
                 singleLine = true,
                 outlined = true,
                 validator = property.validator,
@@ -96,6 +77,16 @@ internal fun <T : Any> DataRow(
                     ""
                 },
                 showValidationMessage = false,
+            )
+
+            else -> AdvancedTextField(
+                value?.toString().orEmpty(),
+                { onValueChange(index, it) },
+                Modifier.weight(1f).padding(4.dp),
+                readOnly = readOnly || property.isReadOnly || item.isReadOnly,
+                singleLine = true,
+                type = textField,
+                outlined = true,
             )
         }
     }
@@ -111,11 +102,11 @@ internal fun <T : Any> DataRow(
                     IconButton(onCopy, Modifier.weight(1f)) { Icon(EvaIcons.Outline.Copy, null) }
 
                     if (!readOnly) {
-                        val isItemValuesValid = valuesValidations.all
+                        val isValuesValid = valuesValidations.all
 
                         IconButton(
                             {
-                                if (isItemValuesValid) {
+                                if (isValuesValid) {
                                     onSave()
                                 }
                             },
@@ -123,7 +114,7 @@ internal fun <T : Any> DataRow(
                         ) {
                             Icon(
                                 EvaIcons.Outline.Save, null,
-                                tint = if (isItemValuesValid) {
+                                tint = if (isValuesValid) {
                                     LocalContentColor.current
                                 }
                                 else {

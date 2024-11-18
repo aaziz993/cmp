@@ -1,11 +1,13 @@
 package ai.tech.core.presentation.component.textfield
 
 import ai.tech.core.data.validator.Validator
+import ai.tech.core.misc.type.single.color
 import ai.tech.core.misc.type.single.now
 import ai.tech.core.misc.type.single.parseOrNull
 import ai.tech.core.misc.type.single.toEpochMilliseconds
 import ai.tech.core.misc.type.single.temporalPickerStateToTemporal
 import ai.tech.core.presentation.component.dialog.temporal.AdvancedTemporalPickerDialog
+import ai.tech.core.presentation.component.dropdown.list.ListDropdown
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Column
@@ -47,6 +49,7 @@ import compose.icons.evaicons.fill.Close
 import compose.icons.evaicons.outline.Eye
 import compose.icons.evaicons.outline.EyeOff2
 import ai.tech.core.presentation.component.textfield.model.TextField
+import androidx.compose.material.icons.filled.ArrowDropDown
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.LocalDateTime
 import kotlinx.datetime.LocalTime
@@ -92,13 +95,15 @@ public fun AdvancedTextField(
     val isTemporal =
         type is TextField.LocalTime || type is TextField.LocalDate || type == TextField.LocalDateTime
 
-    val isUnvalidated = readOnly || isTemporal || validator == null
+    val isEnum = type is TextField.Enum
+
+    val isUnvalidated = readOnly || isTemporal || isEnum || validator == null
 
     val validation = if (isUnvalidated) {
         emptyList()
     }
     else {
-        validator!!.validate(value)
+        validator.validate(value)
     }
 
     val isErrorWithValidation = isError || validation.isNotEmpty()
@@ -134,7 +139,9 @@ public fun AdvancedTextField(
                 else {
                     EvaIcons.Outline.Eye
                 },
-                null, iconModifier.clickable { osc(!showValue) }, iconColorErrorAware(it),
+                null,
+                iconModifier.clickable { osc(!showValue) },
+                color(it),
             )
         }
     }
@@ -198,6 +205,21 @@ public fun AdvancedTextField(
         null
     }
 
+    var showEnumDropdown by remember { mutableStateOf(false) }
+
+    val enumIconButton: (@Composable () -> Unit)? = if (isEnum && !readOnly) {
+        {
+            Icon(
+                Icons.Filled.ArrowDropDown,
+                null,
+                iconModifier.clickable(onClick = { showEnumDropdown = !showEnumDropdown }),
+            )
+        }
+    }
+    else {
+        null
+    }
+
     val advancedTrailingIcon: (@Composable () -> Unit)? =
         if (!(clearIconButton == null && showIconButton == null && trailingIcon == null)) {
             {
@@ -205,6 +227,7 @@ public fun AdvancedTextField(
                     clearIconButton?.invoke()
                     showIconButton?.invoke(isErrorWithValidation)
                     temporalIconButton?.invoke()
+                    enumIconButton?.invoke()
                     trailingIcon?.invoke(isErrorWithValidation)
                 }
             }
@@ -299,13 +322,16 @@ public fun AdvancedTextField(
             }
         }
     }
-    textField()
-}
-
-@Composable
-private fun iconColorErrorAware(isError: Boolean) = if (isError) {
-    MaterialTheme.colorScheme.error
-}
-else {
-    LocalContentColor.current
+    if (isEnum) {
+        ListDropdown(
+            type.values,
+            textField,
+            onValueChange,
+            showEnumDropdown,
+            { showEnumDropdown = false },
+        )
+    }
+    else {
+        textField()
+    }
 }

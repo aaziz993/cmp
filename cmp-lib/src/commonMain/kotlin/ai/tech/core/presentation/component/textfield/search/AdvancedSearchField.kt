@@ -47,9 +47,11 @@ import kotlinx.datetime.LocalTime
 import kotlinx.datetime.TimeZone
 import org.jetbrains.compose.resources.painterResource
 import ai.tech.core.data.validator.Validator
+import ai.tech.core.misc.type.single.color
 import ai.tech.core.misc.type.single.now
 import ai.tech.core.misc.type.single.toEpochMilliseconds
 import ai.tech.core.presentation.component.dialog.temporal.AdvancedTemporalPickerDialog
+import ai.tech.core.presentation.component.textfield.search.model.SearchFieldCompare
 import ai.tech.core.presentation.component.textfield.search.model.SearchFieldState
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -87,7 +89,15 @@ public fun AdvancedSearchField(
     caseMatcher: Boolean = true,
     wordMatcher: Boolean = true,
     regexMatcher: Boolean = true,
-    compareMatchers: List<Int> = listOf(0, 1, 2, 3, -3, -2, -1),
+    compareMatchers: List<SearchFieldCompare> = listOf(
+        SearchFieldCompare.EQUALS,
+        SearchFieldCompare.LESS_THAN_EQUAL,
+        SearchFieldCompare.LESS_THAN,
+        SearchFieldCompare.BETWEEN,
+        SearchFieldCompare.NOT_EQUAL,
+        SearchFieldCompare.GREATER_THAN,
+        SearchFieldCompare.GREATER_THAN_EQUAL,
+    ),
 ): Unit = AdvancedTextField(
     state.query,
     { state.query = it },
@@ -99,7 +109,11 @@ public fun AdvancedSearchField(
     placeholder,
     leadingIcon,
     {
-        if (state.compareMatch == 3 && (type is TextField.LocalTime || type is TextField.LocalDate || type is TextField.LocalDateTime)) {
+        val isTemporal = type is TextField.LocalTime || type is TextField.LocalDate || type is TextField.LocalDateTime
+
+        val isEnum = type is TextField.Enum
+
+        if (state.compareMatch == SearchFieldCompare.BETWEEN && isTemporal) {
             var showTemporalPicker by remember { mutableStateOf(false) }
 
             if (showTemporalPicker) {
@@ -154,51 +168,52 @@ public fun AdvancedSearchField(
             )
         }
 
-        if (caseMatcher) {
-            Icon(
-                painterResource(Res.drawable.case_sensitive),
-                null,
-                iconModifier.clickable { state.caseMatch = !state.caseMatch },
-                iconColorMatchAware(state.caseMatch),
-            )
+        if (!(isTemporal || isEnum)) {
+            if (caseMatcher) {
+                Icon(
+                    painterResource(Res.drawable.case_sensitive),
+                    null,
+                    iconModifier.clickable { state.caseMatch = !state.caseMatch },
+                    color(!state.caseMatch),
+                )
+            }
+
+            if (wordMatcher) {
+                Icon(
+                    painterResource(Res.drawable.whole_word),
+                    null,
+                    iconModifier.clickable { state.wordMatch = !state.wordMatch },
+                    color(!state.wordMatch),
+                )
+            }
+
+            if (regexMatcher) {
+                Icon(
+                    painterResource(Res.drawable.regex),
+                    null,
+                    iconModifier.clickable { state.regexMatch = !state.regexMatch },
+                    color(!state.regexMatch),
+                )
+            }
         }
 
-        if (wordMatcher) {
-            Icon(
-                painterResource(Res.drawable.whole_word),
-                null,
-                iconModifier.clickable { state.wordMatch = !state.wordMatch },
-                iconColorMatchAware(state.wordMatch),
-            )
-        }
-
-        if (regexMatcher) {
-            Icon(
-                painterResource(Res.drawable.regex),
-                null,
-                iconModifier.clickable { state.regexMatch = !state.regexMatch },
-                iconColorMatchAware(state.regexMatch),
-            )
-        }
-
-        if (compareMatchers.isNotEmpty()) {
+        if (!isEnum && compareMatchers.isNotEmpty()) {
             var index by remember { mutableStateOf(0) }
+
             Icon(
                 when (state.compareMatch) {
-                    3 -> LineAwesomeIcons.MinusSolid
-                    2 -> LineAwesomeIcons.LessThanSolid
-                    1 -> LineAwesomeIcons.LessThanEqualSolid
-                    0 -> LineAwesomeIcons.EqualsSolid
-                    -1 -> LineAwesomeIcons.GreaterThanEqualSolid
-                    -2 -> LineAwesomeIcons.GreaterThanSolid
-                    -3 -> LineAwesomeIcons.NotEqualSolid
-
-                    else -> throw IllegalStateException()
+                    SearchFieldCompare.BETWEEN -> LineAwesomeIcons.MinusSolid
+                    SearchFieldCompare.LESS_THAN -> LineAwesomeIcons.LessThanSolid
+                    SearchFieldCompare.LESS_THAN_EQUAL -> LineAwesomeIcons.LessThanEqualSolid
+                    SearchFieldCompare.EQUALS -> LineAwesomeIcons.EqualsSolid
+                    SearchFieldCompare.GREATER_THAN_EQUAL -> LineAwesomeIcons.GreaterThanEqualSolid
+                    SearchFieldCompare.GREATER_THAN -> LineAwesomeIcons.GreaterThanSolid
+                    SearchFieldCompare.NOT_EQUAL -> LineAwesomeIcons.NotEqualSolid
                 },
                 null,
                 iconModifier.clickable {
                     if (++index >= compareMatchers.size) {
-                        if (state.compareMatch == 3) {
+                        if (state.compareMatch == SearchFieldCompare.BETWEEN) {
                             state.query = ""
                         }
                         state.compareMatch = compareMatchers[0]
@@ -237,11 +252,3 @@ public fun AdvancedSearchField(
     showValue,
     onShowValueChange,
 )
-
-@Composable
-private fun iconColorMatchAware(match: Boolean) = if (match) {
-    LocalContentColor.current
-}
-else {
-    MaterialTheme.colorScheme.error
-}

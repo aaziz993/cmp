@@ -11,7 +11,6 @@ import org.gradle.api.initialization.Settings
 import org.gradle.api.internal.GradleInternal
 import org.gradle.api.provider.Provider
 import org.gradle.kotlin.dsl.getByType
-import kotlin.jvm.optionals.getOrDefault
 import org.jetbrains.compose.ComposeExtension
 
 internal val Project.libs: VersionCatalog
@@ -28,5 +27,5 @@ internal fun Project.bundle(alias: String): Provider<ExternalModuleDependencyBun
 internal val Project.settings: Settings
     get() = (gradle as GradleInternal).settings
 
-internal val Project.composeDeps
+internal val Project.compose
     get() = extensions.getByType<ComposeExtension>().dependencies

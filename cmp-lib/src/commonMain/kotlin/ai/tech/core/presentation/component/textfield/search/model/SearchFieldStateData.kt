@@ -8,5 +8,5 @@ public data class SearchFieldStateData(
     val caseMatch: Boolean = true,
     val wordMatch: Boolean = true,
     val regexMatch: Boolean = false,
-    val compareMatch: Int = 0
+    val compareMatch: SearchFieldCompare = SearchFieldCompare.EQUALS
 )

@@ -6,7 +6,7 @@ import org.gradle.kotlin.dsl.configure
 import org.jetbrains.compose.ComposeExtension
 import org.jetbrains.compose.ExperimentalComposeLibrary
 import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
-import plugin.extension.composeDeps
+import plugin.extension.compose
 import plugin.multiplatform.extension.config.androidTestImplementation
 import plugin.multiplatform.extension.config.configureComposeKotlinMultiplatformExtension
 import plugin.extension.config.debugImplementation
@@ -33,7 +33,7 @@ internal class CMPPlugin(
                 extensions.configure<KotlinMultiplatformExtension>(::configureComposeKotlinMultiplatformExtension)
 
                 dependencies.apply {
-                    debugImplementation(composeDeps.uiTooling)
+                    debugImplementation(compose.uiTooling)
                     androidTestImplementation(lib("androidx.uitest.junit4"))
                     debugImplementation(lib("androidx.uitest.test.manifest"))
                 }

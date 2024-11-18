@@ -9,6 +9,8 @@ public data class Item<T : Any>(
     val isSelected: Boolean = false,
 ) {
 
+    val isReadOnly: Boolean = !(isEditing || isNew)
+
     val isNecessary: Boolean = isSelected || isEditing || isNew
 
     public fun validate(properties: List<EntityColumn>): Boolean =

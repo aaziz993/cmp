@@ -14,6 +14,13 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.text.TextStyle
 import ai.tech.core.presentation.component.image.avatar.model.AvatarLocalization
+import androidx.compose.foundation.layout.BoxScope
+import androidx.compose.foundation.layout.wrapContentSize
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import compose.icons.EvaIcons
+import compose.icons.evaicons.Outline
+import compose.icons.evaicons.outline.Edit2
 import kotlin.math.absoluteValue
 
 @Composable
@@ -24,24 +31,27 @@ public fun Avatar(
     lastName: String,
     modifier: Modifier = Modifier,
     textStyle: TextStyle = MaterialTheme.typography.titleSmall,
-    onEditImage: (() -> Unit)? = null,
-    onResetPassword: (() -> Unit)? = null,
-    onSignOut: (() -> Unit)? = null,
+    action: (@Composable BoxScope.() -> Unit)? = null,
     localization: AvatarLocalization = AvatarLocalization(),
-): Unit = if (source == null) {
-    InitialsAvatar(
-        firstName,
-        lastName,
-        modifier,
-        textStyle,
-    )
-} else {
-    AdvancedImage(
-        source,
-        contentDescription,
-        modifier,
-    )
-}
+): Unit =
+    Box {
+        if (source == null) {
+            InitialsAvatar(
+                firstName,
+                lastName,
+                modifier,
+                textStyle,
+            )
+        }
+        else {
+            AdvancedImage(
+                source,
+                contentDescription,
+                modifier,
+            )
+        }
+        action?.invoke(this)
+    }
 
 @Composable
 internal fun InitialsAvatar(

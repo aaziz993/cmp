@@ -7,7 +7,7 @@ import org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi
 import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
 import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTarget
 import plugin.extension.bundle
-import plugin.extension.composeDeps
+import plugin.extension.compose
 import plugin.extension.lib
 import plugin.extension.version
 
@@ -233,18 +233,17 @@ internal fun Project.configureKotlinMultiplatformExtension(extension: KotlinMult
         targets.withType<KotlinNativeTarget> { configureKotlinNativeTarget(this) }
     }
 
-
 internal fun Project.configureComposeKotlinMultiplatformExtension(extension: KotlinMultiplatformExtension) = extension.apply {
     sourceSets.apply {
         commonMain.dependencies {
-            implementation(composeDeps.runtime)
-            implementation(composeDeps.foundation)
-            implementation(composeDeps.material3)
-            implementation(composeDeps.ui)
-            implementation(composeDeps.components.resources)
-            implementation(composeDeps.components.uiToolingPreview)
-            implementation(composeDeps.material3AdaptiveNavigationSuite)
-            implementation(composeDeps.materialIconsExtended)
+            implementation(compose.runtime)
+            implementation(compose.foundation)
+            implementation(compose.material3)
+            implementation(compose.ui)
+            implementation(compose.components.resources)
+            implementation(compose.components.uiToolingPreview)
+            implementation(compose.material3AdaptiveNavigationSuite)
+            implementation(compose.materialIconsExtended)
             implementation(lib("compose.colorpicker"))
             implementation(bundle("compose.icons"))
 //                            implementation(lib("squircle.shape"))
@@ -258,12 +257,12 @@ internal fun Project.configureComposeKotlinMultiplatformExtension(extension: Kot
 
         commonTest.dependencies {
             @OptIn(ExperimentalComposeLibrary::class)
-            implementation(composeDeps.uiTest)
+            implementation(compose.uiTest)
         }
 
         jvmMain {
             dependencies {
-                implementation(composeDeps.desktop.currentOs)
+                implementation(compose.desktop.currentOs)
             }
         }
 
@@ -272,7 +271,7 @@ internal fun Project.configureComposeKotlinMultiplatformExtension(extension: Kot
         }
 
         androidMain.dependencies {
-            implementation(composeDeps.preview)
+            implementation(compose.preview)
             implementation(lib("androidx.activity.compose"))
         }
 
@@ -281,7 +280,7 @@ internal fun Project.configureComposeKotlinMultiplatformExtension(extension: Kot
         }
 
         jsMain.dependencies {
-            implementation(composeDeps.html.core)
+            implementation(compose.html.core)
         }
     }
 }

@@ -37,10 +37,8 @@ public abstract class AbstractDataPagingSource<Key : Any, Value : Any> : PagingS
         } as PagingSourceLoadResult<Key, Value>
     }
 
-    final override fun getRefreshKey(state: PagingState<Key, Value>): Key? {
-        return state.anchorPosition?.let { anchorPosition ->
-            state.closestPageToPosition(anchorPosition)?.prevKey?.let(::getNextKey)
-                ?: state.closestPageToPosition(anchorPosition)?.nextKey?.let(::getPrevKey)
-        }
+    final override fun getRefreshKey(state: PagingState<Key, Value>): Key? = state.anchorPosition?.let { anchorPosition ->
+        state.closestPageToPosition(anchorPosition)?.prevKey?.let(::getNextKey)
+            ?: state.closestPageToPosition(anchorPosition)?.nextKey?.let(::getPrevKey)
     }
 }
