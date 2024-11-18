@@ -24,13 +24,11 @@ public abstract class AbstractDataPagingSource<Key : Any, Value : Any> : PagingS
         return try {
             val data = fetchData(loadKey, pageSize)
 
-            val endOfPaginationReached = data.size < pageSize
+            if (data.size < pageSize) {
+                return PagingSourceLoadResultPage(data, null, null)
+            }
 
-            PagingSourceLoadResultPage(
-                data,
-                loadKey.takeIf { endOfPaginationReached }?.let(::getPrevKey),
-                loadKey.takeIf { endOfPaginationReached }?.let(::getNextKey),
-            )
+            PagingSourceLoadResultPage(data, getPrevKey(loadKey), getNextKey(loadKey))
         }
         catch (e: Exception) {
             PagingSourceLoadResultError<Key, Value>(e)
