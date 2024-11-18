@@ -9,13 +9,14 @@ import app.cash.paging.Pager
 import app.cash.paging.PagingConfig
 import app.cash.paging.PagingSource
 import app.cash.paging.RemoteMediator
+import kotlinx.coroutines.flow.toList
 
 @OptIn(ExperimentalPagingApi::class)
 public fun <Value : Any> CRUDRepository<Value>.findPagingSource(
     sort: List<Order>? = null,
     predicate: BooleanVariable? = null,
     firstItemOffset: Int = 0,
-): PagingSource<Int, Value> = CRUDPagingSource({ find(sort, predicate, it).entities }, firstItemOffset)
+): PagingSource<Int, Value> = CRUDPagingSource({ find(sort, predicate, it).toList() }, firstItemOffset)
 
 @OptIn(ExperimentalPagingApi::class)
 public fun <Value : Any> CRUDRepository<Value>.findPager(
@@ -37,7 +38,7 @@ public fun CRUDRepository<*>.findPagingSource(
     sort: List<Order>? = null,
     predicate: BooleanVariable? = null,
     firstItemOffset: Int = 0,
-): PagingSource<Int, List<Any?>> = CRUDPagingSource({ find(projections, sort, predicate, it).entities }, firstItemOffset)
+): PagingSource<Int, List<Any?>> = CRUDPagingSource({ find(projections, sort, predicate, it).toList() }, firstItemOffset)
 
 @OptIn(ExperimentalPagingApi::class)
 public fun CRUDRepository<*>.findPager(

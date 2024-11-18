@@ -104,16 +104,8 @@ public inline fun <reified T : Any> Routing.CrudRouting(
                     }
                 }
                 else {
-                    val page = repository.find(projections, sort, predicate, limitOffset)
                     call.respondText(
-                        Json.Default.encodeToString(
-                            JsonObject(
-                                mapOf(
-                                    "entities" to Json.Default.encodeAnyToJsonElement(page.entities),
-                                    "totalCount" to JsonPrimitive(page.totalCount),
-                                ),
-                            ),
-                        ),
+                        Json.Default.encodeAnyToString(repository.find(projections, sort, predicate, limitOffset)),
                         status = HttpStatusCode.OK,
                     )
                 }

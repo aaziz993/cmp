@@ -6,7 +6,6 @@ import ai.tech.core.data.crud.CRUDRepository
 import ai.tech.core.data.crud.http.createCRUDApi
 import ai.tech.core.data.crud.model.LimitOffset
 import ai.tech.core.data.crud.model.Order
-import ai.tech.core.data.crud.model.Page
 import ai.tech.core.data.expression.AggregateExpression
 import ai.tech.core.data.expression.BooleanVariable
 import ai.tech.core.data.expression.Variable
@@ -41,15 +40,17 @@ public open class CRUDClient<T : Any>(
     public val authService: ClientAuthService? = null,
 ) : CRUDRepository<T> {
 
-    private val ktorfit = Ktorfit.Builder().httpClient(httpClient.config {
-        HttpResponseValidator {
-            validateResponse { response ->
-                when (response.status.value) {
+    private val ktorfit = Ktorfit.Builder().httpClient(
+        httpClient.config {
+            HttpResponseValidator {
+                validateResponse { response ->
+                    when (response.status.value) {
 
+                    }
                 }
             }
-        }
-    }).baseUrl(path).build()
+        },
+    ).baseUrl(path).build()
 
     private val api = ktorfit.createCRUDApi()
 
@@ -58,7 +59,7 @@ public open class CRUDClient<T : Any>(
     }
 
     override suspend fun <R> transactional(byUser: String?, block: suspend CRUDRepository<T>.() -> R): R {
-        throw UnsupportedOperationException("Not supported by remote client")
+        throw UnsupportedOperationException("Not supported by remote client yet")
     }
 
     override suspend fun insert(entities: List<T>): Unit = api.insert(entities)
@@ -75,9 +76,9 @@ public open class CRUDClient<T : Any>(
             ),
         )
 
-    override fun find(sort: List<Order>?, predicate: BooleanVariable?): Flow<T> =
+    override fun find(sort: List<Order>?, predicate: BooleanVariable?, limitOffset: LimitOffset?): Flow<T> =
         flow {
-            val channel = findHelper(null, sort, predicate, null).bodyAsChannel()
+            val channel = findHelper(null, sort, predicate, limitOffset).bodyAsChannel()
 
             while (!channel.isClosedForRead) {
                 channel.readUTF8Line()?.let {
@@ -86,16 +87,14 @@ public open class CRUDClient<T : Any>(
             }
         }
 
-    override suspend fun find(sort: List<Order>?, predicate: BooleanVariable?, limitOffset: LimitOffset): Page<T> =
-        Json.Default.decodeFromString(findHelper(null, sort, predicate, limitOffset).bodyAsText())
-
     @OptIn(InternalSerializationApi::class)
     override fun find(
         projections: List<Variable>,
         sort: List<Order>?,
         predicate: BooleanVariable?,
+        limitOffset: LimitOffset?,
     ): Flow<List<Any?>> = flow {
-        val channel = findHelper(projections, sort, predicate, null).bodyAsChannel()
+        val channel = findHelper(projections, sort, predicate, limitOffset).bodyAsChannel()
 
         while (!channel.isClosedForRead) {
             channel.readUTF8Line()?.let {
@@ -103,16 +102,6 @@ public open class CRUDClient<T : Any>(
             }
         }
     }
-
-    override suspend fun find(
-        projections: List<Variable>,
-        sort: List<Order>?,
-        predicate: BooleanVariable?,
-        limitOffset: LimitOffset
-    ): Page<List<Any?>> =
-        Json.Default.decodeFromString<JsonObject>(findHelper(projections, sort, predicate, limitOffset).bodyAsText()).let {
-            Page(Json.Default.decodeAnyFromJsonElement(it["entities"] as JsonArray) as List<List<Any?>>, (it["totalCount"] as JsonPrimitive).long)
-        }
 
     override suspend fun delete(predicate: BooleanVariable?): Long =
         api.delete(predicate)
@@ -140,7 +129,7 @@ public open class CRUDClient<T : Any>(
                 sort?.let { append("sort", it, jsonHeader) }
                 predicate?.let { append("predicate", it, jsonHeader) }
                 limitOffset?.let { append("limitOffset", it, jsonHeader) }
-            }
+            },
         ),
     ).execute()
 }

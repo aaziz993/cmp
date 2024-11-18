@@ -2,7 +2,6 @@ package ai.tech.core.data.crud
 
 import ai.tech.core.data.crud.model.LimitOffset
 import ai.tech.core.data.crud.model.Order
-import ai.tech.core.data.crud.model.Page
 import ai.tech.core.data.expression.AggregateExpression
 import ai.tech.core.data.expression.BooleanVariable
 import ai.tech.core.data.expression.Variable
@@ -28,26 +27,15 @@ public interface CRUDRepository<T : Any> {
     public fun find(
         sort: List<Order>? = null,
         predicate: BooleanVariable? = null,
+        limitOffset: LimitOffset? = null
     ): Flow<T>
-
-    public suspend fun find(
-        sort: List<Order>? = null,
-        predicate: BooleanVariable? = null,
-        limitOffset: LimitOffset
-    ): Page<T>
 
     public fun find(
         projections: List<Variable>,
         sort: List<Order>? = null,
         predicate: BooleanVariable? = null,
+        limitOffset: LimitOffset? = null
     ): Flow<List<Any?>>
-
-    public suspend fun find(
-        projections: List<Variable>,
-        sort: List<Order>? = null,
-        predicate: BooleanVariable? = null,
-        limitOffset: LimitOffset
-    ): Page<List<Any?>>
 
     public suspend fun delete(predicate: BooleanVariable? = null): Long
 

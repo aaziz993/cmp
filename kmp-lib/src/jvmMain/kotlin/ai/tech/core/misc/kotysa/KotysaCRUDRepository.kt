@@ -3,7 +3,6 @@ package ai.tech.core.misc.kotysa
 import ai.tech.core.data.crud.CRUDRepository
 import ai.tech.core.data.crud.model.LimitOffset
 import ai.tech.core.data.crud.model.Order
-import ai.tech.core.data.crud.model.Page
 import ai.tech.core.data.expression.AggregateExpression
 import ai.tech.core.data.expression.AggregateExpression.Companion.count
 import ai.tech.core.data.expression.And
@@ -101,29 +100,15 @@ public abstract class KotysaCRUDRepository<T : Any>(
     final override fun find(
         sort: List<Order>?,
         predicate: BooleanVariable?,
-    ): Flow<T> = findHelper(sort, predicate)
-
-    override suspend fun find(
-        sort: List<Order>?,
-        predicate: BooleanVariable?,
-        limitOffset: LimitOffset): Page<T> =
-        client.transactional {
-            Page(findHelper(sort, predicate, limitOffset).toList(), aggregate(count(), predicate))
-        }!!
+        limitOffset: LimitOffset?
+    ): Flow<T> = findHelper(sort, predicate, limitOffset)
 
     override fun find(
         projections: List<Variable>,
         sort: List<Order>?,
-        predicate: BooleanVariable?
-    ): Flow<List<Any?>> = findHelper(projections, sort, predicate)
-
-    override suspend fun find(
-        projections: List<Variable>, sort: List<Order>?, predicate: BooleanVariable?, limitOffset: LimitOffset
-    ): Page<List<Any?>> = client.transactional {
-        Page(
-            findHelper(projections, sort, predicate, limitOffset).toList(), aggregate(count(), predicate),
-        )
-    }!!
+        predicate: BooleanVariable?,
+        limitOffset: LimitOffset?
+    ): Flow<List<Any?>> = findHelper(projections, sort, predicate, limitOffset)
 
     override suspend fun delete(predicate: BooleanVariable?): Long = predicate?.let {
         client.deleteFrom(kotysaTable.table).predicate(it).execute()
