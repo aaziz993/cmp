@@ -11,6 +11,9 @@ import ai.tech.core.presentation.component.lazycolumn.crud.model.selected
 import ai.tech.core.presentation.component.textfield.search.model.SearchFieldState
 import ai.tech.core.presentation.viewmodel.AbstractViewModel
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.mutableStateListOf
+import androidx.compose.runtime.snapshots.Snapshot
+import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
 import app.cash.paging.ExperimentalPagingApi
@@ -49,8 +52,7 @@ public class CRUDViewModel<T : Any>(
     public val state: MutableStateFlow<PagingData<Item<T>>>
         field = MutableStateFlow()
 
-    public val items: StateFlow<List<Item<T>>>
-        field = MutableStateFlow<List<Item<T>>>(emptyList())
+    private val items: MutableStateFlow<List<Item<T>>> = MutableStateFlow(emptyList())
 
     @OptIn(ExperimentalPagingApi::class)
     override fun action(action: CRUDAction<T>) {

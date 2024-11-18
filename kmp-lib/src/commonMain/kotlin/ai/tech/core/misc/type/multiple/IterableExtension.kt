@@ -1,5 +1,6 @@
 package ai.tech.core.misc.type.multiple
 
+import arrow.core.split
 import kotlin.math.pow
 
 public inline fun <T, R : Any> Iterable<T>.firstNotThrowOf(transform: (T) -> R?): R? {
@@ -58,9 +59,9 @@ public inline fun <T> MutableList<T>.replace(
     equator: (T, T) -> Boolean,
 ): Unit = elements.forEach { e ->
     replaceFirst(
-            {
-                equator(it, e)
-            },
+        {
+            equator(it, e)
+        },
     ) { e }
 }
 
@@ -96,16 +97,37 @@ public inline fun <T> MutableCollection<T>.outersectUpdate(
     return p
 }
 
-public fun <T> Collection<T>.replaceAt(index: Int, item: T.() -> T): List<T> = iterator().let { iterator ->
-    List(size) {
-        if (it == index) {
-            iterator.next().item()
-        }
-        else {
-            iterator.next()
+public fun <T> Collection<T>.replaceAt(index: Int, block: T.() -> T): Collection<T> =
+    iterator().let { iterator ->
+        List(size) {
+            if (it == index) {
+                iterator.next().block()
+            }
+            else {
+                iterator.next()
+            }
         }
     }
-}
+
+public fun <T> Collection<T>.replaceIf(predicate: (T) -> Boolean, block: T.() -> T): Collection<T> =
+    iterator().let { iterator ->
+        List(size) {
+            val next = iterator.next()
+
+            if (predicate(next)) {
+                next.block()
+            }
+            else {
+                next
+            }
+        }
+    }
+
+public fun <T> Collection<T>.replaceIfFirst(predicate: (T) -> Boolean, item: T.() -> T): Collection<T> =
+    replaceAt(indexOfFirst(predicate), item)
+
+public fun <T> Collection<T>.replaceIfLast(predicate: (T) -> Boolean, item: T.() -> T): Collection<T> =
+    replaceAt(indexOfLast(predicate), item)
 
 public fun <T> MutableCollection<T>.replaceWith(src: Collection<T>) {
     clear()
