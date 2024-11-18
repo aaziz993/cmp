@@ -66,7 +66,7 @@ public abstract class KotysaCRUDRepository<T : Any>(
 
     private val kotysaTable = KotysaTable(table, createdAtProperty, updatedAtProperty)
 
-    final override suspend fun <R> transactional(byUser: String?, block: suspend CRUDRepository<T>.() -> R): R =
+    final override suspend fun <R> transactional(block: suspend CRUDRepository<T>.() -> R): R =
         client.transactional {
             block()
         }!!

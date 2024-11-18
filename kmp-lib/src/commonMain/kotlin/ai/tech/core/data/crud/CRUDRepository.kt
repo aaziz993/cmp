@@ -9,7 +9,7 @@ import kotlinx.coroutines.flow.Flow
 
 public interface CRUDRepository<T : Any> {
 
-    public suspend fun <R> transactional(byUser: String? = null, block: suspend CRUDRepository<T>.() -> R): R
+    public suspend fun <R> transactional(block: suspend CRUDRepository<T>.() -> R): R
 
     public suspend fun insert(entities: List<T>)
 

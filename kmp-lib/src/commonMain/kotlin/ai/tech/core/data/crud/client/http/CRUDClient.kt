@@ -58,7 +58,7 @@ public open class CRUDClient<T : Any>(
         append(HttpHeaders.ContentType, ContentType.Application.Json)
     }
 
-    override suspend fun <R> transactional(byUser: String?, block: suspend CRUDRepository<T>.() -> R): R {
+    override suspend fun <R> transactional(block: suspend CRUDRepository<T>.() -> R): R {
         throw UnsupportedOperationException("Not supported by remote client yet")
     }
 
