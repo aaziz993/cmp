@@ -4,6 +4,7 @@ import ai.tech.core.misc.type.primeTypeOrNull
 import ai.tech.core.presentation.component.lazycolumn.crud.model.CRUDLazyColumnState
 import ai.tech.core.presentation.component.lazycolumn.crud.model.EntityColumn
 import ai.tech.core.presentation.component.lazycolumn.crud.model.Item
+import ai.tech.core.presentation.component.textfield.AdvancedTextField
 import ai.tech.core.presentation.component.textfield.model.TextField
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
@@ -33,7 +34,6 @@ import kotlin.reflect.typeOf
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.LocalDateTime
 import kotlinx.datetime.LocalTime
-import ai.tech.core.presentation.component.textfield.AdvancedTextField
 
 @Composable
 internal fun <T : Any> DataRow(
@@ -57,7 +57,7 @@ internal fun <T : Any> DataRow(
         Checkbox(item.isSelected, { onSelect() })
     }
 
-    val itemValuesValidations: MutableList<Boolean> =
+    val valuesValidations: MutableList<Boolean> =
         rememberSaveable { item.values.map { true }.toMutableStateList() }
 
     item.values.forEachIndexed { index, value ->
@@ -76,7 +76,7 @@ internal fun <T : Any> DataRow(
                     value?.toString().orEmpty(),
                     { onValueChange(index, it) },
                     Modifier.weight(1f).padding(4.dp),
-                    readOnly = readOnly || property.isReadOnly || item.readOnly,
+                    readOnly = readOnly || property.isReadOnly || property.isReadOnly,
                     singleLine = true,
                     type = textField,
                     outlined = true,
@@ -87,12 +87,12 @@ internal fun <T : Any> DataRow(
                 value?.toString().orEmpty(),
                 { onValueChange(index, it) },
                 Modifier.weight(1f).padding(4.dp),
-                readOnly = readOnly || property.isReadOnly || item.readOnly,
+                readOnly = readOnly || property.isReadOnly || property.isReadOnly,
                 singleLine = true,
                 outlined = true,
                 validator = property.validator,
                 onValidation = {
-                    itemValuesValidations[index] = it.isEmpty()
+                    valuesValidations[index] = it.isEmpty()
                     ""
                 },
                 showValidationMessage = false,
@@ -110,8 +110,9 @@ internal fun <T : Any> DataRow(
                 if (!readOnly) {
                     IconButton(onCopy, Modifier.weight(1f)) { Icon(EvaIcons.Outline.Copy, null) }
 
-                    if (!item.isReadOnly) {
-                        val isItemValuesValid = itemValuesValidations.all
+                    if (!readOnly) {
+                        val isItemValuesValid = valuesValidations.all
+
                         IconButton(
                             {
                                 if (isItemValuesValid) {
