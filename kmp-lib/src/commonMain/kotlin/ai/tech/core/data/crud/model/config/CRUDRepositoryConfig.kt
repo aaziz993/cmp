@@ -7,7 +7,5 @@ import kotlinx.serialization.Serializable
 public data class CRUDRepositoryConfig(
     val timeZone: String? = null,
     val readAuth: AuthResource? = null,
-    val saveAuth: AuthResource? = readAuth,
-    val updateAuth: AuthResource? = readAuth,
-    val deleteAuth: AuthResource? = readAuth,
+    val writeAuth: AuthResource? = readAuth,
 )

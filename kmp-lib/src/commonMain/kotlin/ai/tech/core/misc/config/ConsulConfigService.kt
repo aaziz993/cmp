@@ -31,7 +31,7 @@ public class ConsulConfigService(
         return with(consulConfig.config) {
             val consulClient = ConsulClient(httpClient, consulConfig.address, aclToken)
 
-            generateKeys(applicationConfig.name, applicationConfig.configurations.map { "$it/${applicationConfig.environment}" }).associateWith {
+            getKeys(applicationConfig.name, applicationConfig.configurations.map { "$it/${applicationConfig.environment}" }).associateWith {
                 consulClient.readConsulConfig(it, format)
             }.filterValuesNotEmpty()
         }

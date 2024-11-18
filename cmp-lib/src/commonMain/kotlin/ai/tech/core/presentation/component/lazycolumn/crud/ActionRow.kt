@@ -3,6 +3,9 @@ package ai.tech.core.presentation.component.lazycolumn.crud
 import ai.tech.core.presentation.component.lazycolumn.crud.model.CRUDTableLocalization
 import ai.tech.core.presentation.component.lazycolumn.crud.model.EntityColumn
 import ai.tech.core.presentation.component.lazycolumn.crud.model.Item
+import ai.tech.core.presentation.component.lazycolumn.crud.model.isSelectedAnyNew
+import ai.tech.core.presentation.component.lazycolumn.crud.model.selected
+import ai.tech.core.presentation.component.lazycolumn.crud.model.selectedExists
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -22,6 +25,7 @@ import compose.icons.evaicons.outline.Edit
 import compose.icons.evaicons.outline.Minus
 import compose.icons.evaicons.outline.Plus
 import compose.icons.evaicons.outline.Save
+import compose.icons.evaicons.outline.Trash2
 import compose.icons.evaicons.outline.Upload
 
 @Composable
@@ -32,35 +36,36 @@ internal fun <T : Any> ActionRow(
     properties: List<EntityColumn>,
     items: List<Item<T>>,
     localization: CRUDTableLocalization,
-    onDownloadSelected: (() -> Unit)? = null,
-    onUpload: (() -> Unit)? = null,
+    onDownloadSelected: (() -> Unit)?,
+    onUpload: (() -> Unit)?,
     onEditSelected: () -> Unit,
-    onNew: () -> Unit,
+    onAdd: () -> Unit,
     onCopySelected: () -> Unit,
+    onRemoveSelected: () -> Unit,
     onSaveSelected: () -> Unit,
     onDeleteSelected: () -> Unit
 ) = Row(
     Modifier.padding(contentPadding).fillMaxWidth(), verticalAlignment = Alignment.CenterVertically,
 ) {
 
-    val selected = items.filter(Item<T>::isSelected)
+    val selected = items.selected
 
-    val selectedExistItems = items.any { it.isSelected && !it.isNew }
+    val selectedExists = items.selectedExists
 
-    if (selectedExistItems && onDownloadSelected != null) {
+    if (selectedExists.isNotEmpty() && onDownloadSelected != null) {
         IconButton(onDownloadSelected, content = downloadAllIcon)
     }
 
     if (!readOnly) {
         onUpload?.let { IconButton(it) { Icon(EvaIcons.Outline.Upload, null) } }
 
-        IconButton(onNew) { Icon(EvaIcons.Outline.Plus, null) }
+        IconButton(onAdd) { Icon(EvaIcons.Outline.Plus, null) }
 
         if (selected.isNotEmpty()) {
             IconButton(onCopySelected) { Icon(EvaIcons.Outline.Copy, null) }
         }
 
-        if (selectedExistItems) {
+        if (selectedExists.isNotEmpty()) {
             val selectedAllEditingItems = items.all { it.isSelected && it.isEditing }
 
             IconButton(onEditSelected) {
@@ -73,14 +78,20 @@ internal fun <T : Any> ActionRow(
                     Icon(EvaIcons.Outline.Edit, null)
                 }
             }
+
+            IconButton(onDeleteSelected) { Icon(EvaIcons.Outline.Trash2, null) }
         }
 
-        if (selected.filter(Item<T>::isEditing).all { it.validate(properties) }) {
+        val isValidSelectedEdits = selected.filter(Item<T>::isEditing).all { it.validate(properties) }
+
+        if (isValidSelectedEdits) {
             IconButton(onSaveSelected) { Icon(EvaIcons.Outline.Save, null) }
         }
 
-        if (selected.isNotEmpty()) {
-            IconButton(onDeleteSelected) { Icon(EvaIcons.Outline.Minus, null) }
+        val isSelectedAnyNew = items.isSelectedAnyNew
+
+        if (isSelectedAnyNew) {
+            IconButton(onRemoveSelected) { Icon(EvaIcons.Outline.Minus, null) }
         }
     }
 }

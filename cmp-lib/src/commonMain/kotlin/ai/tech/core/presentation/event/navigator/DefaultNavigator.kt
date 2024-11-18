@@ -91,9 +91,9 @@ public class DefaultNavigator<T : Any>(override val startDestination: T) : Navig
             // Pop up to the start destination of the graph to
             // avoid building up a large stack of destinations
             // on the back stack as users select items
-//            popUpTo(navController.graph.findStartDestination().id) {
-//                saveState = true
-//            }
+            popUpTo(navController.graph.findStartDestination().id) {
+                saveState = true
+            }
             // Avoid multiple copies of the same destination when
             // reselecting the same item
             launchSingleTop = true
@@ -117,7 +117,7 @@ private fun NavHostController.navigateAndReplaceStartRoute(startDestRoute: Strin
 }
 
 private fun <T : Any> NavHostController.navigateAndReplaceStartRoute(startDestRoute: T) {
-//    popBackStack(graph.startDestinationId, true)
+    popBackStack(graph.startDestinationId, true)
     graph.setStartDestination(startDestRoute)
     navigate(startDestRoute)
 }

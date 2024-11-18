@@ -56,7 +56,8 @@ public fun NavScreen(
 
         NavigationSuiteScaffold(
             NavScreenNavigationSuiteItems(
-                navController, currentDestination,
+                navController,
+                currentDestination,
                 "home_main",
                 "home_map",
                 "home_settings",
@@ -110,15 +111,15 @@ public fun NavScreen(
                     )
                 }
 
-                val navigator = koinInject<Navigator<ai.tech.core.presentation.navigation.Destination>>()
+                val navigator = koinInject<Navigator<Destination>>()
 
                 navigator.handleAction(navController)
 
                 NavScreenNavHost(
                     navController,
-                    ai.tech.core.presentation.navigation.Destination.HomeGraph.Main,
+                    Destination.Main,
                     modifier.padding(innerPadding),
-                    route = ai.tech.core.presentation.navigation.Destination.HomeGraph::class,
+                    route = Destination.NavGraph::class,
                 )
             }
         }

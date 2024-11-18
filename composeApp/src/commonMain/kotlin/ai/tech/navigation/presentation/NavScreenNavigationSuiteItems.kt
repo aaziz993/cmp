@@ -1,6 +1,5 @@
 package ai.tech.navigation.presentation
 
-import ai.tech.core.presentation.navigation.Destination
 import androidx.compose.material3.adaptive.navigationsuite.NavigationSuiteScope
 import androidx.compose.runtime.Composable
 import androidx.navigation.NavDestination
@@ -42,7 +41,7 @@ public fun NavScreenNavigationSuiteItems(
                     // Pop up to the start destination of the graph to
                     // avoid building up a large stack of destinations
                     // on the back stack as users select items
-                    popUpTo(navController.graph. findStartDestination().id) {
+                    popUpTo(navController.graph.findStartDestination().id) {
                         saveState = true
                     }
                     // Avoid multiple copies of the same destination when

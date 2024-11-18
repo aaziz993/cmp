@@ -5,6 +5,7 @@ import ai.tech.core.presentation.component.lazycolumn.model.LazyPagingColumnLoca
 public class CRUDTableLocalization(
     public val options: String = "Options",
     public val actions: String = "Actions",
+    public val multiSort: String = "Multi sort",
     public val liveSearch: String = "Live search",
     public val pagination: String = "Pagination",
     public val select: String = "Select",
@@ -21,6 +22,4 @@ public class CRUDTableLocalization(
     public val valueIsInvalid: String = "Value is invalid",
 ) : LazyPagingColumnLocalization(
     notLoading,
-    refreshError,
-    appendError,
 )

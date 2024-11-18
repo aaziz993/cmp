@@ -4,32 +4,40 @@ import ai.tech.core.data.crud.model.LimitOffset
 import ai.tech.core.data.crud.model.Order
 import ai.tech.core.presentation.component.textfield.search.model.SearchFieldState
 
-public sealed class CRUDAction {
+public sealed interface CRUDAction<out T : Any> {
     public data class Find(
         val sort: List<Order>? = null,
         val searchFieldStates: List<SearchFieldState>,
         val limitOffset: LimitOffset
-    ) : CRUDAction()
+    ) : CRUDAction<Nothing>
 
-    public data object New : CRUDAction()
+    public data object Add : CRUDAction<Nothing>
 
-    public data class Copy(val id: Any) : CRUDAction()
+    public data class Copy(val id: Any) : CRUDAction<Nothing>
 
-    public data class Edit(val id: Any) : CRUDAction()
+    public data class Remove(val id: Any) : CRUDAction<Nothing>
 
-    public data object EditSelected : CRUDAction()
+    public data object RemoveSelected : CRUDAction<Nothing>
 
-    public data object CopySelected : CRUDAction()
+    public data class Edit(val id: Any) : CRUDAction<Nothing>
 
-    public data object Save : CRUDAction()
+    public data object EditSelected : CRUDAction<Nothing>
 
-    public data class Delete(val id: Any) : CRUDAction()
+    public data object CopySelected : CRUDAction<Nothing>
 
-    public data object DeleteSelected : CRUDAction()
+    public data class Upload<T : Any>(val entities: List<T>) : CRUDAction<T>
 
-    public data class Select(val id: Any) : CRUDAction()
+    public data class Save<T : Any>(val entity: T) : CRUDAction<T>
 
-    public data object SelectAll : CRUDAction()
+    public data object SaveSelected : CRUDAction<Nothing>
+
+    public data class Delete(val id: Any) : CRUDAction<Nothing>
+
+    public data object DeleteSelected : CRUDAction<Nothing>
+
+    public data class Select(val id: Any) : CRUDAction<Nothing>
+
+    public data object SelectAll : CRUDAction<Nothing>
 
 //    public data object Refresh : CRUDAction()
 }

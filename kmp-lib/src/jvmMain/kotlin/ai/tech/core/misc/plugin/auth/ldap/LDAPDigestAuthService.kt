@@ -9,6 +9,8 @@ import com.sun.jndi.ldap.LdapClient
 import io.ktor.server.application.ApplicationCall
 import io.ktor.server.auth.*
 import io.ktor.server.auth.ldap.*
+import javax.naming.Context
+import javax.naming.directory.InitialDirContext
 import javax.naming.ldap.LdapContext
 
 public open class LDAPDigestAuthService(
@@ -36,8 +38,31 @@ public open class LDAPDigestAuthService(
     override suspend fun validate(
         call: ApplicationCall,
         credential: DigestCredential,
-    ): User? =
-        ldapAuthenticate(credential, config.ldapServerURL, config.userDNFormat)?.let(UserIdPrincipal::name)?.let(::User)
+    ): User? {
+
+
+        val ldapServerURL = "ldap://ldap.example.com" // Replace with your LDAP server URL
+        val userDNFormat = "uid=%s,ou=users,dc=example,dc=com" // Update as per your LDAP schema
+        val userDN = userDNFormat.format(credential.userName)
+
+        // Use LDAP to verify the user's identity
+         try {
+            val env = mutableMapOf<String, Any>(
+                Context.INITIAL_CONTEXT_FACTORY to "com.sun.jndi.ldap.LdapCtxFactory",
+                Context.PROVIDER_URL to ldapServerURL,
+                Context.SECURITY_AUTHENTICATION to "simple",
+                Context.SECURITY_PRINCIPAL to userDN,
+                Context.SECURITY_CREDENTIALS to credential.digestPassword // Digest password sent by the client
+            )
+
+             ldapAuthenticate(credential,config.ldapServerURL,env){
+
+             }
+
+        } catch (e: Exception) {
+            false // LDAP authentication failed
+        }
+    }
 
     override fun roles(principal: Any): Set<String> = (principal as User).roles.orEmpty()
 }

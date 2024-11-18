@@ -17,7 +17,6 @@ import app.cash.paging.cachedIn
 import arrow.core.Either
 import arrow.core.raise.Raise
 import arrow.core.raise.either
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.ExperimentalForInheritanceCoroutinesApi
 import kotlinx.coroutines.Job
@@ -28,13 +27,11 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.launchIn
-import kotlinx.coroutines.flow.mapLatest
 import kotlinx.coroutines.flow.onStart
-import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import org.koin.core.component.KoinComponent
 
-public abstract class AbstractViewModel<A : Any>(protected val savedStateHandle: SavedStateHandle) : ViewModel(), KoinComponent {
+public abstract class AbstractViewModel<T : Any>(protected val savedStateHandle: SavedStateHandle) : ViewModel(), KoinComponent {
 
     public open fun exceptionTransform(exception: Throwable): ViewModelStateException = ViewModelStateException(exception)
 
@@ -60,7 +57,7 @@ public abstract class AbstractViewModel<A : Any>(protected val savedStateHandle:
     public suspend fun <T : Any> ViewModelState<T>.mapRaise(block: suspend Raise<Throwable>.() -> T): ViewModelState<T> =
         mapEither { either<Throwable, T> { block() } }
 
-    public abstract fun action(action: A)
+    public abstract fun action(action: T)
 
     protected fun <T> Flow<T>.viewModelScopeFlow(
         initialValue: T,

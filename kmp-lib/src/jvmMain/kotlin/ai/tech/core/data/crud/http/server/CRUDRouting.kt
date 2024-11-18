@@ -34,11 +34,9 @@ public inline fun <reified T : Any> Routing.CrudRouting(
     path: String,
     repository: CRUDRepository<T>,
     readAuth: AuthResource? = null,
-    saveAuth: AuthResource? = readAuth,
-    updateAuth: AuthResource? = readAuth,
-    deleteAuth: AuthResource? = readAuth,
+    writeAuth: AuthResource? = readAuth,
 ) {
-    authOpt(saveAuth) {
+    authOpt(writeAuth) {
         put("$path/insert") {
             repository.insert(call.receive<List<T>>())
             call.respondText("Inserted", status = HttpStatusCode.OK)
@@ -46,7 +44,7 @@ public inline fun <reified T : Any> Routing.CrudRouting(
     }
 
 
-    authOpt(updateAuth) {
+    authOpt(writeAuth) {
         post("$path/updateTypeSafe") {
             call.respond(HttpStatusCode.OK, repository.update(call.receive<T>()))
         }
@@ -124,7 +122,7 @@ public inline fun <reified T : Any> Routing.CrudRouting(
         }
     }
 
-    authOpt(deleteAuth) {
+    authOpt(writeAuth) {
         post("$path/delete") {
             call.respond(HttpStatusCode.OK, repository.delete(call.receiveNullable()))
         }
@@ -133,7 +131,7 @@ public inline fun <reified T : Any> Routing.CrudRouting(
     authOpt(readAuth) {
         post("$path/aggregate") {
             val form = call.receiveMultipart().readFormData()
-            
+
             repository.aggregate(
                 Json.Default.decodeFromString<AggregateExpression<Nothing>>(form["aggregate"]!!) as AggregateExpression<Any?>,
                 form["predicate"]?.let { Json.Default.decodeFromString(it) },

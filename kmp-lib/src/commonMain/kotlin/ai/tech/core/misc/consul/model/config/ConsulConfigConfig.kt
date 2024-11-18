@@ -1,7 +1,6 @@
 package ai.tech.core.misc.consul.model.config
 
 import kotlinx.serialization.Serializable
-import kotlinx.serialization.Transient
 
 @Serializable
 public data class ConsulConfigConfig(
@@ -15,7 +14,7 @@ public data class ConsulConfigConfig(
     val aclToken: String? = null,
 ) {
 
-    public fun generateKeys(applicationName: String, profiles: List<String> = emptyList()): List<String> {
+    public fun getKeys(applicationName: String, profiles: List<String> = emptyList()): List<String> {
         val dataKeyPart = dataKey.orEmpty()
 
         val namePart = name ?: applicationName

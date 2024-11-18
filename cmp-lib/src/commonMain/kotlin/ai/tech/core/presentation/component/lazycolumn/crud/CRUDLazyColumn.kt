@@ -4,7 +4,7 @@ import ai.tech.core.data.crud.model.LimitOffset
 import ai.tech.core.data.expression.Equals
 import ai.tech.core.presentation.component.lazycolumn.LazyPagingColumn
 import ai.tech.core.presentation.component.lazycolumn.crud.model.CRUDTableLocalization
-import ai.tech.core.presentation.component.lazycolumn.crud.model.CRUDTableState
+import ai.tech.core.presentation.component.lazycolumn.crud.model.CRUDLazyColumnState
 import ai.tech.core.presentation.component.lazycolumn.crud.model.Item
 import ai.tech.core.presentation.component.lazycolumn.crud.viewmodel.CRUDAction
 import ai.tech.core.presentation.component.lazycolumn.crud.viewmodel.CRUDViewModel
@@ -23,16 +23,14 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import app.cash.paging.compose.LazyPagingItems
 import app.cash.paging.compose.collectAsLazyPagingItems
 import compose.icons.SimpleIcons
 import compose.icons.simpleicons.Microsoftexcel
 
 @Composable
-public fun <T : Any> CRUDTable(
+public fun <T : Any> CRUDLazyColumn(
     modifier: Modifier = Modifier.fillMaxSize(),
-    state: CRUDTableState,
+    state: CRUDLazyColumnState,
     contentPadding: PaddingValues = PaddingValues(16.dp),
     reverseLayout: Boolean = false,
     verticalArrangement: Arrangement.Vertical = Arrangement.spacedBy(8.dp),
@@ -69,9 +67,10 @@ public fun <T : Any> CRUDTable(
         onDownload?.let { { it(items.filter { it.isSelected && !it.isNew }.map(Item<T>::entity)) } },
         onUpload,
         { viewModel.action(CRUDAction.EditSelected) },
-        { viewModel.action(CRUDAction.New) },
+        { viewModel.action(CRUDAction.Add) },
         { viewModel.action(CRUDAction.CopySelected) },
-        { viewModel.action(CRUDAction.Save) },
+        { viewModel.action(CRUDAction.RemoveSelected) },
+        { viewModel.action(CRUDAction.SaveSelected) },
     ) { viewModel.action(CRUDAction.DeleteSelected) }
 
     HeaderRow(
@@ -93,7 +92,18 @@ public fun <T : Any> CRUDTable(
         flingBehavior,
         userScrollEnabled,
         data = data,
-    ) { DataRow(it) }
+    ) {
+        val id = it.id
+        val entity = it.entity
+        DataRow(
+            it,
+            onDownload?.let { { it(listOf(entity)) } },
+            { viewModel.action(CRUDAction.Copy(id)) },
+            { viewModel.action(CRUDAction.Remove(id)) },
+            { viewModel.action(CRUDAction.Edit(id)) },
+            { viewModel.action(CRUDAction.Save(entity)) },
+        ) { viewModel.action(CRUDAction.Delete(id)) }
+    }
 }
 
 

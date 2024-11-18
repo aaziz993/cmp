@@ -18,7 +18,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.runtime.toMutableStateList
 
-public class CRUDTableState(
+public class CRUDLazyColumnState(
     public val searchFieldStates: List<SearchFieldState>,
     sort: List<Order> = emptyList(),
     limitOffset: LimitOffset = LimitOffset(0, 10),
@@ -91,7 +91,7 @@ public class CRUDTableState(
     public companion object {
 
         @Suppress("UNCHECKED_CAST")
-        public fun Saver(): Saver<CRUDTableState, *> = listSaver(
+        public fun Saver(): Saver<CRUDLazyColumnState, *> = listSaver(
             save = {
                 listOf(
                     it.searchFieldStates,
@@ -107,7 +107,7 @@ public class CRUDTableState(
                 )
             },
             restore = {
-                CRUDTableState(
+                CRUDLazyColumnState(
                     it[0] as List<SearchFieldState>,
                     it[1] as List<Order>,
                     it[2] as LimitOffset,
@@ -125,16 +125,16 @@ public class CRUDTableState(
 }
 
 @Composable
-public fun rememberCRUDTableState(state: CRUDTableState): CRUDTableState =
-    rememberSaveable(saver = CRUDTableState.Saver()) { state }
+public fun rememberCRUDTableState(state: CRUDLazyColumnState): CRUDLazyColumnState =
+    rememberSaveable(saver = CRUDLazyColumnState.Saver()) { state }
 
 @Composable
 public fun rememberCRUDTableState(
     properties: List<String>,
     data: CRUDTableStateData,
-): CRUDTableState =
+): CRUDLazyColumnState =
     rememberCRUDTableState(
-        CRUDTableState(
+        CRUDLazyColumnState(
             properties.map { property ->
                 data.searchFieldStates.entries.find { it.key == property }
                     ?.let { rememberSearchFieldState(it.value) } ?: rememberSearchFieldState()

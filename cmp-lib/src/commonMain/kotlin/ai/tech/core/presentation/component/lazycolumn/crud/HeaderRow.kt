@@ -2,7 +2,7 @@ package ai.tech.core.presentation.component.lazycolumn.crud
 
 import ai.tech.core.misc.type.primeTypeOrNull
 import ai.tech.core.presentation.component.lazycolumn.crud.model.CRUDTableLocalization
-import ai.tech.core.presentation.component.lazycolumn.crud.model.CRUDTableState
+import ai.tech.core.presentation.component.lazycolumn.crud.model.CRUDLazyColumnState
 import ai.tech.core.presentation.component.lazycolumn.crud.model.EntityColumn
 import ai.tech.core.presentation.component.lazycolumn.crud.model.Item
 import ai.tech.core.presentation.component.textfield.model.TextField
@@ -40,7 +40,7 @@ import kotlinx.datetime.LocalTime
 @Composable
 internal fun <T : Any> HeaderRow(
     contentPadding: PaddingValues,
-    state: CRUDTableState,
+    state: CRUDLazyColumnState,
     properties: List<EntityColumn>,
     items: List<Item<T>>,
     localization: CRUDTableLocalization,

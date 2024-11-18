@@ -1,13 +1,13 @@
 package ai.tech.core.presentation.event.navigator
 
-public sealed class NavigationAction {
+public sealed interface NavigationAction {
 
     /**
      * Navigate back
      */
-    public data object NavigateBack : NavigationAction()
+    public data object NavigateBack : NavigationAction
 
-    public sealed class Navigation : NavigationAction() {
+    public sealed class Navigation : NavigationAction {
         public abstract val route: String
 
         /**
@@ -35,7 +35,7 @@ public sealed class NavigationAction {
         public data class NavigateAndClearTop(override val route: String) : Navigation()
     }
 
-    public sealed class SafeNavigation<out T> : NavigationAction() {
+    public sealed class SafeNavigation<out T> : NavigationAction {
         public abstract val route: T
 
         /**

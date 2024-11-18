@@ -2,7 +2,7 @@ package ai.tech.core.presentation.component.lazycolumn.crud
 
 import ai.tech.core.presentation.component.column.expandable.ExpandableSection
 import ai.tech.core.presentation.component.lazycolumn.crud.model.CRUDTableLocalization
-import ai.tech.core.presentation.component.lazycolumn.crud.model.CRUDTableState
+import ai.tech.core.presentation.component.lazycolumn.crud.model.CRUDLazyColumnState
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -17,7 +17,7 @@ import androidx.compose.ui.Modifier
 
 @Composable
 internal fun OptionRow(
-    state: CRUDTableState,
+    state: CRUDLazyColumnState,
     contentPadding: PaddingValues,
     localization: CRUDTableLocalization,
 ) = ExpandableSection(
@@ -26,8 +26,18 @@ internal fun OptionRow(
 ) {
     Column(Modifier.fillMaxWidth()) {
         Row(verticalAlignment = Alignment.CenterVertically) {
+            Text(localization.multiSort)
+            Switch(state.isMultiSort, { state.isMultiSort = it })
+        }
+
+        Row(verticalAlignment = Alignment.CenterVertically) {
             Text(localization.liveSearch)
-            Switch(state.liveSearch, { state.liveSearch = it })
+            Switch(state.isLiveSearch, { state.isLiveSearch = it })
+        }
+
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            Text(localization.liveSearch)
+            Switch(state.isLiveSearch, { state.isLiveSearch = it })
         }
 
         Row(verticalAlignment = Alignment.CenterVertically) {

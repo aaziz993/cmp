@@ -9,7 +9,7 @@ public data class Item<T : Any>(
     val isSelected: Boolean = false,
 ) {
 
-    val isModifying: Boolean = isSelected || isEditing || isNew
+    val isNecessary: Boolean = isSelected || isEditing || isNew
 
     public fun validate(properties: List<EntityColumn>): Boolean =
         properties.withIndex().all { (index, property) ->
@@ -17,11 +17,23 @@ public data class Item<T : Any>(
         }
 }
 
-public val <T:Any> List<Item<T>>.selected:List<Item<T>>
+public val <T : Any> List<Item<T>>.isSelectedAny: Boolean
+    get() = any(Item<T>::isSelected)
+
+public val <T : Any> List<Item<T>>.isSelectedAll: Boolean
+    get() = all(Item<T>::isSelected)
+
+public val <T : Any> List<Item<T>>.isSelectedAnyNew: Boolean
+    get() = any { it.isSelected && it.isNew }
+
+public val <T : Any> List<Item<T>>.isSelectedAllExistsIsEditing: Boolean
+    get() = all { it.isSelected && it.isEditing && !it.isNew }
+
+public val <T : Any> List<Item<T>>.isSelectedAnyExists: Boolean
+    get() = any { it.isSelected && !it.isNew }
+
+public val <T : Any> List<Item<T>>.selected: List<Item<T>>
     get() = filter(Item<T>::isSelected)
 
-public val <T:Any> List<Item<T>>.selectedNotNew
-    get() = selected.filterNot(Item<T>::isNew)
-
-public val <T:Any> List<Item<T>>.selectedEditing
-    get() = filter(Item<T>::isSelected)
+public val <T : Any> List<Item<T>>.selectedExists: List<Item<T>>
+    get() = filter { it.isSelected && !it.isNew }

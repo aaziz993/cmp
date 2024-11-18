@@ -29,7 +29,7 @@ public inline fun <reified VM : ViewModel> koinViewModel(
     scope: Scope = currentKoinScope(),
     noinline parameters: ParametersDefinition? = null,
 ): VM {
-    val parentEntry = remember(navController, backStackEntry) {
+    val parentEntry = remember(backStackEntry) {
         parentBackStackEntry
     }
     return koinViewModel(
