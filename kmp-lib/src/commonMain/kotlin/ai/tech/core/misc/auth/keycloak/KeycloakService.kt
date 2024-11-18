@@ -11,7 +11,7 @@ import ai.tech.core.misc.auth.keycloak.client.admin.model.UserRepresentation
 import ai.tech.core.misc.auth.keycloak.client.token.KeycloakTokenClient
 import ai.tech.core.misc.auth.model.User
 import ai.tech.core.misc.auth.model.bearer.Token
-import ai.tech.core.misc.network.http.client.apiClient
+import ai.tech.core.misc.network.http.client.configApi
 import de.jensklingenberg.ktorfit.Ktorfit
 import io.ktor.client.HttpClient
 
@@ -30,7 +30,7 @@ public class KeycloakService(
 ) {
 
     private val tokenClient = KeycloakTokenClient(
-        Ktorfit.Builder().httpClient(httpClient.apiClient()).baseUrl(config.address).build(),
+        Ktorfit.Builder().httpClient(httpClient.configApi()).baseUrl(config.address).build(),
         config.realm,
         config.clientId,
     )

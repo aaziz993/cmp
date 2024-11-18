@@ -1,4 +1,4 @@
-package ai.tech.core.data.crud.http.client
+package ai.tech.core.data.crud.client.http
 
 import ai.tech.core.data.expression.BooleanVariable
 import de.jensklingenberg.ktorfit.http.Body

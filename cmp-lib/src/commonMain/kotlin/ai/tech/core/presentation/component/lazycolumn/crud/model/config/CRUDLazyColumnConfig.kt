@@ -5,7 +5,7 @@ import ai.tech.core.presentation.component.lazycolumn.crud.model.CRUDTableStateD
 import kotlinx.serialization.Serializable
 
 @Serializable
-public data class CRUDTableConfig(
+public data class CRUDLazyColumnConfig(
     val repository: CRUDRepositoryConfig = CRUDRepositoryConfig(),
     val readOnly: Boolean = false,
     val paginationPageCount: Int = 10,

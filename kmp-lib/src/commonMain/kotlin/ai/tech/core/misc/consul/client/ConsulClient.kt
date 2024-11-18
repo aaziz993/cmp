@@ -11,7 +11,7 @@ import ai.tech.core.misc.consul.client.operator.OperatorClient
 import ai.tech.core.misc.consul.client.session.SessionClient
 import ai.tech.core.misc.consul.client.snapshot.SnapshotClient
 import ai.tech.core.misc.consul.client.status.StatusClient
-import ai.tech.core.misc.network.http.client.apiClient
+import ai.tech.core.misc.network.http.client.configApi
 import de.jensklingenberg.ktorfit.Ktorfit
 import io.ktor.client.HttpClient
 import io.ktor.client.plugins.defaultRequest
@@ -25,7 +25,7 @@ public class ConsulClient(
 ) {
 
     private val ktorfit = Ktorfit.Builder().httpClient(
-        httpClient.apiClient {
+        httpClient.configApi {
             if (aclToken != null) {
                 defaultRequest {
                     header(HttpHeaders.Authorization, "Bearer $aclToken")

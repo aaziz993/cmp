@@ -4,7 +4,7 @@ import ai.tech.core.data.keyvalue.AbstractKeyValue
 import ai.tech.core.data.keyvalue.get
 import ai.tech.core.misc.auth.model.bearer.Token
 import ai.tech.core.misc.auth.model.bearer.TokenImpl
-import ai.tech.core.misc.network.http.client.apiClient
+import ai.tech.core.misc.network.http.client.configApi
 import ai.tech.core.misc.network.http.client.httpUrl
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
@@ -29,7 +29,7 @@ public abstract class ClientBearerAuthService(
     private val tokenKey = "${name}_token"
     private val tokenEpochSecondsKey = "${name}_token_epoch_seconds"
 
-    public val httpClient: HttpClient = httpClient.apiClient {
+    public val httpClient: HttpClient = httpClient.configApi {
         install(Auth) {
             bearer {
                 loadTokens { getToken()?.let { BearerTokens(it.accessToken, it.refreshToken) } }

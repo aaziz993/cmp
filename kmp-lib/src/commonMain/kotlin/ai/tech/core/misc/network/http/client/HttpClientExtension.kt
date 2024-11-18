@@ -1,17 +1,11 @@
 package ai.tech.core.misc.network.http.client
 
 import ai.tech.core.misc.network.http.client.model.Pin
-import ai.tech.core.misc.network.http.client.model.exception.ErrorDetails
-import ai.tech.core.misc.network.http.client.model.exception.ErrorInfo
-import ai.tech.core.misc.network.http.client.model.exception.HttpResponseException
 import ai.tech.core.misc.type.multiple.filterValuesNotNull
 import ai.tech.core.misc.type.serializablePropertyValues
 import ai.tech.core.misc.type.serializer.encodeAnyToString
 import io.ktor.client.*
-import io.ktor.client.call.body
 import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
-import io.ktor.client.statement.HttpResponse
-import io.ktor.http.HttpStatusCode
 import io.ktor.http.URLBuilder
 import io.ktor.http.URLProtocol
 import io.ktor.http.Url
@@ -71,24 +65,7 @@ public suspend fun MultiPartData.readParts(): List<PartData> {
 
 public suspend fun MultiPartData.readFormData(): Map<String?, String> = readParts().associate { it.name to (it as PartData.FormItem).value }
 
-public suspend fun HttpResponse.requireStatusCode(checkStatus: (HttpStatusCode) -> Boolean = { it == HttpStatusCode.OK }): HttpResponse =
-    if (checkStatus(status)) {
-        this
-    }
-    else {
-        throw HttpResponseException(ErrorInfo(ErrorDetails(status.value, "", status.toString())))
-    }
-
-public suspend inline fun <reified T> HttpResponse.handleError(block: HttpResponse.() -> T): T =
-    try {
-        block()
-    }
-    catch (e: Throwable) {
-        e.printStackTrace()
-        throw HttpResponseException(body())
-    }
-
-public fun HttpClient.apiClient(block: HttpClientConfig<*>.() -> Unit = {}): HttpClient = config {
+public fun HttpClient.configApi(block: HttpClientConfig<*>.() -> Unit = {}): HttpClient = config {
     block()
 
     install(ContentNegotiation) {

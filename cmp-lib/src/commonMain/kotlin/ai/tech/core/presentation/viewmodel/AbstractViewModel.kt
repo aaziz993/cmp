@@ -2,6 +2,10 @@
 
 package ai.tech.core.presentation.viewmodel
 
+import ai.tech.core.data.crud.CRUDRepository
+import ai.tech.core.data.crud.client.findPager
+import ai.tech.core.data.crud.model.Order
+import ai.tech.core.data.expression.BooleanVariable
 import ai.tech.core.misc.type.multiple.mapState
 import ai.tech.core.misc.type.multiple.model.OnetimeWhileSubscribed
 import ai.tech.core.misc.type.multiple.model.RestartableMutableStateFlow
@@ -12,8 +16,12 @@ import ai.tech.core.presentation.viewmodel.model.exception.ViewModelStateExcepti
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import app.cash.paging.ExperimentalPagingApi
+import app.cash.paging.PagingConfig
 import app.cash.paging.PagingData
+import app.cash.paging.RemoteMediator
 import app.cash.paging.cachedIn
+import app.cash.paging.createPagingConfig
 import arrow.core.Either
 import arrow.core.raise.Raise
 import arrow.core.raise.either
@@ -93,6 +101,21 @@ public abstract class AbstractViewModel<T : Any>(protected val savedStateHandle:
         }
     }
 
+    @OptIn(ExperimentalPagingApi::class)
+    protected fun <T : Any> CRUDRepository<T>.viewModelPagingFlow(
+        sort: List<Order>? = null,
+        predicate: BooleanVariable? = null,
+        config: PagingConfig = createPagingConfig(10),
+        initialKey: Int? = null,
+        remoteMediator: RemoteMediator<Int, T>? = null,
+        firstItemOffset: Int = 0,
+    ) = findPager(sort, predicate, config, initialKey, remoteMediator, firstItemOffset).flow.let {
+        if (remoteMediator == null) {
+            return@let it.cachedIn
+        }
+        it
+    }
+
     protected fun <T, R> StateFlow<T>.mapState(transform: (data: T) -> R): StateFlow<R> =
         mapState(scope = viewModelScope, transform)
 
@@ -100,10 +123,10 @@ public abstract class AbstractViewModel<T : Any>(protected val savedStateHandle:
     public fun <T, R> StateFlow<T>.mapState(initialValue: R, transform: suspend (data: T) -> R): StateFlow<R> =
         mapState(viewModelScope, initialValue, transform)
 
-    protected val <T : Any> Flow<PagingData<T>>.cached: Flow<PagingData<T>>
+    protected val <T : Any> Flow<PagingData<T>>.cachedIn: Flow<PagingData<T>>
         get() = cachedIn(viewModelScope)
 
-    protected val <T> Flow<T>.launch: Job
+    protected val <T> Flow<T>.launchedIn: Job
         get() = launchIn(viewModelScope)
 
     public companion object {

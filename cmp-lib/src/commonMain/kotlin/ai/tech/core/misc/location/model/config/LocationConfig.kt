@@ -1,9 +1,9 @@
 package ai.tech.core.misc.location.model.config
 
-import ai.tech.core.presentation.component.lazycolumn.crud.model.config.CRUDTableConfig
+import ai.tech.core.presentation.component.lazycolumn.crud.model.config.CRUDLazyColumnConfig
 import kotlinx.serialization.Serializable
 
 @Serializable
 public data class LocationConfig(
-    val crudTable: CRUDTableConfig = CRUDTableConfig()
+    val crudTable: CRUDLazyColumnConfig = CRUDLazyColumnConfig()
 )

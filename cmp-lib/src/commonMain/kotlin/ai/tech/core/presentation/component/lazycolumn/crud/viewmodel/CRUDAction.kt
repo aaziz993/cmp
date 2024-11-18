@@ -23,6 +23,8 @@ public sealed interface CRUDAction<out T : Any> {
 
     public data object EditSelected : CRUDAction<Nothing>
 
+    public data class ChangeValue(val id: Any,val index:Int,val value: String) : CRUDAction<Nothing>
+
     public data object CopySelected : CRUDAction<Nothing>
 
     public data class Upload<T : Any>(val entities: List<T>) : CRUDAction<T>

@@ -1,7 +1,6 @@
 package ai.tech.core.presentation.component.lazycolumn.crud.viewmodel
 
 import ai.tech.core.data.crud.CRUDRepository
-import ai.tech.core.data.crud.client.findPager
 import ai.tech.core.data.expression.BooleanVariable
 import ai.tech.core.data.expression.f
 import ai.tech.core.presentation.component.lazycolumn.crud.model.EntityColumn
@@ -21,10 +20,8 @@ import app.cash.paging.createPagingConfig
 import app.cash.paging.insertFooterItem
 import app.cash.paging.map
 import com.benasher44.uuid.uuid4
-import kotlin.collections.filter
-import kotlin.collections.filterNot
-import kotlin.collections.map
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
@@ -51,14 +48,14 @@ public class CRUDViewModel<T : Any> (
     public val state: MutableStateFlow<PagingData<Item<T>>>
         field = MutableStateFlow()
 
-    public val items: MutableStateFlow<List<Item<T>>>
+    public val items: StateFlow<List<Item<T>>>
         field = MutableStateFlow<List<Item<T>>>(emptyList())
 
     @OptIn(ExperimentalPagingApi::class)
     override fun action(action: CRUDAction<T>) {
         when (action) {
             is CRUDAction.Find -> {
-                combine(repository.findPager(action.sort, action.searchFieldStates.predicate(), config, initialKey, remoteMediator, firstItemOffset).flow.cached, items) { pagingData, items ->
+                combine(repository.viewModelPagingFlow(action.sort, action.searchFieldStates.predicate(), config, initialKey, remoteMediator, firstItemOffset), items) { pagingData, items ->
                     val modifiedPagingData = pagingData.map(::newItem).map { pagingItem ->
                         items.find { !it.isNew && it.id == pagingItem.id } ?: pagingItem
                     }
@@ -69,7 +66,9 @@ public class CRUDViewModel<T : Any> (
 
             is CRUDAction.Add -> items.update { it + newItem(getNew(uuid4())) }
 
-            is CRUDAction.Copy -> items.update { it + it.single { it.id == action.id }.let(::copyItem) }
+            is CRUDAction.Copy -> {
+//                state.update { data -> data  }
+            }
 
             CRUDAction.CopySelected -> items.update { it + it.selected.map(::copyItem) }
 
@@ -80,6 +79,8 @@ public class CRUDViewModel<T : Any> (
             is CRUDAction.Edit -> items.update { it.edit(action.id) }
 
             is CRUDAction.EditSelected -> items.update { it.editSelected() }
+
+            is CRUDAction.ChangeValue -> items.update { it.editSelected() }
 
             is CRUDAction.Upload -> {
                 viewModelScope.launch {

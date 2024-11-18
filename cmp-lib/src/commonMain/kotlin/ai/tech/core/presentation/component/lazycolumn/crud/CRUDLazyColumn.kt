@@ -55,7 +55,7 @@ public fun <T : Any> CRUDLazyColumn(
 
     val data = viewModel.state.collectAsLazyPagingItems()
 
-    val items = (0 until data.itemCount).map { data[it] }.filterNotNull()
+    val items = data.itemSnapshotList.items
 
     ActionRow(
         contentPadding,
@@ -96,11 +96,17 @@ public fun <T : Any> CRUDLazyColumn(
         val id = it.id
         val entity = it.entity
         DataRow(
+            state,
+            readOnly,
+            downloadAllIcon,
+            viewModel.properties,
             it,
+            { viewModel.action(CRUDAction.Select(id)) },
             onDownload?.let { { it(listOf(entity)) } },
             { viewModel.action(CRUDAction.Copy(id)) },
             { viewModel.action(CRUDAction.Remove(id)) },
             { viewModel.action(CRUDAction.Edit(id)) },
+            { index, value -> viewModel.action(CRUDAction.ChangeValue(id, index, value)) },
             { viewModel.action(CRUDAction.Save(entity)) },
         ) { viewModel.action(CRUDAction.Delete(id)) }
     }

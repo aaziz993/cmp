@@ -1,5 +1,6 @@
 package ai.tech.core.presentation.component.lazycolumn.crud
 
+import ai.tech.core.misc.type.primeTypeOrNull
 import ai.tech.core.presentation.component.lazycolumn.crud.model.CRUDLazyColumnState
 import ai.tech.core.presentation.component.lazycolumn.crud.model.EntityColumn
 import ai.tech.core.presentation.component.lazycolumn.crud.model.Item
@@ -32,6 +33,7 @@ import kotlin.reflect.typeOf
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.LocalDateTime
 import kotlinx.datetime.LocalTime
+import ai.tech.core.presentation.component.textfield.AdvancedTextField
 
 @Composable
 internal fun <T : Any> DataRow(
@@ -45,13 +47,14 @@ internal fun <T : Any> DataRow(
     onCopy: () -> Unit,
     onRemove: () -> Unit,
     onEdit: () -> Unit,
+    onValueChange: (index: Int, value: String) -> Unit,
     onSave: () -> Unit,
     onDelete: () -> Unit,
 ) = Row(
     Modifier.fillMaxWidth().animateItem(), verticalAlignment = Alignment.CenterVertically,
 ) {
     if (state.showSelect) {
-        Checkbox(item.isSelected, onSelect)
+        Checkbox(item.isSelected, { onSelect() })
     }
 
     val itemValuesValidations: MutableList<Boolean> =
@@ -71,7 +74,7 @@ internal fun <T : Any> DataRow(
             TextField.LocalTime, TextField.LocalDate, TextField.LocalDateTime -> {
                 AdvancedTextField(
                     value?.toString().orEmpty(),
-                    { state.replace(item, index, it) },
+                    { onValueChange(index, it) },
                     Modifier.weight(1f).padding(4.dp),
                     readOnly = readOnly || property.isReadOnly || item.readOnly,
                     singleLine = true,
@@ -82,7 +85,7 @@ internal fun <T : Any> DataRow(
 
             else -> AdvancedTextField(
                 value?.toString().orEmpty(),
-                { state.replace(item, index, it) },
+                { onValueChange(index, it) },
                 Modifier.weight(1f).padding(4.dp),
                 readOnly = readOnly || property.isReadOnly || item.readOnly,
                 singleLine = true,
@@ -105,21 +108,9 @@ internal fun <T : Any> DataRow(
                 }
 
                 if (!readOnly) {
-                    IconButton(
-                        {
-                            state.rowItems.add(
-                                lazyListState.firstVisibleItemIndex,
-                                item.copy(properties),
-                            )
-                        },
-                        Modifier.weight(1f),
-                    ) {
-                        Icon(
-                            EvaIcons.Outline.Copy, null,
-                        )
-                    }
+                    IconButton(onCopy, Modifier.weight(1f)) { Icon(EvaIcons.Outline.Copy, null) }
 
-                    if (!item.readOnly) {
+                    if (!item.isReadOnly) {
                         val isItemValuesValid = itemValuesValidations.all
                         IconButton(
                             {
@@ -142,38 +133,20 @@ internal fun <T : Any> DataRow(
                     }
 
                     if (item.isNew) {
-                        IconButton(
-                            {
-                                state.delete(item)
-                            },
-                            Modifier.weight(1f),
-                        ) {
-                            Icon(EvaIcons.Outline.Minus, null)
-                        }
+                        IconButton(onRemove, Modifier.weight(1f)) { Icon(EvaIcons.Outline.Minus, null) }
                     }
                     else {
-                        if (update) {
-                            IconButton(
-                                {
-                                    state.edit(item, properties)
-                                },
-                                Modifier.weight(1f),
-                            ) {
-                                if (item.isEdit) {
-                                    Icon(
-                                        EvaIcons.Outline.Close, null, tint = MaterialTheme.colorScheme.error,
-                                    )
-                                }
-                                else {
-                                    Icon(EvaIcons.Outline.Edit, null)
-                                }
+                        IconButton(onEdit, Modifier.weight(1f)) {
+                            if (item.isEditing) {
+                                Icon(EvaIcons.Outline.Close, null, tint = MaterialTheme.colorScheme.error)
+                            }
+                            else {
+                                Icon(EvaIcons.Outline.Edit, null)
                             }
                         }
 
-                        if (delete) {
-                            IconButton(onDelete, Modifier.weight(1f)) {
-                                Icon(EvaIcons.Outline.Trash2, null)
-                            }
+                        IconButton(onDelete, Modifier.weight(1f)) {
+                            Icon(EvaIcons.Outline.Trash2, null)
                         }
                     }
                 }

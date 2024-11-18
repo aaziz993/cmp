@@ -1,11 +1,9 @@
 package ai.tech.core.data.crud.client
 
 import ai.tech.core.data.crud.CRUDRepository
-import ai.tech.core.data.crud.model.LimitOffset
 import ai.tech.core.data.crud.model.Order
 import ai.tech.core.data.expression.BooleanVariable
 import ai.tech.core.data.expression.Variable
-import ai.tech.core.data.paging.DataPagingSource
 import app.cash.paging.ExperimentalPagingApi
 import app.cash.paging.Pager
 import app.cash.paging.PagingConfig
@@ -17,7 +15,7 @@ public fun <Value : Any> CRUDRepository<Value>.findPagingSource(
     sort: List<Order>? = null,
     predicate: BooleanVariable? = null,
     firstItemOffset: Int = 0,
-): PagingSource<Int, Value> = DataPagingSource({ find(sort, predicate, it) }, firstItemOffset)
+): PagingSource<Int, Value> = CRUDPagingSource({ find(sort, predicate, it).entities }, firstItemOffset)
 
 @OptIn(ExperimentalPagingApi::class)
 public fun <Value : Any> CRUDRepository<Value>.findPager(
@@ -39,7 +37,7 @@ public fun CRUDRepository<*>.findPagingSource(
     sort: List<Order>? = null,
     predicate: BooleanVariable? = null,
     firstItemOffset: Int = 0,
-): PagingSource<Int, List<Any?>> = DataPagingSource({ find(projections, sort, predicate, it) }, firstItemOffset)
+): PagingSource<Int, List<Any?>> = CRUDPagingSource({ find(projections, sort, predicate, it).entities }, firstItemOffset)
 
 @OptIn(ExperimentalPagingApi::class)
 public fun CRUDRepository<*>.findPager(
