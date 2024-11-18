@@ -11,7 +11,7 @@ public class CRUDPagingSource<T : Any>(
     override suspend fun fetchData(loadKey: Int?, pageSize: Int): List<T> =
         fetchData(LimitOffset((loadKey ?: 0) * pageSize.toLong() + firstItemOffset, pageSize.toLong()))
 
-    override fun getNextKey(loadKey: Int): Int? = loadKey.inc()
+    override fun getPrevKey(loadKey: Int?): Int? = loadKey?.takeIf { it > 0 }?.dec()
 
-    override fun getPrevKey(loadKey: Int): Int? = loadKey.takeIf { it > 0 }?.dec()
+    override fun getNextKey(loadKey: Int?): Int? = (loadKey ?: 0).inc()
 }
