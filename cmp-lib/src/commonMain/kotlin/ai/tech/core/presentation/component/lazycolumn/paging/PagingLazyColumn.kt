@@ -1,4 +1,4 @@
-package ai.tech.core.presentation.component.lazycolumn
+package ai.tech.core.presentation.component.lazycolumn.paging
 
 import ai.tech.core.presentation.component.lazycolumn.model.LazyPagingColumnLocalization
 import androidx.compose.foundation.gestures.FlingBehavior
@@ -78,7 +78,7 @@ public fun <T : Any> LazyPagingColumn(
             is LoadStateError -> {
                 getAddErrorMsg((data.loadState.prepend as LoadStateError).error)?.let { text ->
                     item {
-                        ErrorItem(
+                        AddLoadError(
                             message = text,
                             onClickRetry = data::retry,
                         )
@@ -136,7 +136,7 @@ public fun <T : Any> LazyPagingColumn(
             is LoadStateError -> {
                 getRefreshErrorMsg((data.loadState.refresh as LoadStateError).error)?.let { text ->
                     item {
-                        ErrorView(
+                        RefreshLoadError(
                             message = text,
                             onClickRetry = data::retry,
                             modifier = Modifier.fillMaxWidth(1f),
@@ -165,7 +165,7 @@ public fun <T : Any> LazyPagingColumn(
             is LoadStateError -> {
                 getAddErrorMsg((data.loadState.append as LoadStateError).error)?.let { text ->
                     item {
-                        ErrorItem(
+                        AddLoadError(
                             message = text,
                             onClickRetry = data::retry,
                         )

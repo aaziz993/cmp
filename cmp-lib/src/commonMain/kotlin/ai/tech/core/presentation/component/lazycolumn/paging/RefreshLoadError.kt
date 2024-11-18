@@ -1,4 +1,4 @@
-package ai.tech.core.presentation.component.lazycolumn
+package ai.tech.core.presentation.component.lazycolumn.paging
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -15,7 +15,7 @@ import androidx.compose.ui.layout.onPlaced
 import androidx.compose.ui.unit.dp
 
 @Composable
-internal fun ErrorView(
+internal fun RefreshLoadError(
     message: String,
     modifier: Modifier = Modifier,
     onClickRetry: () -> Unit

@@ -2,13 +2,12 @@ package ai.tech.core.presentation.component.lazycolumn.crud
 
 import ai.tech.core.data.crud.model.LimitOffset
 import ai.tech.core.data.expression.Equals
-import ai.tech.core.presentation.component.lazycolumn.LazyPagingColumn
+import ai.tech.core.presentation.component.lazycolumn.paging.LazyPagingColumn
 import ai.tech.core.presentation.component.lazycolumn.crud.model.CRUDTableLocalization
 import ai.tech.core.presentation.component.lazycolumn.crud.model.CRUDLazyColumnState
 import ai.tech.core.presentation.component.lazycolumn.crud.model.Item
 import ai.tech.core.presentation.component.lazycolumn.crud.viewmodel.CRUDAction
 import ai.tech.core.presentation.component.lazycolumn.crud.viewmodel.CRUDViewModel
-import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.gestures.FlingBehavior
 import androidx.compose.foundation.gestures.ScrollableDefaults
 import androidx.compose.foundation.layout.Arrangement
@@ -27,7 +26,6 @@ import androidx.compose.ui.unit.dp
 import app.cash.paging.compose.collectAsLazyPagingItems
 import compose.icons.SimpleIcons
 import compose.icons.simpleicons.Microsoftexcel
-import kotlin.enums.enumEntries
 
 @Composable
 public fun <T : Any> CRUDLazyColumn(
