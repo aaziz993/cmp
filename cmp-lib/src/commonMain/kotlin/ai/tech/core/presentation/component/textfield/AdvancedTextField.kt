@@ -4,10 +4,11 @@ import ai.tech.core.data.validator.Validator
 import ai.tech.core.misc.type.single.color
 import ai.tech.core.misc.type.single.now
 import ai.tech.core.misc.type.single.parseOrNull
-import ai.tech.core.misc.type.single.toEpochMilliseconds
 import ai.tech.core.misc.type.single.temporalPickerStateToTemporal
+import ai.tech.core.misc.type.single.toEpochMilliseconds
 import ai.tech.core.presentation.component.dialog.temporal.AdvancedTemporalPickerDialog
 import ai.tech.core.presentation.component.dropdown.list.ListDropdown
+import ai.tech.core.presentation.component.textfield.model.TextField
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Column
@@ -17,10 +18,10 @@ import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
-import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
@@ -48,8 +49,6 @@ import compose.icons.evaicons.Outline
 import compose.icons.evaicons.fill.Close
 import compose.icons.evaicons.outline.Eye
 import compose.icons.evaicons.outline.EyeOff2
-import ai.tech.core.presentation.component.textfield.model.TextField
-import androidx.compose.material.icons.filled.ArrowDropDown
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.LocalDateTime
 import kotlinx.datetime.LocalTime

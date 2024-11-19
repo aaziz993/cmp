@@ -1,13 +1,13 @@
 package ai.tech.core.presentation.event.navigator
 
+import ai.tech.core.misc.type.multiple.toLaunchedEffect
 import androidx.compose.runtime.Composable
+import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
 import androidx.navigation.NavOptionsBuilder
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.flow.MutableSharedFlow
-import ai.tech.core.misc.type.multiple.toLaunchedEffect
-import androidx.navigation.NavGraph.Companion.findStartDestination
 
 public class DefaultNavigator<T : Any>(override val startDestination: T) : Navigator<T> {
     private val navigationActions =

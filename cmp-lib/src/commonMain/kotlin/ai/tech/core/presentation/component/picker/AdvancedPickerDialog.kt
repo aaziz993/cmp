@@ -1,5 +1,9 @@
 package ai.tech.core.presentation.component.picker
 
+import ai.tech.core.presentation.component.picker.model.PickerItem
+import ai.tech.core.presentation.component.textfield.search.AdvancedSearchField
+import ai.tech.core.presentation.component.textfield.search.model.SearchFieldState
+import ai.tech.core.presentation.component.textfield.search.model.rememberSearchFieldState
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -27,10 +31,6 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
-import ai.tech.core.presentation.component.picker.model.PickerItem
-import ai.tech.core.presentation.component.textfield.search.AdvancedSearchField
-import ai.tech.core.presentation.component.textfield.search.model.SearchFieldState
-import ai.tech.core.presentation.component.textfield.search.model.rememberSearchFieldState
 
 @Composable
 public fun <T : Any> AdvancedPickerDialog(

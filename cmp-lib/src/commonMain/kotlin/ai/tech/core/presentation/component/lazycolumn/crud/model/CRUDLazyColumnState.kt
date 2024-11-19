@@ -1,6 +1,6 @@
 package ai.tech.core.presentation.component.lazycolumn.crud.model
 
-import ai.tech.core.data.crud.client.model.EntityColumn
+import ai.tech.core.data.crud.client.model.EntityProperty
 import ai.tech.core.data.crud.model.LimitOffset
 import ai.tech.core.data.crud.model.Order
 import ai.tech.core.data.expression.BooleanVariable
@@ -65,10 +65,10 @@ public class CRUDLazyColumnState(
 
     public var limitOffset: LimitOffset by mutableStateOf(limitOffset)
 
-    public fun getOrder(property: EntityColumn): IndexedValue<Order>? =
+    public fun getOrder(property: EntityProperty): IndexedValue<Order>? =
         sort.withIndex().find { (_, order) -> order.name == property.name }
 
-    public fun order(property: EntityColumn) {
+    public fun order(property: EntityProperty) {
         val order = getOrder(property)?.value
 
         when {

@@ -1,8 +1,7 @@
 package ai.tech.core.data.crud.client
 
 import ai.tech.core.data.crud.CRUDRepository
-import ai.tech.core.data.crud.client.model.EntityColumn
-import ai.tech.core.data.crud.client.model.MutationItem
+import ai.tech.core.data.crud.client.model.EntityProperty
 import ai.tech.core.data.crud.model.Order
 import ai.tech.core.data.expression.BooleanVariable
 import ai.tech.core.data.expression.Variable
@@ -40,7 +39,7 @@ public fun <Value : Any> CRUDRepository<Value>.mutablePager(
     sort: List<Order>? = null,
     predicate: BooleanVariable? = null,
     create: (id: Any) -> Value,
-    properties: List<EntityColumn>,
+    properties: List<EntityProperty>,
     getValues: (Value) -> List<Any?>,
     config: PagingConfig,
     initialKey: Int? = null,
@@ -88,7 +87,7 @@ public fun CRUDRepository<*>.mutablePager(
     sort: List<Order>? = null,
     predicate: BooleanVariable? = null,
     create: (id: Any) -> List<Any?>,
-    properties: List<EntityColumn>,
+    properties: List<EntityProperty>,
     config: PagingConfig,
     initialKey: Int? = null,
     remoteMediator: RemoteMediator<Int, List<Any?>>? = null,

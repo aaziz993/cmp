@@ -1,6 +1,10 @@
 package ai.tech.core.presentation.component.dialog.password
 
 import ai.tech.core.data.validator.Validator
+import ai.tech.core.presentation.component.dialog.password.model.PasswordResetDialogLocalization
+import ai.tech.core.presentation.component.dialog.password.model.PasswordResetDialogState
+import ai.tech.core.presentation.component.dialog.password.model.rememberPasswordResetDialogState
+import ai.tech.core.presentation.component.textfield.AdvancedTextField
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
@@ -30,10 +34,6 @@ import androidx.compose.ui.window.Dialog
 import compose.icons.EvaIcons
 import compose.icons.evaicons.Outline
 import compose.icons.evaicons.outline.Lock
-import ai.tech.core.presentation.component.dialog.password.model.PasswordResetDialogLocalization
-import ai.tech.core.presentation.component.dialog.password.model.PasswordResetDialogState
-import ai.tech.core.presentation.component.dialog.password.model.rememberPasswordResetDialogState
-import ai.tech.core.presentation.component.textfield.AdvancedTextField
 
 @Composable
 public fun PasswordResetDialog(

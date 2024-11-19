@@ -4,7 +4,7 @@ import ai.tech.core.misc.consul.client.ConsulClient
 import ai.tech.core.misc.consul.client.kv.model.Value
 import ai.tech.core.misc.consul.model.config.ConsulConfig
 import ai.tech.core.misc.model.config.ApplicationConfig
-import ai.tech.core.misc.type.multiple.filterValuesNotEmpty
+import ai.tech.core.misc.type.multiple.filterValuesIsNotEmpty
 import ai.tech.core.misc.type.serializer.decodeFromAny
 import io.ktor.client.HttpClient
 import kotlinx.serialization.InternalSerializationApi
@@ -33,7 +33,7 @@ public class ConsulConfigService(
 
             getKeys(applicationConfig.name, applicationConfig.configurations.map { "$it/${applicationConfig.environment}" }).associateWith {
                 consulClient.readConsulConfig(it, format)
-            }.filterValuesNotEmpty()
+            }.filterValuesIsNotEmpty()
         }
     }
 

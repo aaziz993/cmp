@@ -14,7 +14,7 @@ public data class MutationItem<T : Any>(
 
     val isActual: Boolean = isSelected || mutation != null
 
-    public fun validate(properties: List<EntityColumn>): Boolean =
+    public fun validate(properties: List<EntityProperty>): Boolean =
         properties.withIndex().all { (index, property) ->
             property.validator?.validate(values[index]?.toString().orEmpty())?.isEmpty() != false
         }

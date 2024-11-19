@@ -9,7 +9,7 @@ import ai.tech.core.misc.type.accessor.Accessor
 import ai.tech.core.misc.type.accessor.ListAccessor
 import ai.tech.core.misc.type.accessor.MapLikeAccessor
 import ai.tech.core.misc.type.multiple.depthIterator
-import ai.tech.core.misc.type.multiple.takeNotEmpty
+import ai.tech.core.misc.type.multiple.takeIfNotEmpty
 import ai.tech.core.misc.type.serializer.encodeToAny
 import ai.tech.core.misc.type.single.parseOrNull
 import ai.tech.core.misc.type.single.uuidFromOrNull
@@ -404,7 +404,7 @@ public fun SerialDescriptor.validator(
     uIntPatternMessage: String = "value_is_not_unsigned_integer",
     intPatternMessage: String = "value_is_not_integer",
     floatPatternMessage: String = "value_is_not_float",
-): Validator? = validatorRules(uIntPatternMessage, intPatternMessage, floatPatternMessage).takeNotEmpty()?.let { Validator(type, it + additionalRules, !isNullable) }
+): Validator? = validatorRules(uIntPatternMessage, intPatternMessage, floatPatternMessage).takeIfNotEmpty()?.let { Validator(type, it + additionalRules, !isNullable) }
 
 // ///////////////////////////////////////////////////////ACCESSOR///////////////////////////////////////////////////////
 @Suppress("UNCHECKED_CAST")

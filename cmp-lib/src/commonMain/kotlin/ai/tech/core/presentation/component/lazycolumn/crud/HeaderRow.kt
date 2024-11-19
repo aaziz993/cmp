@@ -1,9 +1,9 @@
 package ai.tech.core.presentation.component.lazycolumn.crud
 
+import ai.tech.core.data.crud.client.model.EntityProperty
+import ai.tech.core.data.crud.client.model.MutationItem
 import ai.tech.core.presentation.component.lazycolumn.crud.model.CRUDLazyColumnLocalization
 import ai.tech.core.presentation.component.lazycolumn.crud.model.CRUDLazyColumnState
-import ai.tech.core.data.crud.client.model.EntityColumn
-import ai.tech.core.data.crud.client.model.MutationItem
 import ai.tech.core.presentation.component.textfield.model.TextField
 import ai.tech.core.presentation.component.textfield.search.AdvancedSearchField
 import ai.tech.core.presentation.component.textfield.search.model.SearchFieldCompare
@@ -39,7 +39,7 @@ import kotlinx.serialization.ExperimentalSerializationApi
 internal fun <T : Any> HeaderRow(
     contentPadding: PaddingValues,
     state: CRUDLazyColumnState,
-    properties: List<EntityColumn>,
+    properties: List<EntityProperty>,
     items: List<MutationItem<T>>,
     localization: CRUDLazyColumnLocalization,
     onSelect: () -> Unit,

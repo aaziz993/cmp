@@ -1,8 +1,10 @@
 package ai.tech.core.data.crud.client
 
+import ai.tech.core.data.crud.client.model.EntityProperty
 import ai.tech.core.data.crud.client.model.MutationItem
+import ai.tech.core.data.crud.model.Order
+import ai.tech.core.data.expression.BooleanVariable
 import ai.tech.core.data.paging.MutablePager
-import ai.tech.core.data.crud.client.model.EntityColumn
 import app.cash.paging.ExperimentalPagingApi
 import app.cash.paging.PagingConfig
 import app.cash.paging.PagingData
@@ -13,8 +15,10 @@ import kotlinx.coroutines.CoroutineScope
 
 @OptIn(ExperimentalPagingApi::class)
 public abstract class AbstractCRUDMutablePager<Value : Any>(
+    protected var sort: List<Order>? = null,
+    protected var predicate: BooleanVariable? = null,
     private val create: (id: Any) -> Value,
-    public val properties: List<EntityColumn>,
+    public val properties: List<EntityProperty>,
     private val getValues: (Value) -> List<Any?>,
     config: PagingConfig,
     initialKey: Int? = null,
@@ -27,7 +31,7 @@ public abstract class AbstractCRUDMutablePager<Value : Any>(
     cacheCoroutineScope,
 ) {
 
-    private val idIndex = properties.indexOfFirst(EntityColumn::isId)
+    private val idIndex = properties.indexOfFirst(EntityProperty::isId)
 
     private val idName = properties[idIndex].name
 
@@ -37,9 +41,7 @@ public abstract class AbstractCRUDMutablePager<Value : Any>(
         val mergedPagingData = pagingData.map {
             val values = getValues(it)
             MutationItem(it, values[idIndex]!!, values)
-        }.map { pagingItem ->
-            mergeMutations.find { it.id == pagingItem.id } ?: pagingItem
-        }
+        }.map { pagingItem -> mergeMutations.find { it.id == pagingItem.id } ?: pagingItem }
 
         return newMutations.fold(mergedPagingData) { acc, v -> acc.insertFooterItem(item = v) }
     }

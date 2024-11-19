@@ -1,8 +1,10 @@
 package ai.tech.core.presentation.component.image.avatar
 
 import ai.tech.core.presentation.component.image.AdvancedImage
+import ai.tech.core.presentation.component.image.avatar.model.AvatarLocalization
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -13,14 +15,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.text.TextStyle
-import ai.tech.core.presentation.component.image.avatar.model.AvatarLocalization
-import androidx.compose.foundation.layout.BoxScope
-import androidx.compose.foundation.layout.wrapContentSize
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
-import compose.icons.EvaIcons
-import compose.icons.evaicons.Outline
-import compose.icons.evaicons.outline.Edit2
 import kotlin.math.absoluteValue
 
 @Composable

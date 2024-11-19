@@ -11,13 +11,13 @@ import ai.tech.core.presentation.component.textfield.search.model.SearchFieldSta
 import kotlin.reflect.typeOf
 import kotlinx.serialization.descriptors.SerialDescriptor
 
-public data class KotysaColumn(
+public data class KotysaProperty(
     override val name: String,
     override val descriptor: SerialDescriptor,
     override val isId: Boolean = false,
     override val isReadOnly: Boolean,
     override val validator: Validator?
-) : EntityColumn {
+) : EntityProperty {
 
     override fun predicate(state: SearchFieldState): BooleanVariable? = when {
         descriptor.primeTypeOrNull == typeOf<String>() -> {

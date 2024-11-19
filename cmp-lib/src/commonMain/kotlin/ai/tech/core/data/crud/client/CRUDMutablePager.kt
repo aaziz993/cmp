@@ -1,7 +1,6 @@
 package ai.tech.core.data.crud.client
 
-import ai.tech.core.data.crud.client.model.EntityColumn
-import ai.tech.core.data.crud.client.model.MutationItem
+import ai.tech.core.data.crud.client.model.EntityProperty
 import ai.tech.core.data.crud.model.Order
 import ai.tech.core.data.expression.BooleanVariable
 import app.cash.paging.ExperimentalPagingApi
@@ -12,10 +11,10 @@ import kotlinx.coroutines.CoroutineScope
 
 @OptIn(ExperimentalPagingApi::class)
 public class CRUDMutablePager<Value : Any>(
-    private var sort: List<Order>? = null,
-    private var predicate: BooleanVariable? = null,
+    sort: List<Order>? = null,
+    predicate: BooleanVariable? = null,
     create: (id: Any) -> Value,
-    properties: List<EntityColumn>,
+    properties: List<EntityProperty>,
     getValues: (Value) -> List<Any?>,
     config: PagingConfig,
     initialKey: Int? = null,
@@ -23,6 +22,8 @@ public class CRUDMutablePager<Value : Any>(
     cacheCoroutineScope: CoroutineScope? = null,
     private val pagingSourceFactory: (sort: List<Order>?, predicate: BooleanVariable?) -> PagingSource<Int, Value>,
 ) : AbstractCRUDMutablePager<Value>(
+    sort,
+    predicate,
     create,
     properties,
     getValues,

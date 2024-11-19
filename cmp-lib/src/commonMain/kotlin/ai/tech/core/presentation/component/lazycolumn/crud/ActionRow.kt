@@ -1,11 +1,11 @@
 package ai.tech.core.presentation.component.lazycolumn.crud
 
-import ai.tech.core.presentation.component.lazycolumn.crud.model.CRUDLazyColumnLocalization
-import ai.tech.core.data.crud.client.model.EntityColumn
+import ai.tech.core.data.crud.client.model.EntityProperty
 import ai.tech.core.data.crud.client.model.MutationItem
 import ai.tech.core.data.crud.client.model.isSelectedAnyNew
 import ai.tech.core.data.crud.client.model.selected
 import ai.tech.core.data.crud.client.model.selectedExists
+import ai.tech.core.presentation.component.lazycolumn.crud.model.CRUDLazyColumnLocalization
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -33,7 +33,7 @@ internal fun <T : Any> ActionRow(
     contentPadding: PaddingValues,
     readOnly: Boolean,
     downloadAllIcon: @Composable () -> Unit,
-    properties: List<EntityColumn>,
+    properties: List<EntityProperty>,
     items: List<MutationItem<T>>,
     localization: CRUDLazyColumnLocalization,
     onDownloadSelected: (() -> Unit)?,

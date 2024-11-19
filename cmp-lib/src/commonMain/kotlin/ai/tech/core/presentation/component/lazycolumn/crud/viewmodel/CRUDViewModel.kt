@@ -2,10 +2,10 @@ package ai.tech.core.presentation.component.lazycolumn.crud.viewmodel
 
 import ai.tech.core.data.crud.CRUDRepository
 import ai.tech.core.data.crud.client.CRUDMutablePager
-import ai.tech.core.data.expression.BooleanVariable
-import ai.tech.core.data.crud.client.model.EntityColumn
-import ai.tech.core.data.crud.client.model.MutationItem
+import ai.tech.core.data.crud.client.model.EntityProperty
+import ai.tech.core.data.crud.client.model.predicate
 import ai.tech.core.data.crud.model.Order
+import ai.tech.core.data.expression.BooleanVariable
 import ai.tech.core.presentation.component.textfield.search.model.SearchFieldState
 import ai.tech.core.presentation.viewmodel.AbstractViewModel
 import androidx.lifecycle.SavedStateHandle
@@ -20,7 +20,7 @@ public class CRUDViewModel<T : Any>(
     sort: List<Order>? = null,
     predicate: BooleanVariable? = null,
     create: (id: Any) -> T,
-    properties: List<EntityColumn>,
+    properties: List<EntityProperty>,
     getValues: (T) -> List<Any?>,
     config: PagingConfig = createPagingConfig(10),
     initialKey: Int? = null,
@@ -44,17 +44,9 @@ public class CRUDViewModel<T : Any>(
     @OptIn(ExperimentalPagingApi::class)
     override fun action(action: CRUDAction<T>) {
         when (action) {
-            is CRUDAction.Find -> pager.refresh(action.sort, action.searchFieldStates.predicate())
+            is CRUDAction.Find -> pager.refresh(action.sort, pager.properties.predicate(action.searchFieldStates))
+
             CRUDAction.Refresh -> pager.refresh()
         }
     }
-
-    private fun List<SearchFieldState>.predicate(): BooleanVariable? =
-        mapIndexed { index, state ->
-            if (state.query.isEmpty()) {
-                return null
-            }
-
-            pager.properties[index].predicate(state)
-        }.filterNotNull().reduce { acc, v -> acc.and(v) }
 }

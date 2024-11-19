@@ -1,7 +1,7 @@
 package ai.tech.core.misc.network.http.client
 
 import ai.tech.core.misc.network.http.client.model.Pin
-import ai.tech.core.misc.type.multiple.filterValuesNotNull
+import ai.tech.core.misc.type.multiple.filterValuesIsNotNull
 import ai.tech.core.misc.type.serializablePropertyValues
 import ai.tech.core.misc.type.serializer.encodeAnyToString
 import io.ktor.client.*
@@ -48,7 +48,7 @@ public val String.decodedHttpUrl: String
             }.buildString()
 
 public val Any.serializableQueryParameters
-    get() = serializablePropertyValues.filterValuesNotNull().mapValues { Json.Default.encodeAnyToString(it.value) }
+    get() = serializablePropertyValues.filterValuesIsNotNull().mapValues { Json.Default.encodeAnyToString(it.value) }
 
 public expect fun createHttpClient(
     pins: List<Pin> = emptyList(),

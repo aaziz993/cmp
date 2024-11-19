@@ -3,8 +3,7 @@
 package ai.tech.core.presentation.viewmodel
 
 import ai.tech.core.data.crud.CRUDRepository
-import ai.tech.core.data.crud.client.model.EntityColumn
-import ai.tech.core.data.crud.client.model.MutationItem
+import ai.tech.core.data.crud.client.model.EntityProperty
 import ai.tech.core.data.crud.client.mutablePager
 import ai.tech.core.data.crud.client.pager
 import ai.tech.core.data.crud.model.Order
@@ -134,7 +133,7 @@ public abstract class AbstractViewModel<T : Any>(protected val savedStateHandle:
         sort: List<Order>? = null,
         predicate: BooleanVariable? = null,
         create: (id: Any) -> T,
-        properties: List<EntityColumn>,
+        properties: List<EntityProperty>,
         getValues: (T) -> List<Any?>,
         config: PagingConfig = createPagingConfig(10),
         initialKey: Int? = null,
@@ -170,7 +169,7 @@ public abstract class AbstractViewModel<T : Any>(protected val savedStateHandle:
         sort: List<Order>? = null,
         predicate: BooleanVariable? = null,
         create: (id: Any) -> List<Any?>,
-        properties: List<EntityColumn>,
+        properties: List<EntityProperty>,
         config: PagingConfig = createPagingConfig(10),
         initialKey: Int? = null,
         remoteMediator: RemoteMediator<Int, List<Any?>>? = null,

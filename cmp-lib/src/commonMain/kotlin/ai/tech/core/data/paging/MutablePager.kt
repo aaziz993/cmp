@@ -11,7 +11,6 @@ import app.cash.paging.RemoteMediator
 import app.cash.paging.cachedIn
 import app.cash.paging.compose.LazyPagingItems
 import app.cash.paging.compose.collectAsLazyPagingItems
-import kotlin.getValue
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -27,7 +26,7 @@ public abstract class MutablePager<Key : Any, Value : Any, Mutation : Any>(
 
     protected val mutations: MutableStateFlow<List<Mutation>> = MutableStateFlow(emptyList())
 
-    private var pagingSource: PagingSource<Key, Value>? = null
+    private lateinit var pagingSource: PagingSource<Key, Value>
 
     private val data: Flow<PagingData<Mutation>> by lazy {
         Pager(config, initialKey, remoteMediator) { createPagingSource().also { pagingSource = it } }
@@ -43,7 +42,5 @@ public abstract class MutablePager<Key : Any, Value : Any, Mutation : Any>(
     @Composable
     public fun collectAsLazyPagingItems(): LazyPagingItems<Mutation> = data.collectAsLazyPagingItems()
 
-    public fun refresh() {
-        pagingSource?.invalidate()
-    }
+    public fun refresh(): Unit = pagingSource.invalidate()
 }

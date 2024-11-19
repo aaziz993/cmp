@@ -1,8 +1,15 @@
 package ai.tech.core.presentation.component.textfield.search
 
+import ai.tech.core.data.validator.Validator
+import ai.tech.core.misc.type.single.color
+import ai.tech.core.misc.type.single.now
 import ai.tech.core.misc.type.single.temporalPickerStateToTemporal
+import ai.tech.core.misc.type.single.toEpochMilliseconds
+import ai.tech.core.presentation.component.dialog.temporal.AdvancedTemporalPickerDialog
 import ai.tech.core.presentation.component.textfield.AdvancedTextField
 import ai.tech.core.presentation.component.textfield.model.TextField
+import ai.tech.core.presentation.component.textfield.search.model.SearchFieldCompare
+import ai.tech.core.presentation.component.textfield.search.model.SearchFieldState
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.padding
@@ -12,9 +19,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
-import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.LocalTextStyle
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.TextFieldColors
 import androidx.compose.material3.rememberDatePickerState
@@ -46,13 +51,6 @@ import kotlinx.datetime.LocalDateTime
 import kotlinx.datetime.LocalTime
 import kotlinx.datetime.TimeZone
 import org.jetbrains.compose.resources.painterResource
-import ai.tech.core.data.validator.Validator
-import ai.tech.core.misc.type.single.color
-import ai.tech.core.misc.type.single.now
-import ai.tech.core.misc.type.single.toEpochMilliseconds
-import ai.tech.core.presentation.component.dialog.temporal.AdvancedTemporalPickerDialog
-import ai.tech.core.presentation.component.textfield.search.model.SearchFieldCompare
-import ai.tech.core.presentation.component.textfield.search.model.SearchFieldState
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
