@@ -5,14 +5,16 @@ import ai.tech.core.presentation.component.textfield.search.model.SearchFieldSta
 import kotlinx.serialization.Serializable
 
 @Serializable
-public data class CRUDTableStateData(
+public data class CRUDLazyColumnStateData(
     val searchFieldStates: Map<String, SearchFieldStateData> = emptyMap(),
     val sort: List<Order> = emptyList(),
-    val liveSearch: Boolean = true,
+    val isMultiSort: Boolean = true,
+    val isLiveSearch: Boolean = true,
     val showPagination: Boolean = true,
     val showActions: Boolean = true,
     val showSelect: Boolean = true,
     val showHeader: Boolean = true,
     val showSearch: Boolean = true,
+    val initialLoad: Long = 10,
     val limit: Long = 10,
 )

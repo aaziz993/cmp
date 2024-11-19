@@ -3,9 +3,14 @@
 package ai.tech.core.presentation.viewmodel
 
 import ai.tech.core.data.crud.CRUDRepository
-import ai.tech.core.data.crud.client.findPager
+import ai.tech.core.data.crud.client.model.EntityColumn
+import ai.tech.core.data.crud.client.model.MutationItem
+import ai.tech.core.data.crud.client.mutablePager
+import ai.tech.core.data.crud.client.pager
 import ai.tech.core.data.crud.model.Order
 import ai.tech.core.data.expression.BooleanVariable
+import ai.tech.core.data.expression.Variable
+import ai.tech.core.misc.type.letIf
 import ai.tech.core.misc.type.multiple.mapState
 import ai.tech.core.misc.type.multiple.model.OnetimeWhileSubscribed
 import ai.tech.core.misc.type.multiple.model.RestartableMutableStateFlow
@@ -67,6 +72,19 @@ public abstract class AbstractViewModel<T : Any>(protected val savedStateHandle:
 
     public abstract fun action(action: T)
 
+    protected fun <T, R> StateFlow<T>.map(transform: (data: T) -> R): StateFlow<R> =
+        mapState(scope = viewModelScope, transform)
+
+    @OptIn(ExperimentalCoroutinesApi::class)
+    protected fun <T, R> StateFlow<T>.map(initialValue: R, transform: suspend (data: T) -> R): StateFlow<R> =
+        mapState(viewModelScope, initialValue, transform)
+
+    protected val <T : Any> Flow<PagingData<T>>.cached: Flow<PagingData<T>>
+        get() = cachedIn(viewModelScope)
+
+    protected val <T> Flow<T>.launch: Job
+        get() = launchIn(viewModelScope)
+
     protected fun <T> Flow<T>.viewModelScopeFlow(
         initialValue: T,
         started: SharingStarted = SharingStarted.OnetimeWhileSubscribed(STATE_STARTED_STOP_TIMEOUT_MILLIS),
@@ -109,25 +127,66 @@ public abstract class AbstractViewModel<T : Any>(protected val savedStateHandle:
         initialKey: Int? = null,
         remoteMediator: RemoteMediator<Int, T>? = null,
         firstItemOffset: Int = 0,
-    ) = findPager(sort, predicate, config, initialKey, remoteMediator, firstItemOffset).flow.let {
-        if (remoteMediator == null) {
-            return@let it.cachedIn
-        }
-        it
-    }
+    ) = pager(sort, predicate, config, initialKey, remoteMediator, firstItemOffset).flow.letIf({ remoteMediator == null }) { it.cached }
 
-    protected fun <T, R> StateFlow<T>.mapState(transform: (data: T) -> R): StateFlow<R> =
-        mapState(scope = viewModelScope, transform)
+    @OptIn(ExperimentalPagingApi::class)
+    protected fun <T : Any> CRUDRepository<T>.viewModelMutablePager(
+        sort: List<Order>? = null,
+        predicate: BooleanVariable? = null,
+        create: (id: Any) -> T,
+        properties: List<EntityColumn>,
+        getValues: (T) -> List<Any?>,
+        config: PagingConfig = createPagingConfig(10),
+        initialKey: Int? = null,
+        remoteMediator: RemoteMediator<Int, T>? = null,
+        firstItemOffset: Int = 0,
+    ) = mutablePager(
+        sort,
+        predicate,
+        create,
+        properties,
+        getValues,
+        config,
+        initialKey,
+        remoteMediator,
+        viewModelScope,
+        firstItemOffset,
+    )
 
-    @OptIn(ExperimentalCoroutinesApi::class)
-    public fun <T, R> StateFlow<T>.mapState(initialValue: R, transform: suspend (data: T) -> R): StateFlow<R> =
-        mapState(viewModelScope, initialValue, transform)
+    @OptIn(ExperimentalPagingApi::class)
+    protected fun CRUDRepository<*>.viewModelPagingFlow(
+        projections: List<Variable>,
+        sort: List<Order>? = null,
+        predicate: BooleanVariable? = null,
+        config: PagingConfig = createPagingConfig(10),
+        initialKey: Int? = null,
+        remoteMediator: RemoteMediator<Int, List<Any?>>? = null,
+        firstItemOffset: Int = 0,
+    ) = pager(projections, sort, predicate, config, initialKey, remoteMediator, firstItemOffset).flow.letIf({ remoteMediator == null }) { it.cached }
 
-    protected val <T : Any> Flow<PagingData<T>>.cachedIn: Flow<PagingData<T>>
-        get() = cachedIn(viewModelScope)
-
-    protected val <T> Flow<T>.launchedIn: Job
-        get() = launchIn(viewModelScope)
+    @OptIn(ExperimentalPagingApi::class)
+    protected fun CRUDRepository<*>.viewModelMutablePager(
+        projections: List<Variable>,
+        sort: List<Order>? = null,
+        predicate: BooleanVariable? = null,
+        create: (id: Any) -> List<Any?>,
+        properties: List<EntityColumn>,
+        config: PagingConfig = createPagingConfig(10),
+        initialKey: Int? = null,
+        remoteMediator: RemoteMediator<Int, List<Any?>>? = null,
+        firstItemOffset: Int = 0,
+    ) = mutablePager(
+        projections,
+        sort,
+        predicate,
+        create,
+        properties,
+        config,
+        initialKey,
+        remoteMediator,
+        viewModelScope,
+        firstItemOffset,
+    )
 
     public companion object {
 

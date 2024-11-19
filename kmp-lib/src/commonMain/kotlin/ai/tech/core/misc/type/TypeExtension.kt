@@ -466,6 +466,20 @@ public fun <T : Any> T.remove(
 ): Any? = accessorOrNull(keys.dropLast(1), accessor)?.remove(keys.last())
 
 // /////////////////////////////////////////////////////TRANSFORM///////////////////////////////////////////////////////
+public inline fun <T : R, R> T.letIf(
+    noinline condition: (T) -> Boolean,
+    block: (T) -> R,
+): R = if (condition(this)) {
+    block(this)
+}
+else {
+    this
+}
+
+public inline fun <T:Any> T?.ifNull(
+    block: () -> T,
+): T = this ?: block()
+
 public fun <T : Any> Any.copyTo(
     value: T,
     keyTransform: (List<Accessor>, key: Any?) -> Any? = { _, key -> key },

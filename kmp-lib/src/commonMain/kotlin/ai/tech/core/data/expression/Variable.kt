@@ -832,3 +832,5 @@ public data class Projection(val value: String, val alias: String? = null, val d
 
     public fun <T> sum(): Sum<T> = AggregateExpression.sum(this)
 }
+
+

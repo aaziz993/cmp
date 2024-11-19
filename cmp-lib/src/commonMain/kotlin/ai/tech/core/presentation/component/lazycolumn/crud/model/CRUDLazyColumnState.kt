@@ -1,5 +1,6 @@
 package ai.tech.core.presentation.component.lazycolumn.crud.model
 
+import ai.tech.core.data.crud.client.model.EntityColumn
 import ai.tech.core.data.crud.model.LimitOffset
 import ai.tech.core.data.crud.model.Order
 import ai.tech.core.data.expression.BooleanVariable
@@ -33,7 +34,7 @@ public class CRUDLazyColumnState(
 
     public constructor(
         searchFieldStates: List<SearchFieldState>,
-        data: CRUDTableStateData,
+        data: CRUDLazyColumnStateData,
     ) : this(
         searchFieldStates,
         data.sort,
@@ -131,7 +132,7 @@ public fun rememberCRUDTableState(state: CRUDLazyColumnState): CRUDLazyColumnSta
 @Composable
 public fun rememberCRUDTableState(
     properties: List<String>,
-    data: CRUDTableStateData,
+    data: CRUDLazyColumnStateData,
 ): CRUDLazyColumnState =
     rememberCRUDTableState(
         CRUDLazyColumnState(

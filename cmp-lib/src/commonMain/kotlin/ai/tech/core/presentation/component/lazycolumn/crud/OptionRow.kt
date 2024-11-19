@@ -1,7 +1,7 @@
 package ai.tech.core.presentation.component.lazycolumn.crud
 
 import ai.tech.core.presentation.component.column.expandable.ExpandableSection
-import ai.tech.core.presentation.component.lazycolumn.crud.model.CRUDTableLocalization
+import ai.tech.core.presentation.component.lazycolumn.crud.model.CRUDLazyColumnLocalization
 import ai.tech.core.presentation.component.lazycolumn.crud.model.CRUDLazyColumnState
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -19,7 +19,7 @@ import androidx.compose.ui.Modifier
 internal fun OptionRow(
     state: CRUDLazyColumnState,
     contentPadding: PaddingValues,
-    localization: CRUDTableLocalization,
+    localization: CRUDLazyColumnLocalization,
 ) = ExpandableSection(
     Modifier.padding(contentPadding).fillMaxWidth(),
     { Text(localization.options, style = MaterialTheme.typography.titleMedium) },

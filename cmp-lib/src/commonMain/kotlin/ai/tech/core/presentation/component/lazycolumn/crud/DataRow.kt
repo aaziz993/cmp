@@ -1,10 +1,8 @@
 package ai.tech.core.presentation.component.lazycolumn.crud
 
-import ai.tech.core.misc.type.isEnum
-import ai.tech.core.misc.type.primeTypeOrNull
 import ai.tech.core.presentation.component.lazycolumn.crud.model.CRUDLazyColumnState
-import ai.tech.core.presentation.component.lazycolumn.crud.model.EntityColumn
-import ai.tech.core.presentation.component.lazycolumn.crud.model.Item
+import ai.tech.core.data.crud.client.model.EntityColumn
+import ai.tech.core.data.crud.client.model.MutationItem
 import ai.tech.core.presentation.component.textfield.AdvancedTextField
 import ai.tech.core.presentation.component.textfield.model.TextField
 import androidx.compose.foundation.layout.Arrangement
@@ -31,10 +29,6 @@ import compose.icons.evaicons.outline.Edit
 import compose.icons.evaicons.outline.Minus
 import compose.icons.evaicons.outline.Save
 import compose.icons.evaicons.outline.Trash2
-import kotlin.reflect.typeOf
-import kotlinx.datetime.LocalDate
-import kotlinx.datetime.LocalDateTime
-import kotlinx.datetime.LocalTime
 import ai.tech.core.misc.type.multiple.all
 
 @Composable
@@ -43,7 +37,7 @@ internal fun <T : Any> DataRow(
     readOnly: Boolean,
     downloadIcon: @Composable () -> Unit,
     properties: List<EntityColumn>,
-    item: Item<T>,
+    item: MutationItem<T>,
     onSelect: () -> Unit,
     onDownload: (() -> Unit)?,
     onCopy: () -> Unit,

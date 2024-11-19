@@ -2,7 +2,7 @@ package ai.tech.core.presentation.component.lazycolumn.crud.model
 
 import ai.tech.core.presentation.component.lazycolumn.model.LazyPagingColumnLocalization
 
-public class CRUDTableLocalization(
+public class CRUDLazyColumnLocalization(
     public val options: String = "Options",
     public val actions: String = "Actions",
     public val multiSort: String = "Multi sort",

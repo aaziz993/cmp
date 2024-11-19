@@ -1,11 +1,9 @@
 package ai.tech.core.presentation.component.lazycolumn.crud
 
-import ai.tech.core.misc.type.isEnum
-import ai.tech.core.misc.type.primeTypeOrNull
-import ai.tech.core.presentation.component.lazycolumn.crud.model.CRUDTableLocalization
+import ai.tech.core.presentation.component.lazycolumn.crud.model.CRUDLazyColumnLocalization
 import ai.tech.core.presentation.component.lazycolumn.crud.model.CRUDLazyColumnState
-import ai.tech.core.presentation.component.lazycolumn.crud.model.EntityColumn
-import ai.tech.core.presentation.component.lazycolumn.crud.model.Item
+import ai.tech.core.data.crud.client.model.EntityColumn
+import ai.tech.core.data.crud.client.model.MutationItem
 import ai.tech.core.presentation.component.textfield.model.TextField
 import ai.tech.core.presentation.component.textfield.search.AdvancedSearchField
 import ai.tech.core.presentation.component.textfield.search.model.SearchFieldCompare
@@ -23,7 +21,6 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -35,14 +32,7 @@ import compose.icons.evaicons.outline.Search
 import compose.icons.lineawesomeicons.SortDownSolid
 import compose.icons.lineawesomeicons.SortSolid
 import compose.icons.lineawesomeicons.SortUpSolid
-import kotlin.reflect.KClass
-import kotlin.reflect.typeOf
-import kotlinx.datetime.LocalDate
-import kotlinx.datetime.LocalDateTime
-import kotlinx.datetime.LocalTime
 import kotlinx.serialization.ExperimentalSerializationApi
-import kotlinx.serialization.descriptors.capturedKClass
-import kotlinx.serialization.descriptors.elementNames
 
 @OptIn(ExperimentalSerializationApi::class)
 @Composable
@@ -50,8 +40,8 @@ internal fun <T : Any> HeaderRow(
     contentPadding: PaddingValues,
     state: CRUDLazyColumnState,
     properties: List<EntityColumn>,
-    items: List<Item<T>>,
-    localization: CRUDTableLocalization,
+    items: List<MutationItem<T>>,
+    localization: CRUDLazyColumnLocalization,
     onSelect: () -> Unit,
     onSearch: () -> Unit,
 ) {
@@ -60,7 +50,7 @@ internal fun <T : Any> HeaderRow(
             Modifier.padding(contentPadding).fillMaxWidth(), verticalAlignment = Alignment.Top,
         ) {
             if (state.showSelect) {
-                Checkbox(items.all(Item<T>::isSelected), { onSelect() })
+                Checkbox(items.all(MutationItem<T>::isSelected), { onSelect() })
             }
 
             val searchLeftPadding = contentPadding.calculateStartPadding(LayoutDirection.Ltr) / 4

@@ -3,9 +3,9 @@ package ai.tech.core.presentation.component.lazycolumn.crud
 import ai.tech.core.data.crud.model.LimitOffset
 import ai.tech.core.data.expression.Equals
 import ai.tech.core.presentation.component.lazycolumn.paging.LazyPagingColumn
-import ai.tech.core.presentation.component.lazycolumn.crud.model.CRUDTableLocalization
+import ai.tech.core.presentation.component.lazycolumn.crud.model.CRUDLazyColumnLocalization
 import ai.tech.core.presentation.component.lazycolumn.crud.model.CRUDLazyColumnState
-import ai.tech.core.presentation.component.lazycolumn.crud.model.Item
+import ai.tech.core.data.crud.client.model.MutationItem
 import ai.tech.core.presentation.component.lazycolumn.crud.viewmodel.CRUDAction
 import ai.tech.core.presentation.component.lazycolumn.crud.viewmodel.CRUDViewModel
 import androidx.compose.foundation.gestures.FlingBehavior
@@ -43,7 +43,7 @@ public fun <T : Any> CRUDLazyColumn(
     downloadAllIcon: @Composable () -> Unit = { Icon(SimpleIcons.Microsoftexcel, null, tint = Color(0xFF33A852)) },
     getHeader: (String) -> String = { it },
     viewModel: CRUDViewModel<T>,
-    localization: CRUDTableLocalization = CRUDTableLocalization(),
+    localization: CRUDLazyColumnLocalization = CRUDLazyColumnLocalization(),
     onDownload: ((List<T>) -> Unit)? = null,
     onUpload: (() -> Unit)? = null,
     onSave: (insert: List<T>, update: List<T>) -> Unit,
@@ -53,7 +53,7 @@ public fun <T : Any> CRUDLazyColumn(
 
     Spacer(modifier = Modifier.height(10.dp))
 
-    val data = viewModel.state.collectAsLazyPagingItems()
+    val data = viewModel.pager.collectAsLazyPagingItems()
 
     val items = data.itemSnapshotList.items
 
@@ -64,7 +64,7 @@ public fun <T : Any> CRUDLazyColumn(
         viewModel.properties,
         items,
         localization,
-        onDownload?.let { { it(items.filter { it.isSelected && !it.isNew }.map(Item<T>::entity)) } },
+        onDownload?.let { { it(items.filter { it.isSelected && !it.isNew }.map(MutationItem<T>::entity)) } },
         onUpload,
         { viewModel.action(CRUDAction.EditSelected) },
         { viewModel.action(CRUDAction.Add) },
@@ -101,11 +101,11 @@ public fun <T : Any> CRUDLazyColumn(
             downloadAllIcon,
             viewModel.properties,
             it,
-            { viewModel.action(CRUDAction.Select(id)) },
+            { viewModel.action(CRUDAction.Select(it)) },
             onDownload?.let { { it(listOf(entity)) } },
-            { viewModel.action(CRUDAction.Copy(id)) },
+            { viewModel.action(CRUDAction.Copy(it)) },
             { viewModel.action(CRUDAction.Remove(id)) },
-            { viewModel.action(CRUDAction.Edit(id)) },
+            { viewModel.action(CRUDAction.Edit(it)) },
             { index, value -> viewModel.action(CRUDAction.ChangeValue(id, index, value)) },
             { viewModel.action(CRUDAction.Save(entity)) },
         ) { viewModel.action(CRUDAction.Delete(id)) }

@@ -11,13 +11,14 @@ internal fun Project.configureKotlinCompilationTask(task: KotlinCompilationTask<
             allWarningsAsErrors.set(this@with.allWarningsAsErrors)
 
             freeCompilerArgs.addAll(
-                "-opt-in=kotlin.ExperimentalStdlibApi",
-                "-opt-in=kotlin.ExperimentalUnsignedTypes",
-                "-opt-in=kotlin.contracts.ExperimentalContracts",
-                "-Xexport-kdoc",
-                "-Xwhen-guards",
-                "-Xexpect-actual-classes",
-                "-Xcontext-receivers"
+                    "-opt-in=kotlin.ExperimentalStdlibApi",
+                    "-opt-in=kotlin.ExperimentalUnsignedTypes",
+                    "-opt-in=kotlin.contracts.ExperimentalContracts",
+                    "-Xopt-in=kotlin.RequiresOptIn",
+                    "-Xexport-kdoc",
+                    "-Xwhen-guards",
+                    "-Xexpect-actual-classes",
+                    "-Xcontext-receivers",
             )
         }
     }

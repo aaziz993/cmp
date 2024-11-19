@@ -1,11 +1,11 @@
 package ai.tech.core.presentation.component.lazycolumn.crud
 
-import ai.tech.core.presentation.component.lazycolumn.crud.model.CRUDTableLocalization
-import ai.tech.core.presentation.component.lazycolumn.crud.model.EntityColumn
-import ai.tech.core.presentation.component.lazycolumn.crud.model.Item
-import ai.tech.core.presentation.component.lazycolumn.crud.model.isSelectedAnyNew
-import ai.tech.core.presentation.component.lazycolumn.crud.model.selected
-import ai.tech.core.presentation.component.lazycolumn.crud.model.selectedExists
+import ai.tech.core.presentation.component.lazycolumn.crud.model.CRUDLazyColumnLocalization
+import ai.tech.core.data.crud.client.model.EntityColumn
+import ai.tech.core.data.crud.client.model.MutationItem
+import ai.tech.core.data.crud.client.model.isSelectedAnyNew
+import ai.tech.core.data.crud.client.model.selected
+import ai.tech.core.data.crud.client.model.selectedExists
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -34,8 +34,8 @@ internal fun <T : Any> ActionRow(
     readOnly: Boolean,
     downloadAllIcon: @Composable () -> Unit,
     properties: List<EntityColumn>,
-    items: List<Item<T>>,
-    localization: CRUDTableLocalization,
+    items: List<MutationItem<T>>,
+    localization: CRUDLazyColumnLocalization,
     onDownloadSelected: (() -> Unit)?,
     onUpload: (() -> Unit)?,
     onEditSelected: () -> Unit,
@@ -82,7 +82,7 @@ internal fun <T : Any> ActionRow(
             IconButton(onDeleteSelected) { Icon(EvaIcons.Outline.Trash2, null) }
         }
 
-        val isValidSelectedEdits = selected.filter(Item<T>::isEditing).all { it.validate(properties) }
+        val isValidSelectedEdits = selected.filter(MutationItem<T>::isEditing).all { it.validate(properties) }
 
         if (isValidSelectedEdits) {
             IconButton(onSaveSelected) { Icon(EvaIcons.Outline.Save, null) }

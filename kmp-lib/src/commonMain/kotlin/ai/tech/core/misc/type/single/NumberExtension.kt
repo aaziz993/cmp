@@ -2,7 +2,9 @@ package ai.tech.core.misc.type.single
 
 import com.ionspin.kotlin.bignum.decimal.BigDecimal
 import com.ionspin.kotlin.bignum.integer.BigInteger
+import kotlin.collections.subtract
 import kotlin.math.absoluteValue
+import kotlin.reflect.KClass
 
 private val UBYTE_HALF_VALUE: UByte = Byte.MAX_VALUE.toUByte()
 private val USHORT_HALF_VALUE: UInt = Int.MAX_VALUE.toUInt()
@@ -63,7 +65,8 @@ public fun UInt.assignBits(
     intSetBits(lowIndex, highIndex).toUInt().let {
         if (set) {
             this or it
-        } else {
+        }
+        else {
             this and it.inv()
         }
     }
@@ -95,7 +98,8 @@ public fun Int.assignBits(
     intSetBits(lowIndex, highIndex).let {
         if (set) {
             this or it
-        } else {
+        }
+        else {
             this and it.inv()
         }
     }
@@ -129,7 +133,8 @@ public fun ULong.assignBits(
     longSetBits(lowIndex, highIndex).toULong().let {
         if (set) {
             this or it
-        } else {
+        }
+        else {
             this and it.inv()
         }
     }
@@ -161,7 +166,8 @@ public fun Long.assignBits(
     longSetBits(lowIndex, highIndex).let {
         if (set) {
             this or it
-        } else {
+        }
+        else {
             this and it.inv()
         }
     }
@@ -281,8 +287,53 @@ public fun Long.toByteArray(): ByteArray =
 
 public fun Long.toByteArray(size: Int): ByteArray = ByteArray(size) { sliceByte(it * 8).toByte() }
 
-
 public fun BigInteger.Companion.parseOrNull(s: String): BigInteger? = s.runCatching { parseString(this) }.getOrNull()
 
 public fun BigDecimal.Companion.parseOrNull(s: String): BigDecimal? = s.runCatching { parseString(this) }.getOrNull()
 
+/////////////////////////////////////////////////////NUMBER/////////////////////////////////////////////////////////////
+public fun Number.toBigInteger() = BigInteger.parseString(toString())
+
+public fun Any.toBigInteger() = when (this) {
+    is BigDecimal -> this
+    else -> BigDecimal.parseString(toString())
+}
+
+public fun Number.toBigDecimal() = BigDecimal.parseString(toString())
+
+public fun Any.toBigDecimal() = when (this) {
+    is BigDecimal -> this
+    else -> BigDecimal.parseString(toString())
+}
+
+private fun BigDecimal.toNumber(types: List<KClass<*>>) = when {
+    types.any { it == BigDecimal::class } -> this
+    types.any { it == BigInteger::class } -> toBigInteger()
+    types.any { it == Double::class } -> toString().toDouble()
+    types.any { it == Float::class } -> toString().toFloat()
+    types.any { it == Long::class } -> toString().toLong()
+    types.any { it == Int::class } -> toString().toInt()
+    types.any { it == Short::class } -> toString().toShort()
+    types.any { it == Byte::class } -> toString().toByte()
+    types.any { it == ULong::class } -> toString().toLong()
+    types.any { it == UInt::class } -> toString().toInt()
+    types.any { it == UShort::class } -> toString().toShort()
+    types.any { it == UByte::class } -> toString().toByte()
+    else -> this
+}
+
+public fun List<Any>.add(): Any = if (any { it is String }) {
+    fold("") { acc, v -> acc + v.toString() }
+}
+else {
+    fold(BigDecimal.ZERO) { acc, v -> acc.add(v.toBigDecimal()) }.toNumber(map { it::class })
+}
+
+public fun List<Any>.subtract(): Any =
+    drop(1).fold(get(0).toString().toBigDecimal()) { acc, v -> acc.subtract(v.toBigDecimal()) }.toNumber(map { it::class })
+
+public fun List<Any>.multiply(): Any =
+    fold(BigDecimal.ONE) { acc, v -> acc.multiply(v.toBigDecimal()) }.toNumber(map { it::class })
+
+public fun List<Any>.divide(): Any =
+    drop(1).fold(get(0).toBigDecimal()) { acc, v -> acc.divide(v.toBigDecimal()) }.toNumber(map { it::class })
