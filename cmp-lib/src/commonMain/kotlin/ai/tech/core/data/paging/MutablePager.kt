@@ -19,8 +19,8 @@ import kotlinx.coroutines.flow.combine
 
 @OptIn(ExperimentalPagingApi::class)
 public abstract class MutablePager<Key : Any, Value : Any, Mutation : Any>(
-    config: PagingConfig,
-    initialKey: Key? = null,
+    public val config: PagingConfig,
+    public val initialKey: Key? = null,
     remoteMediator: RemoteMediator<Key, Value>? = null,
     cacheCoroutineScope: CoroutineScope? = null,
 ) {

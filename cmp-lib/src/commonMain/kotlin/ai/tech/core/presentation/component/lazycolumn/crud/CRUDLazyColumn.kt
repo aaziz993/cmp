@@ -6,6 +6,7 @@ import ai.tech.core.presentation.component.lazycolumn.paging.LazyPagingColumn
 import ai.tech.core.presentation.component.lazycolumn.crud.model.CRUDLazyColumnLocalization
 import ai.tech.core.presentation.component.lazycolumn.crud.model.CRUDLazyColumnState
 import ai.tech.core.data.crud.client.model.MutationItem
+import ai.tech.core.misc.type.model.Property
 import ai.tech.core.presentation.component.lazycolumn.crud.viewmodel.CRUDAction
 import ai.tech.core.presentation.component.lazycolumn.crud.viewmodel.CRUDViewModel
 import androidx.compose.foundation.gestures.FlingBehavior
@@ -41,7 +42,7 @@ public fun <T : Any> CRUDLazyColumn(
     title: String? = null,
     downloadIcon: @Composable () -> Unit = { Icon(SimpleIcons.Microsoftexcel, null, tint = Color(0xFF33A852)) },
     downloadAllIcon: @Composable () -> Unit = { Icon(SimpleIcons.Microsoftexcel, null, tint = Color(0xFF33A852)) },
-    getHeader: (String) -> String = { it },
+    getHeader: (String) -> String? = { it },
     viewModel: CRUDViewModel<T>,
     localization: CRUDLazyColumnLocalization = CRUDLazyColumnLocalization(),
     onDownload: ((List<T>) -> Unit)? = null,
@@ -61,7 +62,7 @@ public fun <T : Any> CRUDLazyColumn(
         contentPadding,
         readOnly,
         downloadAllIcon,
-        viewModel.properties,
+        viewModel.pager.properties,
         items,
         localization,
         onDownload?.let { { it(items.filter { it.isSelected && !it.isNew }.map(MutationItem<T>::entity)) } },
@@ -73,10 +74,12 @@ public fun <T : Any> CRUDLazyColumn(
         { viewModel.action(CRUDAction.SaveSelected) },
     ) { viewModel.action(CRUDAction.DeleteSelected) }
 
+    val headers = viewModel.pager.properties.map(Property::name).mapNotNull(getHeader)
+
     HeaderRow(
         contentPadding,
         state,
-        viewModel.properties,
+        viewModel.pager.properties,
         items,
         localization,
         { viewModel.action(CRUDAction.SelectAll) },
@@ -99,7 +102,7 @@ public fun <T : Any> CRUDLazyColumn(
             state,
             readOnly,
             downloadAllIcon,
-            viewModel.properties,
+            viewModel.pager.properties,
             it,
             { viewModel.action(CRUDAction.Select(it)) },
             onDownload?.let { { it(listOf(entity)) } },
