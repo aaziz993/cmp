@@ -24,6 +24,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import app.cash.paging.compose.collectAsLazyPagingItems
 import compose.icons.SimpleIcons
 import compose.icons.simpleicons.Microsoftexcel
 
@@ -53,7 +54,7 @@ public fun <T : Any> CRUDLazyColumn(
 
     Spacer(modifier = Modifier.height(10.dp))
 
-    val data = viewModel.pager.collectAsLazyPagingItems()
+    val data = viewModel.pager.mutatedData.collectAsLazyPagingItems()
 
     val items = data.itemSnapshotList.items
 

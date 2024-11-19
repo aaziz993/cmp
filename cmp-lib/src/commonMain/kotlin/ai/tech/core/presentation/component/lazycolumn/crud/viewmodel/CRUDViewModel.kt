@@ -1,12 +1,14 @@
 package ai.tech.core.presentation.component.lazycolumn.crud.viewmodel
 
 import ai.tech.core.data.crud.CRUDRepository
-import ai.tech.core.data.crud.client.CRUDMutablePager
+import ai.tech.core.data.crud.client.CRUDRefreshableMutablePager
 import ai.tech.core.data.crud.client.model.EntityProperty
+import ai.tech.core.data.crud.client.model.MutationItem
 import ai.tech.core.data.crud.client.model.predicate
 import ai.tech.core.data.crud.model.Order
 import ai.tech.core.data.expression.BooleanVariable
-import ai.tech.core.presentation.component.textfield.search.model.SearchFieldState
+import ai.tech.core.data.paging.AbstractMutablePager
+import ai.tech.core.data.paging.AbstractPager
 import ai.tech.core.presentation.viewmodel.AbstractViewModel
 import androidx.lifecycle.SavedStateHandle
 import app.cash.paging.ExperimentalPagingApi
@@ -29,17 +31,18 @@ public class CRUDViewModel<T : Any>(
     savedStateHandle: SavedStateHandle
 ) : AbstractViewModel<CRUDAction<T>>(savedStateHandle) {
 
-    public val pager: CRUDMutablePager<T> = repository.viewModelMutablePager(
-        sort,
-        predicate,
-        create,
-        properties,
-        getValues,
-        config,
-        initialKey,
-        remoteMediator,
-        firstItemOffset,
-    )
+    public val pager: AbstractMutablePager<Int, T, MutationItem<T>>
+        field = repository.viewModelMutablePager(
+            sort,
+            predicate,
+            create,
+            properties,
+            getValues,
+            config,
+            initialKey,
+            remoteMediator,
+            firstItemOffset,
+        )
 
     @OptIn(ExperimentalPagingApi::class)
     override fun action(action: CRUDAction<T>) {

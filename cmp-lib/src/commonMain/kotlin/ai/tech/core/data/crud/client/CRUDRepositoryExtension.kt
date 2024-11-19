@@ -6,7 +6,6 @@ import ai.tech.core.data.crud.model.Order
 import ai.tech.core.data.expression.BooleanVariable
 import ai.tech.core.data.expression.Variable
 import app.cash.paging.ExperimentalPagingApi
-import app.cash.paging.Pager
 import app.cash.paging.PagingConfig
 import app.cash.paging.PagingSource
 import app.cash.paging.RemoteMediator
@@ -27,12 +26,16 @@ public fun <Value : Any> CRUDRepository<Value>.pager(
     config: PagingConfig,
     initialKey: Int? = null,
     remoteMediator: RemoteMediator<Int, Value>? = null,
+    cacheCoroutineScope: CoroutineScope? = null,
     firstItemOffset: Int = 0,
-): Pager<Int, Value> = Pager(
+): CRUDRefreshablePager<Value> = CRUDRefreshablePager(
+    sort,
+    predicate,
     config,
     initialKey,
     remoteMediator,
-) { findPagingSource(sort, predicate, firstItemOffset) }
+    cacheCoroutineScope,
+) { sort, predicate -> findPagingSource(sort, predicate, firstItemOffset) }
 
 @OptIn(ExperimentalPagingApi::class)
 public fun <Value : Any> CRUDRepository<Value>.mutablePager(
@@ -46,7 +49,7 @@ public fun <Value : Any> CRUDRepository<Value>.mutablePager(
     remoteMediator: RemoteMediator<Int, Value>? = null,
     cacheCoroutineScope: CoroutineScope? = null,
     firstItemOffset: Int = 0,
-): CRUDMutablePager<Value> = CRUDMutablePager(
+): CRUDRefreshableMutablePager<Value> = CRUDRefreshableMutablePager(
     sort,
     predicate,
     create,
@@ -74,12 +77,17 @@ public fun CRUDRepository<*>.pager(
     config: PagingConfig,
     initialKey: Int? = null,
     remoteMediator: RemoteMediator<Int, List<Any?>>? = null,
+    cacheCoroutineScope: CoroutineScope? = null,
     firstItemOffset: Int = 0,
-): Pager<Int, List<Any?>> = Pager(
+): CRUDProjectionRefreshablePager<List<Any?>> = CRUDProjectionRefreshablePager(
+    projections,
+    sort,
+    predicate,
     config,
     initialKey,
     remoteMediator,
-) { findPagingSource(projections, sort, predicate, firstItemOffset) }
+    cacheCoroutineScope,
+) { projections, sort, predicate -> findPagingSource(projections, sort, predicate, firstItemOffset) }
 
 @OptIn(ExperimentalPagingApi::class)
 public fun CRUDRepository<*>.mutablePager(
@@ -93,7 +101,7 @@ public fun CRUDRepository<*>.mutablePager(
     remoteMediator: RemoteMediator<Int, List<Any?>>? = null,
     cacheCoroutineScope: CoroutineScope? = null,
     firstItemOffset: Int = 0,
-): CRUDProjectionsMutablePager = CRUDProjectionsMutablePager(
+): CRUDProjectionRefreshableMutablePager = CRUDProjectionRefreshableMutablePager(
     projections,
     sort,
     predicate,

@@ -4,7 +4,7 @@ import ai.tech.core.data.crud.client.model.EntityProperty
 import ai.tech.core.data.crud.client.model.MutationItem
 import ai.tech.core.data.crud.model.Order
 import ai.tech.core.data.expression.BooleanVariable
-import ai.tech.core.data.paging.MutablePager
+import ai.tech.core.data.paging.AbstractRefreshableMutablePager
 import app.cash.paging.ExperimentalPagingApi
 import app.cash.paging.PagingConfig
 import app.cash.paging.PagingData
@@ -14,7 +14,7 @@ import app.cash.paging.map
 import kotlinx.coroutines.CoroutineScope
 
 @OptIn(ExperimentalPagingApi::class)
-public abstract class AbstractCRUDMutablePager<Value : Any>(
+public abstract class AbstractCRUDRefreshableMutablePager<Value : Any>(
     protected var sort: List<Order>? = null,
     protected var predicate: BooleanVariable? = null,
     private val create: (id: Any) -> Value,
@@ -24,7 +24,7 @@ public abstract class AbstractCRUDMutablePager<Value : Any>(
     initialKey: Int? = null,
     remoteMediator: RemoteMediator<Int, Value>? = null,
     cacheCoroutineScope: CoroutineScope? = null,
-) : MutablePager<Int, Value, MutationItem<Value>>(
+) : AbstractRefreshableMutablePager<Int, Value, MutationItem<Value>>(
     config,
     initialKey,
     remoteMediator,

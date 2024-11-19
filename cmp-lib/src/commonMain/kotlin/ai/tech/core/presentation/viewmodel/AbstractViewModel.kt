@@ -126,7 +126,7 @@ public abstract class AbstractViewModel<T : Any>(protected val savedStateHandle:
         initialKey: Int? = null,
         remoteMediator: RemoteMediator<Int, T>? = null,
         firstItemOffset: Int = 0,
-    ) = pager(sort, predicate, config, initialKey, remoteMediator, firstItemOffset).flow.letIf({ remoteMediator == null }) { it.cached }
+    ) = pager(sort, predicate, config, initialKey, remoteMediator, viewModelScope, firstItemOffset)
 
     @OptIn(ExperimentalPagingApi::class)
     protected fun <T : Any> CRUDRepository<T>.viewModelMutablePager(
@@ -161,7 +161,7 @@ public abstract class AbstractViewModel<T : Any>(protected val savedStateHandle:
         initialKey: Int? = null,
         remoteMediator: RemoteMediator<Int, List<Any?>>? = null,
         firstItemOffset: Int = 0,
-    ) = pager(projections, sort, predicate, config, initialKey, remoteMediator, firstItemOffset).flow.letIf({ remoteMediator == null }) { it.cached }
+    ) = pager(projections, sort, predicate, config, initialKey, remoteMediator, viewModelScope, firstItemOffset)
 
     @OptIn(ExperimentalPagingApi::class)
     protected fun CRUDRepository<*>.viewModelMutablePager(

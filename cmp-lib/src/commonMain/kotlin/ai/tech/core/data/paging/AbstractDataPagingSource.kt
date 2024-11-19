@@ -11,7 +11,7 @@ public abstract class AbstractDataPagingSource<Key : Any, Value : Any> : PagingS
 
     protected abstract suspend fun fetchData(loadKey: Key?, pageSize: Int): List<Value>
 
-    protected abstract fun getPrevKey(loadKey: Key?): Key?
+    protected abstract fun getPrevKey(loadKey: Key): Key?
 
     protected abstract fun getNextKey(loadKey: Key?): Key?
 
@@ -24,12 +24,16 @@ public abstract class AbstractDataPagingSource<Key : Any, Value : Any> : PagingS
         return try {
             val data = fetchData(loadKey, pageSize)
 
-            if (data.size < pageSize) {
-                PagingSourceLoadResultPage(data, null, null)
-            }
-            else {
-                PagingSourceLoadResultPage(data, getPrevKey(loadKey), getNextKey(loadKey))
-            }
+            PagingSourceLoadResultPage(
+                data,
+                loadKey?.let(::getPrevKey),
+                if (data.size < pageSize) {
+                    null
+                }
+                else {
+                    getNextKey(loadKey)
+                },
+            )
         }
         catch (e: Exception) {
             PagingSourceLoadResultError<Key, Value>(e)
@@ -37,7 +41,7 @@ public abstract class AbstractDataPagingSource<Key : Any, Value : Any> : PagingS
     }
 
     final override fun getRefreshKey(state: PagingState<Key, Value>): Key? = state.anchorPosition?.let { anchorPosition ->
-        getPrevKey(state.closestPageToPosition(anchorPosition)?.prevKey)
+        state.closestPageToPosition(anchorPosition)?.prevKey?.let(::getPrevKey)
             ?: getNextKey(state.closestPageToPosition(anchorPosition)?.nextKey)
     }
 }
