@@ -41,7 +41,7 @@ public class ConsulConfigService(
                     throw e
                 }
 
-                log.w(e)
+                log.w(e) { "Cannot load consul configuration from: ${consulConfig.address}" }
 
                 emptyMap()
             }
