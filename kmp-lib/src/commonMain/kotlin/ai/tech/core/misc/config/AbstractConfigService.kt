@@ -3,6 +3,8 @@ package ai.tech.core.misc.config
 import ai.tech.core.misc.type.serializer.decoderMapFromString
 import kotlinx.serialization.InternalSerializationApi
 import ai.tech.core.misc.type.deepMerge
+import org.lighthousegames.logging.KmLog
+import org.lighthousegames.logging.logging
 
 public abstract class AbstractConfigService(
     public val name: String = "application",
@@ -26,5 +28,10 @@ public abstract class AbstractConfigService(
     @Suppress("UNCHECKED_CAST")
     private fun decoder(format: String): (String) -> Map<String, Any?> = {
         decoderMapFromString(format)(it) as Map<String, Any?>
+    }
+
+    public companion object {
+
+        internal val log: KmLog = logging()
     }
 }

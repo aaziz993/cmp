@@ -6,8 +6,8 @@ import ai.tech.core.misc.consul.model.config.ConsulConfig
 import ai.tech.core.misc.model.config.ApplicationConfig
 import ai.tech.core.misc.type.multiple.filterValuesIsNotEmpty
 import ai.tech.core.misc.type.serializer.decodeFromAny
-import io.ktor.client.HttpClient
-import io.ktor.client.plugins.HttpRequestTimeoutException
+import io.ktor.client.*
+import io.ktor.client.plugins.*
 import kotlinx.serialization.InternalSerializationApi
 import kotlinx.serialization.json.Json
 
@@ -40,6 +40,9 @@ public class ConsulConfigService(
                 if (failFast) {
                     throw e
                 }
+
+                log.w(e)
+
                 emptyMap()
             }
         }
