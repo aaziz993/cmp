@@ -12,6 +12,7 @@ public data class ConsulConfigConfig(
     val dataKey: String? = null,
     val format: String = "yaml",
     val aclToken: String? = null,
+    val failFast: Boolean = false,
 ) {
 
     public fun getKeys(applicationName: String, profiles: List<String> = emptyList()): List<String> {

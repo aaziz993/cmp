@@ -83,7 +83,7 @@ public fun <T : Any> CRUDLazyColumn(
         items,
         localization,
         { viewModel.action(CRUDAction.SelectAll) },
-    ) { viewModel.action(CRUDAction.Find(state.sort, state.searchFieldStates, LimitOffset(0, 10))) }
+    ) { viewModel.action(CRUDAction.Find(state.sort, state.searchFieldStates)) }
 
     LazyPagingColumn(
         Modifier.fillMaxSize(),

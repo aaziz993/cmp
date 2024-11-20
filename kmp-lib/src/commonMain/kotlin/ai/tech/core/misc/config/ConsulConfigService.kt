@@ -7,6 +7,7 @@ import ai.tech.core.misc.model.config.ApplicationConfig
 import ai.tech.core.misc.type.multiple.filterValuesIsNotEmpty
 import ai.tech.core.misc.type.serializer.decodeFromAny
 import io.ktor.client.HttpClient
+import io.ktor.client.plugins.HttpRequestTimeoutException
 import kotlinx.serialization.InternalSerializationApi
 import kotlinx.serialization.json.Json
 
@@ -27,13 +28,20 @@ public class ConsulConfigService(
         if (consulConfig?.config == null) {
             return emptyMap()
         }
-
         return with(consulConfig.config) {
-            val consulClient = ConsulClient(httpClient, consulConfig.address, aclToken)
+            return try {
+                val consulClient = ConsulClient(httpClient, consulConfig.address, aclToken)
 
-            getKeys(applicationConfig.name, applicationConfig.configurations.map { "$it/${applicationConfig.environment}" }).associateWith {
-                consulClient.readConsulConfig(it, format)
-            }.filterValuesIsNotEmpty()
+                getKeys(applicationConfig.name, applicationConfig.configurations.map { "$it/${applicationConfig.environment}" }).associateWith {
+                    consulClient.readConsulConfig(it, format)
+                }.filterValuesIsNotEmpty()
+            }
+            catch (e: HttpRequestTimeoutException) {
+                if (failFast) {
+                    throw e
+                }
+                emptyMap()
+            }
         }
     }
 
