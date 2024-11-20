@@ -11,7 +11,7 @@ import app.cash.paging.RemoteMediator
 import kotlinx.coroutines.CoroutineScope
 
 @OptIn(ExperimentalPagingApi::class)
-public class CRUDProjectionMutablePager(
+public class CRUDProjectionRefreshableMutablePager (
     private var projections: List<Variable>,
     sort: List<Order>? = null,
     predicate: BooleanVariable? = null,

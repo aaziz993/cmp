@@ -17,7 +17,8 @@ public fun <Value : Any> CRUDRepository<Value>.pagingSource(
     sort: List<Order>? = null,
     predicate: BooleanVariable? = null,
     firstItemOffset: Int = 0,
-): PagingSource<Int, Value> = CRUDPagingSource({ find(sort, predicate, it).toList() }, firstItemOffset)
+    disablePrepend: Boolean = false,
+): PagingSource<Int, Value> = CRUDPagingSource({ find(sort, predicate, it).toList() }, firstItemOffset, disablePrepend)
 
 @OptIn(ExperimentalPagingApi::class)
 public fun <Value : Any> CRUDRepository<Value>.pager(
@@ -28,6 +29,7 @@ public fun <Value : Any> CRUDRepository<Value>.pager(
     remoteMediator: RemoteMediator<Int, Value>? = null,
     cacheCoroutineScope: CoroutineScope? = null,
     firstItemOffset: Int = 0,
+    disablePrepend: Boolean = false,
 ): CRUDRefreshablePager<Value> = CRUDRefreshablePager(
     sort,
     predicate,
@@ -35,7 +37,7 @@ public fun <Value : Any> CRUDRepository<Value>.pager(
     initialKey,
     remoteMediator,
     cacheCoroutineScope,
-) { sort, predicate -> pagingSource(sort, predicate, firstItemOffset) }
+) { sort, predicate -> pagingSource(sort, predicate, firstItemOffset, disablePrepend) }
 
 @OptIn(ExperimentalPagingApi::class)
 public fun <Value : Any> CRUDRepository<Value>.mutablePager(
@@ -49,6 +51,7 @@ public fun <Value : Any> CRUDRepository<Value>.mutablePager(
     remoteMediator: RemoteMediator<Int, Value>? = null,
     cacheCoroutineScope: CoroutineScope? = null,
     firstItemOffset: Int = 0,
+    disablePrepend: Boolean = false,
 ): CRUDRefreshableMutablePager<Value> = CRUDRefreshableMutablePager(
     sort,
     predicate,
@@ -59,7 +62,7 @@ public fun <Value : Any> CRUDRepository<Value>.mutablePager(
     initialKey,
     remoteMediator,
     cacheCoroutineScope,
-) { sort, predicate -> pagingSource(sort, predicate, firstItemOffset) }
+) { sort, predicate -> pagingSource(sort, predicate, firstItemOffset, disablePrepend) }
 
 @OptIn(ExperimentalPagingApi::class)
 public fun CRUDRepository<*>.pagingSource(
@@ -67,7 +70,8 @@ public fun CRUDRepository<*>.pagingSource(
     sort: List<Order>? = null,
     predicate: BooleanVariable? = null,
     firstItemOffset: Int = 0,
-): PagingSource<Int, List<Any?>> = CRUDPagingSource({ find(projections, sort, predicate, it).toList() }, firstItemOffset)
+    disablePrepend: Boolean = false,
+): PagingSource<Int, List<Any?>> = CRUDPagingSource({ find(projections, sort, predicate, it).toList() }, firstItemOffset, disablePrepend)
 
 @OptIn(ExperimentalPagingApi::class)
 public fun CRUDRepository<*>.pager(
@@ -79,7 +83,8 @@ public fun CRUDRepository<*>.pager(
     remoteMediator: RemoteMediator<Int, List<Any?>>? = null,
     cacheCoroutineScope: CoroutineScope? = null,
     firstItemOffset: Int = 0,
-): CRUDProjectionRefreshablePager<List<Any?>> = CRUDProjectionRefreshablePager(
+    disablePrepend: Boolean = false,
+): CRUDProjectionRefreshablePager = CRUDProjectionRefreshablePager(
     projections,
     sort,
     predicate,
@@ -87,7 +92,7 @@ public fun CRUDRepository<*>.pager(
     initialKey,
     remoteMediator,
     cacheCoroutineScope,
-) { projections, sort, predicate -> pagingSource(projections, sort, predicate, firstItemOffset) }
+) { projections, sort, predicate -> pagingSource(projections, sort, predicate, firstItemOffset, disablePrepend) }
 
 @OptIn(ExperimentalPagingApi::class)
 public fun CRUDRepository<*>.mutablePager(
@@ -100,7 +105,8 @@ public fun CRUDRepository<*>.mutablePager(
     initialKey: Int? = null,
     remoteMediator: RemoteMediator<Int, List<Any?>>? = null,
     cacheCoroutineScope: CoroutineScope? = null,
-    firstItemOffset: Int = 0,
+    firstItemOffset: Int = 0,    disablePrepend: Boolean = false,
+
 ): CRUDProjectionRefreshableMutablePager = CRUDProjectionRefreshableMutablePager(
     projections,
     sort,
@@ -111,4 +117,4 @@ public fun CRUDRepository<*>.mutablePager(
     initialKey,
     remoteMediator,
     cacheCoroutineScope,
-) { projections, sort, predicate -> pagingSource(projections, sort, predicate, firstItemOffset) }
+) { projections, sort, predicate -> pagingSource(projections, sort, predicate, firstItemOffset, disablePrepend) }

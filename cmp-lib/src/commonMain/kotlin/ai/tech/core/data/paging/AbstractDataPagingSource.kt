@@ -1,5 +1,6 @@
 package ai.tech.core.data.paging
 
+import ai.tech.core.misc.type.takeIfNot
 import app.cash.paging.PagingSource
 import app.cash.paging.PagingSourceLoadParams
 import app.cash.paging.PagingSourceLoadResult
@@ -7,7 +8,9 @@ import app.cash.paging.PagingSourceLoadResultError
 import app.cash.paging.PagingSourceLoadResultPage
 import app.cash.paging.PagingState
 
-public abstract class AbstractDataPagingSource<Key : Any, Value : Any> : PagingSource<Key, Value>() {
+public abstract class AbstractDataPagingSource<Key : Any, Value : Any>(
+    public val disablePrepend: Boolean,
+) : PagingSource<Key, Value>() {
 
     protected abstract suspend fun fetchData(loadKey: Key?, pageSize: Int): List<Value>
 
@@ -26,7 +29,12 @@ public abstract class AbstractDataPagingSource<Key : Any, Value : Any> : PagingS
 
             PagingSourceLoadResultPage(
                 data,
-                loadKey?.let(::getPrevKey),
+                if (disablePrepend) {
+                    null
+                }
+                else {
+                    loadKey?.let(::getPrevKey)
+                },
                 if (data.size < pageSize) {
                     null
                 }

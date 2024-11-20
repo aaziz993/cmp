@@ -17,6 +17,8 @@ import com.benasher44.uuid.Uuid
 import com.benasher44.uuid.uuid4
 import com.ionspin.kotlin.bignum.decimal.BigDecimal
 import com.ionspin.kotlin.bignum.integer.BigInteger
+import kotlin.contracts.InvocationKind
+import kotlin.contracts.contract
 import kotlin.reflect.KClass
 import kotlin.reflect.KType
 import kotlin.reflect.typeOf
@@ -476,7 +478,14 @@ else {
     this
 }
 
-public inline fun <T:Any> T?.ifNull(
+public inline fun <T> T.takeIfNot(predicate: (T) -> Boolean): T? {
+    contract {
+        callsInPlace(predicate, InvocationKind.EXACTLY_ONCE)
+    }
+    return if (predicate(this)) null else this
+}
+
+public inline fun <T : Any> T?.ifNull(
     block: () -> T,
 ): T = this ?: block()
 

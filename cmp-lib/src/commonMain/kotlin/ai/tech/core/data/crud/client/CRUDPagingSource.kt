@@ -6,7 +6,8 @@ import ai.tech.core.data.paging.AbstractDataPagingSource
 public class CRUDPagingSource<T : Any>(
     private val fetchData: suspend (limitOffset: LimitOffset) -> List<T>,
     public val firstItemOffset: Int = 0,
-) : AbstractDataPagingSource<Int, T>() {
+    disablePrepend: Boolean = false,
+) : AbstractDataPagingSource<Int, T>(disablePrepend) {
 
     override suspend fun fetchData(loadKey: Int?, pageSize: Int): List<T> =
         fetchData(LimitOffset((loadKey ?: 0) * pageSize.toLong() + firstItemOffset, pageSize.toLong()))
