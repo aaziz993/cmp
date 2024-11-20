@@ -123,7 +123,7 @@ internal fun <T : Any> DataRow(
                     }
                     else {
                         IconButton(onEdit, Modifier.weight(1f)) {
-                            if (item.isEditing) {
+                            if (item.isEdit) {
                                 Icon(EvaIcons.Outline.Close, null, tint = MaterialTheme.colorScheme.error)
                             }
                             else {

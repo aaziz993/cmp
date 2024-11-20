@@ -7,13 +7,12 @@ public class CRUDLazyColumnLocalization(
     public val actions: String = "Actions",
     public val multiSort: String = "Multi sort",
     public val liveSearch: String = "Live search",
+    public val prepend: String = "Prepend",
     public val pagination: String = "Pagination",
     public val select: String = "Select",
     public val header: String = "Header",
     public val search: String = "Search",
-    notLoading: String? = null,
-    refreshError: String? = null,
-    appendError: String? = null,
+    noItems: String? = "No items",
     public val confirmAlert: String = "Are you sure?",
     public val confirm: String = "Confirm",
     public val cancel: String = "Cancel",
@@ -21,5 +20,5 @@ public class CRUDLazyColumnLocalization(
     public val valueIsZero: String = "Value is zero",
     public val valueIsInvalid: String = "Value is invalid",
 ) : LazyPagingColumnLocalization(
-    notLoading,
+    noItems,
 )

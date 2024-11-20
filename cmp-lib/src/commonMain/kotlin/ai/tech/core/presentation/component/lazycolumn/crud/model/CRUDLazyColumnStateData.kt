@@ -10,6 +10,7 @@ public data class CRUDLazyColumnStateData(
     val sort: List<Order> = emptyList(),
     val isMultiSort: Boolean = true,
     val isLiveSearch: Boolean = true,
+    val isPrepend: Boolean = true,
     val showPagination: Boolean = true,
     val showActions: Boolean = true,
     val showSelect: Boolean = true,

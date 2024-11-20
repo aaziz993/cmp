@@ -25,6 +25,7 @@ public class CRUDLazyColumnState(
     limitOffset: LimitOffset = LimitOffset(0, 10),
     isMultiSort: Boolean = true,
     isLiveSearch: Boolean = true,
+    isPrepend: Boolean = true,
     showActions: Boolean = true,
     showPagination: Boolean = true,
     showSelect: Boolean = true,
@@ -39,7 +40,9 @@ public class CRUDLazyColumnState(
         searchFieldStates,
         data.sort,
         LimitOffset(0, data.limit),
-        data.liveSearch,
+        data.isMultiSort,
+        data.isLiveSearch,
+        data.isPrepend,
         data.showPagination,
         data.showActions,
         data.showSelect,
@@ -52,6 +55,8 @@ public class CRUDLazyColumnState(
     public var isMultiSort: Boolean by mutableStateOf(isMultiSort)
 
     public var isLiveSearch: Boolean by mutableStateOf(isLiveSearch)
+
+    public var isPrepend: Boolean by mutableStateOf(isPrepend)
 
     public var showActions: Boolean by mutableStateOf(showActions)
 
@@ -99,6 +104,7 @@ public class CRUDLazyColumnState(
                     it.sort,
                     it.isMultiSort,
                     it.isLiveSearch,
+                    it.isPrepend,
                     it.showActions,
                     it.showPagination,
                     it.showSelect,
@@ -119,6 +125,7 @@ public class CRUDLazyColumnState(
                     it[7] as Boolean,
                     it[8] as Boolean,
                     it[9] as Boolean,
+                    it[10] as Boolean,
                 )
             },
         )

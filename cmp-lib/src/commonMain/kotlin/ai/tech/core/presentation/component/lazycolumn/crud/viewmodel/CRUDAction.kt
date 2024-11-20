@@ -9,5 +9,17 @@ public sealed interface CRUDAction<T : Any> {
         val searchFieldStates: List<SearchFieldState>,
     ) : CRUDAction<Nothing>
 
+    public data object Add : CRUDAction<Nothing>
+
+    public data object CopySelected : CRUDAction<Nothing>
+
+    public data object RemoveSelected : CRUDAction<Nothing>
+
+    public data object EditSelected : CRUDAction<Nothing>
+
+    public data object SaveSelected : CRUDAction<Nothing>
+
+    public data object DeleteSelected : CRUDAction<Nothing>
+
     public data object Refresh : CRUDAction<Nothing>
 }

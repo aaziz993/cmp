@@ -1,7 +1,7 @@
 package ai.tech.core.misc.config
 
 import ai.tech.core.misc.model.config.ApplicationConfig
-import ai.tech.core.misc.type.multiple.filterValuesIsNotEmpty
+import ai.tech.core.misc.type.multiple.filterValuesNotEmpty
 import ai.tech.core.misc.type.serializer.decodeFromAny
 import kotlinx.serialization.json.Json
 
@@ -18,6 +18,6 @@ public class FileConfigService(
 
         return mapOf(name to config) + applicationConfig.configurations.associateWith {
             readFileConfig("${applicationConfig.environment}/application-$it", formats)
-        }.filterValuesIsNotEmpty()
+        }.filterValuesNotEmpty()
     }
 }

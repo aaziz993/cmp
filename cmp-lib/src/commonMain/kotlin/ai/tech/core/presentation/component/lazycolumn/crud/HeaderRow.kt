@@ -39,6 +39,7 @@ import kotlinx.serialization.ExperimentalSerializationApi
 internal fun <T : Any> HeaderRow(
     contentPadding: PaddingValues,
     state: CRUDLazyColumnState,
+    headers: List<String>,
     properties: List<EntityProperty>,
     items: List<MutationItem<T>>,
     localization: CRUDLazyColumnLocalization,

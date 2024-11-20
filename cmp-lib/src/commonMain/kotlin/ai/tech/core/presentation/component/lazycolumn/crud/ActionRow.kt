@@ -2,9 +2,12 @@ package ai.tech.core.presentation.component.lazycolumn.crud
 
 import ai.tech.core.data.crud.client.model.EntityProperty
 import ai.tech.core.data.crud.client.model.MutationItem
-import ai.tech.core.data.crud.client.model.isSelectedAnyNew
+import ai.tech.core.data.crud.client.model.isEditsSelectedAll
+import ai.tech.core.data.crud.client.model.isSelectedAnyExists
+import ai.tech.core.data.crud.client.model.isSelectedAnyNews
+import ai.tech.core.data.crud.client.model.modifies
 import ai.tech.core.data.crud.client.model.selected
-import ai.tech.core.data.crud.client.model.selectedExists
+import ai.tech.core.data.crud.client.model.validate
 import ai.tech.core.presentation.component.lazycolumn.crud.model.CRUDLazyColumnLocalization
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -38,10 +41,10 @@ internal fun <T : Any> ActionRow(
     localization: CRUDLazyColumnLocalization,
     onDownloadSelected: (() -> Unit)?,
     onUpload: (() -> Unit)?,
-    onEditSelected: () -> Unit,
     onAdd: () -> Unit,
     onCopySelected: () -> Unit,
     onRemoveSelected: () -> Unit,
+    onEditSelected: () -> Unit,
     onSaveSelected: () -> Unit,
     onDeleteSelected: () -> Unit
 ) = Row(
@@ -50,9 +53,9 @@ internal fun <T : Any> ActionRow(
 
     val selected = items.selected
 
-    val selectedExists = items.selectedExists
+    val isSelectedAnyExists = items.isSelectedAnyExists
 
-    if (selectedExists.isNotEmpty() && onDownloadSelected != null) {
+    if (isSelectedAnyExists && onDownloadSelected != null) {
         IconButton(onDownloadSelected, content = downloadAllIcon)
     }
 
@@ -65,11 +68,11 @@ internal fun <T : Any> ActionRow(
             IconButton(onCopySelected) { Icon(EvaIcons.Outline.Copy, null) }
         }
 
-        if (selectedExists.isNotEmpty()) {
-            val selectedAllEditingItems = items.all { it.isSelected && it.isEditing }
+        if (isSelectedAnyExists) {
+            val isEditsSelectedAll = items.isEditsSelectedAll
 
             IconButton(onEditSelected) {
-                if (selectedAllEditingItems) {
+                if (isEditsSelectedAll) {
                     Icon(
                         EvaIcons.Fill.Close, null, tint = MaterialTheme.colorScheme.error,
                     )
@@ -82,15 +85,13 @@ internal fun <T : Any> ActionRow(
             IconButton(onDeleteSelected) { Icon(EvaIcons.Outline.Trash2, null) }
         }
 
-        val isValidSelectedEdits = selected.filter(MutationItem<T>::isEditing).all { it.validate(properties) }
+        val isSelectedModifiesValid = selected.modifies.validate(properties)
 
-        if (isValidSelectedEdits) {
+        if (isSelectedModifiesValid) {
             IconButton(onSaveSelected) { Icon(EvaIcons.Outline.Save, null) }
         }
 
-        val isSelectedAnyNew = items.isSelectedAnyNew
-
-        if (isSelectedAnyNew) {
+        if (items.isSelectedAnyNews) {
             IconButton(onRemoveSelected) { Icon(EvaIcons.Outline.Minus, null) }
         }
     }

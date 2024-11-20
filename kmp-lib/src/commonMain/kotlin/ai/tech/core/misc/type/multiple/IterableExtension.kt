@@ -145,9 +145,9 @@ public fun <T> List<T>.unmerge(step: Int): List<List<T>> =
 
 public fun <T> List<T>.takeIfNotEmpty(): List<T>? = takeIf(List<T>::isNotEmpty)
 
-public fun <T : List<*>> Iterable<T>.filterIsNotEmpty(): Iterable<T> = filterNot(List<*>::isEmpty)
+public fun <T : List<*>> Iterable<T>.filterNotEmpty(): Iterable<T> = filterNot(List<*>::isEmpty)
 
-public fun <T : Map<*, *>> Iterable<T>.filterIsNotEmpty(): Iterable<T> = filterNot(Map<*, *>::isEmpty)
+public fun <T : Map<*, *>> Iterable<T>.filterNotEmpty(): Iterable<T> = filterNot(Map<*, *>::isEmpty)
 
 public val Iterable<Boolean>.all: Boolean
     get() = all { it }

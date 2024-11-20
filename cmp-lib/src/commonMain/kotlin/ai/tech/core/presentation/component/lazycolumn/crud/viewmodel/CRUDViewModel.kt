@@ -8,14 +8,16 @@ import ai.tech.core.data.crud.model.Order
 import ai.tech.core.data.expression.BooleanVariable
 import ai.tech.core.presentation.viewmodel.AbstractViewModel
 import androidx.lifecycle.SavedStateHandle
+import androidx.lifecycle.viewModelScope
 import app.cash.paging.ExperimentalPagingApi
 import app.cash.paging.PagingConfig
 import app.cash.paging.RemoteMediator
 import app.cash.paging.createPagingConfig
+import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalPagingApi::class)
 public class CRUDViewModel<T : Any>(
-    repository: CRUDRepository<T>,
+    private val repository: CRUDRepository<T>,
     sort: List<Order>? = null,
     predicate: BooleanVariable? = null,
     create: (id: Any) -> T,
@@ -46,7 +48,28 @@ public class CRUDViewModel<T : Any>(
         when (action) {
             is CRUDAction.Find -> pager.refresh(action.sort, pager.properties.predicate(action.searchFieldStates))
 
-            CRUDAction.Refresh -> pager.refresh()
+            CRUDAction.Add -> pager.add()
+
+            CRUDAction.CopySelected -> pager.copySelected()
+
+            CRUDAction.RemoveSelected -> pager.removeSelected()
+
+            CRUDAction.EditSelected -> pager.editSelected()
+
+            CRUDAction.SaveSelected -> viewModelScope.launch{
+                pager.getSelectedModifies()
+            }
+
+            CRUDAction.DeleteSelected -> {
+                viewModelScope.launch {
+                    repository.delete(pager.getSelectedIdPredicate())
+                    pager.deleteSelected()
+                    pager.refresh()
+                }
+            }
         }
+
+        CRUDAction.Refresh -> pager.refresh()
     }
+}
 }

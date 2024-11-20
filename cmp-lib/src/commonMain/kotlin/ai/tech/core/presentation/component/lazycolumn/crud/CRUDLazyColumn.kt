@@ -1,6 +1,7 @@
 package ai.tech.core.presentation.component.lazycolumn.crud
 
 import ai.tech.core.data.crud.client.model.MutationItem
+import ai.tech.core.data.crud.client.model.selectedExists
 import ai.tech.core.data.crud.model.LimitOffset
 import ai.tech.core.data.expression.Equals
 import ai.tech.core.misc.type.model.Property
@@ -72,20 +73,21 @@ public fun <T : Any> CRUDLazyColumn(
         viewModel.pager.properties,
         items,
         localization,
-        onDownload?.let { { it(items.filter { it.isSelected && !it.isNew }.map(MutationItem<T>::entity)) } },
+        onDownload?.let { { it(items.selectedExists.map(MutationItem<T>::entity)) } },
         onUpload,
-        { viewModel.action(CRUDAction.EditSelected) },
         { viewModel.action(CRUDAction.Add) },
         { viewModel.action(CRUDAction.CopySelected) },
         { viewModel.action(CRUDAction.RemoveSelected) },
+        { viewModel.action(CRUDAction.EditSelected) },
         { viewModel.action(CRUDAction.SaveSelected) },
     ) { viewModel.action(CRUDAction.DeleteSelected) }
 
-    val headers = viewModel.pager.properties.map(Property::name).mapNotNull(getHeader)
+    val headers = viewModel.pager.properties.mapNotNull { getHeader(it.name) }
 
     HeaderRow(
         contentPadding,
         state,
+        headers,
         viewModel.pager.properties,
         items,
         localization,

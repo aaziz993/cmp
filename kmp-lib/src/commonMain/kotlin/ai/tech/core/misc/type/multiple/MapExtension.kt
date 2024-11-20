@@ -10,9 +10,9 @@ public fun <K, V> Map<K, V>.filterKeys(vararg key: K): Map<K, V> = filterKeys(ke
 
 public fun <K, V> Map<K, V>.takeIfNotEmpty(): Map<K, V>? = takeIf(Map<K, V>::isNotEmpty)
 
-public fun <K, V : List<*>> Map<K, V>.filterValuesIsNotEmpty(): Map<K, V> = filterValues(List<*>::isNotEmpty)
+public fun <K, V : List<*>> Map<K, V>.filterValuesNotEmpty(): Map<K, V> = filterValues(List<*>::isNotEmpty)
 
-public fun <K, V : Map<*, *>> Map<K, V>.filterValuesIsNotEmpty(): Map<K, V> = filterValues(Map<*, *>::isNotEmpty)
+public fun <K, V : Map<*, *>> Map<K, V>.filterValuesNotEmpty(): Map<K, V> = filterValues(Map<*, *>::isNotEmpty)
 
 public fun <K, V> Map<K, V>.filterValuesIsNotNull(): Map<K, V> = filterValues { it != null }
 

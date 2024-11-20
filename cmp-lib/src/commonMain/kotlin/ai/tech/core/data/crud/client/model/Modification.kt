@@ -1,6 +1,6 @@
 package ai.tech.core.data.crud.client.model
 
-public enum class Mutation {
+public enum class Modification {
     EDIT,
     NEW
 }

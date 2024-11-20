@@ -36,6 +36,11 @@ internal fun OptionRow(
         }
 
         Row(verticalAlignment = Alignment.CenterVertically) {
+            Text(localization.prepend)
+            Switch(state.isPrepend, { state.isPrepend = it })
+        }
+
+        Row(verticalAlignment = Alignment.CenterVertically) {
             Text(localization.liveSearch)
             Switch(state.isLiveSearch, { state.isLiveSearch = it })
         }
