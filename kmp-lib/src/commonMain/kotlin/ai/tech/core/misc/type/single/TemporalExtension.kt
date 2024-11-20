@@ -3,11 +3,18 @@ package ai.tech.core.misc.type.single
 import kotlinx.datetime.Clock
 import kotlinx.datetime.DatePeriod
 import kotlinx.datetime.DateTimePeriod
+import kotlinx.datetime.Instant
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.LocalDateTime
 import kotlinx.datetime.LocalTime
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
+
+public val nowInstant: Instant
+    get() = Clock.System.now()
+
+public val now: Long
+    get() = nowInstant.toEpochMilliseconds()
 
 public val zeroTime: LocalTime = LocalTime.fromSecondOfDay(0)
 

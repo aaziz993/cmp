@@ -11,7 +11,9 @@ import app.cash.paging.PagingData
 import app.cash.paging.RemoteMediator
 import app.cash.paging.insertFooterItem
 import app.cash.paging.map
+import com.benasher44.uuid.uuid4
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.flow.update
 
 @OptIn(ExperimentalPagingApi::class)
 public abstract class AbstractCRUDMutablePager<Value : Any>(
@@ -45,4 +47,6 @@ public abstract class AbstractCRUDMutablePager<Value : Any>(
 
         return newMutations.fold(mergedPagingData) { acc, v -> acc.insertFooterItem(item = v) }
     }
+
+    public fun addNew(): Unit = mutations.update { it + MutationItem(create(uuid4())) }
 }

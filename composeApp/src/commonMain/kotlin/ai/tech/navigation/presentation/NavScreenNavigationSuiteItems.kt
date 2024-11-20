@@ -1,12 +1,11 @@
 package ai.tech.navigation.presentation
 
 import androidx.compose.material3.adaptive.navigationsuite.NavigationSuiteScope
-import androidx.compose.runtime.Composable
-import androidx.navigation.NavDestination
+import androidx.compose.runtime.*
+import androidx.navigation.*
 import androidx.navigation.NavDestination.Companion.hasRoute
 import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.NavGraph.Companion.findStartDestination
-import androidx.navigation.NavHostController
 
 @Composable
 public fun NavScreenNavigationSuiteItems(
@@ -41,13 +40,14 @@ public fun NavScreenNavigationSuiteItems(
                     // Pop up to the start destination of the graph to
                     // avoid building up a large stack of destinations
                     // on the back stack as users select items
-                    popUpTo(navController.graph.findStartDestination().id) {
+                    popUpTo(navController.graph.startDestinationRoute!!) {
                         saveState = true
                     }
+
                     // Avoid multiple copies of the same destination when
-                    // reselecting the same item
+                    // re-selecting the same item
                     launchSingleTop = true
-                    // Restore state when reselecting a previously selected item
+                    // Restore state when re-selecting a previously selected item
                     restoreState = true
                 }
             },
@@ -55,7 +55,7 @@ public fun NavScreenNavigationSuiteItems(
             navItem.calculateModifier(selected),
             label = { navItem.calculateText(selected) },
             alwaysShowLabel = navItem.alwaysShowLabel,
-            badge = { navItem.calculateBadge(selected) }
+            badge = { navItem.calculateBadge(selected) },
         )
     }
 }

@@ -2,7 +2,6 @@ package ai.tech.core.presentation.event.navigator
 
 import ai.tech.core.misc.type.multiple.toLaunchedEffect
 import androidx.compose.runtime.Composable
-import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
 import androidx.navigation.NavOptionsBuilder
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -10,6 +9,7 @@ import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.flow.MutableSharedFlow
 
 public class DefaultNavigator<T : Any>(override val startDestination: T) : Navigator<T> {
+
     private val navigationActions =
         MutableSharedFlow<NavigationAction>(replay = 1, onBufferOverflow = BufferOverflow.DROP_LATEST)
 
@@ -47,34 +47,34 @@ public class DefaultNavigator<T : Any>(override val startDestination: T) : Navig
 
             is NavigationAction.Navigation.Navigate -> navController.navigate(
                 action.route,
-                navigateNavOptionsBuilder(navController)
+                navigateNavOptionsBuilder(navController),
             )
 
             is NavigationAction.SafeNavigation.Navigate<*> -> navController.navigate(
                 action.route,
-                navigateNavOptionsBuilder(navController)
+                navigateNavOptionsBuilder(navController),
             )
 
             is NavigationAction.Navigation.NavigateBackTo -> navController.navigateBackTo(
                 action.route,
                 action.inclusive,
-                action.saveState
+                action.saveState,
             )
 
             is NavigationAction.SafeNavigation.NavigateBackTo<*> -> navController.navigateBackTo(
                 action.route,
                 action.inclusive,
-                action.saveState
+                action.saveState,
             )
 
             is NavigationAction.Navigation.NavigateAndClearCurrent -> navController.navigate(
                 action.route,
-                navigateAndClearCurrentNavOptionsBuilder(navController)
+                navigateAndClearCurrentNavOptionsBuilder(navController),
             )
 
             is NavigationAction.SafeNavigation.NavigateAndClearCurrent<*> -> navController.navigate(
                 action.route,
-                navigateAndClearCurrentNavOptionsBuilder(navController)
+                navigateAndClearCurrentNavOptionsBuilder(navController),
             )
 
             is NavigationAction.Navigation.NavigateAndClearTop -> navController.navigateAndReplaceStartRoute(action.route)
@@ -87,17 +87,18 @@ public class DefaultNavigator<T : Any>(override val startDestination: T) : Navig
     }
 
     public companion object {
+
         private fun navigateNavOptionsBuilder(navController: NavHostController): NavOptionsBuilder.() -> Unit = {
             // Pop up to the start destination of the graph to
             // avoid building up a large stack of destinations
             // on the back stack as users select items
-            popUpTo(navController.graph.findStartDestination().id) {
+            popUpTo(navController.graph.startDestinationRoute!!) {
                 saveState = true
             }
             // Avoid multiple copies of the same destination when
-            // reselecting the same item
+            // re-selecting the same item
             launchSingleTop = true
-            // Restore state when reselecting a previously selected item
+            // Restore state when re-selecting a previously selected item
             restoreState = true
         }
 
@@ -111,13 +112,13 @@ public class DefaultNavigator<T : Any>(override val startDestination: T) : Navig
 }
 
 private fun NavHostController.navigateAndReplaceStartRoute(startDestRoute: String) {
-//    popBackStack(graph.startDestinationId, true)
+    popBackStack(graph.startDestinationRoute!!, true)
     graph.setStartDestination(startDestRoute)
     navigate(startDestRoute)
 }
 
 private fun <T : Any> NavHostController.navigateAndReplaceStartRoute(startDestRoute: T) {
-    popBackStack(graph.startDestinationId, true)
+    popBackStack(graph.startDestinationRoute!!, true)
     graph.setStartDestination(startDestRoute)
     navigate(startDestRoute)
 }

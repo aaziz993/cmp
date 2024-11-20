@@ -20,14 +20,21 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import app.cash.paging.compose.collectAsLazyPagingItems
+import com.ionspin.kotlin.bignum.integer.Quadruple
 import compose.icons.SimpleIcons
 import compose.icons.simpleicons.Microsoftexcel
+import kotlinx.coroutines.FlowPreview
+import kotlinx.coroutines.flow.debounce
+import kotlinx.coroutines.flow.filter
 
+@OptIn(FlowPreview::class)
 @Composable
 public fun <T : Any> CRUDLazyColumn(
     modifier: Modifier = Modifier.fillMaxSize(),
@@ -112,6 +119,25 @@ public fun <T : Any> CRUDLazyColumn(
             { index, value -> viewModel.action(CRUDAction.ChangeValue(id, index, value)) },
             { viewModel.action(CRUDAction.Save(entity)) },
         ) { viewModel.action(CRUDAction.Delete(id)) }
+    }
+
+    LaunchedEffect(Unit) {
+        snapshotFlow {
+            state.searchFieldStates.map {
+                Quadruple(
+                    it.query,
+                    it.caseMatch,
+                    it.wordMatch,
+                    it.compareMatch,
+                )
+            }
+        }.filter { state.isLiveSearch }.debounce(1000L).collect {
+            viewModel.action(CRUDAction.Find(state.sort, state.searchFieldStates))
+        }
+    }
+
+    LaunchedEffect(Unit) {
+        snapshotFlow { state.sort.toList() }.filter { state.isLiveSearch }.collect { findPrimary(null) }
     }
 }
 

@@ -9,7 +9,7 @@ import ai.tech.core.data.crud.client.pager
 import ai.tech.core.data.crud.model.Order
 import ai.tech.core.data.expression.BooleanVariable
 import ai.tech.core.data.expression.Variable
-import ai.tech.core.misc.type.multiple.mapState
+import ai.tech.core.misc.type.multiple.map
 import ai.tech.core.misc.type.multiple.model.OnetimeWhileSubscribed
 import ai.tech.core.misc.type.multiple.model.RestartableMutableStateFlow
 import ai.tech.core.misc.type.multiple.model.RestartableStateFlow
@@ -71,11 +71,11 @@ public abstract class AbstractViewModel<T : Any>(protected val savedStateHandle:
     public abstract fun action(action: T)
 
     protected fun <T, R> StateFlow<T>.map(transform: (data: T) -> R): StateFlow<R> =
-        mapState(scope = viewModelScope, transform)
+        map(scope = viewModelScope, transform)
 
     @OptIn(ExperimentalCoroutinesApi::class)
     protected fun <T, R> StateFlow<T>.map(initialValue: R, transform: suspend (data: T) -> R): StateFlow<R> =
-        mapState(viewModelScope, initialValue, transform)
+        map(viewModelScope, initialValue, transform)
 
     protected val <T : Any> Flow<PagingData<T>>.cached: Flow<PagingData<T>>
         get() = cachedIn(viewModelScope)
@@ -141,17 +141,17 @@ public abstract class AbstractViewModel<T : Any>(protected val savedStateHandle:
         firstItemOffset: Int = 0,
         disablePrepend: Boolean = false,
     ) = mutablePager(
-            sort,
-            predicate,
-            create,
-            properties,
-            getValues,
-            config,
-            initialKey,
-            remoteMediator,
-            viewModelScope,
-            firstItemOffset,
-            disablePrepend,
+        sort,
+        predicate,
+        create,
+        properties,
+        getValues,
+        config,
+        initialKey,
+        remoteMediator,
+        viewModelScope,
+        firstItemOffset,
+        disablePrepend,
     )
 
     @OptIn(ExperimentalPagingApi::class)
