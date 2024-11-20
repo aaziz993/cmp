@@ -1,6 +1,7 @@
 package ai.tech.core.presentation.component.lazycolumn.crud.viewmodel
 
 import ai.tech.core.data.crud.CRUDRepository
+import ai.tech.core.data.crud.client.AbstractCRUDMutablePager
 import ai.tech.core.data.crud.client.CRUDRefreshableMutablePager
 import ai.tech.core.data.crud.client.model.EntityProperty
 import ai.tech.core.data.crud.client.model.MutationItem
@@ -31,7 +32,7 @@ public class CRUDViewModel<T : Any>(
     savedStateHandle: SavedStateHandle
 ) : AbstractViewModel<CRUDAction<T>>(savedStateHandle) {
 
-    public val pager: AbstractMutablePager<Int, T, MutationItem<T>>
+    public val pager: AbstractCRUDMutablePager<T>
         field = repository.viewModelMutablePager(
             sort,
             predicate,

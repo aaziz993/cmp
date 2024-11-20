@@ -21,7 +21,7 @@ public class CRUDRefreshableMutablePager<Value : Any>(
     remoteMediator: RemoteMediator<Int, Value>? = null,
     cacheCoroutineScope: CoroutineScope? = null,
     private val pagingSourceFactory: (sort: List<Order>?, predicate: BooleanVariable?) -> PagingSource<Int, Value>,
-) : AbstractCRUDRefreshableMutablePager<Value>(
+) : AbstractCRUDMutablePager<Value>(
     sort,
     predicate,
     create,
@@ -34,6 +34,9 @@ public class CRUDRefreshableMutablePager<Value : Any>(
 ) {
 
     override fun createPagingSource(): PagingSource<Int, Value> = pagingSourceFactory(sort, predicate)
+
+
+    public fun refresh(): Unit = pagingSource.invalidate()
 
     public fun refresh(
         sort: List<Order>? = null,

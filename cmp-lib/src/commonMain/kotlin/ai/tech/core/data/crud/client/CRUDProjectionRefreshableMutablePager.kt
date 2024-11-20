@@ -11,7 +11,7 @@ import app.cash.paging.RemoteMediator
 import kotlinx.coroutines.CoroutineScope
 
 @OptIn(ExperimentalPagingApi::class)
-public class CRUDProjectionRefreshableMutablePager(
+public class CRUDProjectionMutablePager(
     private var projections: List<Variable>,
     sort: List<Order>? = null,
     predicate: BooleanVariable? = null,
@@ -22,18 +22,21 @@ public class CRUDProjectionRefreshableMutablePager(
     remoteMediator: RemoteMediator<Int, List<Any?>>? = null,
     cacheCoroutineScope: CoroutineScope? = null,
     private val pagingSourceFactory: (projections: List<Variable>, sort: List<Order>?, predicate: BooleanVariable?) -> PagingSource<Int, List<Any?>>,
-) : AbstractCRUDRefreshableMutablePager<List<Any?>>(
+) : AbstractCRUDMutablePager<List<Any?>>(
     sort,
     predicate,
     create,
     properties,
-    { it.toList() },
+    List<Any?>::toList,
     config,
     initialKey,
     remoteMediator,
     cacheCoroutineScope,
 ) {
+
     override fun createPagingSource(): PagingSource<Int, List<Any?>> = pagingSourceFactory(projections, sort, predicate)
+
+    public fun refresh(): Unit = pagingSource.invalidate()
 
     public fun refresh(
         projections: List<Variable>,
