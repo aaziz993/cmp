@@ -13,7 +13,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.toList
 
 @OptIn(ExperimentalPagingApi::class)
-public fun <Value : Any> CRUDRepository<Value>.findPagingSource(
+public fun <Value : Any> CRUDRepository<Value>.pagingSource(
     sort: List<Order>? = null,
     predicate: BooleanVariable? = null,
     firstItemOffset: Int = 0,
@@ -35,7 +35,7 @@ public fun <Value : Any> CRUDRepository<Value>.pager(
     initialKey,
     remoteMediator,
     cacheCoroutineScope,
-) { sort, predicate -> findPagingSource(sort, predicate, firstItemOffset) }
+) { sort, predicate -> pagingSource(sort, predicate, firstItemOffset) }
 
 @OptIn(ExperimentalPagingApi::class)
 public fun <Value : Any> CRUDRepository<Value>.mutablePager(
@@ -59,10 +59,10 @@ public fun <Value : Any> CRUDRepository<Value>.mutablePager(
     initialKey,
     remoteMediator,
     cacheCoroutineScope,
-) { sort, predicate -> findPagingSource(sort, predicate, firstItemOffset) }
+) { sort, predicate -> pagingSource(sort, predicate, firstItemOffset) }
 
 @OptIn(ExperimentalPagingApi::class)
-public fun CRUDRepository<*>.findPagingSource(
+public fun CRUDRepository<*>.pagingSource(
     projections: List<Variable>,
     sort: List<Order>? = null,
     predicate: BooleanVariable? = null,
@@ -87,7 +87,7 @@ public fun CRUDRepository<*>.pager(
     initialKey,
     remoteMediator,
     cacheCoroutineScope,
-) { projections, sort, predicate -> findPagingSource(projections, sort, predicate, firstItemOffset) }
+) { projections, sort, predicate -> pagingSource(projections, sort, predicate, firstItemOffset) }
 
 @OptIn(ExperimentalPagingApi::class)
 public fun CRUDRepository<*>.mutablePager(
@@ -111,4 +111,4 @@ public fun CRUDRepository<*>.mutablePager(
     initialKey,
     remoteMediator,
     cacheCoroutineScope,
-) { projections, sort, predicate -> findPagingSource(projections, sort, predicate, firstItemOffset) }
+) { projections, sort, predicate -> pagingSource(projections, sort, predicate, firstItemOffset) }
