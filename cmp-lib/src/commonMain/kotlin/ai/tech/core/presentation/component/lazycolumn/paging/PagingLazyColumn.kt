@@ -64,25 +64,14 @@ public fun <T : Any> LazyPagingColumn(
     ) {
         beforePrepend()
         when (data.loadState.prepend) {
-            LoadStateLoading -> {
-                item {
-                    CircularProgressIndicator(
-                        color = Color.Red,
-                        modifier = Modifier.fillMaxWidth(1f)
-                            .padding(20.dp)
-                            .wrapContentWidth(Alignment.CenterHorizontally),
-                    )
-                }
-            }
+            LoadStateLoading -> AddLoading()
 
             is LoadStateError -> {
                 getAddErrorMsg((data.loadState.prepend as LoadStateError).error)?.let { text ->
-                    item {
-                        AddLoadError(
-                            message = text,
-                            onClickRetry = data::retry,
-                        )
-                    }
+                    AddLoadError(
+                        message = text,
+                        onClickRetry = data::retry,
+                    )
                 }
             }
 
@@ -135,13 +124,11 @@ public fun <T : Any> LazyPagingColumn(
 
             is LoadStateError -> {
                 getRefreshErrorMsg((data.loadState.refresh as LoadStateError).error)?.let { text ->
-                    item {
-                        RefreshLoadError(
-                            message = text,
-                            onClickRetry = data::retry,
-                            modifier = Modifier.fillMaxWidth(1f),
-                        )
-                    }
+                    RefreshLoadError(
+                        message = text,
+                        onClickRetry = data::retry,
+                        modifier = Modifier.fillMaxWidth(1f),
+                    )
                 }
             }
 
@@ -151,25 +138,14 @@ public fun <T : Any> LazyPagingColumn(
         afterItems()
 
         when (data.loadState.append) {
-            LoadStateLoading -> {
-                item {
-                    CircularProgressIndicator(
-                        color = Color.Red,
-                        modifier = Modifier.fillMaxWidth(1f)
-                            .padding(20.dp)
-                            .wrapContentWidth(Alignment.CenterHorizontally),
-                    )
-                }
-            }
+            LoadStateLoading -> AddLoading()
 
             is LoadStateError -> {
                 getAddErrorMsg((data.loadState.append as LoadStateError).error)?.let { text ->
-                    item {
-                        AddLoadError(
-                            message = text,
-                            onClickRetry = data::retry,
-                        )
-                    }
+                    AddLoadError(
+                        message = text,
+                        onClickRetry = data::retry,
+                    )
                 }
             }
 
