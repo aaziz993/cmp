@@ -1,6 +1,7 @@
 package ai.tech.core.misc.plugin
 
 import ai.tech.core.data.filesystem.readResourceText
+import ai.tech.core.misc.model.config.EnabledConfig
 import ai.tech.core.misc.model.config.server.ServerConfig
 import ai.tech.core.misc.network.http.client.createHttpClient
 import ai.tech.core.misc.plugin.applicationmonitoring.configureApplicationMonitoring
@@ -40,6 +41,7 @@ import com.apurebase.kgraphql.GraphQL
 import freemarker.template.Configuration
 import io.github.smiley4.ktorswaggerui.dsl.PluginConfigDsl
 import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
+import io.ktor.http.HttpStatusCode
 import io.ktor.serialization.kotlinx.json.json
 import io.ktor.server.application.Application
 import io.ktor.server.auth.AuthenticationConfig
@@ -63,7 +65,10 @@ import io.ktor.server.plugins.partialcontent.PartialContentConfig
 import io.ktor.server.plugins.ratelimit.RateLimitConfig
 import io.ktor.server.plugins.requestvalidation.RequestValidationConfig
 import io.ktor.server.plugins.statuspages.StatusPagesConfig
+import io.ktor.server.response.respondText
 import io.ktor.server.routing.Routing
+import io.ktor.server.routing.get
+import io.ktor.server.routing.routing
 import io.ktor.server.sessions.SessionsConfig
 import io.ktor.server.websocket.WebSockets
 import kotlin.collections.orEmpty
@@ -73,6 +78,7 @@ import org.koin.core.KoinApplication
 import org.koin.ktor.ext.get
 
 public fun Application.configure(
+    config: ServerConfig,
     koinApplication: KoinApplication.() -> Unit = {},
     serializationBlock: (ContentNegotiationConfig.() -> Unit)? = null,
     httpsRedirectBlock: (HttpsRedirectConfig.() -> Unit)? = null,
@@ -102,38 +108,16 @@ public fun Application.configure(
     dropwizardMetricsBlock: (DropwizardMetricsConfig.() -> Unit)? = null,
     shutdownBlock: (ShutDownUrl.Config.() -> Unit)? = null
 ) {
-    val httpClient = createHttpClient() {
-        install(ContentNegotiation) {
-            json(
-                Json {
-                    isLenient = true
-                    ignoreUnknownKeys = true
-                    explicitNulls = false
-                },
-            )
-        }
-    }
-
-    runBlocking {
-        val fileConfigs = FileConfigService {
-            readResourceText(it)
-        }.readConfigs()
-
-        val consulConfigs = ConsulConfigService(httpClient) {
-            readResourceText(it)
-        }.readConfigs()
-
-        val configs = fileConfigs.mapValues { (profile, configs) -> configs + consulConfigs[profile].orEmpty() }
-
-    }
-
-    val config: ServerConfig = get()
-
     configureKoin(config, koinApplication)
 
     with(config) {
+
         // Configure consul
-        configureConsul(httpClient, consul)
+        with(application) {
+            "$name:$environment:${ktor.deployment.preferredSslPort}"
+        }
+
+        configureConsul(get(), consul)
 
         // Configure the Serialization plugin
         configureSerialization(serialization, serializationBlock)
@@ -142,7 +126,16 @@ public fun Application.configure(
         configureHttpsRedirect(httpsRedirect, ktor.deployment.sslPort, httpsRedirectBlock)
 
         // Configure the Routing plugin
-        configureRouting(routing, routingBlock)
+        configureRouting(routing) {
+            consul?.takeIf(EnabledConfig::enable)?.discovery?.takeIf(EnabledConfig::enable)?.let {
+                routing {
+                    get(it.healthCheckPath) {
+                        call.respondText("Healthy", status = HttpStatusCode.OK)
+                    }
+                }
+            }
+            routingBlock?.invoke(this)
+        }
 
         // Configure the Websockets plugin
         configureWebSockets(websockets, ktor.deployment.wsURL, websocketsBlock)
@@ -224,9 +217,7 @@ public fun Application.configure(
         // Configure the security plugin with JWT
         configureAuth(
             ktor.deployment.httpURL, get(), auth,
-            { provider, database, principalTable, roleTable ->
-                null
-            },
+            { provider, database, principalTable, roleTable -> null },
             authBlock,
         )
 

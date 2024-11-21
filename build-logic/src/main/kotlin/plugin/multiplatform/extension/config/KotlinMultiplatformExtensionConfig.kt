@@ -96,6 +96,7 @@ internal fun Project.configureKotlinMultiplatformExtension(extension: KotlinMult
                     implementation(bundle("cryptography"))
                     implementation(lib("colormath"))
                     implementation(bundle("arrow"))
+                    implementation(lib("cache4k"))
                     implementation(lib("okio"))
                     implementation(bundle("multiplatform.settings"))
                     implementation(lib("kstore"))
@@ -117,7 +118,7 @@ internal fun Project.configureKotlinMultiplatformExtension(extension: KotlinMult
                 implementation(lib("kotlinx.coroutines.test"))
                 implementation(lib("koin.test"))
                 implementation(lib("okio.fakefilesystem"))
-                implementation(lib("paging.testing"))
+                implementation(lib("androidx.paging.testing"))
             }
 
             getByName("nonWebMain").dependencies {
@@ -249,9 +250,9 @@ internal fun Project.configureComposeKotlinMultiplatformExtension(extension: Kot
 //                            implementation(lib("squircle.shape"))
             implementation(bundle("material3.adaptive"))
             implementation(bundle("compose.settings.ui"))
+            implementation(bundle("androidx.paging"))
             implementation(bundle("androidx.lifecycle"))
             implementation(bundle("androidx.navigation"))
-//            implementation(bundle("androidx.paging"))
             implementation(lib("filekit.compose"))
             implementation(bundle("koin.compose.multiplatform"))
         }
@@ -277,7 +278,7 @@ internal fun Project.configureComposeKotlinMultiplatformExtension(extension: Kot
         }
 
         iosMain.dependencies {
-            implementation(lib("paging.runtime.uikit"))
+            implementation(lib("androidx.paging.runtime.uikit"))
         }
 
         jsMain.dependencies {

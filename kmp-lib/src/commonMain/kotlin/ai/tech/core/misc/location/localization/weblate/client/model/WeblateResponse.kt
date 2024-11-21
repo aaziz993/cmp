@@ -9,10 +9,4 @@ public interface WeblateResponse<T> {
     public val next: String?
     public val previous: String?
     public val results: Set<T>
-
-    public val nextPage: Int?
-        get() = next?.httpUrl?.parameters["page"]!!.toInt()
-
-    public val previousPage: Int?
-        get() = previous?.httpUrl?.parameters["page"]!!.toInt()
 }

@@ -17,5 +17,5 @@ public interface Config {
 
     public val validator: ValidatorConfig
 
-    public val ktor: KtorServerConfig
+    public val ktorServer: KtorServerConfig
 }

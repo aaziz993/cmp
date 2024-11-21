@@ -8,11 +8,11 @@ import io.ktor.client.plugins.api.createClientPlugin
 import io.ktor.client.request.HttpRequestPipeline
 
 @Suppress("FunctionName")
-public fun ConsulServiceDiscovery(
+public fun ConsulDiscovery(
     consulAddress: String,
     serviceName: String,
     loadBalancer: LoadBalancer,
-): ClientPlugin<Unit> = createClientPlugin("ConsulServiceDiscovery", { }) {
+): ClientPlugin<Unit> = createClientPlugin("ConsulDiscovery", { }) {
 
     val healthClient = HealthClient(client, consulAddress)
 

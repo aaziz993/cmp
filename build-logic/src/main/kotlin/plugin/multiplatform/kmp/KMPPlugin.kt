@@ -40,7 +40,7 @@ internal class KMPPlugin(
                 apply(id("ktorfit"))
                 apply(androidPluginId)
                 apply(id("sqldelight"))
-                apply(id("room"))
+//                apply(id("room"))
             }
 
             extensions.configure<KotlinProjectExtension>(::configureKotlinProjectExtension)
@@ -62,7 +62,7 @@ internal class KMPPlugin(
 
             extensions.configure<SqlDelightExtension>(::configureSqlDelightExtension)
 
-            extensions.configure<RoomExtension>(::configureRoomExtension)
+//            extensions.configure<RoomExtension>(::configureRoomExtension)
 
             dependencies.apply {
                 kspCommonMainMetadata(lib("arrow.optics.ksp.plugin"))

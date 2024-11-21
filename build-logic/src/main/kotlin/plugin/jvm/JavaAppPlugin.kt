@@ -67,6 +67,8 @@ public class JavaAppPlugin : Plugin<Project> {
                     implementation(lib("kotlinx.coroutines.swing"))
                     implementation(lib("cryptography.provider.jdk"))
                     implementation(bundle("pgpainless"))
+                    implementation(bundle("arrow"))
+                    implementation(lib("cache4k"))
                     implementation(bundle("jdbc"))
                     implementation(bundle("r2dbc"))
                     implementation(lib("dataframe"))

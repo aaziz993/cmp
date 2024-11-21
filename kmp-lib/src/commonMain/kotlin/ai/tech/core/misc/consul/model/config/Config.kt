@@ -4,7 +4,7 @@ import ai.tech.core.misc.model.config.EnabledConfig
 import kotlinx.serialization.Serializable
 
 @Serializable
-public data class ConsulConfigConfig(
+public data class Config(
     val prefix: String = "config",
     // defaults to the value of the application.name property
     val name: String?,

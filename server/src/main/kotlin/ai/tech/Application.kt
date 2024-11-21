@@ -1,21 +1,58 @@
 package ai.tech
 
+import ai.tech.core.data.filesystem.readResourceText
+import ai.tech.core.misc.config.ConfigService
+import ai.tech.core.misc.model.config.server.ServerConfig
+import ai.tech.core.misc.model.config.server.keyStore
 import ai.tech.core.misc.plugin.configure
 import ai.tech.di.ServerModule
 import ai.tech.map.mapRouting
 import io.ktor.server.application.*
+import io.ktor.server.engine.*
 import io.ktor.server.netty.*
+import java.io.File
+import java.util.concurrent.TimeUnit
 import org.koin.ktor.ext.get
+import org.slf4j.LoggerFactory
 
-public fun main(args: Array<String>) {
-    // Configure ssl certificate generation
-//        val properties= Properties.dec readResourceText("application")
-//        rootConfig.environment.config.decode<GenerateServerSSLConfig>("")?.generate()
-    EngineMain.main(args)
+public suspend fun main(args: Array<String>) {
+    val serverConfig = ConfigService<ServerConfig> { readResourceText(it) }.readConfig()
+
+    val server = embeddedServer(
+        Netty,
+        applicationEnvironment { log = LoggerFactory.getLogger("ktor.application") },
+        { envConfig(serverConfig) },
+    ) { module(serverConfig) }.start(false)
+
+    Runtime.getRuntime().addShutdownHook(
+        Thread {
+            server.stop(1, 5, TimeUnit.SECONDS)
+        },
+    )
+    Thread.currentThread().join()
+}
+
+private fun ApplicationEngine.Configuration.envConfig(config: ServerConfig) {
+    connector {
+        port = config.ktorServer.port
+    }
+
+    config.ktorServer.ssl?.let {
+        sslConnector(
+            keyStore = it.keyStore,
+            keyAlias = it.keyAlias,
+            keyStorePassword = { it.keyStorePassword.toCharArray() },
+            privateKeyPassword = { it.privateKeyPassword.toCharArray() },
+        ) {
+            port = it.port
+            keyStorePath = File(it.keyStorePath)
+        }
+    }
 }
 
 @Suppress("unused")
-public fun Application.module() = configure(
+public fun Application.module(config: ServerConfig) = configure(
+    config,
     { ServerModule().module },
     routingBlock = {
         // Add all other routes here

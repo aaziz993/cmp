@@ -10,6 +10,7 @@ import de.jensklingenberg.ktorfit.Ktorfit
 import io.ktor.client.*
 import io.ktor.client.plugins.*
 import io.ktor.client.request.*
+import io.ktor.client.statement.HttpResponse
 import io.ktor.http.*
 import kotlinx.serialization.ExperimentalSerializationApi
 
@@ -30,28 +31,36 @@ public class WeblateClient(
 
     private val api = ktorfit.createWeblateApi()
 
+    public suspend fun get(path: String, page: Int? = null): HttpResponse =
+        api.get(path, "json", page).execute()
+
+    public suspend fun getTranslations(page: Int? = null): WeblateTranslationsResponse =
+        api.getTranslations("json", page)
+
+    public suspend fun getUnits(page: Int? = null): WeblateUnitsResponse =
+        api.getUnits("json", page)
+
     public val translations: AsyncIterator<WeblateTranslationsResponse>
-        get() = WeblateResponseAsyncIterator { api.getTranslations("json", it) }
+        get() = WeblateResponseAsyncIterator("api/translations") { api.get(it).body() }
 
     public val units: AsyncIterator<WeblateUnitsResponse>
-        get() = WeblateResponseAsyncIterator { api.getUnits("json", it) }
+        get() = WeblateResponseAsyncIterator("api/units") { api.get(it).body() }
 }
 
 private class WeblateResponseAsyncIterator<T : WeblateResponse<*>>(
-    private val getResponse: suspend (page: Int?) -> T,
+    private var path: String?,
+    private val get: suspend (path: String) -> T,
 ) : AbstractAsyncIterator<T>() {
 
-    private var page: Int? = 0
-
     override suspend fun computeNext() {
-        if (page == null) {
+        if (path == null) {
             done()
             return
         }
 
         setNext(
-            getResponse(page).also {
-                page = it.nextPage
+            get(path!!).also {
+                path = it.next
             },
         )
     }

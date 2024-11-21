@@ -6,8 +6,8 @@ import ai.tech.core.misc.consul.model.config.ConsulConfig
 import ai.tech.core.misc.location.localization.model.config.LocalizationConfig
 import ai.tech.core.misc.model.config.client.KtorClientConfig
 import ai.tech.core.misc.model.config.di.KoinConfig
-import ai.tech.core.misc.model.config.server.KtorServerConfig
 import ai.tech.core.misc.model.config.server.ServerConfig
+import ai.tech.core.misc.model.config.server.keystore.ServerSSLConfig
 import ai.tech.core.misc.plugin.applicationmonitoring.model.config.ApplicationMonitoringConfig
 import ai.tech.core.misc.plugin.authheadresponse.model.config.AutoHeadResponseConfig
 import ai.tech.core.misc.plugin.cachingheaders.model.config.CachingHeadersConfig
@@ -48,6 +48,7 @@ public data class ServerConfig(
     override val consul: ConsulConfig? = null,
     override val database: Map<String, DBProviderConfig>? = null,
     override val serialization: SerializationConfig? = null,
+    override val ssl: ServerSSLConfig? = null,
     override val httpsRedirect: HTTPSRedirectConfig? = null,
     override val routing: RoutingConfig? = null,
     override val websockets: WebSocketsConfig? = null,

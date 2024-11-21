@@ -47,9 +47,9 @@ public data class Registration(
         @SerialName("Args")
         val args: List<String>? = null,
         @SerialName("Interval")
-        val interval: Duration? = null,
+        val interval: String? = null,
         @SerialName("TTL")
-        val ttl: Duration? = null,
+        val ttl: String? = null,
         @SerialName("HTTP")
         val http: String? = null,
         @SerialName("TCP")
@@ -66,6 +66,8 @@ public data class Registration(
         val deregisterCriticalServiceAfter: String? = null,
         @SerialName("TLSSkipVerify")
         val tlsSkipVerify: Boolean? = null,
+        @SerialName("Header")
+        val header: Map<String,List<String>>? = null,
         @SerialName("Status")
         val status: String? = null,
         @SerialName("SuccessBeforePassing")
