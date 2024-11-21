@@ -2,6 +2,7 @@ package ai.tech.core.presentation.component.lazycolumn.crud
 
 import ai.tech.core.data.crud.client.model.EntityProperty
 import ai.tech.core.data.crud.client.model.MutationItem
+import ai.tech.core.data.crud.client.model.unselected
 import ai.tech.core.presentation.component.lazycolumn.crud.model.CRUDLazyColumnLocalization
 import ai.tech.core.presentation.component.lazycolumn.crud.model.CRUDLazyColumnState
 import ai.tech.core.presentation.component.textfield.model.TextField
@@ -43,21 +44,36 @@ internal fun <T : Any> HeaderRow(
     properties: List<EntityProperty>,
     items: List<MutationItem<T>>,
     localization: CRUDLazyColumnLocalization,
-    onSelect: () -> Unit,
-    onSearch: () -> Unit,
+    onSelectAll: (List<MutationItem<T>>) -> Unit,
+    onUnselectAll: () -> Unit,
+    onLoad: () -> Unit,
 ) {
     if (state.showHeader) {
         Row(
             Modifier.padding(contentPadding).fillMaxWidth(), verticalAlignment = Alignment.Top,
         ) {
             if (state.showSelect) {
-                Checkbox(items.all(MutationItem<T>::isSelected), { onSelect() })
+                val unselected = items.unselected
+                Checkbox(
+                    unselected.isEmpty(),
+                    {
+                        if (unselected.isEmpty()) {
+                            onUnselectAll()
+                        }
+                        else {
+                            onSelectAll(unselected)
+                        }
+                    },
+                )
             }
 
             val searchLeftPadding = contentPadding.calculateStartPadding(LayoutDirection.Ltr) / 4
             val searchRightPadding = contentPadding.calculateEndPadding(LayoutDirection.Ltr) / 4
 
-            properties.forEachIndexed { index, property ->
+            headers.forEachIndexed { index, header ->
+
+                val property = properties[index]
+
                 Column(
                     Modifier.wrapContentHeight().weight(1f),
                     horizontalAlignment = Alignment.CenterHorizontally,
@@ -66,7 +82,7 @@ internal fun <T : Any> HeaderRow(
                         Modifier.wrapContentWidth(), verticalAlignment = Alignment.CenterVertically,
                     ) {
                         Text(
-                            property.header, maxLines = 1, style = MaterialTheme.typography.titleSmall,
+                            header, maxLines = 1, style = MaterialTheme.typography.titleSmall,
                         )
 
                         val order = state.getOrder(property)
@@ -144,7 +160,7 @@ internal fun <T : Any> HeaderRow(
                     Text(
                         localization.actions, maxLines = 1, style = MaterialTheme.typography.titleSmall,
                     )
-                    IconButton(onSearch) { Icon(EvaIcons.Outline.Search, null) }
+                    IconButton(onLoad) { Icon(EvaIcons.Outline.Search, null) }
                 }
             }
         }

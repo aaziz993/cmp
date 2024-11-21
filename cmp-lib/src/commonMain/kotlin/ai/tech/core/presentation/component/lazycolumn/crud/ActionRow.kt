@@ -3,10 +3,10 @@ package ai.tech.core.presentation.component.lazycolumn.crud
 import ai.tech.core.data.crud.client.model.EntityProperty
 import ai.tech.core.data.crud.client.model.MutationItem
 import ai.tech.core.data.crud.client.model.isEditsSelectedAll
-import ai.tech.core.data.crud.client.model.isSelectedAnyExists
 import ai.tech.core.data.crud.client.model.isSelectedAnyNews
 import ai.tech.core.data.crud.client.model.modifies
 import ai.tech.core.data.crud.client.model.selected
+import ai.tech.core.data.crud.client.model.selectedExists
 import ai.tech.core.data.crud.client.model.validate
 import ai.tech.core.presentation.component.lazycolumn.crud.model.CRUDLazyColumnLocalization
 import androidx.compose.foundation.layout.PaddingValues
@@ -39,10 +39,10 @@ internal fun <T : Any> ActionRow(
     properties: List<EntityProperty>,
     items: List<MutationItem<T>>,
     localization: CRUDLazyColumnLocalization,
-    onDownloadSelected: (() -> Unit)?,
+    onDownloadSelected: ((List<T>) -> Unit)?,
     onUpload: (() -> Unit)?,
-    onAdd: () -> Unit,
-    onCopySelected: () -> Unit,
+    onNew: () -> Unit,
+    onNewFromSelected: () -> Unit,
     onRemoveSelected: () -> Unit,
     onEditSelected: () -> Unit,
     onSaveSelected: () -> Unit,
@@ -53,22 +53,22 @@ internal fun <T : Any> ActionRow(
 
     val selected = items.selected
 
-    val isSelectedAnyExists = items.isSelectedAnyExists
+    val selectedExists = items.selectedExists
 
-    if (isSelectedAnyExists && onDownloadSelected != null) {
-        IconButton(onDownloadSelected, content = downloadAllIcon)
+    if (selectedExists.isNotEmpty() && onDownloadSelected != null) {
+        IconButton({ onDownloadSelected(selectedExists.map(MutationItem<T>::entity)) }, content = downloadAllIcon)
     }
 
     if (!readOnly) {
         onUpload?.let { IconButton(it) { Icon(EvaIcons.Outline.Upload, null) } }
 
-        IconButton(onAdd) { Icon(EvaIcons.Outline.Plus, null) }
+        IconButton(onNew) { Icon(EvaIcons.Outline.Plus, null) }
 
         if (selected.isNotEmpty()) {
-            IconButton(onCopySelected) { Icon(EvaIcons.Outline.Copy, null) }
+            IconButton(onNewFromSelected) { Icon(EvaIcons.Outline.Copy, null) }
         }
 
-        if (isSelectedAnyExists) {
+        if (selectedExists.isNotEmpty()) {
             val isEditsSelectedAll = items.isEditsSelectedAll
 
             IconButton(onEditSelected) {

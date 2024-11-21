@@ -38,21 +38,31 @@ internal fun <T : Any> DataRow(
     downloadIcon: @Composable () -> Unit,
     properties: List<EntityProperty>,
     item: MutationItem<T>,
-    onSelect: () -> Unit,
-    onDownload: (() -> Unit)?,
-    onCopy: () -> Unit,
-    onRemove: () -> Unit,
+    onSelect: (MutationItem<T>) -> Unit,
+    onUnselect: (id: Any) -> Unit,
+    onDownload: ((T) -> Unit)?,
+    onNewFrom: (MutationItem<T>) -> Unit,
+    onRemove: (id: Any) -> Unit,
     onEdit: () -> Unit,
+    onSave: (T) -> Unit,
+    onDelete: (id: Any) -> Unit,
     onValueChange: (index: Int, value: String) -> Unit,
-    onSave: () -> Unit,
-    onDelete: () -> Unit,
 ) = Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
     if (state.showSelect) {
-        Checkbox(item.isSelected, { onSelect() })
+        Checkbox(
+            item.isSelected,
+            {
+                if (item.isSelected) {
+                    onUnselect(item.id)
+                }
+                else {
+                    onSelect(item)
+                }
+            },
+        )
     }
 
-    val valuesValidations: MutableList<Boolean> =
-        rememberSaveable { item.values.map { true }.toMutableStateList() }
+    val validations: MutableList<Boolean> = rememberSaveable { item.values.map { true }.toMutableStateList() }
 
     item.values.forEachIndexed { index, value ->
         val property = properties[index]
@@ -62,12 +72,12 @@ internal fun <T : Any> DataRow(
                 value?.toString().orEmpty(),
                 { onValueChange(index, it) },
                 Modifier.weight(1f).padding(4.dp),
-                readOnly = readOnly || property.isReadOnly || item.isReadOnly,
+                readOnly = readOnly || property.isReadOnly || !item.isModify,
                 singleLine = true,
                 outlined = true,
                 validator = property.validator,
                 onValidation = {
-                    valuesValidations[index] = it.isEmpty()
+                    validations[index] = it.isEmpty()
                     ""
                 },
                 showValidationMessage = false,
@@ -77,7 +87,7 @@ internal fun <T : Any> DataRow(
                 value?.toString().orEmpty(),
                 { onValueChange(index, it) },
                 Modifier.weight(1f).padding(4.dp),
-                readOnly = readOnly || property.isReadOnly || item.isReadOnly,
+                readOnly = readOnly || property.isReadOnly || !item.isModify,
                 singleLine = true,
                 type = textField,
                 outlined = true,
@@ -88,34 +98,32 @@ internal fun <T : Any> DataRow(
     if (state.showActions) {
         Row(Modifier.weight(.4f), Arrangement.SpaceAround, verticalAlignment = Alignment.CenterVertically) {
             Row(Modifier.wrapContentWidth()) {
-                onDownload?.takeIf { !item.isNew }?.let {
-                    IconButton(it, Modifier.weight(1f)) { downloadIcon() }
+                if (!item.isNew && onDownload != null) {
+                    IconButton({ onDownload(item.entity) }, Modifier.weight(1f), content = downloadIcon)
                 }
 
                 if (!readOnly) {
-                    IconButton(onCopy, Modifier.weight(1f)) { Icon(EvaIcons.Outline.Copy, null) }
+                    IconButton({ onNewFrom(item) }, Modifier.weight(1f)) { Icon(EvaIcons.Outline.Copy, null) }
 
-                    if (!readOnly) {
-                        val isValuesValid = valuesValidations.all
+                    val isValuesValid = validations.all
 
-                        IconButton(
-                            {
-                                if (isValuesValid) {
-                                    onSave()
-                                }
+                    IconButton(
+                        {
+                            if (isValuesValid) {
+                                onSave()
+                            }
+                        },
+                        Modifier.weight(1f),
+                    ) {
+                        Icon(
+                            EvaIcons.Outline.Save, null,
+                            tint = if (isValuesValid) {
+                                LocalContentColor.current
+                            }
+                            else {
+                                MaterialTheme.colorScheme.error
                             },
-                            Modifier.weight(1f),
-                        ) {
-                            Icon(
-                                EvaIcons.Outline.Save, null,
-                                tint = if (isValuesValid) {
-                                    LocalContentColor.current
-                                }
-                                else {
-                                    MaterialTheme.colorScheme.error
-                                },
-                            )
-                        }
+                        )
                     }
 
                     if (item.isNew) {

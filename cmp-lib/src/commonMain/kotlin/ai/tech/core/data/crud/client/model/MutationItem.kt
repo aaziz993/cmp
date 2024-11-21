@@ -16,6 +16,8 @@ public data class MutationItem<T : Any>(
 
     val isSelectedExist: Boolean = isSelected && !isNew
 
+    val isSelectedEdit: Boolean = isSelected && isEdit
+
     val isSelectedNew: Boolean = isSelected && isNew
 
     val isSelectedModify: Boolean = isSelected && isModify
@@ -27,6 +29,9 @@ public data class MutationItem<T : Any>(
             property.validator?.validate(values[index]?.toString().orEmpty())?.isEmpty() != false
         }
 }
+
+internal val <T : Any> List<MutationItem<T>>.unselected
+    get() = filterNot(MutationItem<T>::isSelected)
 
 internal val <T : Any> List<MutationItem<T>>.selected
     get() = filter(MutationItem<T>::isSelected)
@@ -49,6 +54,9 @@ internal val <T : Any> List<MutationItem<T>>.isSelectedAnyExists
 internal val <T : Any> List<MutationItem<T>>.edits
     get() = filter(MutationItem<T>::isEdit)
 
+internal val <T : Any> List<MutationItem<T>>.selectedEdits
+    get() = filter(MutationItem<T>::isSelectedEdit)
+
 internal val <T : Any> List<MutationItem<T>>.isEditsSelectedAll
     get() = edits.isSelectedAll
 
@@ -65,3 +73,6 @@ internal val <T : Any> List<MutationItem<T>>.selectedModifies
     get() = filter(MutationItem<T>::isSelectedModify)
 
 internal fun <T : Any> List<MutationItem<T>>.validate(properties: List<EntityProperty>): Boolean = all { it.validate(properties) }
+
+internal val <T : Any> List<MutationItem<T>>.actuals
+    get() = filter(MutationItem<T>::isActual)

@@ -43,7 +43,6 @@ public fun <Value : Any> CRUDRepository<Value>.pager(
 public fun <Value : Any> CRUDRepository<Value>.mutablePager(
     sort: List<Order>? = null,
     predicate: BooleanVariable? = null,
-    create: (id: Any) -> Value,
     properties: List<EntityProperty>,
     getValues: (Value) -> List<Any?>,
     config: PagingConfig,
@@ -55,7 +54,6 @@ public fun <Value : Any> CRUDRepository<Value>.mutablePager(
 ): CRUDRefreshableMutablePager<Value> = CRUDRefreshableMutablePager(
     sort,
     predicate,
-    create,
     properties,
     getValues,
     config,
@@ -99,7 +97,6 @@ public fun CRUDRepository<*>.mutablePager(
     projections: List<Variable>,
     sort: List<Order>? = null,
     predicate: BooleanVariable? = null,
-    create: (id: Any) -> List<Any?>,
     properties: List<EntityProperty>,
     config: PagingConfig,
     initialKey: Int? = null,
@@ -111,7 +108,6 @@ public fun CRUDRepository<*>.mutablePager(
     projections,
     sort,
     predicate,
-    create,
     properties,
     config,
     initialKey,

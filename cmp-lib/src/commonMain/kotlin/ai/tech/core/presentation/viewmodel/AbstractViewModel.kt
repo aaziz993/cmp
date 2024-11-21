@@ -132,7 +132,6 @@ public abstract class AbstractViewModel<T : Any>(protected val savedStateHandle:
     protected fun <T : Any> CRUDRepository<T>.viewModelMutablePager(
         sort: List<Order>? = null,
         predicate: BooleanVariable? = null,
-        create: (id: Any) -> T,
         properties: List<EntityProperty>,
         getValues: (T) -> List<Any?>,
         config: PagingConfig = createPagingConfig(10),
@@ -143,7 +142,6 @@ public abstract class AbstractViewModel<T : Any>(protected val savedStateHandle:
     ) = mutablePager(
         sort,
         predicate,
-        create,
         properties,
         getValues,
         config,
@@ -170,7 +168,6 @@ public abstract class AbstractViewModel<T : Any>(protected val savedStateHandle:
         projections: List<Variable>,
         sort: List<Order>? = null,
         predicate: BooleanVariable? = null,
-        create: (id: Any) -> List<Any?>,
         properties: List<EntityProperty>,
         config: PagingConfig = createPagingConfig(10),
         initialKey: Int? = null,
@@ -180,7 +177,6 @@ public abstract class AbstractViewModel<T : Any>(protected val savedStateHandle:
         projections,
         sort,
         predicate,
-        create,
         properties,
         config,
         initialKey,

@@ -3,10 +3,11 @@ package ai.tech.core.data.crud.client
 import ai.tech.core.data.crud.client.model.EntityProperty
 import ai.tech.core.data.crud.client.model.Modification
 import ai.tech.core.data.crud.client.model.MutationItem
+import ai.tech.core.data.crud.client.model.actuals
 import ai.tech.core.data.crud.client.model.isSelectedAll
+import ai.tech.core.data.crud.client.model.news
 import ai.tech.core.data.crud.client.model.selected
 import ai.tech.core.data.crud.client.model.selectedExists
-import ai.tech.core.data.crud.model.Order
 import ai.tech.core.data.expression.BooleanVariable
 import ai.tech.core.data.expression.f
 import ai.tech.core.data.paging.AbstractMutablePager
@@ -22,9 +23,6 @@ import kotlinx.coroutines.flow.update
 
 @OptIn(ExperimentalPagingApi::class)
 public abstract class AbstractCRUDMutablePager<Value : Any>(
-    protected var sort: List<Order>? = null,
-    protected var predicate: BooleanVariable? = null,
-    private val create: () -> Value,
     public val properties: List<EntityProperty>,
     private val getValues: (Value) -> List<Any?>,
     config: PagingConfig,
@@ -38,43 +36,65 @@ public abstract class AbstractCRUDMutablePager<Value : Any>(
     cacheCoroutineScope,
 ) {
 
-    private val idIndex = properties.indexOfFirst(EntityProperty::isId)
+    public val idIndex: Int = properties.indexOfFirst(EntityProperty::isId)
 
-    private val idName = properties[idIndex].name
+    public val idName: String = properties[idIndex].name
 
-    override fun mergeMutations(pagingData: PagingData<Value>, mutations: List<MutationItem<Value>>): PagingData<MutationItem<Value>> {
-        val (newMutations, mergeMutations) = mutations.partition(MutationItem<Value>::isNew)
+    public val selectedNewEntities: List<Value>
+        get() = mutations.value.selected.news.map(::toEntity)
 
-        val mergedPagingData = pagingData.map {
-            val values = getValues(it)
-            MutationItem(it, values[idIndex]!!, values)
-        }.map { pagingItem -> mergeMutations.find { it.id == pagingItem.id } ?: pagingItem }
+    public val selectedEditEntities: List<Value>
+        get() = mutations.value.selected.news.map(::toEntity)
 
-        return newMutations.fold(mergedPagingData) { acc, v -> acc.insertFooterItem(item = v) }
+    public val selectedIdPredicate: BooleanVariable?
+        get() = mutations.value.selectedExists.ifEmpty { null }?.map { idName.f.eq(it.id) as BooleanVariable }?.reduce { acc, v -> acc.and(v) }
+
+    final override fun mergeMutations(pagingData: PagingData<Value>, mutations: List<MutationItem<Value>>): PagingData<MutationItem<Value>> {
+        val (insertMutations, mergeMutations) = mutations.partition(MutationItem<Value>::isNew)
+
+        val mergedPagingData = pagingData
+            .map {
+                val values = getValues(it)
+                MutationItem(it, values[idIndex]!!, values)
+            }
+            .map { pagingItem -> mergeMutations.find { it.id == pagingItem.id } ?: pagingItem }
+
+        return insertMutations.fold(mergedPagingData) { acc, v -> acc.insertFooterItem(item = v) }
     }
 
-    public fun add(): Unit = mutations.update { it + create().let { MutationItem(it, uuid4(), getValues(it), Modification.NEW) } }
+    public final override fun refresh(): Unit = super.refresh()
 
-    public fun copySelected(): Unit = mutations.update { it + it.selected.map { it.copy(modification = Modification.NEW) } }
+    protected abstract fun createEntity(): Value
 
-    public fun removeSelected(): Unit = mutations.update { it.filterNot(MutationItem<Value>::isSelectedNew) }
+    protected abstract fun toEntity(item: MutationItem<Value>): Value
+
+    public fun new(): Unit = mutations.update { it + createEntity().let { MutationItem(it, uuid4(), getValues(it), Modification.NEW) } }
+
+    public fun newFrom(item: MutationItem<Value>): Unit = mutations.update { it + item.copy(modification = Modification.NEW) }
+
+    public fun newFromSelected(): Unit = mutations.update { it + it.selected.map { it.copy(modification = Modification.NEW) } }
+
+    public fun removeSelectedNews(): Unit = mutations.update { it.filterNot(MutationItem<Value>::isSelectedNew) }
+
+    public fun edit(item: MutationItem<Value>): Unit = mutations.update { it + item.copy(modification = Modification.EDIT) }
 
     public fun editSelected(): Unit = mutations.update {
         val (edits, others) = it.partition(MutationItem<Value>::isEdit)
 
-        if (edits.isSelectedAll) {
+        others + if (edits.isSelectedAll) {
             edits.map { it.copy(values = getValues(it.entity), modification = null) }
         }
         else {
             edits.map { it.copy(modification = Modification.EDIT) }
-        }.filter(MutationItem<Value>::isActual) + others
+        }.actuals
     }
 
-    public fun getSelectedModifies(): List<Value> = mutations.selectedModifies
+    public fun setValue(id: Any, index: Int, value: String) {}
 
-    public fun getSelectedIdPredicate(): BooleanVariable? =
-        mutations.value.selectedExists.ifEmpty { null }?.map { idName.f.eq(it.id) as BooleanVariable }?.reduce { acc, v -> acc.and(v) }
+    public fun select(items: List<MutationItem<Value>>): Unit = mutations.update { it + items.map { it.copy(isSelected = true) } }
 
-    public fun deleteSelected(): Unit =
-        mutations.update { it.filterNot(MutationItem<Value>::isSelectedExist) }
+    public fun unselectAll(): Unit =
+        mutations.update { it.map { it.copy(isSelected = false) }.actuals }
+
+    public fun remove(ids: List<Any>): Unit = mutations.update { it.filterNot { it.id in ids } }
 }

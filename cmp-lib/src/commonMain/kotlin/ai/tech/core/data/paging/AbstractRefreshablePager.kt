@@ -17,5 +17,6 @@ public abstract class AbstractRefreshablePager<Key : Any, Value : Any>(
     remoteMediator,
     cacheCoroutineScope,
 ) {
-    public fun refresh(): Unit = pagingSource.invalidate()
+
+    public final override fun refresh(): Unit = super.refresh()
 }

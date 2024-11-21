@@ -27,4 +27,6 @@ public abstract class AbstractPager<Key : Any, Value : Any> @OptIn(ExperimentalP
     }
 
     protected abstract fun createPagingSource(): PagingSource<Key, Value>
+
+    protected open fun refresh(): Unit = pagingSource.invalidate()
 }

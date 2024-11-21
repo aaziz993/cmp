@@ -1,10 +1,6 @@
 package ai.tech.core.presentation.component.lazycolumn.crud
 
-import ai.tech.core.data.crud.client.model.MutationItem
-import ai.tech.core.data.crud.client.model.selectedExists
-import ai.tech.core.data.crud.model.LimitOffset
 import ai.tech.core.data.expression.Equals
-import ai.tech.core.misc.type.model.Property
 import ai.tech.core.presentation.component.lazycolumn.crud.model.CRUDLazyColumnLocalization
 import ai.tech.core.presentation.component.lazycolumn.crud.model.CRUDLazyColumnState
 import ai.tech.core.presentation.component.lazycolumn.crud.viewmodel.CRUDAction
@@ -54,9 +50,6 @@ public fun <T : Any> CRUDLazyColumn(
     viewModel: CRUDViewModel<T>,
     localization: CRUDLazyColumnLocalization = CRUDLazyColumnLocalization(),
     onDownload: ((List<T>) -> Unit)? = null,
-    onUpload: (() -> Unit)? = null,
-    onSave: (insert: List<T>, update: List<T>) -> Unit,
-    onDelete: (List<Equals>) -> Unit,
 ): Unit = Column(modifier, horizontalAlignment = Alignment.CenterHorizontally) {
     title?.let { TitleRow(contentPadding, it) }
 
@@ -73,10 +66,10 @@ public fun <T : Any> CRUDLazyColumn(
         viewModel.pager.properties,
         items,
         localization,
-        onDownload?.let { { it(items.selectedExists.map(MutationItem<T>::entity)) } },
-        onUpload,
-        { viewModel.action(CRUDAction.Add) },
-        { viewModel.action(CRUDAction.CopySelected) },
+        onDownload,
+        {},
+        { viewModel.action(CRUDAction.New) },
+        { viewModel.action(CRUDAction.NewFromSelected) },
         { viewModel.action(CRUDAction.RemoveSelected) },
         { viewModel.action(CRUDAction.EditSelected) },
         { viewModel.action(CRUDAction.SaveSelected) },
@@ -91,8 +84,9 @@ public fun <T : Any> CRUDLazyColumn(
         viewModel.pager.properties,
         items,
         localization,
-        { viewModel.action(CRUDAction.SelectAll) },
-    ) { viewModel.action(CRUDAction.Find(state.sort, state.searchFieldStates)) }
+        { viewModel.action(CRUDAction.SelectAll(it)) },
+        { viewModel.action(CRUDAction.UnselectAll) },
+    ) { viewModel.action(CRUDAction.Load(state.sort, state.searchFieldStates)) }
 
     LazyPagingColumn(
         Modifier.fillMaxSize(),
@@ -105,18 +99,22 @@ public fun <T : Any> CRUDLazyColumn(
         userScrollEnabled,
         data = data,
     ) {
-        val id = it.id
-        val entity = it.entity
         DataRow(
             state,
             readOnly,
             downloadAllIcon,
             viewModel.pager.properties,
             it,
-            { viewModel.action(CRUDAction.Select(it)) },
-            onDownload?.let { { it(listOf(entity)) } },
-            { viewModel.action(CRUDAction.Copy(it)) },
-            { viewModel.action(CRUDAction.Remove(id)) },
+            { viewModel.action(CRUDAction.SelectAll(listOf(it))) },
+            { viewModel.action(CRUDAction.RemoveMutations(listOf(it))) },
+            if (onDownload == null) {
+                null
+            }
+            else {
+                { onDownload(listOf(it)) }
+            },
+            { viewModel.action(CRUDAction.NewFrom(it)) },
+            { viewModel.action(CRUDAction.RemoveMutations(listOf(it))) },
             { viewModel.action(CRUDAction.Edit(it)) },
             { index, value -> viewModel.action(CRUDAction.ChangeValue(id, index, value)) },
             { viewModel.action(CRUDAction.Save(entity)) },
@@ -134,7 +132,7 @@ public fun <T : Any> CRUDLazyColumn(
                 )
             }
         }.filter { state.isLiveSearch }.debounce(1000L).collect {
-            viewModel.action(CRUDAction.Find(state.sort, state.searchFieldStates))
+            viewModel.action(CRUDAction.Load(state.sort, state.searchFieldStates))
         }
     }
 

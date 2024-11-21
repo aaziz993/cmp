@@ -20,7 +20,7 @@ public class CRUDViewModel<T : Any>(
     private val repository: CRUDRepository<T>,
     sort: List<Order>? = null,
     predicate: BooleanVariable? = null,
-    create: (id: Any) -> T,
+    create: (Map<String, Any?>?) -> T,
     properties: List<EntityProperty>,
     getValues: (T) -> List<Any?>,
     config: PagingConfig = createPagingConfig(10),
@@ -34,7 +34,6 @@ public class CRUDViewModel<T : Any>(
         field = repository.viewModelMutablePager(
             sort,
             predicate,
-            create,
             properties,
             getValues,
             config,
@@ -46,30 +45,34 @@ public class CRUDViewModel<T : Any>(
     @OptIn(ExperimentalPagingApi::class)
     override fun action(action: CRUDAction<T>) {
         when (action) {
-            is CRUDAction.Find -> pager.refresh(action.sort, pager.properties.predicate(action.searchFieldStates))
+            is CRUDAction.Load -> pager.load(action.sort, pager.properties.predicate(action.searchFieldStates))
 
-            CRUDAction.Add -> pager.add()
+            CRUDAction.New -> pager.new()
 
-            CRUDAction.CopySelected -> pager.copySelected()
+            CRUDAction.NewFromSelected -> pager.newFromSelected()
 
-            CRUDAction.RemoveSelected -> pager.removeSelected()
+            CRUDAction.RemoveSelected -> pager.removeSelectedNews()
 
             CRUDAction.EditSelected -> pager.editSelected()
 
-            CRUDAction.SaveSelected -> viewModelScope.launch{
-                pager.getSelectedModifies()
+            CRUDAction.SaveSelected -> viewModelScope.launch {
+                repository.insert(pager.selectedNewEntities)
+                repository.update(pager.selectedNewEntities)
             }
 
-            CRUDAction.DeleteSelected -> {
-                viewModelScope.launch {
-                    repository.delete(pager.getSelectedIdPredicate())
-                    pager.deleteSelected()
-                    pager.refresh()
-                }
+            CRUDAction.DeleteSelected -> viewModelScope.launch {
+                pager.selectedIdPredicate?.let { predicate -> repository.delete(predicate) }
             }
+
+            is CRUDAction.SetValue -> pager.setValue(action.id, action.index, action.value)
+
+            is CRUDAction.Select -> pager.selectAll(action.items)
+
+            CRUDAction.UnselectAll -> pager.unselectAll()
+
+            is CRUDAction.RemoveMutations -> pager.remove(action.ids)
+
+            CRUDAction.Refresh -> pager.refresh()
         }
-
-        CRUDAction.Refresh -> pager.refresh()
     }
-}
 }
