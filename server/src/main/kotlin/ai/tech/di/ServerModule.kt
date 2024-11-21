@@ -1,10 +1,9 @@
 package ai.tech.di
 
-import ai.tech.core.misc.consul.client.ConsulClient
 import ai.tech.core.misc.location.localization.AbstractLocalizationService
 import ai.tech.core.misc.location.localization.MapLocalizationService
-import ai.tech.core.misc.location.localization.weblate.WeblateClient
 import ai.tech.core.misc.location.localization.weblate.WeblateService
+import ai.tech.core.misc.location.localization.weblate.client.WeblateClient
 import ai.tech.core.misc.model.config.EnabledConfig
 import ai.tech.core.misc.model.config.server.ServerConfig
 import ai.tech.core.misc.network.http.client.createHttpClient
@@ -21,7 +20,7 @@ import org.koin.core.annotation.Single
 
 @Module
 @ComponentScan("ai.tech")
-public class DefaultModule {
+public class ServerModule {
 
     @OptIn(ExperimentalSerializationApi::class)
     @Single
@@ -54,25 +53,16 @@ public class DefaultModule {
         }
 
     @Single
-    public fun provideConsul(
-        config: ServerConfig,
-        httpClient: HttpClient,
-    ): ConsulClient = ConsulClient(httpClient, config.consul)
-
-    @Single
     public fun provideLocalizationProvider(
         config: ServerConfig,
         httpClient: HttpClient,
     ): AbstractLocalizationService = with(config.localization) {
-        weblate?.let {
+        weblate?.takeIf(EnabledConfig::enable)?.let {
             WeblateService(
-                WeblateClient(
-                    httpClient,
-                    it,
-                ),
-                config.project,
+                WeblateClient(httpClient, it.address, it.apiKey),
+                config.application.name,
                 foundLanguage,
             )
-        } ?: MapLocalizationService(foundLanguage, map)
+        } ?: MapLocalizationService(foundLanguage, localization)
     }
 }

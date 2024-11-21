@@ -1,9 +1,15 @@
 package ai.tech.core.misc.consul.client.status
 
+import ai.tech.core.misc.consul.client.AbstractConsulClient
 import ai.tech.core.misc.consul.model.parameter.QueryParameters
 import de.jensklingenberg.ktorfit.Ktorfit
+import io.ktor.client.HttpClient
 
-public class StatusClient internal constructor(ktorfit: Ktorfit) {
+public class StatusClient(
+    httpClient: HttpClient,
+    address: String,
+    aclToken: String? = null
+) : AbstractConsulClient(httpClient, address, aclToken) {
 
     /**
      * Constructs an instance of this class.

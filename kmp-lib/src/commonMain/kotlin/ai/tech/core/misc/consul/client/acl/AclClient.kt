@@ -1,5 +1,6 @@
 package ai.tech.core.misc.consul.client.acl
 
+import ai.tech.core.misc.consul.client.AbstractConsulClient
 import ai.tech.core.misc.consul.client.acl.model.Policy
 import ai.tech.core.misc.consul.client.acl.model.PolicyResponse
 import ai.tech.core.misc.consul.client.acl.model.Role
@@ -11,8 +12,14 @@ import ai.tech.core.misc.consul.client.acl.model.TokenResponse
 import ai.tech.core.misc.consul.model.parameter.RoleParameters
 import ai.tech.core.misc.consul.model.parameter.TokenQueryParameters
 import de.jensklingenberg.ktorfit.Ktorfit
+import io.ktor.client.HttpClient
 
-public class AclClient internal constructor(ktorfit: Ktorfit) {
+public class AclClient(
+    httpClient: HttpClient,
+    address: String,
+    aclToken: String? = null
+) : AbstractConsulClient(httpClient, address, aclToken) {
+
     /**
      * Constructs an instance of this class.
      *

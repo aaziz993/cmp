@@ -11,6 +11,8 @@ import ai.tech.core.data.crud.client.model.selectedExists
 import ai.tech.core.data.expression.BooleanVariable
 import ai.tech.core.data.expression.f
 import ai.tech.core.data.paging.AbstractMutablePager
+import ai.tech.core.misc.type.multiple.replaceAt
+import ai.tech.core.misc.type.multiple.replaceIfFirst
 import app.cash.paging.ExperimentalPagingApi
 import app.cash.paging.PagingConfig
 import app.cash.paging.PagingData
@@ -41,10 +43,10 @@ public abstract class AbstractCRUDMutablePager<Value : Any>(
     public val idName: String = properties[idIndex].name
 
     public val selectedNewEntities: List<Value>
-        get() = mutations.value.selected.news.map(::toEntity)
+        get() = mutations.value.selected.news.map { create(it.values) }
 
     public val selectedEditEntities: List<Value>
-        get() = mutations.value.selected.news.map(::toEntity)
+        get() = mutations.value.selected.news.map { create(it.values) }
 
     public val selectedIdPredicate: BooleanVariable?
         get() = mutations.value.selectedExists.ifEmpty { null }?.map { idName.f.eq(it.id) as BooleanVariable }?.reduce { acc, v -> acc.and(v) }
@@ -64,11 +66,11 @@ public abstract class AbstractCRUDMutablePager<Value : Any>(
 
     public final override fun refresh(): Unit = super.refresh()
 
-    protected abstract fun createEntity(): Value
+    protected abstract fun create(): Value
 
-    protected abstract fun toEntity(item: MutationItem<Value>): Value
+    protected abstract fun create(values: List<Any?>): Value
 
-    public fun new(): Unit = mutations.update { it + createEntity().let { MutationItem(it, uuid4(), getValues(it), Modification.NEW) } }
+    public fun new(): Unit = mutations.update { it + create().let { MutationItem(it, uuid4(), getValues(it), Modification.NEW) } }
 
     public fun newFrom(item: MutationItem<Value>): Unit = mutations.update { it + item.copy(modification = Modification.NEW) }
 
@@ -89,7 +91,11 @@ public abstract class AbstractCRUDMutablePager<Value : Any>(
         }.actuals
     }
 
-    public fun setValue(id: Any, index: Int, value: String) {}
+    public fun setValue(id: Any, index: Int, value: String): Unit = mutations.update {
+        it.replaceIfFirst({ it.id == id }) {
+            copy(values = values.replaceAt(index) { value }.toList())
+        }.toList()
+    }
 
     public fun select(items: List<MutationItem<Value>>): Unit = mutations.update { it + items.map { it.copy(isSelected = true) } }
 

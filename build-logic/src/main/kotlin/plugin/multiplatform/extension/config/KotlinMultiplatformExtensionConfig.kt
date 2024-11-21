@@ -247,10 +247,11 @@ internal fun Project.configureComposeKotlinMultiplatformExtension(extension: Kot
             implementation(lib("compose.colorpicker"))
             implementation(bundle("compose.icons"))
 //                            implementation(lib("squircle.shape"))
-            implementation(bundle("paging"))
             implementation(bundle("material3.adaptive"))
             implementation(bundle("compose.settings.ui"))
-            implementation(bundle("androidx.multiplatform"))
+            implementation(bundle("androidx.lifecycle"))
+            implementation(bundle("androidx.navigation"))
+//            implementation(bundle("androidx.paging"))
             implementation(lib("filekit.compose"))
             implementation(bundle("koin.compose.multiplatform"))
         }

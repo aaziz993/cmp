@@ -1,6 +1,5 @@
 package ai.tech.core.misc.location.localization.weblate.client
 
-import ai.tech.core.misc.location.localization.weblate.client.model.WeblateConfig
 import ai.tech.core.misc.location.localization.weblate.client.model.WeblateResponse
 import ai.tech.core.misc.location.localization.weblate.client.model.WeblateTranslationsResponse
 import ai.tech.core.misc.location.localization.weblate.client.model.WeblateUnitsResponse
@@ -9,24 +8,25 @@ import ai.tech.core.misc.type.multiple.model.AbstractAsyncIterator
 import ai.tech.core.misc.type.multiple.model.AsyncIterator
 import de.jensklingenberg.ktorfit.Ktorfit
 import io.ktor.client.*
-import io.ktor.client.plugins.defaultRequest
-import io.ktor.client.request.header
-import io.ktor.http.HttpHeaders
+import io.ktor.client.plugins.*
+import io.ktor.client.request.*
+import io.ktor.http.*
 import kotlinx.serialization.ExperimentalSerializationApi
 
 public class WeblateClient(
     httpClient: HttpClient,
-    public val config: WeblateConfig,
+    public val address: String,
+    public val apiKey: String,
 ) {
 
     @OptIn(ExperimentalSerializationApi::class)
     private val ktorfit = Ktorfit.Builder().httpClient(
         httpClient.configApi {
             defaultRequest {
-                header(HttpHeaders.Authorization, "Token  ${config.apiKey}")
+                header(HttpHeaders.Authorization, "Token  $apiKey")
             }
         },
-    ).baseUrl(config.address).build()
+    ).baseUrl(address).build()
 
     private val api = ktorfit.createWeblateApi()
 

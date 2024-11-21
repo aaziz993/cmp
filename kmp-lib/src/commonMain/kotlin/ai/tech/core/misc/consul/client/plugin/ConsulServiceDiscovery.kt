@@ -1,6 +1,6 @@
 package ai.tech.core.misc.consul.client.plugin
 
-import ai.tech.core.misc.consul.client.ConsulClient
+import ai.tech.core.misc.consul.client.health.HealthClient
 import ai.tech.core.misc.consul.model.config.LoadBalancer
 import ai.tech.core.misc.network.http.client.httpUrl
 import io.ktor.client.plugins.api.ClientPlugin
@@ -14,10 +14,10 @@ public fun ConsulServiceDiscovery(
     loadBalancer: LoadBalancer,
 ): ClientPlugin<Unit> = createClientPlugin("ConsulServiceDiscovery", { }) {
 
-    val consulClient = ConsulClient(client, consulAddress)
+    val healthClient = HealthClient(client, consulAddress)
 
     client.requestPipeline.intercept(HttpRequestPipeline.Render) {
-        val nodes = consulClient.health.getHealthyServiceInstances(serviceName)
+        val nodes = healthClient.getHealthyServiceInstances(serviceName)
 
         val selectedNode = checkNotNull(loadBalancer(nodes)) {
             "Impossible to find available nodes of the $serviceName"

@@ -17,7 +17,7 @@ public class CRUDProjectionRefreshableMutablePager(
     private var sort: List<Order>? = null,
     private var predicate: BooleanVariable? = null,
     properties: List<EntityProperty>,
-    private val create: () -> List<Any?>,
+    private val _create: () -> List<Any?>,
     config: PagingConfig,
     initialKey: Int? = null,
     remoteMediator: RemoteMediator<Int, List<Any?>>? = null,
@@ -34,11 +34,9 @@ public class CRUDProjectionRefreshableMutablePager(
 
     override fun createPagingSource(): PagingSource<Int, List<Any?>> = pagingSourceFactory(projections, sort, predicate)
 
-    public override fun refresh(): Unit = pagingSource.invalidate()
+    override fun create(): List<Any?> = _create()
 
-    override fun createEntity(): List<Any?> = create()
-
-    override fun toEntity(item: MutationItem<List<Any?>>): List<Any?> = item.values.toList()
+    override fun create(values: List<Any?>): List<Any?> = values.toList()
 
     public fun load(
         projections: List<Variable>,

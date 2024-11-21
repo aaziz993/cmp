@@ -1,9 +1,15 @@
 package ai.tech.core.misc.consul.client.operator
 
+import ai.tech.core.misc.consul.client.AbstractConsulClient
 import ai.tech.core.misc.consul.client.operator.model.RaftConfiguration
 import de.jensklingenberg.ktorfit.Ktorfit
+import io.ktor.client.HttpClient
 
-public class OperatorClient internal constructor(ktorfit: Ktorfit) {
+public class OperatorClient(
+    httpClient: HttpClient,
+    address: String,
+    aclToken: String? = null
+) : AbstractConsulClient(httpClient, address, aclToken) {
 
     /**
      * Constructs an instance of this class.

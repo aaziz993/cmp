@@ -18,13 +18,13 @@ import io.ktor.client.plugins.defaultRequest
 import io.ktor.client.request.header
 import io.ktor.http.HttpHeaders
 
-public class ConsulClient(
+public abstract class AbstractConsulClient(
     httpClient: HttpClient,
     public val address: String,
     public val aclToken: String? = null
 ) {
 
-    private val ktorfit = Ktorfit.Builder().httpClient(
+    protected val ktorfit: Ktorfit = Ktorfit.Builder().httpClient(
         httpClient.configApi {
             if (aclToken != null) {
                 defaultRequest {
@@ -33,18 +33,6 @@ public class ConsulClient(
             }
         },
     ).baseUrl(address).build()
-
-    public val acl: AclClient = AclClient(ktorfit)
-    public val agent: AgentClient = AgentClient(ktorfit)
-    public val catalog: CatalogClient = CatalogClient(ktorfit)
-    public val coordinate: CoordinateClient = CoordinateClient(ktorfit)
-    public val event: EventClient = EventClient(ktorfit)
-    public val health: HealthClient = HealthClient(ktorfit)
-    public val kv: KVClient = KVClient(ktorfit)
-    public val `operator`: OperatorClient = OperatorClient(ktorfit)
-    public val session: SessionClient = SessionClient(ktorfit)
-    public val snapshot: SnapshotClient = SnapshotClient(ktorfit)
-    public val status: StatusClient = StatusClient(ktorfit)
 }
 
 

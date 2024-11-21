@@ -32,11 +32,9 @@ public class CRUDRefreshableMutablePager<Value : Any>(
 ) {
     override fun createPagingSource(): PagingSource<Int, Value> = pagingSourceFactory(sort, predicate)
 
-    public override fun refresh(): Unit = pagingSource.invalidate()
+    override fun create(): Value = create(emptyMap())
 
-    override fun createEntity(): Value = create(emptyMap())
-
-    override fun toEntity(item: MutationItem<Value>): Value = create(properties.map(EntityProperty::name).zip(item.values).toMap())
+    override fun create(values: List<Any?>): Value = create(properties.map(EntityProperty::name).zip(values).toMap())
 
     public fun load(
         sort: List<Order>? = null,

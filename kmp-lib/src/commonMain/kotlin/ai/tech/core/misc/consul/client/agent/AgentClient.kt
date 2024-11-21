@@ -1,5 +1,6 @@
 package ai.tech.core.misc.consul.client.agent
 
+import ai.tech.core.misc.consul.client.AbstractConsulClient
 import ai.tech.core.misc.consul.client.agent.model.Agent
 import ai.tech.core.misc.consul.client.agent.model.Check
 import ai.tech.core.misc.consul.client.agent.model.FullService
@@ -11,13 +12,18 @@ import ai.tech.core.misc.consul.client.model.State
 import ai.tech.core.misc.consul.model.parameter.QueryParameterParameters
 import ai.tech.core.misc.consul.model.parameter.QueryParameters
 import de.jensklingenberg.ktorfit.Ktorfit
+import io.ktor.client.HttpClient
 
 /**
  * HTTP Client for /v1/agent/ endpoints.
  *
  * @see [The Consul API Docs](http://www.consul.io/docs/agent/http.html.agent)
  */
-public class AgentClient internal constructor(ktorfit: Ktorfit) {
+public class AgentClient(
+    httpClient: HttpClient,
+    address: String,
+    aclToken: String? = null
+) : AbstractConsulClient(httpClient, address, aclToken) {
     /**
      * Constructs an instance of this class.
      *

@@ -1,9 +1,11 @@
 package ai.tech.core.misc.consul.client.event
 
+import ai.tech.core.misc.consul.client.AbstractConsulClient
 import ai.tech.core.misc.consul.client.event.model.Event
 import ai.tech.core.misc.consul.model.parameter.EventParameters
 import ai.tech.core.misc.consul.model.parameter.QueryParameters
 import de.jensklingenberg.ktorfit.Ktorfit
+import io.ktor.client.HttpClient
 import kotlinx.serialization.json.JsonPrimitive
 
 /**
@@ -11,7 +13,11 @@ import kotlinx.serialization.json.JsonPrimitive
  *
  * @see [The Consul API Docs](http://www.consul.io/docs/agent/http.html.event)
  */
-public class EventClient internal constructor(ktorfit: Ktorfit) {
+public class EventClient(
+    httpClient: HttpClient,
+    address: String,
+    aclToken: String? = null
+) : AbstractConsulClient(httpClient, address, aclToken) {
 
     /**
      * Constructs an instance of this class.

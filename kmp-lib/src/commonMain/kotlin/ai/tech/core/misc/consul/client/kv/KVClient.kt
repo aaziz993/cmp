@@ -1,5 +1,6 @@
 package ai.tech.core.misc.consul.client.kv
 
+import ai.tech.core.misc.consul.client.AbstractConsulClient
 import ai.tech.core.misc.consul.client.kv.model.Operation
 import ai.tech.core.misc.consul.client.kv.model.TxResponse
 import ai.tech.core.misc.consul.client.kv.model.Value
@@ -9,6 +10,7 @@ import ai.tech.core.misc.consul.model.parameter.PutParameters
 import ai.tech.core.misc.consul.model.parameter.QueryParameters
 import ai.tech.core.misc.consul.model.parameter.TransactionParameters
 import de.jensklingenberg.ktorfit.Ktorfit
+import io.ktor.client.HttpClient
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.json.JsonPrimitive
@@ -17,7 +19,11 @@ import kotlinx.serialization.json.encodeToJsonElement
 /**
  * HTTP Client for /v1/kv/ endpoints.
  */
-public class KVClient(ktorfit: Ktorfit) {
+public class KVClient(
+    httpClient: HttpClient,
+    address: String,
+    aclToken: String? = null
+) : AbstractConsulClient(httpClient, address, aclToken) {
 
     /**
      * Constructs an instance of this class.

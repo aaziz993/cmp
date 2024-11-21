@@ -489,7 +489,7 @@ public inline fun <T : Any> T?.ifNull(
     block: () -> T,
 ): T = this ?: block()
 
-public fun <T : Any> Any.copyTo(
+public fun <T : Any> Any.mapTo(
     value: T,
     keyTransform: (List<Accessor>, key: Any?) -> Any? = { _, key -> key },
     valueTransform: (List<Accessor>, key: String, value: Any?, valueType: KType) -> Any? = { _, _, value, _ -> value },
@@ -500,7 +500,7 @@ public fun <T : Any> Any.copyTo(
 public fun List<Map<String, Any?>>.deepMerge(): Map<String, Any?> = emptyMap()
 
 @Suppress("UNCHECKED_CAST")
-public fun <T : Any> T.eval(
+public fun <T : Any> T.reduce(
     transform: (transforms: List<T>, value: Any?) -> Iterator<Any?>?,
     removeLast: (transforms: List<T>, transform: Any?) -> Unit
 ) {

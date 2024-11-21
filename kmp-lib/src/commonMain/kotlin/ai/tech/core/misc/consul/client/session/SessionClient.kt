@@ -1,16 +1,22 @@
 package ai.tech.core.misc.consul.client.session
 
+import ai.tech.core.misc.consul.client.AbstractConsulClient
 import ai.tech.core.misc.consul.client.session.model.Session
 import ai.tech.core.misc.consul.client.session.model.SessionCreatedResponse
 import ai.tech.core.misc.consul.client.session.model.SessionInfo
 import de.jensklingenberg.ktorfit.Ktorfit
+import io.ktor.client.HttpClient
 
 /**
  * HTTP Client for /v1/session/ endpoints.
  *
  * @see [The Consul API Docs](http://www.consul.io/docs/agent/http.html.session)
  */
-public class SessionClient internal constructor(ktorfit: Ktorfit) {
+public class SessionClient(
+    httpClient: HttpClient,
+    address: String,
+    aclToken: String? = null
+) : AbstractConsulClient(httpClient, address, aclToken) {
 
     /**
      * Constructs an instance of this class.

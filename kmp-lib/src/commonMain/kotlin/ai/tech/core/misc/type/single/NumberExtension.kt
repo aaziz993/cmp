@@ -322,18 +322,13 @@ private fun BigDecimal.toNumber(types: List<KClass<*>>) = when {
     else -> this
 }
 
-public fun List<Any>.add(): Any = if (any { it is String }) {
-    fold("") { acc, v -> acc + v.toString() }
-}
-else {
-    fold(BigDecimal.ZERO) { acc, v -> acc.add(v.toBigDecimal()) }.toNumber(map { it::class })
-}
+private fun List<Any>.operate(block: (BigDecimal, BigDecimal) -> BigDecimal): Any =
+    drop(1).fold(get(0).toBigDecimal()) { acc, v -> block(acc, v.toBigDecimal()) }.toNumber(map { it::class })
 
-public fun List<Any>.subtract(): Any =
-    drop(1).fold(get(0).toString().toBigDecimal()) { acc, v -> acc.subtract(v.toBigDecimal()) }.toNumber(map { it::class })
+public fun List<Any>.add(): Any = operate { v1, v2 -> v1.add(v2) }
 
-public fun List<Any>.multiply(): Any =
-    fold(BigDecimal.ONE) { acc, v -> acc.multiply(v.toBigDecimal()) }.toNumber(map { it::class })
+public fun List<Any>.subtract(): Any = operate { v1, v2 -> v1.subtract(v2) }
 
-public fun List<Any>.divide(): Any =
-    drop(1).fold(get(0).toBigDecimal()) { acc, v -> acc.divide(v.toBigDecimal()) }.toNumber(map { it::class })
+public fun List<Any>.multiply(): Any = operate { v1, v2 -> v1.multiply(v2) }
+
+public fun List<Any>.divide(): Any = operate { v1, v2 -> v1.divide(v2) }

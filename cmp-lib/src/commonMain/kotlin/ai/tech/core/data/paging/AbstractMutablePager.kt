@@ -20,6 +20,7 @@ public abstract class AbstractMutablePager<Key : Any, Value : Any, Mutation : An
     remoteMediator,
     cacheCoroutineScope,
 ) {
+
     protected val mutations: MutableStateFlow<List<Mutation>> = MutableStateFlow(emptyList())
 
     public val mutatedData: Flow<PagingData<Mutation>> by lazy {

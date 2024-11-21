@@ -1,6 +1,7 @@
 package ai.tech.core.misc.consul.server.plugin
 
-import ai.tech.core.misc.consul.client.ConsulClient
+import ai.tech.core.misc.consul.client.AbstractConsulClient
+import ai.tech.core.misc.consul.client.agent.AgentClient
 import ai.tech.core.misc.consul.client.agent.model.Registration
 import io.ktor.client.HttpClient
 import io.ktor.server.application.ApplicationPlugin
@@ -17,6 +18,6 @@ public fun ConsulService(
     { config },
 ) {
     runBlocking {
-        ConsulClient(httpClient, address).agent.register(config)
+        AgentClient(httpClient, address).register(config)
     }
 }

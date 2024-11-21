@@ -2,10 +2,12 @@ package ai.tech.core.misc.consul.client.snapshot
 
 import ai.tech.core.data.filesystem.fsPathRead
 import ai.tech.core.data.filesystem.fsPathWrite
+import ai.tech.core.misc.consul.client.AbstractConsulClient
 import ai.tech.core.misc.consul.model.parameter.QueryParameters
 import ai.tech.core.misc.type.multiple.asyncIterator
 import ai.tech.core.misc.type.multiple.toList
 import de.jensklingenberg.ktorfit.Ktorfit
+import io.ktor.client.HttpClient
 import io.ktor.client.statement.bodyAsChannel
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.encodeToJsonElement
@@ -15,7 +17,11 @@ import kotlinx.serialization.json.encodeToJsonElement
  *
  * @see [The Consul API Docs](https://www.consul.io/api/snapshot.html) for Snapshots
  */
-public class SnapshotClient internal constructor(ktorfit: Ktorfit) {
+public class SnapshotClient(
+    httpClient: HttpClient,
+    address: String,
+    aclToken: String? = null
+) : AbstractConsulClient(httpClient, address, aclToken) {
 
     /**
      * Constructs an instance of this class.

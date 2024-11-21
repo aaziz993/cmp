@@ -18,11 +18,13 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import app.cash.paging.compose.collectAsLazyPagingItems
 import com.ionspin.kotlin.bignum.integer.Quadruple
 import compose.icons.SimpleIcons
@@ -84,7 +86,7 @@ public fun <T : Any> CRUDLazyColumn(
         viewModel.pager.properties,
         items,
         localization,
-        { viewModel.action(CRUDAction.SelectAll(it)) },
+        { viewModel.action(CRUDAction.Select(it)) },
         { viewModel.action(CRUDAction.UnselectAll) },
     ) { viewModel.action(CRUDAction.Load(state.sort, state.searchFieldStates)) }
 
@@ -123,21 +125,22 @@ public fun <T : Any> CRUDLazyColumn(
 
     LaunchedEffect(Unit) {
         snapshotFlow {
-            state.searchFieldStates.map {
-                Quadruple(
-                    it.query,
-                    it.caseMatch,
-                    it.wordMatch,
-                    it.compareMatch,
-                )
-            }
+            state.searchFieldStates.map { it.query }
         }.filter { state.isLiveSearch }.debounce(1000L).collect {
             viewModel.action(CRUDAction.Load(state.sort, state.searchFieldStates))
         }
     }
 
     LaunchedEffect(Unit) {
-        snapshotFlow { state.sort.toList() }.filter { state.isLiveSearch }.collect { findPrimary(null) }
+        snapshotFlow {
+            state.searchFieldStates.map { Quadruple(it.caseMatch, it.wordMatch, it.regexMatch, it.compareMatch) }
+        }.filter { state.isLiveSearch }.collect {
+            viewModel.action(CRUDAction.Load(state.sort, state.searchFieldStates))
+        }
+    }
+
+    LaunchedEffect(Unit) {
+        snapshotFlow { state.sort.toList() }.filter { state.isLiveSearch }.collect { viewModel.action(CRUDAction.Load(state.sort, state.searchFieldStates)) }
     }
 }
 

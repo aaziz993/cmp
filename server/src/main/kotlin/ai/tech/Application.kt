@@ -1,15 +1,10 @@
 package ai.tech
 
-import ai.tech.core.data.filesystem.readResourceText
-import ai.tech.core.misc.model.config.ServerConfig
 import ai.tech.core.misc.plugin.configure
-import ai.tech.core.misc.plugin.koin.configureKoin
+import ai.tech.di.ServerModule
 import ai.tech.map.mapRouting
-import ai.tech.di.DefaultModule
-import io.ktor.network.tls.certificates.*
-import io.ktor.server.application.Application
-import io.ktor.server.netty.EngineMain
-import org.koin.ksp.generated.*
+import io.ktor.server.application.*
+import io.ktor.server.netty.*
 import org.koin.ktor.ext.get
 
 public fun main(args: Array<String>) {
@@ -20,21 +15,12 @@ public fun main(args: Array<String>) {
 }
 
 @Suppress("unused")
-public fun Application.module() {
-    configureKoin(ServerConfig.read<ServerConfig> { readResourceText(it) }) {
-        DefaultModule().module
-    }
-
-    val config: ServerConfig = get()
-
-    configure(
-        get(),
-        config,
-        routingBlock = {
-            // Add all other routes here
-            mapRouting(config)
-        },
-    )
-}
+public fun Application.module() = configure(
+    { ServerModule().module },
+    routingBlock = {
+        // Add all other routes here
+        mapRouting(get())
+    },
+)
 
 

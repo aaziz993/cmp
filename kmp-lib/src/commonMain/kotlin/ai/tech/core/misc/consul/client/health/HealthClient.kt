@@ -1,15 +1,21 @@
 package ai.tech.core.misc.consul.client.health
 
+import ai.tech.core.misc.consul.client.AbstractConsulClient
 import ai.tech.core.misc.consul.client.health.model.HealthCheck
 import ai.tech.core.misc.consul.client.health.model.ServiceHealth
 import ai.tech.core.misc.consul.client.model.State
 import ai.tech.core.misc.consul.model.parameter.QueryParameters
 import de.jensklingenberg.ktorfit.Ktorfit
+import io.ktor.client.HttpClient
 
 /**
  * HTTP Client for /v1/health/ endpoints.
  */
-public class HealthClient internal constructor(ktorfit: Ktorfit) {
+public class HealthClient(
+    httpClient: HttpClient,
+    address: String,
+    aclToken: String? = null
+) : AbstractConsulClient(httpClient, address, aclToken) {
 
     /**
      * Constructs an instance of this class.

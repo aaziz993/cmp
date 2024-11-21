@@ -1,5 +1,6 @@
 package ai.tech.core.misc.consul.client.catalog
 
+import ai.tech.core.misc.consul.client.AbstractConsulClient
 import ai.tech.core.misc.consul.client.catalog.model.CatalogDeregistration
 import ai.tech.core.misc.consul.client.catalog.model.CatalogNode
 import ai.tech.core.misc.consul.client.catalog.model.CatalogRegistration
@@ -7,11 +8,16 @@ import ai.tech.core.misc.consul.client.catalog.model.CatalogService
 import ai.tech.core.misc.consul.client.health.model.Node
 import ai.tech.core.misc.consul.model.parameter.QueryParameters
 import de.jensklingenberg.ktorfit.Ktorfit
+import io.ktor.client.HttpClient
 
 /**
  * HTTP Client for /v1/catalog/ endpoints.
  */
-public class CatalogClient internal constructor(ktorfit: Ktorfit) {
+public class CatalogClient(
+    httpClient: HttpClient,
+    address: String,
+    aclToken: String? = null
+) : AbstractConsulClient(httpClient, address, aclToken) {
 
     /**
      * Constructs an instance of this class.
