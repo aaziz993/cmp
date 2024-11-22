@@ -1,7 +1,7 @@
 package ai.tech.wallet.crypto.model.config
 
 import ai.tech.core.misc.auth.model.AuthResource
-import ai.tech.core.misc.model.config.presentation.ScreenConfig
+import ai.tech.core.presentation.model.config.ScreenConfig
 import kotlinx.serialization.Serializable
 
 @Serializable

@@ -15,12 +15,12 @@ import kotlinx.serialization.InternalSerializationApi
 import kotlinx.serialization.serializer
 import org.koin.ktor.ext.get
 import org.slf4j.LoggerFactory
-import ai.tech.core.misc.model.config.ServerConfig
+import ai.tech.core.misc.model.config.server.ServerConfigImpl
 import org.koin.ksp.generated.*
 
 @OptIn(InternalSerializationApi::class)
 public suspend fun main(args: Array<String>) {
-    val serverConfig = ConfigService<ServerConfig>(ServerConfig::class.serializer()) { readResourceText(it) }.readConfig()
+    val serverConfig = ConfigService<ServerConfigImpl>(ServerConfigImpl::class.serializer()) { readResourceText(it) }.readConfig()
 
     val server = embeddedServer(
         Netty,
@@ -36,7 +36,7 @@ public suspend fun main(args: Array<String>) {
     Thread.currentThread().join()
 }
 
-private fun ApplicationEngine.Configuration.envConfig(config: ServerConfig) {
+private fun ApplicationEngine.Configuration.envConfig(config: ServerConfigImpl) {
     connector {
         port = config.ktorServer.port
     }
@@ -55,7 +55,7 @@ private fun ApplicationEngine.Configuration.envConfig(config: ServerConfig) {
 }
 
 @Suppress("unused")
-public fun Application.module (config: ServerConfig) = configure(
+public fun Application.module (config: ServerConfigImpl) = configure(
     config,
     { ServerModule().module },
     routingBlock = {

@@ -1,4 +1,4 @@
-package ai.tech.core.misc.model.config.presentation
+package ai.tech.core.presentation.model.config
 
 import ai.tech.core.misc.auth.model.AuthResource
 

@@ -3,7 +3,7 @@ package ai.tech.core.misc.model.config
 import ai.tech.core.misc.consul.model.config.ConsulConfig
 import ai.tech.core.misc.location.localization.model.config.LocalizationConfig
 import ai.tech.core.misc.model.config.client.HttpClientConfig
-import ai.tech.core.misc.model.config.presentation.PresentationConfig
+import ai.tech.core.misc.model.config.client.SharedUIConfig
 import ai.tech.core.misc.model.config.server.SharedHostConfig
 
 public interface Config {
@@ -18,7 +18,7 @@ public interface Config {
 
     public val validator: ValidatorConfig
 
-    public val presentation: PresentationConfig
+    public val ui: SharedUIConfig
 
     public val host: SharedHostConfig
 }

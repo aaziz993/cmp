@@ -36,7 +36,7 @@ import kotlinx.serialization.Serializable
 import kotlinx.serialization.Transient
 
 @Serializable
-public data class HostDeploymentConfig(
+public data class ServerHostConfig(
     val koin: KoinConfig? = null,
     val database: Map<String, DBProviderConfig>? = null,
     val serialization: SerializationConfig? = null,

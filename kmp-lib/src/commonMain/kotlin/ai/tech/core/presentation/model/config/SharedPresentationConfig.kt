@@ -1,6 +1,6 @@
-package ai.tech.core.misc.model.config.presentation
+package ai.tech.core.presentation.model.config
 
-public interface PresentationConfig {
+public interface SharedPresentationConfig {
 
     public val route: String?
 

@@ -5,7 +5,7 @@ import ai.tech.core.misc.location.localization.MapLocalizationService
 import ai.tech.core.misc.location.localization.weblate.WeblateService
 import ai.tech.core.misc.location.localization.weblate.client.WeblateClient
 import ai.tech.core.misc.model.config.EnabledConfig
-import ai.tech.core.misc.model.config.server.ServerConfig
+import ai.tech.core.misc.model.config.server.ServerConfigImpl
 import ai.tech.core.misc.network.http.client.createHttpClient
 import io.ktor.client.*
 import io.ktor.client.plugins.*
@@ -24,7 +24,7 @@ public class ServerModule {
 
     @OptIn(ExperimentalSerializationApi::class)
     @Single
-    public fun provideHttpClient(config: ServerConfig): HttpClient =
+    public fun provideHttpClient(config: ServerConfigImpl): HttpClient =
         with(config.httpClient) {
             createHttpClient {
                 install(HttpTimeout) {
@@ -54,7 +54,7 @@ public class ServerModule {
 
     @Single
     public fun provideLocalizationProvider(
-        config: ServerConfig,
+        config: ServerConfigImpl,
         httpClient: HttpClient,
     ): AbstractLocalizationService = with(config.localization) {
         weblate?.takeIf(EnabledConfig::enable)?.let {
