@@ -5,9 +5,9 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 public data class ServerPresentationConfig(
-    override val routeBase: String?,
+    override val route: String? = null,
     override val startDestination: String,
     override val signInRedirectDestination: String,
     override val signOutRedirectDestination: String,
-    override val destination: SharedDestinationsConfig
+    override val destination: SharedDestinationConfig
 ) : PresentationConfig

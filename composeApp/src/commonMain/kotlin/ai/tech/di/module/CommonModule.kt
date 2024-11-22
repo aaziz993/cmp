@@ -8,7 +8,7 @@ import ai.tech.core.misc.location.localization.MapLocalizationService
 import ai.tech.core.misc.location.localization.weblate.WeblateService
 import ai.tech.core.misc.location.localization.weblate.client.WeblateClient
 import ai.tech.core.misc.model.config.EnabledConfig
-import ai.tech.core.misc.model.config.client.ClientConfig
+import ai.tech.core.misc.model.config.client.UIConfig
 import ai.tech.core.misc.network.http.client.createHttpClient
 import ai.tech.core.presentation.event.navigator.DefaultNavigator
 import ai.tech.core.presentation.event.navigator.Navigator
@@ -31,7 +31,7 @@ public class CommonModule {
     public fun provideJson(): Json = Json { isLenient = true; ignoreUnknownKeys = true }
 
     @Single
-    public fun provideHttpClient(config: ClientConfig, json: Json): HttpClient = with(config.ktorClient) {
+    public fun provideHttpClient(config: UIConfig, json: Json): HttpClient = with(config.httpClient) {
         createHttpClient {
             install(HttpTimeout) {
                 this@with.requestTimeoutMillis?.let { requestTimeoutMillis }
@@ -63,7 +63,7 @@ public class CommonModule {
 
     @Single
     public fun provideLocalizationProvider(
-        config: ClientConfig,
+        config: UIConfig,
         httpClient: HttpClient,
     ): AbstractLocalizationService = with(config.localization) {
         weblate?.takeIf(EnabledConfig::enable)?.let {
@@ -77,7 +77,7 @@ public class CommonModule {
 
     @Single
     public fun provideAuthProvider(
-        config: ClientConfig,
+        config: UIConfig,
         httpClient: HttpClient,
         keyValue: SettingsKeyValue
     ): ClientAuthService {

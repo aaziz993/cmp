@@ -6,7 +6,7 @@ import kotlin.time.DurationUnit
 import kotlin.time.toDuration
 
 @Serializable
-public data class DatabaseConnectionConfig(
+public data class DBConnectionConfig(
     val protocol: String = "r2dbc",
     val driver: String,
     val host: String,
@@ -22,7 +22,7 @@ public data class DatabaseConnectionConfig(
 
     public companion object {
 
-        public operator fun invoke(url: String): DatabaseConnectionConfig {
+        public operator fun invoke(url: String): DBConnectionConfig {
 
             // Try matching JDBC first
             val jdbcMatchResult = jdbcUR.matchEntire(url)
@@ -49,7 +49,7 @@ public data class DatabaseConnectionConfig(
                     }
                 }
 
-                return DatabaseConnectionConfig(
+                return DBConnectionConfig(
                     driver = driver,
                     host = host,
                     port = port,
@@ -76,7 +76,7 @@ public data class DatabaseConnectionConfig(
                 // Handle query parameters for R2DBC
                 val ssl = r2dbcMatchResult.groups[8]?.value?.contains("ssl=true") == true
 
-                return DatabaseConnectionConfig(
+                return DBConnectionConfig(
                     driver = driver,
                     host = host,
                     port = port,

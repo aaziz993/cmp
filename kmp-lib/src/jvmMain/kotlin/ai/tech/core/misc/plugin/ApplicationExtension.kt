@@ -106,92 +106,93 @@ public fun Application.configure(
                 get(),
                 it.address,
                 it.discovery,
-                "${application.name}:${application.environment}:${ktorServer.preferredSslPort}",
+                "${application.name}:${application.environment}:${host.preferredSslPort}",
                 application.configurations,
-                ktorServer.httpURL,
+                host.preferredHttpsURL,
             )
         }
 
-        // Configure the Serialization plugin
-        configureSerialization(serialization, serializationBlock)
+        with(host) {
+            // Configure the Serialization plugin
+            configureSerialization(serialization, serializationBlock)
 
-        // Configure the HttpsRedirect plugin
-        configureHttpsRedirect(httpsRedirect, ktorServer.ssl?.port, httpsRedirectBlock)
+            // Configure the HttpsRedirect plugin
+            configureHttpsRedirect(httpsRedirect, ssl?.port, httpsRedirectBlock)
 
-        // Configure the Routing plugin
-        configureRouting(routing) {
-            consul?.takeIf(EnabledConfig::enable)?.discovery?.takeIf(EnabledConfig::enable)?.let {
-                routing {
-                    get(it.healthCheckPath) {
-                        call.respondText("Healthy", status = HttpStatusCode.OK)
+            // Configure the Routing plugin
+            configureRouting(routing) {
+                consul?.takeIf(EnabledConfig::enable)?.discovery?.takeIf(EnabledConfig::enable)?.let {
+                    routing {
+                        get(it.healthCheckPath) {
+                            call.respondText("Healthy", status = HttpStatusCode.OK)
+                        }
                     }
                 }
+                routingBlock?.invoke(this)
             }
-            routingBlock?.invoke(this)
-        }
 
-        // Configure the Websockets plugin
-        configureWebSockets(websockets, ktorServer.wsURL, websocketsBlock)
+            // Configure the Websockets plugin
+            configureWebSockets(websockets, preferredWSSURL, websocketsBlock)
 
-        // Configure the Graphql plugin
-        configureGraphQL(graphql, graphQLBlock)
+            // Configure the Graphql plugin
+            configureGraphQL(graphql, graphQLBlock)
 
-        // Configure the CallLogging plugin
-        configureCallLogging(callLogging, callLoggingBlock)
+            // Configure the CallLogging plugin
+            configureCallLogging(callLogging, callLoggingBlock)
 
-        // Configure the CallLogging plugin
-        configureCallId(callId, callIdBlock)
+            // Configure the CallLogging plugin
+            configureCallId(callId, callIdBlock)
 
-        // Configure the RateLimit plugin
-        configureRateLimit(rateLimit, rateLimitBlock)
+            // Configure the RateLimit plugin
+            configureRateLimit(rateLimit, rateLimitBlock)
 
-        // Configure the CORS plugin
-        configureCORS(cors, corsBlock)
+            // Configure the CORS plugin
+            configureCORS(cors, corsBlock)
 
-        // Configure the compression plugin
-        configureCompression(compression, compressionBlock)
+            // Configure the compression plugin
+            configureCompression(compression, compressionBlock)
 
-        // Configure the PartialContent plugin
-        configurePartialContent(partialContent, partialContentBlock)
+            // Configure the PartialContent plugin
+            configurePartialContent(partialContent, partialContentBlock)
 
-        // Configure the HttpsRedirect plugin
-        configureDataConversion(dataConversion)
+            // Configure the HttpsRedirect plugin
+            configureDataConversion(dataConversion)
 
-        // Configure the validation plugin
-        configureRequestValidation(validation, requestValidationBlock)
+            // Configure the validation plugin
+            configureRequestValidation(validation, requestValidationBlock)
 
-        // Configure the Resources plugin
-        configureResources(resources)
+            // Configure the Resources plugin
+            configureResources(resources)
 
-        // Configure the status pages plugin
-        configureStatusPages(statusPages, statusPagesBlock)
+            // Configure the status pages plugin
+            configureStatusPages(statusPages, statusPagesBlock)
 
-        // Configure the DefaultHeaders plugin
-        configureDefaultHeaders(defaultHeaders, defaultHeadersBlock)
+            // Configure the DefaultHeaders plugin
+            configureDefaultHeaders(defaultHeaders, defaultHeadersBlock)
 
-        // Configure the CachingHeaders plugin
-        configureCachingHeaders(cachingHeaders, cachingHeadersBlock)
+            // Configure the CachingHeaders plugin
+            configureCachingHeaders(cachingHeaders, cachingHeadersBlock)
 
-        // Configure the ConditionalHeaders plugin
-        configureConditionalHeaders(conditionalHeaders, conditionalHeadersBlock)
+            // Configure the ConditionalHeaders plugin
+            configureConditionalHeaders(conditionalHeaders, conditionalHeadersBlock)
 
-        // Configure the ForwardedHeaders plugin
-        configureForwardedHeaders(forwardedHeaders, forwardedHeadersBlock)
+            // Configure the ForwardedHeaders plugin
+            configureForwardedHeaders(forwardedHeaders, forwardedHeadersBlock)
 
-        // Configure the XForwardedHeaders plugin
-        configureXForwardedHeaders(xForwardedHeaders, xForwardedHeadersBlock)
+            // Configure the XForwardedHeaders plugin
+            configureXForwardedHeaders(xForwardedHeaders, xForwardedHeadersBlock)
 
-        // Configure the HSTS plugin
-        configureHSTS(hsts, hstsBlock)
+            // Configure the HSTS plugin
+            configureHSTS(hsts, hstsBlock)
 
-        // Configure the AutoHeadResponse plugin
-        configureAutoHeadResponse(autoHeadResponse)
+            // Configure the AutoHeadResponse plugin
+            configureAutoHeadResponse(autoHeadResponse)
 
-        // Configure the XHttpMethodOverride plugin
-        configureXHttpMethodOverride(xHttpMethodOverride, xHttpMethodOverrideBlock)
+            // Configure the XHttpMethodOverride plugin
+            configureXHttpMethodOverride(xHttpMethodOverride, xHttpMethodOverrideBlock)
 
-        // Configure session with cookies
-        configureSession(auth) {
+            // Configure session with cookies
+            configureSession(auth) {
 //            it.jwtHs256.filterValues(EnabledConfig::enable).forEach { (name, config) ->
 //                cookie<UserSession>(name, config.cookie?.takeIf(EnabledConfig::enable))
 //            }
@@ -204,32 +205,33 @@ public fun Application.configure(
 //                cookie<UserSession>(name, config.cookie?.takeIf(EnabledConfig::enable))
 //            }
 
-            sessionBlock?.invoke(this)
+                sessionBlock?.invoke(this)
+            }
+
+            // Configure the security plugin with JWT
+            configureAuth(
+                preferredHttpsURL, get(), auth,
+                { provider, database, principalTable, roleTable -> null },
+                authBlock,
+            )
+
+            // Configure the FreeMarker plugin for templating .ftl files
+            configureFreeMarker(freeMarker, freeMarkerBlock)
+
+            // Configure the Swagger plugin
+            configureSwagger(swagger, swaggerBlock)
+
+            // Configure the Application monitoring plugin
+            configureApplicationMonitoring(applicationMonitoring)
+
+            // Configure the MicrometerMetrics plugin
+            configureMicrometerMetrics(micrometerMetrics, micrometerMetricsBlock)
+
+            // Configure the DropwizardMetrics plugin
+            configureDropwizardMetrics(dropwizardMetrics, dropwizardMetricsBlock)
+
+            // Configure the Shutdown plugin
+            configureShutdown(shutdown, shutdownBlock)
         }
-
-        // Configure the security plugin with JWT
-        configureAuth(
-            ktorServer.httpURL, get(), auth,
-            { provider, database, principalTable, roleTable -> null },
-            authBlock,
-        )
-
-        // Configure the FreeMarker plugin for templating .ftl files
-        configureFreeMarker(freeMarker, freeMarkerBlock)
-
-        // Configure the Swagger plugin
-        configureSwagger(swagger, swaggerBlock)
-
-        // Configure the Application monitoring plugin
-        configureApplicationMonitoring(applicationMonitoring)
-
-        // Configure the MicrometerMetrics plugin
-        configureMicrometerMetrics(micrometerMetrics, micrometerMetricsBlock)
-
-        // Configure the DropwizardMetrics plugin
-        configureDropwizardMetrics(dropwizardMetrics, dropwizardMetricsBlock)
-
-        // Configure the Shutdown plugin
-        configureShutdown(shutdown, shutdownBlock)
     }
 }

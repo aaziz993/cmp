@@ -3,7 +3,7 @@ package ai.tech.core.presentation.model.config
 import ai.tech.auth.forgotpassword.model.config.ForgotPasswordScreenConfig
 import ai.tech.auth.login.model.LoginScreenConfig
 import ai.tech.core.misc.auth.model.AuthResource
-import ai.tech.core.misc.model.config.presentation.DestinationsConfig
+import ai.tech.core.misc.model.config.presentation.DestinationConfig
 import ai.tech.home.about.model.config.AboutScreenConfig
 import customs.cms.model.CMSScreenConfig
 import ai.tech.home.main.model.config.MainScreenConfig
@@ -16,7 +16,7 @@ import kotlinx.serialization.Serializable
 import profile.model.ProfileScreenConfig
 
 @Serializable
-public data class SharedDestinationsConfig(
+public data class SharedDestinationConfig(
     val main: MainScreenConfig = MainScreenConfig("main"),
     val map: MapScreenConfig,
     val settings: SettingsScreenConfig = SettingsScreenConfig("settings"),
@@ -30,4 +30,4 @@ public data class SharedDestinationsConfig(
     val camera: CMSScreenConfig,
     val xray: CMSScreenConfig,
     val scales: CMSScreenConfig,
-) : DestinationsConfig
+) : DestinationConfig

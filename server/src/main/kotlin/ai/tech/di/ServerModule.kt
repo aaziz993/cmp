@@ -25,7 +25,7 @@ public class ServerModule {
     @OptIn(ExperimentalSerializationApi::class)
     @Single
     public fun provideHttpClient(config: ServerConfig): HttpClient =
-        with(config.ktorClient) {
+        with(config.httpClient) {
             createHttpClient {
                 install(HttpTimeout) {
                     this@with.requestTimeoutMillis?.let { requestTimeoutMillis }

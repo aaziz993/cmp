@@ -1,14 +1,14 @@
 package ai.tech.core.misc.model.config
 
 import ai.tech.core.data.database.model.config.DBProviderConfig
-import ai.tech.core.misc.plugin.auth.model.config.AuthProvidersConfig
 import ai.tech.core.misc.consul.model.config.ConsulConfig
 import ai.tech.core.misc.location.localization.model.config.LocalizationConfig
-import ai.tech.core.misc.model.config.client.KtorClientConfig
+import ai.tech.core.misc.model.config.client.HttpClientConfig
 import ai.tech.core.misc.model.config.di.KoinConfig
 import ai.tech.core.misc.model.config.server.ServerConfig
-import ai.tech.core.misc.model.config.server.keystore.ServerSSLConfig
+import ai.tech.core.misc.model.config.server.HostDeploymentConfig
 import ai.tech.core.misc.plugin.applicationmonitoring.model.config.ApplicationMonitoringConfig
+import ai.tech.core.misc.plugin.auth.model.config.AuthProvidersConfig
 import ai.tech.core.misc.plugin.authheadresponse.model.config.AutoHeadResponseConfig
 import ai.tech.core.misc.plugin.cachingheaders.model.config.CachingHeadersConfig
 import ai.tech.core.misc.plugin.callid.model.config.CallIdConfig
@@ -21,6 +21,7 @@ import ai.tech.core.misc.plugin.defaultheaders.model.config.DefaultHeadersConfig
 import ai.tech.core.misc.plugin.dropwizardmetrics.model.config.DropwizardMetricsConfig
 import ai.tech.core.misc.plugin.forwardedheaders.mode.config.ForwardedHeadersConfig
 import ai.tech.core.misc.plugin.forwardedheaders.mode.config.XForwardedHeadersConfig
+import ai.tech.core.misc.plugin.freemarker.model.config.FreeMarkerConfig
 import ai.tech.core.misc.plugin.graphql.model.config.GraphQLConfig
 import ai.tech.core.misc.plugin.hsts.model.config.HSTSConfig
 import ai.tech.core.misc.plugin.httpsredirect.model.config.HTTPSRedirectConfig
@@ -33,7 +34,6 @@ import ai.tech.core.misc.plugin.serialization.model.config.SerializationConfig
 import ai.tech.core.misc.plugin.shutdown.model.config.ShutDownConfig
 import ai.tech.core.misc.plugin.statuspages.model.config.StatusPagesConfig
 import ai.tech.core.misc.plugin.swagger.model.config.SwaggerConfig
-import ai.tech.core.misc.plugin.freemarker.model.config.FreeMarkerConfig
 import ai.tech.core.misc.plugin.validation.model.config.RequestValidationConfig
 import ai.tech.core.misc.plugin.websockets.model.config.WebSocketsConfig
 import ai.tech.core.misc.plugin.xhttpmethodoverride.model.config.XHttpMethodOverrideConfig
@@ -44,11 +44,10 @@ import kotlinx.serialization.Serializable
 public data class ServerConfig(
     override val application: ApplicationConfig,
     override val koin: KoinConfig? = null,
-    override val ktorClient: KtorClientConfig = KtorClientConfig(),
+    override val httpClient: HttpClientConfig = HttpClientConfig(),
     override val consul: ConsulConfig? = null,
     override val database: Map<String, DBProviderConfig>? = null,
     override val serialization: SerializationConfig? = null,
-    override val ssl: ServerSSLConfig? = null,
     override val httpsRedirect: HTTPSRedirectConfig? = null,
     override val routing: RoutingConfig? = null,
     override val websockets: WebSocketsConfig? = null,
@@ -78,8 +77,8 @@ public data class ServerConfig(
     override val micrometerMetrics: MicrometerMetricsConfig? = null,
     override val dropwizardMetrics: DropwizardMetricsConfig? = null,
     override val shutdown: ShutDownConfig? = null,
-    override val localization: LocalizationConfig,
-    override val validator: ValidatorConfig,
-    override val ktor: KtorServerConfig,
-    val presentation: ServerPresentationConfig?
+    override val localization: LocalizationConfig = LocalizationConfig(),
+    override val validator: ValidatorConfig = ValidatorConfig(),
+    override val presentation: ServerPresentationConfig,
+    override val host: HostDeploymentConfig,
 ) : ServerConfig

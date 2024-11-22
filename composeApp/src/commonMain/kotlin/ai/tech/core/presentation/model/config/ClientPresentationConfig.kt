@@ -12,9 +12,9 @@ public data class ClientPresentationConfigImpl(
     override val colorScheme: ColorSchemeJson? = null,
     override val shapes: ShapesJson = Shapes(),
     override val typography: TypographyJson = Typography(),
-    override val routeBase: String? = null,
+    override val route: String? = null,
     override val startDestination: String,
     override val signInRedirectDestination: String = startDestination,
     override val signOutRedirectDestination: String = startDestination,
-    override val destination: SharedDestinationsConfig
+    override val destination: SharedDestinationConfig
 ) : ClientPresentationConfig
