@@ -5,5 +5,5 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 public data class LocationConfig(
-    val crudLazyColumn: CRUDLazyColumnConfig = CRUDLazyColumnConfig()
-)
+    override val repository: CRUDLazyColumnConfig = CRUDLazyColumnConfig()
+) : SharedLocationConfig

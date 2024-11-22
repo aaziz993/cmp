@@ -1,11 +1,11 @@
-package ai.tech.wallet.crypto.model.config
+package ai.tech.about.model.config
 
 import ai.tech.core.misc.auth.model.AuthResource
 import ai.tech.core.presentation.model.config.ScreenConfig
 import kotlinx.serialization.Serializable
 
 @Serializable
-public data class CryptoScreenConfig(
-    override val route: String = "crypto",
+public data class AboutScreenConfig(
+    override val route: String = "about",
     override val auth: AuthResource? = null,
 ) : ScreenConfig

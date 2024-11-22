@@ -7,8 +7,12 @@ import io.ktor.server.routing.*
 import org.koin.core.qualifier.named
 import org.koin.ktor.ext.get
 
-public fun Routing.mapRouting(config: ServerConfigImpl) = with(config.ui) {
-    with(presentation.destination.map) {
-        CrudRouting("$database/$route/location", LocationKotysaCRUDRepository(get(named(database))))
+public fun Routing.mapRouting(config: ServerConfigImpl) =
+    with(config.ui) {
+        with(presentation.destination.map) {
+            CrudRouting(
+                "$database/$route/location",
+                LocationKotysaCRUDRepository(get(named(database))),
+            )
+        }
     }
-}

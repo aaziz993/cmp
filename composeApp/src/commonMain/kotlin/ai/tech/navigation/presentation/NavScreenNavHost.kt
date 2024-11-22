@@ -1,6 +1,6 @@
 package ai.tech.navigation.presentation
 
-import ai.tech.home.about.AboutScreen
+import ai.tech.about.AboutScreen
 import androidx.compose.animation.AnimatedContentTransitionScope
 import androidx.compose.animation.EnterTransition
 import androidx.compose.animation.ExitTransition
@@ -22,9 +22,9 @@ import ai.tech.auth.login.presentation.LoginScreen
 import ai.tech.auth.profile.presentation.ProfileScreen
 import ai.tech.core.misc.di.koinViewModel
 import ai.tech.core.presentation.event.navigator.NavigationAction
-import ai.tech.home.main.MainScreen
-import ai.tech.home.map.MapScreen
-import ai.tech.home.settings.SettingsScreen
+import ai.tech.main.MainScreen
+import ai.tech.map.MapScreen
+import ai.tech.settings.SettingsScreen
 import ai.tech.navigation.presentation.viewmodel.NavViewModel
 import ai.tech.wallet.balance.BalanceScreen
 import ai.tech.wallet.crypto.CryptoScreen

@@ -6,6 +6,6 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 public data class BalanceScreenConfig(
-    override val route: String,
+    override val route: String = "balance",
     override val auth: AuthResource? = null,
 ) : ScreenConfig

@@ -1,11 +1,11 @@
-package profile.model
+package ai.tech.auth.profile.model.config
 
-import core.auth.model.AuthResource
-import core.presentation.model.config.DestinationConfig
+import ai.tech.core.misc.auth.model.AuthResource
+import ai.tech.core.presentation.model.config.ScreenConfig
 import kotlinx.serialization.Serializable
 
 @Serializable
 public data class ProfileScreenConfig(
-    override val route: String,
+    override val route: String = "profile",
     override val auth: AuthResource,
-) : DestinationConfig
+) : ScreenConfig

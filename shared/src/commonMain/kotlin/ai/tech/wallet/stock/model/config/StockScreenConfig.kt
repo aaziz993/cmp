@@ -6,6 +6,6 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 public data class StockScreenConfig(
-    override val route: String,
+    override val route: String = "stock",
     override val auth: AuthResource? = null,
 ) : ScreenConfig

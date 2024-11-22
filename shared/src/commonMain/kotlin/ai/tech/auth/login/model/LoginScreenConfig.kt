@@ -6,8 +6,9 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 public data class LoginScreenConfig(
-    override val route: String,
+    override val route: String = "login",
 ) : ScreenConfig {
+
     override val auth: AuthResource?
         get() = null
 }

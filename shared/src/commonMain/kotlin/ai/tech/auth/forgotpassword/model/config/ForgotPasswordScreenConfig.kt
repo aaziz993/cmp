@@ -6,7 +6,7 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 public data class ForgotPasswordScreenConfig(
-    override val route: String,
+    override val route: String="forgotpassword",
 ) : ScreenConfig {
     override val auth: AuthResource?
         get() = null

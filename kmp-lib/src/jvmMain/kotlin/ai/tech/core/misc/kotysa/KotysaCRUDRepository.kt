@@ -4,7 +4,6 @@ import ai.tech.core.data.crud.CRUDRepository
 import ai.tech.core.data.crud.model.LimitOffset
 import ai.tech.core.data.crud.model.Order
 import ai.tech.core.data.expression.AggregateExpression
-import ai.tech.core.data.expression.AggregateExpression.Companion.count
 import ai.tech.core.data.expression.And
 import ai.tech.core.data.expression.Avg
 import ai.tech.core.data.expression.Between
@@ -29,15 +28,14 @@ import ai.tech.core.data.expression.Sum
 import ai.tech.core.data.expression.Value
 import ai.tech.core.data.expression.Variable
 import ai.tech.core.misc.kotysa.model.KotysaTable
-import ai.tech.core.misc.type.serializer.copy
 import ai.tech.core.misc.type.kClass
+import ai.tech.core.misc.type.serializer.copy
 import kotlin.reflect.KClass
 import kotlin.reflect.KTypeParameter
 import kotlin.reflect.full.declaredMemberProperties
 import kotlin.reflect.full.isSubclassOf
 import kotlin.reflect.full.memberFunctions
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.toList
 import kotlinx.datetime.TimeZone
 import kotlinx.serialization.InternalSerializationApi
 import kotlinx.serialization.json.Json
