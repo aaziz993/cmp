@@ -5,5 +5,5 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 public data class LocationConfig(
-    val crudTable: CRUDLazyColumnConfig = CRUDLazyColumnConfig()
+    val crudLazyColumn: CRUDLazyColumnConfig = CRUDLazyColumnConfig()
 )

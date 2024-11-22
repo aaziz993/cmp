@@ -7,8 +7,8 @@ import kotlinx.serialization.Serializable
 @Serializable
 public data class CRUDLazyColumnConfig(
     val repository: CRUDRepositoryConfig = CRUDRepositoryConfig(),
-    val readOnly: Boolean = false,
-    val paginationPageCount: Int = 10,
-    val multiSort: Boolean = true,
+    val isReadOnly: Boolean = false,
+    val isMultiSort: Boolean = true,
+    val showPageCount: Int = 10,
     val state: CRUDLazyColumnStateData = CRUDLazyColumnStateData()
 )
