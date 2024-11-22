@@ -20,7 +20,7 @@ public data class SSLConfig(
     val format: String = "PKCS12",
     val generate: Boolean = false,
     val rewrite: Boolean = false,
-    val port: Int = 8443,
+    val port: Int = 443,
     override val enable: Boolean = true
 ) : EnabledConfig
 

@@ -497,7 +497,9 @@ public fun <T : Any> Any.mapTo(
 ) {
 }
 
-public fun List<Map<String, Any?>>.deepMerge(): Map<String, Any?> = emptyMap()
+public fun List<Map<String, Any?>>.deepMerge(
+    override: Boolean = false
+): Map<String, Any?> = emptyMap()
 
 @Suppress("UNCHECKED_CAST")
 public fun <T : Any> T.reduce(

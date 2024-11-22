@@ -16,15 +16,22 @@ import io.ktor.client.HttpClient
 import io.ktor.client.plugins.HttpRequestTimeoutException
 import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
 import io.ktor.serialization.kotlinx.json.json
+import kotlinx.serialization.KSerializer
 import kotlinx.serialization.json.Json
+import kotlinx.serialization.serializer
 import org.lighthousegames.logging.KmLog
 import org.lighthousegames.logging.logging
 
 public class ConfigService<T : Any>(
+    private val serializer: KSerializer<T>,
     public val name: String = "application",
     public val formats: List<String> = listOf("properties", "yaml", "yml", "json"),
     private val readFile: suspend (String) -> String?,
 ) {
+
+    private val json = Json {
+        ignoreUnknownKeys = true
+    }
 
     private val decoders: Map<String, (String) -> Map<String, Any?>> = formats.associateWith(::decoder)
 
@@ -33,7 +40,7 @@ public class ConfigService<T : Any>(
 
         val application: ApplicationConfig = Json.Default.decodeFromAny(config["application"])
 
-        val fileConfigs = readFileConfigs(application)
+        val fileConfigs = readFileConfigs(application) + config
 
         val consul: ConsulConfig? = config["consul"]?.let { Json.Default.decodeFromAny(it) }
 
@@ -57,8 +64,10 @@ public class ConfigService<T : Any>(
 
         } ?: emptyMap()
 
-        application.configurations.map()
+        return Json.Default.decodeFromAny(serializer, listOf(consulConfigs + fileConfigs).deepMerge())
     }
+
+    private suspend fun readFileConfig(): Map<String, Any?> = readFileConfig(name, formats)
 
     @OptIn(InternalSerializationApi::class)
     @Suppress("UNCHECKED_CAST")
@@ -67,34 +76,32 @@ public class ConfigService<T : Any>(
             readFile("$path.$format")?.let(decoders[format]!!::invoke)
         }.deepMerge()
 
-    private suspend fun readFileConfig(): Map<String, Any?> = readFileConfig(name, formats)
-
     private suspend fun readFileConfigs(config: ApplicationConfig): Map<String, Any?> =
-        config.configurations.associateWith {
+        config.configurations.map {
             readFileConfig("${config.environment}/application-$it", formats)
-        }.filterValuesNotEmpty()
+        }.deepMerge()
 
     @OptIn(InternalSerializationApi::class)
     @Suppress("UNCHECKED_CAST")
-    private suspend fun KVClient.readConsulConfig(path: String, format: String) =
+    private suspend fun KVClient.readConsulConfig(path: String, format: String): Map<String, Any?> =
         getValue(path).mapNotNull(Value::decodedValue)
-            .fold(emptyMap<String, Any?>()) { acc, v -> acc + decoders[format]!!(v) }
+            .map { decoders[format]!!(it) }.deepMerge()
 
     private suspend fun readConsulConfigs(
         httpClient: HttpClient,
         address: String,
         applicationConfig: ApplicationConfig,
         config: Config,
-    ): Map<String, Map<String, Any?>> = with(config) {
+    ): Map<String, Any?> = with(config) {
         return try {
             val kvClient = KVClient(httpClient, address, aclToken)
 
-            getKeys(
-                applicationConfig.name,
-                applicationConfig.configurations.map { "$it/${applicationConfig.environment}" },
-            ).associateWith {
-                kvClient.readConsulConfig(it, format)
-            }.filterValuesNotEmpty()
+            with(applicationConfig) {
+                getKeys(
+                    name,
+                    configurations.map { "${environment}/$it" },
+                ).map { kvClient.readConsulConfig(it, format) }.deepMerge()
+            }
         }
         catch (e: HttpRequestTimeoutException) {
             if (failFast) {

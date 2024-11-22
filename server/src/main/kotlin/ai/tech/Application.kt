@@ -2,7 +2,6 @@ package ai.tech
 
 import ai.tech.core.data.filesystem.readResourceText
 import ai.tech.core.misc.config.ConfigService
-import ai.tech.core.misc.model.config.server.ServerConfig
 import ai.tech.core.misc.model.config.server.keyStore
 import ai.tech.core.misc.plugin.configure
 import ai.tech.di.ServerModule
@@ -12,11 +11,16 @@ import io.ktor.server.engine.*
 import io.ktor.server.netty.*
 import java.io.File
 import java.util.concurrent.TimeUnit
+import kotlinx.serialization.InternalSerializationApi
+import kotlinx.serialization.serializer
 import org.koin.ktor.ext.get
 import org.slf4j.LoggerFactory
+import ai.tech.core.misc.model.config.ServerConfig
+import org.koin.ksp.generated.*
 
+@OptIn(InternalSerializationApi::class)
 public suspend fun main(args: Array<String>) {
-    val serverConfig = ConfigService<ServerConfig> { readResourceText(it) }.readConfig()
+    val serverConfig = ConfigService<ServerConfig>(ServerConfig::class.serializer()) { readResourceText(it) }.readConfig()
 
     val server = embeddedServer(
         Netty,
@@ -51,7 +55,7 @@ private fun ApplicationEngine.Configuration.envConfig(config: ServerConfig) {
 }
 
 @Suppress("unused")
-public fun Application.module(config: ServerConfig) = configure(
+public fun Application.module (config: ServerConfig) = configure(
     config,
     { ServerModule().module },
     routingBlock = {

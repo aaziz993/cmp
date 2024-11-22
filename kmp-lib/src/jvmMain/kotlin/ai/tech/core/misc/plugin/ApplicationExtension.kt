@@ -1,9 +1,7 @@
 package ai.tech.core.misc.plugin
 
-import ai.tech.core.data.filesystem.readResourceText
 import ai.tech.core.misc.model.config.EnabledConfig
 import ai.tech.core.misc.model.config.server.ServerConfig
-import ai.tech.core.misc.network.http.client.createHttpClient
 import ai.tech.core.misc.plugin.applicationmonitoring.configureApplicationMonitoring
 import ai.tech.core.misc.plugin.auth.configureAuth
 import ai.tech.core.misc.plugin.authheadresponse.configureAutoHeadResponse
@@ -12,16 +10,18 @@ import ai.tech.core.misc.plugin.callid.configureCallId
 import ai.tech.core.misc.plugin.calllogging.configureCallLogging
 import ai.tech.core.misc.plugin.compression.configureCompression
 import ai.tech.core.misc.plugin.conditionalheaders.configureConditionalHeaders
-import ai.tech.core.misc.plugin.consul.configureConsul
+import ai.tech.core.misc.plugin.consul.configureConsulDiscovery
 import ai.tech.core.misc.plugin.cors.configureCORS
 import ai.tech.core.misc.plugin.dataconversion.configureDataConversion
 import ai.tech.core.misc.plugin.defaultheaders.configureDefaultHeaders
 import ai.tech.core.misc.plugin.dropwizardmetrics.configureDropwizardMetrics
 import ai.tech.core.misc.plugin.forwardedheaders.configureForwardedHeaders
 import ai.tech.core.misc.plugin.forwardedheaders.configureXForwardedHeaders
+import ai.tech.core.misc.plugin.freemarker.configureFreeMarker
 import ai.tech.core.misc.plugin.graphql.configureGraphQL
 import ai.tech.core.misc.plugin.hsts.configureHSTS
 import ai.tech.core.misc.plugin.httpsredirect.configureHttpsRedirect
+import ai.tech.core.misc.plugin.koin.configureKoin
 import ai.tech.core.misc.plugin.micrometermetrics.configureMicrometerMetrics
 import ai.tech.core.misc.plugin.partialcontent.configurePartialContent
 import ai.tech.core.misc.plugin.ratelimit.configureRateLimit
@@ -32,48 +32,38 @@ import ai.tech.core.misc.plugin.session.configureSession
 import ai.tech.core.misc.plugin.shutdown.configureShutdown
 import ai.tech.core.misc.plugin.statuspages.configureStatusPages
 import ai.tech.core.misc.plugin.swagger.configureSwagger
-import ai.tech.core.misc.plugin.freemarker.configureFreeMarker
-import ai.tech.core.misc.plugin.koin.configureKoin
 import ai.tech.core.misc.plugin.validation.configureRequestValidation
 import ai.tech.core.misc.plugin.websockets.configureWebSockets
 import ai.tech.core.misc.plugin.xhttpmethodoverride.configureXHttpMethodOverride
 import com.apurebase.kgraphql.GraphQL
 import freemarker.template.Configuration
 import io.github.smiley4.ktorswaggerui.dsl.PluginConfigDsl
-import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
-import io.ktor.http.HttpStatusCode
-import io.ktor.serialization.kotlinx.json.json
-import io.ktor.server.application.Application
-import io.ktor.server.auth.AuthenticationConfig
-import io.ktor.server.engine.ShutDownUrl
-import io.ktor.server.metrics.dropwizard.DropwizardMetricsConfig
-import io.ktor.server.metrics.micrometer.MicrometerMetricsConfig
-import io.ktor.server.plugins.cachingheaders.CachingHeadersConfig
-import io.ktor.server.plugins.callid.CallIdConfig
-import io.ktor.server.plugins.calllogging.CallLoggingConfig
-import io.ktor.server.plugins.compression.CompressionConfig
-import io.ktor.server.plugins.conditionalheaders.ConditionalHeadersConfig
-import io.ktor.server.plugins.contentnegotiation.ContentNegotiationConfig
-import io.ktor.server.plugins.cors.CORSConfig
-import io.ktor.server.plugins.defaultheaders.DefaultHeadersConfig
-import io.ktor.server.plugins.forwardedheaders.ForwardedHeadersConfig
-import io.ktor.server.plugins.forwardedheaders.XForwardedHeadersConfig
-import io.ktor.server.plugins.hsts.HSTSConfig
-import io.ktor.server.plugins.httpsredirect.HttpsRedirectConfig
-import io.ktor.server.plugins.methodoverride.XHttpMethodOverrideConfig
-import io.ktor.server.plugins.partialcontent.PartialContentConfig
-import io.ktor.server.plugins.ratelimit.RateLimitConfig
-import io.ktor.server.plugins.requestvalidation.RequestValidationConfig
-import io.ktor.server.plugins.statuspages.StatusPagesConfig
-import io.ktor.server.response.respondText
-import io.ktor.server.routing.Routing
-import io.ktor.server.routing.get
-import io.ktor.server.routing.routing
-import io.ktor.server.sessions.SessionsConfig
-import io.ktor.server.websocket.WebSockets
-import kotlin.collections.orEmpty
-import kotlinx.coroutines.runBlocking
-import kotlinx.serialization.json.Json
+import io.ktor.http.*
+import io.ktor.server.application.*
+import io.ktor.server.auth.*
+import io.ktor.server.engine.*
+import io.ktor.server.metrics.dropwizard.*
+import io.ktor.server.metrics.micrometer.*
+import io.ktor.server.plugins.cachingheaders.*
+import io.ktor.server.plugins.callid.*
+import io.ktor.server.plugins.calllogging.*
+import io.ktor.server.plugins.compression.*
+import io.ktor.server.plugins.conditionalheaders.*
+import io.ktor.server.plugins.contentnegotiation.*
+import io.ktor.server.plugins.cors.*
+import io.ktor.server.plugins.defaultheaders.*
+import io.ktor.server.plugins.forwardedheaders.*
+import io.ktor.server.plugins.hsts.*
+import io.ktor.server.plugins.httpsredirect.*
+import io.ktor.server.plugins.methodoverride.*
+import io.ktor.server.plugins.partialcontent.*
+import io.ktor.server.plugins.ratelimit.*
+import io.ktor.server.plugins.requestvalidation.*
+import io.ktor.server.plugins.statuspages.*
+import io.ktor.server.response.*
+import io.ktor.server.routing.*
+import io.ktor.server.sessions.*
+import io.ktor.server.websocket.*
 import org.koin.core.KoinApplication
 import org.koin.ktor.ext.get
 
@@ -111,19 +101,22 @@ public fun Application.configure(
     configureKoin(config, koinApplication)
 
     with(config) {
-
-        // Configure consul
-        with(application) {
-            "$name:$environment:${ktor.deployment.preferredSslPort}"
+        consul?.takeIf(EnabledConfig::enable)?.let {
+            configureConsulDiscovery(
+                get(),
+                it.address,
+                it.discovery,
+                "${application.name}:${application.environment}:${ktorServer.preferredSslPort}",
+                application.configurations,
+                ktorServer.httpURL,
+            )
         }
-
-        configureConsul(get(), consul)
 
         // Configure the Serialization plugin
         configureSerialization(serialization, serializationBlock)
 
         // Configure the HttpsRedirect plugin
-        configureHttpsRedirect(httpsRedirect, ktor.deployment.sslPort, httpsRedirectBlock)
+        configureHttpsRedirect(httpsRedirect, ktorServer.ssl?.port, httpsRedirectBlock)
 
         // Configure the Routing plugin
         configureRouting(routing) {
@@ -138,7 +131,7 @@ public fun Application.configure(
         }
 
         // Configure the Websockets plugin
-        configureWebSockets(websockets, ktor.deployment.wsURL, websocketsBlock)
+        configureWebSockets(websockets, ktorServer.wsURL, websocketsBlock)
 
         // Configure the Graphql plugin
         configureGraphQL(graphql, graphQLBlock)
@@ -216,7 +209,7 @@ public fun Application.configure(
 
         // Configure the security plugin with JWT
         configureAuth(
-            ktor.deployment.httpURL, get(), auth,
+            ktorServer.httpURL, get(), auth,
             { provider, database, principalTable, roleTable -> null },
             authBlock,
         )

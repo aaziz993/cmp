@@ -11,30 +11,9 @@ import kotlinx.coroutines.runBlocking
 @Suppress("FunctionName")
 public fun ConsulDiscovery(
     httpClient: HttpClient,
-    consulAddress: String,
-    serviceAddress: String,
-    config: Discovery,
-): ApplicationPlugin<Discovery> = createApplicationPlugin(
+    address: String,
+    config: Registration,
+): ApplicationPlugin<Registration> = createApplicationPlugin(
     "ConsulDiscovery",
     { config },
-) {
-    runBlocking {
-        AgentClient(httpClient, consulAddress).register(
-            Registration(
-                config.serviceName,
-                config.instanceId ?: config.serviceName,
-                tags = config.tags,
-                meta = config.meta,
-                checks = listOf(
-                    Registration.RegCheck(
-                        serviceAddress,
-                        interval = "${config.healthCheckInterval.inWholeMilliseconds}ms",
-                        deregisterCriticalServiceAfter = config.healthCheckCriticalTimeout?.inWholeMilliseconds?.let { "${it}ms" },
-                        header = config.header,
-                    ),
-                ),
-                enableTagOverride = false,
-            ),
-        )
-    }
-}
+) { runBlocking { AgentClient(httpClient, address).register(config) } }
