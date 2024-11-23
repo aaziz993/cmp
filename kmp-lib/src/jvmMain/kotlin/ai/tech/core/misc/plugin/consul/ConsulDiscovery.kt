@@ -1,5 +1,6 @@
 package ai.tech.core.misc.plugin.consul
 
+import ai.tech.core.misc.consul.client.agent.model.Check
 import ai.tech.core.misc.consul.client.agent.model.Registration
 import ai.tech.core.misc.consul.model.config.Discovery
 import ai.tech.core.misc.consul.server.plugin.ConsulDiscovery
@@ -13,28 +14,29 @@ import io.ktor.utils.io.KtorDsl
 @KtorDsl
 public fun Application.configureConsulDiscovery(
     httpClient: HttpClient,
-    consulAddress: String,
+    address: String,
     config: Discovery?,
     instanceId: String? = null,
-    tags: List<String> = emptyList(),
     serviceAddress: String,
+    tags: List<String> = emptyList(),
 ) = config?.takeIf(EnabledConfig::enable)?.let {
     val registration =
         Registration(
             it.serviceName,
             it.instanceId ?: instanceId,
-            tags = it.tags.ifEmpty { tags },
+            it.tags ?: tags,
+            serviceAddress,
             meta = it.meta,
             checks = listOf(
-                Registration.RegCheck(
-                    serviceAddress,
-                    interval = "${it.healthCheckInterval.inWholeMilliseconds}ms",
-                    deregisterCriticalServiceAfter = it.healthCheckCriticalTimeout?.inWholeMilliseconds?.let { "${it}ms" },
+                Check(
+                    interval =it.healthCheckInterval,
+                    deregisterCriticalServiceAfter = it.healthCheckCriticalTimeout,
                     header = it.header,
                 ),
             ),
             enableTagOverride = false,
+            serviceWeights = it.serviceWeights,
         )
 
-    install(ConsulDiscovery(httpClient, consulAddress, registration))
+    install(ConsulDiscovery(httpClient, address, registration))
 }

@@ -1,6 +1,8 @@
 package ai.tech.core.misc.consul.client.session.model
 
+import ai.tech.core.misc.consul.client.serializer.ConsulDurationSerializer
 import ai.tech.core.misc.type.serializer.bignum.BigIntegerSerial
+import kotlin.time.Duration
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
@@ -16,8 +18,9 @@ public data class SessionInfo(
     val localDelay: Long,
     @SerialName("Behavior")
     val behavior: String,
+    @Serializable(with = ConsulDurationSerializer::class)
     @SerialName("TTL")
-    val ttl: String? = null,
+    val ttl: Duration? = null,
     @SerialName("Checks")
     val checks: List<String>,
     @SerialName("NodeChecks")

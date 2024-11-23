@@ -2,7 +2,6 @@ package ai.tech.core.misc.auth.keycloak
 
 import ai.tech.core.data.keyvalue.AbstractKeyValue
 import ai.tech.core.misc.auth.client.ClientBearerAuthService
-import ai.tech.core.misc.auth.client.model.config.oauth.ClientOAuthConfig
 import ai.tech.core.misc.auth.keycloak.client.admin.KeycloakAdminClient
 import ai.tech.core.misc.auth.keycloak.client.admin.model.ExecuteActionsEmail
 import ai.tech.core.misc.auth.keycloak.client.admin.model.ResetPassword
@@ -11,33 +10,67 @@ import ai.tech.core.misc.auth.keycloak.client.admin.model.UserRepresentation
 import ai.tech.core.misc.auth.keycloak.client.token.KeycloakTokenClient
 import ai.tech.core.misc.auth.model.User
 import ai.tech.core.misc.auth.model.bearer.Token
-import ai.tech.core.misc.network.http.client.configApi
-import de.jensklingenberg.ktorfit.Ktorfit
-import io.ktor.client.HttpClient
+import ai.tech.core.misc.auth.model.bearer.TokenImpl
+import ai.tech.core.misc.network.http.client.httpUrl
+import io.ktor.client.*
+import io.ktor.client.call.*
+import io.ktor.client.plugins.auth.*
+import io.ktor.client.plugins.auth.providers.*
+import io.ktor.client.request.forms.*
+import io.ktor.http.*
 
 public class KeycloakService(
-    httpClient: HttpClient,
     name: String,
-    public val config: ClientOAuthConfig,
+    httpClient: HttpClient,
+    public val address: String,
+    public val realm: String,
+    clientId: String,
     keyValue: AbstractKeyValue,
 ) : ClientBearerAuthService(
-    httpClient,
     name,
-    config.address,
     "realms/{realm}/protocol/openid-connect/token",
-    config.clientId,
+    clientId,
     keyValue,
 ) {
 
+    override val authHttpClient: HttpClient = httpClient.config {
+        install(Auth) {
+            bearer {
+                loadTokens { getToken()?.let { BearerTokens(it.accessToken, it.refreshToken) } }
+
+                refreshTokens {
+                    val token: TokenImpl = client.submitForm(
+                        url = "$address/$tokenUri",
+                        formParameters = parameters {
+                            append("grant_type", "refresh_token")
+                            append("client_id", clientId)
+                            append("refresh_token", oldTokens?.refreshToken.orEmpty())
+                        },
+                    ) { markAsRefreshTokenRequest() }.body()
+
+                    setToken(token)
+
+                    BearerTokens(token.accessToken, oldTokens?.refreshToken!!)
+                }
+
+                sendWithoutRequest { request ->
+                    request.url.host == address.httpUrl.host
+                }
+            }
+        }
+    }
+
     private val tokenClient = KeycloakTokenClient(
-        Ktorfit.Builder().httpClient(httpClient.configApi()).baseUrl(config.address).build(),
-        config.realm,
-        config.clientId,
+        httpClient,
+        address,
+        realm,
+        clientId,
     )
 
     private val adminClient: KeycloakAdminClient = KeycloakAdminClient(
-        Ktorfit.Builder().httpClient(httpClient).baseUrl(config.address).build(),
-        config.realm,
+        authHttpClient,
+        address,
+        realm,
     )
 
     override suspend fun getToken(username: String, password: String): Token = tokenClient.getToken(username, password)

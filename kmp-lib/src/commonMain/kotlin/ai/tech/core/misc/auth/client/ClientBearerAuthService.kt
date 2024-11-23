@@ -4,57 +4,22 @@ import ai.tech.core.data.keyvalue.AbstractKeyValue
 import ai.tech.core.data.keyvalue.get
 import ai.tech.core.misc.auth.model.bearer.Token
 import ai.tech.core.misc.auth.model.bearer.TokenImpl
-import ai.tech.core.misc.network.http.client.configApi
-import ai.tech.core.misc.network.http.client.httpUrl
-import io.ktor.client.HttpClient
-import io.ktor.client.call.body
-import io.ktor.client.plugins.auth.Auth
-import io.ktor.client.plugins.auth.authProvider
-import io.ktor.client.plugins.auth.providers.BearerAuthProvider
-import io.ktor.client.plugins.auth.providers.BearerTokens
-import io.ktor.client.plugins.auth.providers.bearer
-import io.ktor.client.request.forms.submitForm
-import io.ktor.http.parameters
+import io.ktor.client.*
+import io.ktor.client.plugins.auth.*
+import io.ktor.client.plugins.auth.providers.*
 import kotlinx.datetime.Clock.System
 
 public abstract class ClientBearerAuthService(
-    httpClient: HttpClient,
     override val name: String,
-    public val address: String,
     public val tokenUri: String,
     public val clientId: String,
     public val keyValue: AbstractKeyValue
 ) : ClientAuthService {
 
+    public abstract val authHttpClient: HttpClient
+
     private val tokenKey = "${name}_token"
     private val tokenEpochSecondsKey = "${name}_token_epoch_seconds"
-
-    public val httpClient: HttpClient = httpClient.configApi {
-        install(Auth) {
-            bearer {
-                loadTokens { getToken()?.let { BearerTokens(it.accessToken, it.refreshToken) } }
-
-                refreshTokens {
-                    val token: TokenImpl = client.submitForm(
-                        url = "$address/$tokenUri",
-                        formParameters = parameters {
-                            append("grant_type", "refresh_token")
-                            append("client_id", clientId)
-                            append("refresh_token", oldTokens?.refreshToken.orEmpty())
-                        },
-                    ) { markAsRefreshTokenRequest() }.body()
-
-                    setToken(token)
-
-                    BearerTokens(token.accessToken, oldTokens?.refreshToken!!)
-                }
-
-                sendWithoutRequest { request ->
-                    request.url.host == address.httpUrl.host
-                }
-            }
-        }
-    }
 
     protected abstract suspend fun getToken(username: String, password: String): Token
 
@@ -73,7 +38,7 @@ public abstract class ClientBearerAuthService(
 
     final override suspend fun authOut() {
         removeToken()
-        httpClient.authProvider<BearerAuthProvider>()?.clearToken()
+        authHttpClient.authProvider<BearerAuthProvider>()?.clearToken()
     }
 
     final override suspend fun isAuth(): Boolean =

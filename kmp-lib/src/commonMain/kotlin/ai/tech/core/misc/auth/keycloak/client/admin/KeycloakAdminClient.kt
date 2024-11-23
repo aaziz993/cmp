@@ -5,14 +5,18 @@ import ai.tech.core.misc.auth.keycloak.client.admin.model.ResetPassword
 import ai.tech.core.misc.auth.keycloak.client.admin.model.RoleRepresentation
 import ai.tech.core.misc.auth.keycloak.client.admin.model.UserInfo
 import ai.tech.core.misc.auth.keycloak.client.admin.model.UserRepresentation
+import ai.tech.core.misc.network.http.client.AbstractApiHttpClient
 import ai.tech.core.misc.type.serializer.encodeAnyToString
 import ai.tech.core.misc.type.serializer.encodeToAny
-import de.jensklingenberg.ktorfit.Ktorfit
-import kotlin.collections.orEmpty
+import io.ktor.client.*
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.json.Json
 
-public class KeycloakAdminClient(ktorfit: Ktorfit, public val realm: String) {
+public class KeycloakAdminClient(
+    httpClient: HttpClient,
+    public val address: String,
+    public val realm: String
+) : AbstractApiHttpClient(httpClient, address) {
 
     private val api = ktorfit.createKeycloakAdminApi()
 

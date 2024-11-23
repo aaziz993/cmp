@@ -1,5 +1,6 @@
 package ai.tech.core.misc.consul.client.agent.model
 
+import ai.tech.core.misc.consul.client.serializer.ConsulDurationSerializer
 import kotlin.time.Duration
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
@@ -7,17 +8,19 @@ import kotlinx.serialization.Serializable
 @Serializable
 public data class Check(
     @SerialName("Name")
-    val name: String,
+    val name: String? = null,
     @SerialName("Args")
     val args: List<String>? = null,
     @SerialName("ID")
-    val id: String,
+    val id: String? = null,
+    @Serializable(with = ConsulDurationSerializer::class)
     @SerialName("Interval")
-    val interval: String? = null,
+    val interval: Duration? = null,
     @SerialName("Notes")
     val notes: String? = null,
+    @Serializable(with = ConsulDurationSerializer::class)
     @SerialName("DeregisterCriticalServiceAfter")
-    val deregisterCriticalServiceAfter: String? = null,
+    val deregisterCriticalServiceAfter: Duration? = null,
     @SerialName("AliasNode")
     val aliasNode: String? = null,
     @SerialName("AliasService")
@@ -36,6 +39,7 @@ public data class Check(
     val body: String? = null,
     @SerialName("Header")
     val header: Map<String, List<String>>? = null,
+    @Serializable(with = ConsulDurationSerializer::class)
     @SerialName("Timeout")
     val timeout: Duration? = null,
     @SerialName("OutputMaxSize")
@@ -46,8 +50,9 @@ public data class Check(
     val tlsSkipVerify: Boolean? = null,
     @SerialName("TCP")
     val tcp: String? = null,
+    @Serializable(with = ConsulDurationSerializer::class)
     @SerialName("TTL")
-    val ttl: String? = null,
+    val ttl: Duration? = null,
     @SerialName("ServiceID")
     val serviceId: String? = null,
     @SerialName("Status")
@@ -57,7 +62,7 @@ public data class Check(
     @SerialName("FailureBeforeCritical")
     val failureBeforeCritical: Int? = null,
     @SerialName("ServiceTags")
-    val serviceTags: List<String>
+    val serviceTags: List<String>? = null
 ) {
 
     init {

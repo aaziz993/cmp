@@ -1,13 +1,16 @@
 package ai.tech.core.misc.auth.keycloak.client.token
 
 import ai.tech.core.misc.auth.keycloak.client.token.model.TokenResponse
+import ai.tech.core.misc.network.http.client.AbstractApiHttpClient
 import de.jensklingenberg.ktorfit.Ktorfit
+import io.ktor.client.HttpClient
 
 public class KeycloakTokenClient(
-    ktorfit: Ktorfit,
+    httpClient: HttpClient,
+    public val address: String,
     public val realm: String,
     public val clientId: String
-) {
+) : AbstractApiHttpClient(httpClient, address) {
 
     private val api = ktorfit.createKeycloakTokenApi()
 

@@ -64,17 +64,3 @@ public suspend fun MultiPartData.readParts(): List<PartData> {
 }
 
 public suspend fun MultiPartData.readFormData(): Map<String?, String> = readParts().associate { it.name to (it as PartData.FormItem).value }
-
-public fun HttpClient.configApi(block: HttpClientConfig<*>.() -> Unit = {}): HttpClient = config {
-    block()
-
-    install(ContentNegotiation) {
-        json(
-            Json {
-                isLenient = true
-                ignoreUnknownKeys = true
-                explicitNulls = false
-            },
-        )
-    }
-}
