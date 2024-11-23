@@ -80,15 +80,17 @@ public class CommonModule {
         config: ClientConfigImpl,
         httpClient: HttpClient,
         keyValue: SettingsKeyValue
-    ): ClientAuthService {
-        require(config.auth.providerConfig.provider == "keycloak") {
+    ): ClientAuthService = with(config.ui.auth) {
+        require(providerConfig.provider == "keycloak") {
             "Only keycloak auth provider is supported for now."
         }
 
         return KeycloakService(
+            providerName,
             httpClient,
-            config.auth.provider,
-            config.auth.providerConfig,
+            providerConfig.address,
+            providerConfig.realm,
+            providerConfig.clientId,
             keyValue,
         )
     }

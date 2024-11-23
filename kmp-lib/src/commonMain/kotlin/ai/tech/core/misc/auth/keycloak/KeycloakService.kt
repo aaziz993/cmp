@@ -10,55 +10,23 @@ import ai.tech.core.misc.auth.keycloak.client.admin.model.UserRepresentation
 import ai.tech.core.misc.auth.keycloak.client.token.KeycloakTokenClient
 import ai.tech.core.misc.auth.model.User
 import ai.tech.core.misc.auth.model.bearer.Token
-import ai.tech.core.misc.auth.model.bearer.TokenImpl
-import ai.tech.core.misc.network.http.client.httpUrl
 import io.ktor.client.*
-import io.ktor.client.call.*
-import io.ktor.client.plugins.auth.*
-import io.ktor.client.plugins.auth.providers.*
-import io.ktor.client.request.forms.*
-import io.ktor.http.*
 
 public class KeycloakService(
     name: String,
     httpClient: HttpClient,
-    public val address: String,
+    address: String,
     public val realm: String,
     clientId: String,
     keyValue: AbstractKeyValue,
 ) : ClientBearerAuthService(
     name,
+    httpClient,
+    address,
     "realms/{realm}/protocol/openid-connect/token",
     clientId,
     keyValue,
 ) {
-
-    override val authHttpClient: HttpClient = httpClient.config {
-        install(Auth) {
-            bearer {
-                loadTokens { getToken()?.let { BearerTokens(it.accessToken, it.refreshToken) } }
-
-                refreshTokens {
-                    val token: TokenImpl = client.submitForm(
-                        url = "$address/$tokenUri",
-                        formParameters = parameters {
-                            append("grant_type", "refresh_token")
-                            append("client_id", clientId)
-                            append("refresh_token", oldTokens?.refreshToken.orEmpty())
-                        },
-                    ) { markAsRefreshTokenRequest() }.body()
-
-                    setToken(token)
-
-                    BearerTokens(token.accessToken, oldTokens?.refreshToken!!)
-                }
-
-                sendWithoutRequest { request ->
-                    request.url.host == address.httpUrl.host
-                }
-            }
-        }
-    }
 
     private val tokenClient = KeycloakTokenClient(
         httpClient,

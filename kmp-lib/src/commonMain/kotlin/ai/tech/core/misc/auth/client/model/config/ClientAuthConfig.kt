@@ -6,10 +6,10 @@ import kotlinx.serialization.Transient
 
 @Serializable
 public data class ClientAuthConfig(
-    val provider: String,
+    val providerName: String,
     val oauth: Map<String, ClientOAuthConfig> = emptyMap(),
 ) {
 
     @Transient
-    public val providerConfig: ClientOAuthConfig = oauth[provider]!!
+    public val providerConfig: ClientOAuthConfig = oauth[providerName]!!
 }

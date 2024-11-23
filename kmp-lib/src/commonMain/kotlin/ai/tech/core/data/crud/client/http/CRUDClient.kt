@@ -3,19 +3,16 @@
 package ai.tech.core.data.crud.client.http
 
 import ai.tech.core.data.crud.CRUDRepository
-import ai.tech.core.data.crud.http.createCRUDApi
 import ai.tech.core.data.crud.model.LimitOffset
 import ai.tech.core.data.crud.model.Order
 import ai.tech.core.data.expression.AggregateExpression
 import ai.tech.core.data.expression.BooleanVariable
 import ai.tech.core.data.expression.Variable
 import ai.tech.core.misc.auth.client.ClientAuthService
-import ai.tech.core.misc.type.serializer.decodeAnyFromJsonElement
+import ai.tech.core.misc.network.http.client.AbstractApiHttpClient
 import ai.tech.core.misc.type.serializer.decodeAnyFromString
 import ai.tech.core.misc.type.serializer.json
-import de.jensklingenberg.ktorfit.Ktorfit
 import io.ktor.client.*
-import io.ktor.client.plugins.HttpResponseValidator
 import io.ktor.client.request.forms.*
 import io.ktor.client.statement.*
 import io.ktor.http.*
@@ -28,29 +25,14 @@ import kotlinx.serialization.PolymorphicSerializer
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonArray
-import kotlinx.serialization.json.JsonObject
-import kotlinx.serialization.json.JsonPrimitive
-import kotlinx.serialization.json.long
 import kotlinx.serialization.serializer
 
 public open class CRUDClient<T : Any>(
     public val serializer: KSerializer<T>,
     httpClient: HttpClient,
-    public val path: String,
+    public val address: String,
     public val authService: ClientAuthService? = null,
-) : CRUDRepository<T> {
-
-    private val ktorfit = Ktorfit.Builder().httpClient(
-        httpClient.config {
-            HttpResponseValidator {
-                validateResponse { response ->
-                    when (response.status.value) {
-
-                    }
-                }
-            }
-        },
-    ).baseUrl(path).build()
+) : AbstractApiHttpClient(httpClient, address), CRUDRepository<T> {
 
     private val api = ktorfit.createCRUDApi()
 

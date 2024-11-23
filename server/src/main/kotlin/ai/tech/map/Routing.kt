@@ -11,8 +11,8 @@ public fun Routing.mapRouting(config: ServerConfigImpl) =
     with(config.ui) {
         with(presentation.destination.map) {
             CrudRouting(
-                "$database/$route/location",
-                LocationKotysaCRUDRepository(get(named(database)), location.repository.timeZone),
+                "$databaseName/$route/location",
+                LocationKotysaCRUDRepository(get(named(databaseName)), location.repository.timeZone),
                 location.repository.readAuth,
                 location.repository.writeAuth,
             )
