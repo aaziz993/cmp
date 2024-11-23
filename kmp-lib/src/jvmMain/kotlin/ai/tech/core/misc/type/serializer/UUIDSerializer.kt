@@ -1,4 +1,4 @@
-package ai.tech.core.misc.type.model
+package ai.tech.core.misc.type.serializer
 
 import ai.tech.core.misc.type.serializer.primitive.PrimitiveStringSerializer
 import kotlinx.serialization.Serializable

@@ -12,7 +12,9 @@ public fun Routing.mapRouting(config: ServerConfigImpl) =
         with(presentation.destination.map) {
             CrudRouting(
                 "$database/$route/location",
-                LocationKotysaCRUDRepository(get(named(database))),
+                LocationKotysaCRUDRepository(get(named(database)), location.repository.timeZone),
+                location.repository.readAuth,
+                location.repository.writeAuth,
             )
         }
     }
