@@ -1,5 +1,7 @@
 package ai.tech.core.misc.plugin
 
+import ai.tech.core.misc.health.registerDBHealthCheck
+import ai.tech.core.misc.health.registerHttpHealthCheck
 import ai.tech.core.misc.model.config.EnabledConfig
 import ai.tech.core.misc.model.config.server.ServerConfig
 import ai.tech.core.misc.plugin.applicationmonitoring.configureApplicationMonitoring
@@ -66,6 +68,9 @@ import io.ktor.server.sessions.*
 import io.ktor.server.websocket.*
 import org.koin.core.KoinApplication
 import org.koin.ktor.ext.get
+import org.lighthousegames.logging.logging
+
+private val appLog = logging("Application")
 
 public fun Application.configure(
     config: ServerConfig,
@@ -107,9 +112,11 @@ public fun Application.configure(
                 it.address,
                 it.discovery,
                 "${application.name}:${application.environment}:${host.preferredSslPort}",
-                application.configurations,
                 host.preferredHttpsURL,
-            )
+                application.configurations,
+            ) { exception, attempt ->
+                appLog.w(exception) { "Couldn't register in consul \"${it.address}\" in attempt \"$attempt\"" }
+            }
         }
 
         with(host) {
@@ -121,12 +128,12 @@ public fun Application.configure(
 
             // Configure the Routing plugin
             configureRouting(routing) {
+                auth?.oauth?.filterValues(EnabledConfig::enable)?.forEach { name, config -> registerHttpHealthCheck(get(), "auth/$name", config.address) }
+
+                database?.filterValues(EnabledConfig::enable)?.forEach { name, config -> registerDBHealthCheck("db/$name", config.connection) }
+
                 consul?.takeIf(EnabledConfig::enable)?.discovery?.takeIf(EnabledConfig::enable)?.let {
-                    routing {
-                        get(it.healthCheckPath) {
-                            call.respondText("Healthy", status = HttpStatusCode.OK)
-                        }
-                    }
+                    get(it.healthCheckPath) { call.respond(HttpStatusCode.OK) }
                 }
                 routingBlock?.invoke(this)
             }

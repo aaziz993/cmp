@@ -12,6 +12,7 @@ import kotlinx.serialization.InternalSerializationApi
 import ai.tech.core.misc.type.deepMerge
 import ai.tech.core.misc.type.multiple.filterValuesNotEmpty
 import ai.tech.core.misc.type.serializer.decodeFromAny
+import ai.tech.core.misc.util.run
 import io.ktor.client.HttpClient
 import io.ktor.client.plugins.HttpRequestTimeoutException
 import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
@@ -94,13 +95,20 @@ public class ConfigService<T : Any>(
         config: Config,
     ): Map<String, Any?> = with(config) {
         return try {
-            val kvClient = KVClient(httpClient, address, aclToken)
+            return run(
+                config.retry,
+                { exception, attempt ->
+                    log.w(exception) { "Couldn't load consul configuration from \"$address\" in attempt \"$attempt\"" }
+                },
+            ) {
+                val kvClient = KVClient(httpClient, address, aclToken)
 
-            with(applicationConfig) {
-                getKeys(
-                    name,
-                    configurations.map { "${environment}/$it" },
-                ).map { kvClient.readConsulConfig(it, format) }.deepMerge()
+                with(applicationConfig) {
+                    getKeys(
+                        name,
+                        configurations.map { "${environment}/$it" },
+                    ).map { kvClient.readConsulConfig(it, format) }.deepMerge()
+                }
             }
         }
         catch (e: HttpRequestTimeoutException) {
@@ -108,7 +116,7 @@ public class ConfigService<T : Any>(
                 throw e
             }
 
-            log.w(e) { "Couldn't load consul configuration from: $address}" }
+            log.w(e) { "Couldn't load consul configuration from \"$address\"" }
 
             emptyMap()
         }
@@ -121,6 +129,6 @@ public class ConfigService<T : Any>(
 
     public companion object {
 
-        internal val log: KmLog = logging()
+        private val log: KmLog = logging("ConfigService")
     }
 }

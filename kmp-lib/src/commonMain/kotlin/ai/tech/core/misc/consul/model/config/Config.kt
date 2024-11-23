@@ -1,6 +1,7 @@
 package ai.tech.core.misc.consul.model.config
 
 import ai.tech.core.misc.model.config.EnabledConfig
+import ai.tech.core.misc.util.model.Retry
 import kotlinx.serialization.Serializable
 
 @Serializable
@@ -13,9 +14,10 @@ public data class Config(
     val dataKey: String? = null,
     val format: String = "yaml",
     val aclToken: String? = null,
+    val retry: Retry = Retry(),
     val failFast: Boolean = false,
     override val enable: Boolean = true,
-):EnabledConfig {
+) : EnabledConfig {
 
     public fun getKeys(applicationName: String, profiles: List<String> = emptyList()): List<String> {
         val dataKeyPart = dataKey.orEmpty()

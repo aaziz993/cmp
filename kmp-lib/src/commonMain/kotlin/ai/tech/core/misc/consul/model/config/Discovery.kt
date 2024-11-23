@@ -2,6 +2,7 @@ package ai.tech.core.misc.consul.model.config
 
 import ai.tech.core.misc.consul.client.catalog.model.ServiceWeights
 import ai.tech.core.misc.model.config.EnabledConfig
+import ai.tech.core.misc.util.model.Retry
 import kotlin.time.Duration
 import kotlinx.serialization.Serializable
 
@@ -18,5 +19,7 @@ public data class Discovery(
     val healthCheckPath: String = "/health",
     val healthCheckInterval: Duration,
     val healthCheckCriticalTimeout: Duration? = null,
+    val retry: Retry = Retry(),
+    val failFast: Boolean = false,
     override val enable: Boolean = true
 ) : EnabledConfig

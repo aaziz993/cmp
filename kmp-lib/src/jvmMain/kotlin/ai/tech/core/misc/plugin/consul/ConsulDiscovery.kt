@@ -19,6 +19,7 @@ public fun Application.configureConsulDiscovery(
     instanceId: String? = null,
     serviceAddress: String,
     tags: List<String> = emptyList(),
+    failureBlock: (Exception, attempt: Int) -> Unit = { _, _ -> },
 ) = config?.takeIf(EnabledConfig::enable)?.let {
     val registration =
         Registration(
@@ -29,7 +30,7 @@ public fun Application.configureConsulDiscovery(
             meta = it.meta,
             checks = listOf(
                 Check(
-                    interval =it.healthCheckInterval,
+                    interval = it.healthCheckInterval,
                     deregisterCriticalServiceAfter = it.healthCheckCriticalTimeout,
                     header = it.header,
                 ),
@@ -38,5 +39,5 @@ public fun Application.configureConsulDiscovery(
             serviceWeights = it.serviceWeights,
         )
 
-    install(ConsulDiscovery(httpClient, address, registration))
+    install(ConsulDiscovery(httpClient, address, registration, it.retry, it.failFast, failureBlock))
 }
