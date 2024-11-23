@@ -55,7 +55,7 @@ internal class BasePlugin : Plugin<Project> {
         }
 
         // Code format check and fix
-        extensions.configure<SpotlessExtension>(::configureSpotlessExtension)
+//        extensions.configure<SpotlessExtension>(::configureSpotlessExtension)
 
         tasks.withType<SpotlessApply> {
             dependsOn("synchronizeRootFiles")

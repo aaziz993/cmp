@@ -1,14 +1,10 @@
 package ai.tech.core.misc.kotysa
 
-import ai.tech.core.data.database.model.config.DBTableConfig
 import ai.tech.core.data.database.model.config.DBProviderConfig
+import ai.tech.core.data.database.model.config.DBTableConfig
 import ai.tech.core.data.database.model.config.TableCreation
-import ai.tech.core.misc.r2dbc.createR2dbcConnectionFactory
+import ai.tech.core.data.database.model.config.r2dbcConnectionFactory
 import ai.tech.core.misc.type.multiple.whileIndexed
-import java.lang.IllegalStateException
-import java.lang.UnsupportedOperationException
-import kotlin.collections.contains
-import kotlin.collections.single
 import kotlin.reflect.KClass
 import kotlin.reflect.full.declaredMemberProperties
 import org.reflections.Reflections
@@ -51,7 +47,7 @@ public fun <T : Any, U : Any> ForeignKey<T, U>.referencedTables(tables: List<Tab
 }
 
 public suspend fun createKotysaR2dbcSqlClient(config: DBProviderConfig): R2dbcSqlClient {
-    val r2dbcConnectionFactory = createR2dbcConnectionFactory(config.connection)
+    val r2dbcConnectionFactory = config.connection.r2dbcConnectionFactory
 
     val createTables: List<Pair<List<Table<*>>, TableCreation>>
 

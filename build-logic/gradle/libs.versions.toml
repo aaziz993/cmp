@@ -56,10 +56,10 @@ sarxos-webcam = "0.3.12"
 commons-net = "3.11.0"
 sshj = "0.38.0"
 jsch = "0.1.55"
-# Kotlinß
+# Kotlin
 kotlin = "2.0.21"
 # compiler processor for generating code during compilation
-ksp = "2.0.21-1.0.25"
+ksp = "2.0.21-1.0.28"
 # multiplatform logging
 km-logging = "1.5.0"
 kotlinx-datetime = "0.6.1"
@@ -68,7 +68,7 @@ kotlinx-serialization = "1.7.3"
 kotlinx-serialization-csv = "0.0.18"
 kotlinx-serialization-smile-core = "0.2.0"
 serialization-msgpack = "0.5.5"
-xmlutil-serialization = "0.86.3"
+xmlutil-serialization = "0.90.1"
 knbt = "0.11.5"
 tomlkt = "0.3.7"
 yamlkt = "0.13.0"
@@ -164,6 +164,7 @@ postgresql = "42.7.4"
 mysql-connector-j = "9.1.0"
 sqlite-jdbc = "3.47.0.0"
 mssql-jdbc = "12.8.1.jre11"
+hikari = "6.2.1"
 # R2DBC
 r2dbc-pool = "1.0.1.RELEASE"
 r2dbc-h2 = "1.0.0.RELEASE"
@@ -190,9 +191,15 @@ kgraphql = "0.19.0"
 # Metrics
 prometheus = "1.12.2"
 dropwizard = "4.2.25"
+cohort = "2.6.0"
+cohort-http = "2.4.1"
 # Koin
 koin = "4.0.0"
-koin-annotations = "2.0.0-Beta1"
+koin-annotations = "2.0.0-Beta2"
+# task scheduler
+ktor-server-task-scheduling = "2.1.1"
+# handle gracefull shutdown
+suspendapp = "0.4.1-alpha.5"
 
 [libraries]
 # Gradle
@@ -294,6 +301,7 @@ postgresql = { module = "org.postgresql:postgresql", version.ref = "postgresql" 
 mysql-connector-j = { module = "com.mysql:mysql-connector-j", version.ref = "mysql-connector-j" }
 sqlite-jdbc = { module = "org.xerial:sqlite-jdbc", version.ref = "sqlite-jdbc" }
 mssql-jdbc = { module = "com.microsoft.sqlserver:mssql-jdbc", version.ref = "mssql-jdbc" }
+hikari = { module = "com.zaxxer:HikariCP", version.ref = "hikari" }
 # r2dbc drivers
 r2dbc-pool = { module = "io.r2dbc:r2dbc-pool", version.ref = "r2dbc-pool" }
 r2dbc-h2 = { module = "io.r2dbc:r2dbc-h2", version.ref = "r2dbc-h2" }
@@ -570,6 +578,10 @@ apollo-normalized-cache = { module = "com.apollographql.apollo3:apollo-normalize
 micrometer-registry-prometheus = { module = "io.micrometer:micrometer-registry-prometheus", version.ref = "prometheus" }
 # dropwizard
 metrics-jmx = { module = "io.dropwizard.metrics:metrics-jmx", version.ref = "dropwizard" }
+# health
+cohort-ktor = { module = "com.sksamuel.cohort:cohort-ktor", version.ref = "cohort" }
+cohort-http = { module = "com.sksamuel.cohort:cohort-http", version.ref = "cohort-http" }
+cohort-micrometer = { module = "com.sksamuel.cohort:cohort-micrometer", version.ref = "cohort" }
 
 # Koin DI
 koin-core = { module = "io.insert-koin:koin-core", version.ref = "koin" }
@@ -584,6 +596,14 @@ koin-android = { module = "io.insert-koin:koin-android", version.ref = "koin" }
 koin-logger-slf4j = { module = "io.insert-koin:koin-logger-slf4j", version.ref = "koin" }
 koin-ktor = { module = "io.insert-koin:koin-ktor", version.ref = "koin" }
 koin-test-junit5 = { module = "io.insert-koin:koin-test-junit5", version.ref = "koin" }
+# task scheduler
+ktor-server-task-scheduling-core = { module = "io.github.flaxoos:ktor-server-task-scheduling-core", version.ref = "ktor-server-task-scheduling" }
+ktor-server-task-scheduling-redis = { module = "io.github.flaxoos:ktor-server-task-scheduling-redis", version.ref = "ktor-server-task-scheduling" }
+ktor-server-task-scheduling-jdbc = { module = "io.github.flaxoos:ktor-server-task-scheduling-jdbc", version.ref = "ktor-server-task-scheduling" }
+ktor-server-task-scheduling-mongodb = { module = "io.github.flaxoos:ktor-server-task-scheduling-mongodb", version.ref = "ktor-server-task-scheduling" }
+# handle graceful shutdown
+suspendapp = { module = "io.arrow-kt:suspendapp", version.ref = "suspendapp" }
+suspendapp-ktor = { module = "io.arrow-kt:suspendapp-ktor", version.ref = "suspendapp" }
 
 [bundles]
 # Java
@@ -658,6 +678,7 @@ jdbc = [
     "mysql-connector-j",
     "sqlite-jdbc",
     "mssql-jdbc",
+    "hikari",
 ]
 # r2dbc drivers
 r2dbc = [
@@ -795,7 +816,11 @@ ktor-server = [
     "ktor-server-call-id",
     "ktor-server-metrics",
     "ktor-server-metrics-micrometer",
-    "ktor-swagger-ui"
+    "ktor-swagger-ui",
+    "ktor-server-task-scheduling-core",
+    "ktor-server-task-scheduling-redis",
+    "ktor-server-task-scheduling-jdbc",
+    "ktor-server-task-scheduling-mongodb"
 ]
 ktor-client = [
     "ktor-client-core",
@@ -848,6 +873,9 @@ apollo = [
 metrics = [
     "micrometer-registry-prometheus",
     "metrics-jmx",
+    "cohort-ktor",
+    "cohort-http",
+    "cohort-micrometer"
 ]
 
 # Koin DI
@@ -870,6 +898,10 @@ koin-ktor = [
 koin-test = [
     "koin-test",
     "koin-test-junit5"
+]
+suspendapp = [
+    "suspendapp",
+    "suspendapp-ktor"
 ]
 
 [plugins]

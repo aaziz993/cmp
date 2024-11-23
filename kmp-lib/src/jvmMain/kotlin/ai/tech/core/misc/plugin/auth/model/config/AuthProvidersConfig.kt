@@ -1,5 +1,6 @@
 package ai.tech.core.misc.plugin.auth.model.config
 
+import ai.tech.core.misc.model.config.EnabledConfig
 import ai.tech.core.misc.plugin.auth.basic.model.config.BasicAuthConfig
 import ai.tech.core.misc.plugin.auth.digest.model.config.DigestAuthConfig
 import ai.tech.core.misc.plugin.auth.form.model.config.FormAuthConfig
@@ -25,4 +26,5 @@ public data class AuthProvidersConfig(
     val jwtRs256: Map<String, JWTRS256Config> = emptyMap(),
     val oauth: Map<String, ServerOAuthConfig> = emptyMap(),
     val session: Map<String, SessionAuthConfig> = emptyMap(),
-)
+    override val enable: Boolean = true,
+) : EnabledConfig

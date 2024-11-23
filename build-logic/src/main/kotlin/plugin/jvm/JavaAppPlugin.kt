@@ -85,6 +85,7 @@ public class JavaAppPlugin : Plugin<Project> {
                     implementation(bundle("kgraphql"))
                     implementation(bundle("metrics"))
                     implementation(bundle("koin.ktor"))
+                    implementation(bundle("suspendapp"))
                     // KSP
                     ksp(lib("arrow.optics.ksp.plugin"))
                     ksp(lib("ktorfit.ksp"))

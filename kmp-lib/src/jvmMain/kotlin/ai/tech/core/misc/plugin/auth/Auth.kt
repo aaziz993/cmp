@@ -40,7 +40,7 @@ public fun Application.configureAuth(
     getRepository: (provider: String, database: String?, principalTable: String?, roleTable: String?) -> AuthRepository? = { _, _, _, _ -> null },
     block: (AuthenticationConfig.() -> Unit)? = null
 ) = authentication {
-    config?.let {
+    config?.takeIf(EnabledConfig::enable)?.let {
 
         it.basic.forEach { (name, config) -> configureBasic(name, config, BasicAuthService(name, config, getRepository)) }
 

@@ -26,6 +26,8 @@ public fun Application.configureMicrometerMetrics(config: MicrometerMetricsConfi
     var configBlock: (io.ktor.server.metrics.micrometer.MicrometerMetricsConfig.() -> Unit)? = null
 
     config?.takeIf(EnabledConfig::enable)?.let {
+        // After installing MicrometerMetrics, you need to create a registry for your monitoring system and assign it to the registry property.
+        // Below, the PrometheusMeterRegistry is created outside the installation block to have the capability to reuse this registry in different route handlers
         val appMicrometerRegistry: MeterRegistry = when (it.type) {
             PROMETHEUS -> {
                 PrometheusMeterRegistry(PrometheusConfig.DEFAULT).also {

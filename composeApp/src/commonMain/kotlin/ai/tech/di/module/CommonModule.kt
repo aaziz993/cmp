@@ -15,6 +15,7 @@ import ai.tech.core.presentation.event.navigator.Navigator
 import ai.tech.navigation.presentation.Destination
 import io.ktor.client.*
 import io.ktor.client.plugins.*
+import io.ktor.client.plugins.cache.*
 import io.ktor.client.plugins.contentnegotiation.*
 import io.ktor.client.plugins.logging.*
 import io.ktor.serialization.kotlinx.json.*
@@ -33,10 +34,18 @@ public class CommonModule {
     @Single
     public fun provideHttpClient(config: ClientConfigImpl, json: Json): HttpClient = with(config.httpClient) {
         createHttpClient {
-            install(HttpTimeout) {
-                this@with.requestTimeoutMillis?.let { requestTimeoutMillis }
-                this@with.connectTimeoutMillis.let { connectTimeoutMillis }
-                this@with.socketTimeoutMillis.let { socketTimeoutMillis }
+            this@with.timeout?.takeIf(EnabledConfig::enable)?.let {
+                install(HttpTimeout) {
+                    it.requestTimeoutMillis?.let { requestTimeoutMillis }
+                    it.connectTimeoutMillis.let { connectTimeoutMillis }
+                    it.socketTimeoutMillis.let { socketTimeoutMillis }
+                }
+            }
+
+            this@with.cache?.takeIf(EnabledConfig::enable)?.let {
+                install(HttpCache) {
+                    it.isShared?.let { isShared = it }
+                }
             }
 
             install(ContentNegotiation) {

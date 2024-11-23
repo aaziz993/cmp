@@ -4,6 +4,7 @@ import kotlinx.serialization.Serializable
 import kotlin.time.Duration
 import kotlin.time.DurationUnit
 import kotlin.time.toDuration
+import kotlinx.serialization.Transient
 
 @Serializable
 public data class DBConnectionConfig(
@@ -15,10 +16,52 @@ public data class DBConnectionConfig(
     val password: String,
     val database: String,
     val ssl: Boolean = false,
-    val connectTimeout: Duration = 15.toDuration(DurationUnit.SECONDS),
-    val lockWaitTimeout: Duration = 15.toDuration(DurationUnit.SECONDS),
-    val statementTimeout: Duration = 15.toDuration(DurationUnit.SECONDS),
+    val initPoolSize: Int? = null,
+    val maxPoolSize: Int? = null,
+    val connectTimeout: Duration? = null,
+    val lockWaitTimeout: Duration? = null,
+    val statementTimeout: Duration? = null,
 ) {
+
+    @Transient
+    val jdbcUrl: String = "jdbc:$driver://$host:$port/$database${
+        if (ssl) {
+            "?${
+                when (driver) {
+                    "mysql" -> "sslMode=VERIFY_IDENTITY"
+                    else -> "ssl=true"
+                }
+            }"
+        }
+        else {
+            ""
+        }
+    }"
+
+    @Transient
+    val r2dbcUrl: String = "$protocol:$driver://${user}:$password@$host:$port/database${
+        listOfNotNull(
+            if (ssl) {
+                when (driver) {
+                    "mysql" -> "sslMode=VERIFY_IDENTITY"
+                    else -> "ssl=true"
+                }
+            }
+            else {
+                null
+            },
+            connectTimeout?.let { "connectTimeout=${it.inWholeMilliseconds}" },
+            lockWaitTimeout?.let { "lockWaitTimeout=${it.inWholeMilliseconds}" },
+            statementTimeout?.let { "statementTimeout=${it.inWholeMilliseconds}" },
+        ).let {
+            if (it.isEmpty()) {
+                ""
+            }
+            else {
+                "?${it.joinToString("&")}"
+            }
+        }
+    }"
 
     public companion object {
 

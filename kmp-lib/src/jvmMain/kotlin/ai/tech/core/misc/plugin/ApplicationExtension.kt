@@ -1,15 +1,15 @@
 package ai.tech.core.misc.plugin
 
-import ai.tech.core.misc.health.registerDBHealthCheck
-import ai.tech.core.misc.health.registerHttpHealthCheck
 import ai.tech.core.misc.model.config.EnabledConfig
 import ai.tech.core.misc.model.config.server.ServerConfig
+import ai.tech.core.misc.model.config.server.ServerHostConfig
 import ai.tech.core.misc.plugin.applicationmonitoring.configureApplicationMonitoring
 import ai.tech.core.misc.plugin.auth.configureAuth
 import ai.tech.core.misc.plugin.authheadresponse.configureAutoHeadResponse
 import ai.tech.core.misc.plugin.cachingheaders.configureCachingHeaders
 import ai.tech.core.misc.plugin.callid.configureCallId
 import ai.tech.core.misc.plugin.calllogging.configureCallLogging
+import ai.tech.core.misc.plugin.cohort.configureCohort
 import ai.tech.core.misc.plugin.compression.configureCompression
 import ai.tech.core.misc.plugin.conditionalheaders.configureConditionalHeaders
 import ai.tech.core.misc.plugin.consul.configureConsulDiscovery
@@ -66,11 +66,37 @@ import io.ktor.server.response.*
 import io.ktor.server.routing.*
 import io.ktor.server.sessions.*
 import io.ktor.server.websocket.*
+import java.io.File
 import org.koin.core.KoinApplication
 import org.koin.ktor.ext.get
 import org.lighthousegames.logging.logging
 
 private val appLog = logging("Application")
+
+public fun ApplicationEngine.Configuration.configure(config: ServerHostConfig) {
+
+    config.connectionGroupSize?.let { connectionGroupSize = it }
+    config.workerGroupSize?.let { workerGroupSize = it }
+    config.callGroupSize?.let { callGroupSize = it }
+    config.shutdownGracePeriod?.let { shutdownGracePeriod = it }
+    config.shutdownTimeout?.let { shutdownTimeout = it }
+
+    connector {
+        port = config.port
+    }
+
+    config.ssl?.let {
+        sslConnector(
+            keyStore = it.keyStore,
+            keyAlias = it.keyAlias,
+            keyStorePassword = { it.keyStorePassword.toCharArray() },
+            privateKeyPassword = { it.privateKeyPassword.toCharArray() },
+        ) {
+            port = it.port
+            keyStorePath = File(it.keyStorePath)
+        }
+    }
+}
 
 public fun Application.configure(
     config: ServerConfig,
@@ -114,6 +140,8 @@ public fun Application.configure(
                 "${application.name}:${application.environment}:${host.preferredSslPort}",
                 host.preferredHttpsURL,
                 application.configurations,
+                host.auth?.takeIf(EnabledConfig::enable)?.oauth?.keys,
+                host.database?.keys,
             ) { exception, attempt ->
                 appLog.w(exception) { "Couldn't register in consul \"${it.address}\" in attempt \"$attempt\"" }
             }
@@ -128,10 +156,6 @@ public fun Application.configure(
 
             // Configure the Routing plugin
             configureRouting(routing) {
-                auth?.oauth?.filterValues(EnabledConfig::enable)?.forEach { name, config -> registerHttpHealthCheck(get(), "auth/$name", config.address) }
-
-                database?.filterValues(EnabledConfig::enable)?.forEach { name, config -> registerDBHealthCheck("db/$name", config.connection) }
-
                 consul?.takeIf(EnabledConfig::enable)?.discovery?.takeIf(EnabledConfig::enable)?.let {
                     get(it.healthCheckPath) { call.respond(HttpStatusCode.OK) }
                 }
@@ -217,7 +241,9 @@ public fun Application.configure(
 
             // Configure the security plugin with JWT
             configureAuth(
-                preferredHttpsURL, get(), auth,
+                preferredHttpsURL,
+                get(),
+                auth,
                 { provider, database, principalTable, roleTable -> null },
                 authBlock,
             )
@@ -236,6 +262,9 @@ public fun Application.configure(
 
             // Configure the DropwizardMetrics plugin
             configureDropwizardMetrics(dropwizardMetrics, dropwizardMetricsBlock)
+
+            // Configure the Cohort health checks plugin
+            configureCohort(cohort, auth?.takeIf(EnabledConfig::enable)?.oauth, database)
 
             // Configure the Shutdown plugin
             configureShutdown(shutdown, shutdownBlock)

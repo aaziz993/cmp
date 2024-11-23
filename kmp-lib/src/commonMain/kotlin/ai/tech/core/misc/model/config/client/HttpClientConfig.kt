@@ -6,7 +6,6 @@ import kotlinx.serialization.Serializable
 @Serializable
 public data class HttpClientConfig(
     val log: LogConfig? = null,
-    val requestTimeoutMillis: Long? = null,
-    val connectTimeoutMillis: Long? = null,
-    val socketTimeoutMillis: Long? = null
+    val timeout: TimeoutConfig? = null,
+    val cache: CacheConfig? = null
 )

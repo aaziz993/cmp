@@ -8,6 +8,7 @@ import ai.tech.core.misc.plugin.authheadresponse.model.config.AutoHeadResponseCo
 import ai.tech.core.misc.plugin.cachingheaders.model.config.CachingHeadersConfig
 import ai.tech.core.misc.plugin.callid.model.config.CallIdConfig
 import ai.tech.core.misc.plugin.calllogging.model.config.CallLoggingConfig
+import ai.tech.core.misc.plugin.cohort.model.config.CohortConfig
 import ai.tech.core.misc.plugin.compression.model.config.CompressionConfig
 import ai.tech.core.misc.plugin.conditionalheaders.model.config.ConditionalHeadersConfig
 import ai.tech.core.misc.plugin.cors.model.config.CORSConfig
@@ -68,7 +69,14 @@ public data class ServerHostConfig(
     val applicationMonitoring: ApplicationMonitoringConfig? = null,
     val micrometerMetrics: MicrometerMetricsConfig? = null,
     val dropwizardMetrics: DropwizardMetricsConfig? = null,
+    val cohort: CohortConfig? = null,
     val shutdown: ShutDownConfig? = null,
+    val watchPaths: List<String> = listOf("classes", "resources"),
+    val connectionGroupSize: Int? = null,
+    val workerGroupSize: Int? = null,
+    val callGroupSize: Int? = null,
+    val shutdownGracePeriod: Long? = null,
+    val shutdownTimeout: Long? = null,
     override val host: String,
     override val port: Int = 8080,
     val ssl: SSLConfig? = null,

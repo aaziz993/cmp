@@ -9,6 +9,7 @@ import ai.tech.core.misc.model.config.server.ServerConfigImpl
 import ai.tech.core.misc.network.http.client.createHttpClient
 import io.ktor.client.*
 import io.ktor.client.plugins.*
+import io.ktor.client.plugins.cache.HttpCache
 import io.ktor.client.plugins.contentnegotiation.*
 import io.ktor.client.plugins.logging.*
 import io.ktor.serialization.kotlinx.json.*
@@ -27,10 +28,18 @@ public class ServerModule {
     public fun provideHttpClient(config: ServerConfigImpl): HttpClient =
         with(config.httpClient) {
             createHttpClient {
-                install(HttpTimeout) {
-                    this@with.requestTimeoutMillis?.let { requestTimeoutMillis }
-                    this@with.connectTimeoutMillis.let { connectTimeoutMillis }
-                    this@with.socketTimeoutMillis.let { socketTimeoutMillis }
+                this@with.timeout?.takeIf(EnabledConfig::enable)?.let {
+                    install(HttpTimeout) {
+                        it.requestTimeoutMillis?.let { requestTimeoutMillis }
+                        it.connectTimeoutMillis.let { connectTimeoutMillis }
+                        it.socketTimeoutMillis.let { socketTimeoutMillis }
+                    }
+                }
+
+                this@with.cache?.takeIf(EnabledConfig::enable)?.let {
+                    install(HttpCache) {
+                        it.isShared?.let { isShared = it }
+                    }
                 }
 
                 install(ContentNegotiation) {
