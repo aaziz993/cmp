@@ -502,17 +502,17 @@ public fun List<Map<String, Any?>>.deepMerge(
 ): Map<String, Any?> = emptyMap()
 
 @Suppress("UNCHECKED_CAST")
-public fun <T : Any> T.reduce(
-    transform: (transforms: List<T>, value: Any?) -> Iterator<Any?>?,
-    removeLast: (transforms: List<T>, transform: Any?) -> Unit
+public fun <T : Any> T.depthTraverse(
+    transform: (vertices: List<T>, value: Any?) -> Iterator<Any?>?,
+    removeLast: (vertices: List<T>, transform: Any?) -> Unit
 ) {
-    val transforms = mutableListOf(this)
+    val vertices = mutableListOf(this)
 
     transform(emptyList(), this)?.depthIterator(
-        { _, value -> transform(transforms, value)?.also { transforms.add(value as T) } },
+        { _, value -> transform(vertices, value)?.also { vertices.add(value as T) } },
     ) {
-        val last = transforms.removeLast()
+        val last = vertices.removeLast()
 
-        removeLast(transforms, last)
+        removeLast(vertices, last)
     }?.forEach { _ -> }
 }
