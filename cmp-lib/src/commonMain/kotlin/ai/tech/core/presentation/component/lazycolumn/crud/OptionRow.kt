@@ -14,6 +14,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import ai.tech.core.presentation.component.textfield.AdvancedTextField
 
 @Composable
 internal fun OptionRow(
@@ -33,6 +34,7 @@ internal fun OptionRow(
         Row(verticalAlignment = Alignment.CenterVertically) {
             Text(localization.liveSearch)
             Switch(state.isLiveSearch, { state.isLiveSearch = it })
+            AdvancedTextField()
         }
 
         Row(verticalAlignment = Alignment.CenterVertically) {

@@ -85,7 +85,7 @@ internal fun <T : Any> HeaderRow(
                             header, maxLines = 1, style = MaterialTheme.typography.titleSmall,
                         )
 
-                        val order = state.getOrder(property)
+                        val order = state.getIndexedOrder(property)
 
                         IconButton({ state.order(property) }) {
                             Icon(

@@ -39,7 +39,7 @@ internal fun <T : Any> ActionRow(
     properties: List<EntityProperty>,
     items: List<EntityItem<T>>,
     localization: CRUDLazyColumnLocalization,
-    onDownloadSelected: ((List<T>) -> Unit)?,
+    onDownloadSelected: (List<T>) -> Unit,
     onUpload: (() -> Unit)?,
     onNew: () -> Unit,
     onNewFromSelected: () -> Unit,

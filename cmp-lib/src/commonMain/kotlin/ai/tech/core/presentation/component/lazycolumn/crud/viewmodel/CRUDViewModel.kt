@@ -46,7 +46,7 @@ public class CRUDViewModel<T : Any>(
     @OptIn(ExperimentalPagingApi::class)
     override fun action(action: CRUDAction<T>) {
         when (action) {
-            is CRUDAction.Load -> pager.load(action.sort, pager.properties.predicate(action.searchFieldStates))
+            is CRUDAction.Find -> pager.load(action.sort, pager.properties.predicate(action.searchFieldStates))
 
             CRUDAction.New -> pager.new()
 

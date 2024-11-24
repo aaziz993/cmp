@@ -8,10 +8,12 @@ public data class Validator(
     public val rules: List<ValidatorRule>,
     public val required: Boolean = true,
 ) {
+
     public fun validate(input: String): List<String> =
         if (input.isEmpty() && !required) {
             emptyList()
-        } else when (type) {
+        }
+        else when (type) {
             Validation.FAIL_FAST -> rules.firstNotNullOfOrNull { it.validate(input) }?.let { listOf(it) }
                 .orEmpty()
 
@@ -19,10 +21,11 @@ public data class Validator(
         }
 
     public companion object {
+
         public fun nonEmpty(emptyMessage: String = "value_is_empty"): Validator = Validator(
             rules = listOf(
-                ValidatorRule.Companion.nonEmpty(emptyMessage)
-            )
+                ValidatorRule.Companion.nonEmpty(emptyMessage),
+            ),
         )
 
         public fun numericPhone(
@@ -42,7 +45,7 @@ public data class Validator(
                 ValidatorRule.Companion.noLetters(lettersMessage),
                 ValidatorRule.Companion.numericPhonePattern(patternMessage),
             ),
-            required = required
+            required = required,
         )
 
         public fun delimitedPhone(
@@ -62,7 +65,7 @@ public data class Validator(
                 ValidatorRule.Companion.noLetters(lettersMessage),
                 ValidatorRule.Companion.delimitedPhonePattern(patternMessage),
             ),
-            required = required
+            required = required,
         )
 
         public fun email(
@@ -76,9 +79,19 @@ public data class Validator(
                 ValidatorRule.Companion.nonEmpty(emptyMessage),
                 ValidatorRule.Companion.emailLength(lengthMessage),
                 ValidatorRule.Companion.noWhitespace(whitespaceMessage),
-                ValidatorRule.Companion.emailPattern(patternMessage)
+                ValidatorRule.Companion.emailPattern(patternMessage),
             ),
-            required = required
+            required = required,
+        )
+
+        public fun kotlinduration(
+            required: Boolean = true,
+            patternMessage: String = "value_is_invalid_duration",
+        ): Validator = Validator(
+            rules = listOf(
+                ValidatorRule.Companion.kotlinDurationPattern(patternMessage),
+            ),
+            required = required,
         )
     }
 }

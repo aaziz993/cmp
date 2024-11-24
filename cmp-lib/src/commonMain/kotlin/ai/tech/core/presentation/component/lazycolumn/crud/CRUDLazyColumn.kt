@@ -1,10 +1,14 @@
 package ai.tech.core.presentation.component.lazycolumn.crud
 
+import ai.tech.core.data.validator.Validator
+import ai.tech.core.misc.type.ifNull
 import ai.tech.core.presentation.component.lazycolumn.crud.model.CRUDLazyColumnLocalization
 import ai.tech.core.presentation.component.lazycolumn.crud.model.CRUDLazyColumnState
 import ai.tech.core.presentation.component.lazycolumn.crud.viewmodel.CRUDAction
 import ai.tech.core.presentation.component.lazycolumn.crud.viewmodel.CRUDViewModel
 import ai.tech.core.presentation.component.lazycolumn.paging.LazyPagingColumn
+import ai.tech.core.presentation.component.textfield.AdvancedTextField
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.gestures.FlingBehavior
 import androidx.compose.foundation.gestures.ScrollableDefaults
 import androidx.compose.foundation.layout.Arrangement
@@ -12,6 +16,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.Icon
@@ -26,10 +31,13 @@ import app.cash.paging.compose.collectAsLazyPagingItems
 import com.ionspin.kotlin.bignum.integer.Quadruple
 import compose.icons.SimpleIcons
 import compose.icons.simpleicons.Microsoftexcel
+import kotlin.time.Duration
+import kotlin.time.DurationUnit
+import kotlin.time.toDuration
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.debounce
 
-@OptIn(FlowPreview::class)
+@OptIn(FlowPreview::class, ExperimentalFoundationApi::class)
 @Composable
 public fun <T : Any> CRUDLazyColumn(
     modifier: Modifier = Modifier.fillMaxSize(),
@@ -47,8 +55,8 @@ public fun <T : Any> CRUDLazyColumn(
     getHeader: (String) -> String? = { it },
     viewModel: CRUDViewModel<T>,
     localization: CRUDLazyColumnLocalization = CRUDLazyColumnLocalization(),
-    onDownload: ((List<T>) -> Unit)? = null,
-): Unit = Column(modifier, horizontalAlignment = Alignment.CenterHorizontally) {
+    onDownload: (List<T>) -> Unit = {},
+): Unit = Column {
     title?.let { TitleRow(contentPadding, it) }
 
     Spacer(modifier = Modifier.height(10.dp))
@@ -74,20 +82,13 @@ public fun <T : Any> CRUDLazyColumn(
     ) { viewModel.action(CRUDAction.DeleteSelected) }
 
     val headers = viewModel.pager.properties.mapNotNull { getHeader(it.name) }
-
-    HeaderRow(
-        contentPadding,
-        state,
-        headers,
-        viewModel.pager.properties,
-        items,
-        localization,
-        { viewModel.action(CRUDAction.SelectAll(it)) },
-        { viewModel.action(CRUDAction.UnselectAll) },
-    ) { viewModel.action(CRUDAction.Load(state.sort, state.searchFieldStates)) }
-
+    AdvancedTextField(
+        state.liveSearchDebounce,
+        { state.liveSearchDebounce = it },
+        validator = Validator.kotlinduration(),
+    )
     LazyPagingColumn(
-        Modifier.fillMaxSize(),
+        modifier,
         rememberLazyListState(),
         contentPadding,
         reverseLayout,
@@ -95,6 +96,22 @@ public fun <T : Any> CRUDLazyColumn(
         horizontalAlignment,
         flingBehavior,
         userScrollEnabled,
+        {
+            stickyHeader {
+                Column(modifier = Modifier.fillMaxWidth()) {
+                    HeaderRow(
+                        contentPadding,
+                        state,
+                        headers,
+                        viewModel.pager.properties,
+                        items,
+                        localization,
+                        { viewModel.action(CRUDAction.SelectAll(it)) },
+                        { viewModel.action(CRUDAction.UnselectAll) },
+                    ) { viewModel.action(CRUDAction.Find(state.sort, state.searchFieldStates)) }
+                }
+            }
+        },
         data = data,
     ) {
         DataRow(
@@ -103,12 +120,7 @@ public fun <T : Any> CRUDLazyColumn(
             downloadAllIcon,
             viewModel.pager.properties,
             it,
-            if (onDownload == null) {
-                null
-            }
-            else {
-                { onDownload(listOf(it)) }
-            },
+            { onDownload(listOf(it)) },
             { viewModel.action(CRUDAction.NewFrom(it)) },
             { viewModel.action(CRUDAction.Remove(listOf(it))) },
             { viewModel.action(CRUDAction.EditOrUnEdit(it)) },
@@ -118,24 +130,30 @@ public fun <T : Any> CRUDLazyColumn(
         ) { id, index, value -> viewModel.action(CRUDAction.SetValue(id, index, value)) }
     }
 
-    LaunchedEffect(state.isLiveSearch) {
-        snapshotFlow {
-            state.searchFieldStates.map { it.query }
-        }.debounce(state.liveSearchDebounce.inWholeMilliseconds).collect {
-            viewModel.action(CRUDAction.Load(state.sort, state.searchFieldStates))
+    LaunchedEffect(state.isLiveSearch, state.liveSearchDebounce) {
+        if (state.isLiveSearch) {
+            snapshotFlow {
+                state.searchFieldStates.map { it.query }
+            }.debounce(Duration.parseOrNull(state.liveSearchDebounce).ifNull { 1.toDuration(DurationUnit.SECONDS) }.inWholeMilliseconds).collect {
+                viewModel.action(CRUDAction.Find(state.sort, state.searchFieldStates))
+            }
         }
     }
 
     LaunchedEffect(state.isLiveSearch) {
-        snapshotFlow {
-            state.searchFieldStates.map { Quadruple(it.caseMatch, it.wordMatch, it.regexMatch, it.compareMatch) }
-        }.collect {
-            viewModel.action(CRUDAction.Load(state.sort, state.searchFieldStates))
+        if (state.isLiveSearch) {
+            snapshotFlow {
+                state.searchFieldStates.map { Quadruple(it.caseMatch, it.wordMatch, it.regexMatch, it.compareMatch) }
+            }.collect {
+                viewModel.action(CRUDAction.Find(state.sort, state.searchFieldStates))
+            }
         }
     }
 
     LaunchedEffect(state.isLiveSearch) {
-        snapshotFlow { state.sort.toList() }.collect { viewModel.action(CRUDAction.Load(state.sort, state.searchFieldStates)) }
+        if (state.isLiveSearch) {
+            snapshotFlow { state.sort.toList() }.collect { viewModel.action(CRUDAction.Find(state.sort, state.searchFieldStates)) }
+        }
     }
 }
 

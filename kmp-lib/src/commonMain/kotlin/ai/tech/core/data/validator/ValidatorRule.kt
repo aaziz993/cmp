@@ -15,161 +15,163 @@ public data class ValidatorRule(
     public val ignoreCase: Boolean = true,
     public val message: String,
 ) {
+
     @Transient
     private val regex = pattern.toRegex()
 
     public fun validate(input: String): String? = if (regex.matches(input)) {
         null
-    } else {
+    }
+    else {
         message
     }
 
     public companion object {
+
         public fun nonEmpty(message: String): ValidatorRule = ValidatorRule(
-            "$AP+",
-            message = message
+                "$AP+",
+                message = message,
         )
 
         public fun lengthInRange(min: Int, max: Int? = null, message: String): ValidatorRule = ValidatorRule(
-            "$AP{$min,${max ?: ""}}",
-            message = message
+                "$AP{$min,${max ?: ""}}",
+                message = message,
         )
-
 
         public fun startsWith(value: String, ignoreCase: Boolean = false, message: String): ValidatorRule =
             ValidatorRule(
-                "^${value.quotePattern()}$AP*",
-                ignoreCase,
-                message
+                    "^${value.quotePattern()}$AP*",
+                    ignoreCase,
+                    message,
             )
 
         public fun endsWith(value: String, ignoreCase: Boolean = false, message: String): ValidatorRule =
             ValidatorRule(
-                "$AP*${value.quotePattern()}$",
-                ignoreCase,
-                message
+                    "$AP*${value.quotePattern()}$",
+                    ignoreCase,
+                    message,
             )
 
         public fun contains(value: String, ignoreCase: Boolean = false, message: String): ValidatorRule =
             ValidatorRule(
-                "$AP*${value.quotePattern()}$AP*",
-                ignoreCase,
-                message
+                    "$AP*${value.quotePattern()}$AP*",
+                    ignoreCase,
+                    message,
             )
 
         public fun isAlphaNumeric(message: String): ValidatorRule = ValidatorRule(
-            "$LDP+",
-            message = message
+                "$LDP+",
+                message = message,
         )
 
         public fun noDigits(message: String): ValidatorRule = ValidatorRule(
-            "[^\\d]*",
-            message = message
+                "[^\\d]*",
+                message = message,
         )
 
         public fun hasDigit(message: String): ValidatorRule = ValidatorRule(
-            """$AP*\d+$AP*""",
-            message = message
+                """$AP*\d+$AP*""",
+                message = message,
         )
 
         public fun noLetters(message: String): ValidatorRule = ValidatorRule(
-            "[^$LP]*",
-            message = message
+                "[^$LP]*",
+                message = message,
         )
 
         public fun hasLetter(message: String): ValidatorRule = ValidatorRule(
-            "$AP*$LP+$AP*",
-            message = message
+                "$AP*$LP+$AP*",
+                message = message,
         )
 
         public fun lettersOnly(message: String): ValidatorRule = ValidatorRule(
-            "$LP+",
-            message = message
+                "$LP+",
+                message = message,
         )
 
         public fun digitsOnly(message: String): ValidatorRule = ValidatorRule(
-            """\d+""",
-            message = message
+                """\d+""",
+                message = message,
         )
 
         public fun nonZero(message: String): ValidatorRule = ValidatorRule(
-            """[+-]?[^0]$AP*""",
-            message = message
+                """[+-]?[^0]$AP*""",
+                message = message,
         )
 
         public fun positive(message: String): ValidatorRule = ValidatorRule(
-            """[^-]$AP*""",
-            message = message
+                """[^-]$AP*""",
+                message = message,
         )
 
         public fun negative(message: String): ValidatorRule = ValidatorRule(
-            """-$AP*""",
-            message = message
+                """-$AP*""",
+                message = message,
         )
 
         public fun intValue(message: String): ValidatorRule = ValidatorRule(
-            """[+-]?\d+""",
-            message = message
+                """[+-]?\d+""",
+                message = message,
         )
 
         public fun uIntValue(message: String): ValidatorRule = ValidatorRule(
-            """[^-]?\d+""",
-            message = message
+                """[^-]?\d+""",
+                message = message,
         )
 
         public fun floatValue(message: String): ValidatorRule = ValidatorRule(
-            """[+-]?\d+\.\d+""",
-            message = message
+                """[+-]?\d+\.\d+""",
+                message = message,
         )
 
         public fun isAsciiOnly(message: String): ValidatorRule = ValidatorRule(
-            """[\\u0000-\\u007F]+""",
-            message = message
+                """[\\u0000-\\u007F]+""",
+                message = message,
         )
 
         public fun lowercaseOnly(message: String): ValidatorRule = ValidatorRule(
-            "[^$LUP]+",
-            message = message
+                "[^$LUP]+",
+                message = message,
         )
 
         public fun uppercaseOnly(message: String): ValidatorRule = ValidatorRule(
-            "[^$LLP]+",
-            message = message
+                "[^$LLP]+",
+                message = message,
         )
 
         public fun noWhitespace(message: String): ValidatorRule = ValidatorRule(
-            "[^ ]*",
-            message = message
+                "[^ ]*",
+                message = message,
         )
 
         public fun singleLine(message: String): ValidatorRule = ValidatorRule(
-            """[^\r\n]*""",
-            message = message
+                """[^\r\n]*""",
+                message = message,
         )
 
         public fun numericPhoneLength(message: String): ValidatorRule = Length.NumericPhoneNumber.let {
             lengthInRange(
-                it.first,
-                it.last,
-                message
+                    it.first,
+                    it.last,
+                    message,
             )
         }
 
         public fun numericPhonePattern(message: String): ValidatorRule = ValidatorRule(
-            Pattern.InternationalNumericPhoneNumber.pattern,
-            message = message
+                Pattern.InternationalNumericPhoneNumber.pattern,
+                message = message,
         )
 
         public fun delimitedPhoneLength(message: String): ValidatorRule = Length.DelimitedPhoneNumber.let {
             lengthInRange(
-                it.first,
-                it.last, message
+                    it.first,
+                    it.last, message,
             )
         }
 
         public fun delimitedPhonePattern(message: String): ValidatorRule = ValidatorRule(
-            Pattern.InternationalDelimitedPhoneNumber.pattern,
-            message = message
+                Pattern.InternationalDelimitedPhoneNumber.pattern,
+                message = message,
         )
 
         public fun emailLength(message: String): ValidatorRule = Length.Email.let {
@@ -177,8 +179,13 @@ public data class ValidatorRule(
         }
 
         public fun emailPattern(message: String): ValidatorRule = ValidatorRule(
-            Pattern.Email.pattern,
-            message = message
+                Pattern.Email.pattern,
+                message = message,
+        )
+
+        public fun kotlinDurationPattern(message: String): ValidatorRule = ValidatorRule(
+                """^P(?!$)(\d+Y)?(\d+M)?(\d+D)?(T(\d+H)?(\d+M)?(\d+(\.\d+)?S)?)?$""",
+                message = message,
         )
     }
 
@@ -280,7 +287,7 @@ public data class ValidatorRule(
          * A web url starting with either http, https, www and then containing a domain-specific part and optionally a path
          */
         public val UrlPattern: Regex = Regex(
-            """(http(s)?://.)?(www\.)?[-a-zA-Z0-9@:%._+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_+.~#?&/=]*)"""
+                """(http(s)?://.)?(www\.)?[-a-zA-Z0-9@:%._+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_+.~#?&/=]*)""",
         )
     }
 }

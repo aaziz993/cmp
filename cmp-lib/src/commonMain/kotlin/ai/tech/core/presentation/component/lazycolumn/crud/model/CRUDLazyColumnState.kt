@@ -3,7 +3,6 @@ package ai.tech.core.presentation.component.lazycolumn.crud.model
 import ai.tech.core.data.crud.client.model.EntityProperty
 import ai.tech.core.data.crud.model.LimitOffset
 import ai.tech.core.data.crud.model.Order
-import ai.tech.core.data.expression.BooleanVariable
 import ai.tech.core.misc.type.multiple.removeFirst
 import ai.tech.core.misc.type.multiple.replaceFirst
 import ai.tech.core.misc.type.multiple.replaceWith
@@ -18,9 +17,6 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.runtime.toMutableStateList
-import kotlin.time.Duration
-import kotlin.time.DurationUnit
-import kotlin.time.toDuration
 
 public class CRUDLazyColumnState(
     public val searchFieldStates: List<SearchFieldState>,
@@ -28,7 +24,7 @@ public class CRUDLazyColumnState(
     limitOffset: LimitOffset = LimitOffset(0, 10),
     isMultiSort: Boolean = true,
     isLiveSearch: Boolean = true,
-    liveSearchDebounce: Duration = 1.toDuration(DurationUnit.SECONDS),
+    liveSearchDebounce: String = "1s",
     isPrepend: Boolean = true,
     showActions: Boolean = true,
     showPagination: Boolean = true,
@@ -46,7 +42,7 @@ public class CRUDLazyColumnState(
         LimitOffset(0, data.limit),
         data.isMultiSort,
         data.isLiveSearch,
-        data.liveSearchDebounce,
+        data.liveSearchDebounce.toString(),
         data.isPrepend,
         data.showPagination,
         data.showActions,
@@ -61,7 +57,7 @@ public class CRUDLazyColumnState(
 
     public var isLiveSearch: Boolean by mutableStateOf(isLiveSearch)
 
-    public var liveSearchDebounce: Duration by mutableStateOf(liveSearchDebounce)
+    public var liveSearchDebounce: String by mutableStateOf(liveSearchDebounce)
 
     public var isPrepend: Boolean by mutableStateOf(isPrepend)
 
@@ -77,11 +73,11 @@ public class CRUDLazyColumnState(
 
     public var limitOffset: LimitOffset by mutableStateOf(limitOffset)
 
-    public fun getOrder(property: EntityProperty): IndexedValue<Order>? =
+    public fun getIndexedOrder(property: EntityProperty): IndexedValue<Order>? =
         sort.withIndex().find { (_, order) -> order.name == property.name }
 
     public fun order(property: EntityProperty) {
-        val order = getOrder(property)?.value
+        val order = getIndexedOrder(property)?.value
 
         when {
             order == null -> Order(property.name).let {
@@ -98,8 +94,6 @@ public class CRUDLazyColumnState(
             else -> sort.removeFirst { it.name == property.name }
         }
     }
-
-    public fun predicate(): BooleanVariable? = null
 
     public companion object {
 
@@ -127,7 +121,7 @@ public class CRUDLazyColumnState(
                     it[2] as LimitOffset,
                     it[3] as Boolean,
                     it[4] as Boolean,
-                    it[5] as Duration,
+                    it[5] as String,
                     it[6] as Boolean,
                     it[7] as Boolean,
                     it[8] as Boolean,

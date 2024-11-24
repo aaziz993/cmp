@@ -36,7 +36,7 @@ public class CRUDRefreshableMutablePager<Value : Any>(
 
     override fun createEntity(values: List<String>): Value = createEntity(properties.map(EntityProperty::name).zip(values).toMap())
 
-    public fun load(
+    public fun find(
         sort: List<Order>? = null,
         predicate: BooleanVariable? = null,
     ) {
