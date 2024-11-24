@@ -1,7 +1,6 @@
 package ai.tech.core.data.crud.client
 
 import ai.tech.core.data.crud.client.model.EntityProperty
-import ai.tech.core.data.crud.client.model.MutationItem
 import ai.tech.core.data.crud.model.Order
 import ai.tech.core.data.expression.BooleanVariable
 import app.cash.paging.ExperimentalPagingApi
@@ -15,8 +14,8 @@ public class CRUDRefreshableMutablePager<Value : Any>(
     private var sort: List<Order>? = null,
     private var predicate: BooleanVariable? = null,
     properties: List<EntityProperty>,
-    getValues: (Value) -> List<Any?>,
-    private val create: (Map<String, Any?>) -> Value,
+    getEntityValues: (Value) -> List<String>,
+    private val createEntity: (Map<String, String>) -> Value,
     config: PagingConfig,
     initialKey: Int? = null,
     remoteMediator: RemoteMediator<Int, Value>? = null,
@@ -24,17 +23,18 @@ public class CRUDRefreshableMutablePager<Value : Any>(
     private val pagingSourceFactory: (sort: List<Order>?, predicate: BooleanVariable?) -> PagingSource<Int, Value>,
 ) : AbstractCRUDMutablePager<Value>(
     properties,
-    getValues,
+    getEntityValues,
     config,
     initialKey,
     remoteMediator,
     cacheCoroutineScope,
 ) {
+
     override fun createPagingSource(): PagingSource<Int, Value> = pagingSourceFactory(sort, predicate)
 
-    override fun create(): Value = create(emptyMap())
+    override fun createEntity(): Value = createEntity(emptyMap())
 
-    override fun create(values: List<Any?>): Value = create(properties.map(EntityProperty::name).zip(values).toMap())
+    override fun createEntity(values: List<String>): Value = createEntity(properties.map(EntityProperty::name).zip(values).toMap())
 
     public fun load(
         sort: List<Order>? = null,

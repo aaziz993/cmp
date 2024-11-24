@@ -20,9 +20,9 @@ public class CRUDViewModel<T : Any>(
     private val repository: CRUDRepository<T>,
     sort: List<Order>? = null,
     predicate: BooleanVariable? = null,
-    create: (Map<String, Any?>) -> T,
     properties: List<EntityProperty>,
-    getValues: (T) -> List<Any?>,
+    getEntityValues: (T) -> List<String>,
+    createEntity: (Map<String, String>) -> T,
     config: PagingConfig = createPagingConfig(10),
     initialKey: Int? = null,
     remoteMediator: RemoteMediator<Int, T>? = null,
@@ -35,8 +35,8 @@ public class CRUDViewModel<T : Any>(
             sort,
             predicate,
             properties,
-            getValues,
-            create,
+            getEntityValues,
+            createEntity,
             config,
             initialKey,
             remoteMediator,
@@ -80,7 +80,7 @@ public class CRUDViewModel<T : Any>(
             }
 
             is CRUDAction.Save -> viewModelScope.launch {
-                val entity = pager.createFrom(action.item)
+                val entity = pager.createEntity(action.item)
 
                 if (action.item.isNew) {
                     repository.insert(entity)

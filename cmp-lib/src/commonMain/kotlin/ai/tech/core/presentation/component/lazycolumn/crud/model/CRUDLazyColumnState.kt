@@ -18,6 +18,9 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.runtime.toMutableStateList
+import kotlin.time.Duration
+import kotlin.time.DurationUnit
+import kotlin.time.toDuration
 
 public class CRUDLazyColumnState(
     public val searchFieldStates: List<SearchFieldState>,
@@ -25,6 +28,7 @@ public class CRUDLazyColumnState(
     limitOffset: LimitOffset = LimitOffset(0, 10),
     isMultiSort: Boolean = true,
     isLiveSearch: Boolean = true,
+    liveSearchDebounce: Duration = 1.toDuration(DurationUnit.SECONDS),
     isPrepend: Boolean = true,
     showActions: Boolean = true,
     showPagination: Boolean = true,
@@ -42,6 +46,7 @@ public class CRUDLazyColumnState(
         LimitOffset(0, data.limit),
         data.isMultiSort,
         data.isLiveSearch,
+        data.liveSearchDebounce,
         data.isPrepend,
         data.showPagination,
         data.showActions,
@@ -55,6 +60,8 @@ public class CRUDLazyColumnState(
     public var isMultiSort: Boolean by mutableStateOf(isMultiSort)
 
     public var isLiveSearch: Boolean by mutableStateOf(isLiveSearch)
+
+    public var liveSearchDebounce: Duration by mutableStateOf(liveSearchDebounce)
 
     public var isPrepend: Boolean by mutableStateOf(isPrepend)
 
@@ -103,7 +110,7 @@ public class CRUDLazyColumnState(
                     it.searchFieldStates,
                     it.sort,
                     it.isMultiSort,
-                    it.isLiveSearch,
+                    it.liveSearchDebounce,
                     it.isPrepend,
                     it.showActions,
                     it.showPagination,
@@ -120,12 +127,13 @@ public class CRUDLazyColumnState(
                     it[2] as LimitOffset,
                     it[3] as Boolean,
                     it[4] as Boolean,
-                    it[5] as Boolean,
+                    it[5] as Duration,
                     it[6] as Boolean,
                     it[7] as Boolean,
                     it[8] as Boolean,
                     it[9] as Boolean,
                     it[10] as Boolean,
+                    it[11] as Boolean,
                 )
             },
         )

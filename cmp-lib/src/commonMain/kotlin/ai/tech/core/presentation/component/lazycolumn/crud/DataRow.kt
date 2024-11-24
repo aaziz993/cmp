@@ -1,7 +1,7 @@
 package ai.tech.core.presentation.component.lazycolumn.crud
 
 import ai.tech.core.data.crud.client.model.EntityProperty
-import ai.tech.core.data.crud.client.model.MutationItem
+import ai.tech.core.data.crud.client.model.EntityItem
 import ai.tech.core.misc.type.multiple.all
 import ai.tech.core.presentation.component.lazycolumn.crud.model.CRUDLazyColumnState
 import ai.tech.core.presentation.component.textfield.AdvancedTextField
@@ -37,14 +37,14 @@ internal fun <T : Any> DataRow(
     readOnly: Boolean,
     downloadIcon: @Composable () -> Unit,
     properties: List<EntityProperty>,
-    item: MutationItem<T>,
+    item: EntityItem<T>,
     onDownload: ((T) -> Unit)?,
-    onNewFrom: (MutationItem<T>) -> Unit,
+    onNewFrom: (EntityItem<T>) -> Unit,
     onRemove: (id: Any) -> Unit,
     onEdit: () -> Unit,
-    onSave: (MutationItem<T>) -> Unit,
+    onSave: (EntityItem<T>) -> Unit,
     onDelete: (id: Any) -> Unit,
-    onSelect: (MutationItem<T>) -> Unit,
+    onSelect: (EntityItem<T>) -> Unit,
     onValueChange: (id: Any, index: Int, value: String) -> Unit,
 ) = Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
     if (state.showSelect) {
@@ -59,7 +59,7 @@ internal fun <T : Any> DataRow(
         when (val textField = TextField(property.descriptor)) {
             TextField.Text -> AdvancedTextField(
                 value?.toString().orEmpty(),
-                { onValueChange(index, it) },
+                { onValueChange(item.id, index, it) },
                 Modifier.weight(1f).padding(4.dp),
                 readOnly = readOnly || property.isReadOnly || !item.isModify,
                 singleLine = true,

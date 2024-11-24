@@ -1,7 +1,7 @@
 package ai.tech.core.presentation.component.lazycolumn.crud
 
 import ai.tech.core.data.crud.client.model.EntityProperty
-import ai.tech.core.data.crud.client.model.MutationItem
+import ai.tech.core.data.crud.client.model.EntityItem
 import ai.tech.core.data.crud.client.model.unselected
 import ai.tech.core.presentation.component.lazycolumn.crud.model.CRUDLazyColumnLocalization
 import ai.tech.core.presentation.component.lazycolumn.crud.model.CRUDLazyColumnState
@@ -42,9 +42,9 @@ internal fun <T : Any> HeaderRow(
     state: CRUDLazyColumnState,
     headers: List<String>,
     properties: List<EntityProperty>,
-    items: List<MutationItem<T>>,
+    items: List<EntityItem<T>>,
     localization: CRUDLazyColumnLocalization,
-    onSelectAll: (List<MutationItem<T>>) -> Unit,
+    onSelectAll: (List<EntityItem<T>>) -> Unit,
     onUnselectAll: () -> Unit,
     onLoad: () -> Unit,
 ) {

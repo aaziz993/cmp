@@ -133,8 +133,8 @@ public abstract class AbstractViewModel<T : Any>(protected val savedStateHandle:
         sort: List<Order>? = null,
         predicate: BooleanVariable? = null,
         properties: List<EntityProperty>,
-        getValues: (Value) -> List<Any?>,
-        create: (Map<String, Any?>) -> Value,
+        getEntityValues: (Value) -> List<String>,
+        createEntity: (Map<String, String>) -> Value,
         config: PagingConfig = createPagingConfig(10),
         initialKey: Int? = null,
         remoteMediator: RemoteMediator<Int, Value>? = null,
@@ -144,49 +144,14 @@ public abstract class AbstractViewModel<T : Any>(protected val savedStateHandle:
         sort,
         predicate,
         properties,
-        getValues,
-        create,
+        getEntityValues,
+        createEntity,
         config,
         initialKey,
         remoteMediator,
         viewModelScope,
         firstItemOffset,
         disablePrepend,
-    )
-
-    @OptIn(ExperimentalPagingApi::class)
-    protected fun CRUDRepository<*>.viewModelPagingFlow(
-        projections: List<Variable>,
-        sort: List<Order>? = null,
-        predicate: BooleanVariable? = null,
-        config: PagingConfig = createPagingConfig(10),
-        initialKey: Int? = null,
-        remoteMediator: RemoteMediator<Int, List<Any?>>? = null,
-        firstItemOffset: Int = 0,
-    ) = pager(projections, sort, predicate, config, initialKey, remoteMediator, viewModelScope, firstItemOffset)
-
-    @OptIn(ExperimentalPagingApi::class)
-    protected fun CRUDRepository<*>.viewModelMutablePager(
-        projections: List<Variable>,
-        sort: List<Order>? = null,
-        predicate: BooleanVariable? = null,
-        properties: List<EntityProperty>,
-        create: () -> List<Any?>,
-        config: PagingConfig = createPagingConfig(10),
-        initialKey: Int? = null,
-        remoteMediator: RemoteMediator<Int, List<Any?>>? = null,
-        firstItemOffset: Int = 0,
-    ) = mutablePager(
-        projections,
-        sort,
-        predicate,
-        properties,
-        create,
-        config,
-        initialKey,
-        remoteMediator,
-        viewModelScope,
-        firstItemOffset,
     )
 
     public companion object {

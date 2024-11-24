@@ -1,7 +1,7 @@
 package ai.tech.core.presentation.component.lazycolumn.crud
 
 import ai.tech.core.data.crud.client.model.EntityProperty
-import ai.tech.core.data.crud.client.model.MutationItem
+import ai.tech.core.data.crud.client.model.EntityItem
 import ai.tech.core.data.crud.client.model.isEditsSelectedAll
 import ai.tech.core.data.crud.client.model.isSelectedAnyNews
 import ai.tech.core.data.crud.client.model.modifies
@@ -37,7 +37,7 @@ internal fun <T : Any> ActionRow(
     readOnly: Boolean,
     downloadAllIcon: @Composable () -> Unit,
     properties: List<EntityProperty>,
-    items: List<MutationItem<T>>,
+    items: List<EntityItem<T>>,
     localization: CRUDLazyColumnLocalization,
     onDownloadSelected: ((List<T>) -> Unit)?,
     onUpload: (() -> Unit)?,
@@ -56,7 +56,7 @@ internal fun <T : Any> ActionRow(
     val selectedExists = items.selectedExists
 
     if (selectedExists.isNotEmpty() && onDownloadSelected != null) {
-        IconButton({ onDownloadSelected(selectedExists.map(MutationItem<T>::entity)) }, content = downloadAllIcon)
+        IconButton({ onDownloadSelected(selectedExists.map(EntityItem<T>::entity)) }, content = downloadAllIcon)
     }
 
     if (!readOnly) {

@@ -44,8 +44,8 @@ public fun <Value : Any> CRUDRepository<Value>.mutablePager(
     sort: List<Order>? = null,
     predicate: BooleanVariable? = null,
     properties: List<EntityProperty>,
-    getValues: (Value) -> List<Any?>,
-    create: (Map<String, Any?>) -> Value,
+    getEntityValues: (Value) -> List<String>,
+    createEntity: (Map<String, String>) -> Value,
     config: PagingConfig,
     initialKey: Int? = null,
     remoteMediator: RemoteMediator<Int, Value>? = null,
@@ -56,65 +56,10 @@ public fun <Value : Any> CRUDRepository<Value>.mutablePager(
     sort,
     predicate,
     properties,
-    getValues,
-    create,
+    getEntityValues,
+    createEntity,
     config,
     initialKey,
     remoteMediator,
     cacheCoroutineScope,
 ) { sort, predicate -> pagingSource(sort, predicate, firstItemOffset, disablePrepend) }
-
-@OptIn(ExperimentalPagingApi::class)
-public fun CRUDRepository<*>.pagingSource(
-    projections: List<Variable>,
-    sort: List<Order>? = null,
-    predicate: BooleanVariable? = null,
-    firstItemOffset: Int = 0,
-    disablePrepend: Boolean = false,
-): PagingSource<Int, List<Any?>> = CRUDPagingSource({ find(projections, sort, predicate, it).toList() }, firstItemOffset, disablePrepend)
-
-@OptIn(ExperimentalPagingApi::class)
-public fun CRUDRepository<*>.pager(
-    projections: List<Variable>,
-    sort: List<Order>? = null,
-    predicate: BooleanVariable? = null,
-    config: PagingConfig,
-    initialKey: Int? = null,
-    remoteMediator: RemoteMediator<Int, List<Any?>>? = null,
-    cacheCoroutineScope: CoroutineScope? = null,
-    firstItemOffset: Int = 0,
-    disablePrepend: Boolean = false,
-): CRUDProjectionRefreshablePager = CRUDProjectionRefreshablePager(
-    projections,
-    sort,
-    predicate,
-    config,
-    initialKey,
-    remoteMediator,
-    cacheCoroutineScope,
-) { projections, sort, predicate -> pagingSource(projections, sort, predicate, firstItemOffset, disablePrepend) }
-
-@OptIn(ExperimentalPagingApi::class)
-public fun CRUDRepository<*>.mutablePager(
-    projections: List<Variable>,
-    sort: List<Order>? = null,
-    predicate: BooleanVariable? = null,
-    properties: List<EntityProperty>,
-    create: () -> List<Any?>,
-    config: PagingConfig,
-    initialKey: Int? = null,
-    remoteMediator: RemoteMediator<Int, List<Any?>>? = null,
-    cacheCoroutineScope: CoroutineScope? = null,
-    firstItemOffset: Int = 0, disablePrepend: Boolean = false,
-
-    ): CRUDProjectionRefreshableMutablePager = CRUDProjectionRefreshableMutablePager(
-    projections,
-    sort,
-    predicate,
-    properties,
-    create,
-    config,
-    initialKey,
-    remoteMediator,
-    cacheCoroutineScope,
-) { projections, sort, predicate -> pagingSource(projections, sort, predicate, firstItemOffset, disablePrepend) }
