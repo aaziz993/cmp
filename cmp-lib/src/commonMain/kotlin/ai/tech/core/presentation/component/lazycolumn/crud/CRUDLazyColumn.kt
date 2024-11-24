@@ -86,7 +86,7 @@ public fun <T : Any> CRUDLazyColumn(
         viewModel.pager.properties,
         items,
         localization,
-        { viewModel.action(CRUDAction.Select(it)) },
+        { viewModel.action(CRUDAction.SelectAll(it)) },
         { viewModel.action(CRUDAction.UnselectAll) },
     ) { viewModel.action(CRUDAction.Load(state.sort, state.searchFieldStates)) }
 
@@ -107,8 +107,6 @@ public fun <T : Any> CRUDLazyColumn(
             downloadAllIcon,
             viewModel.pager.properties,
             it,
-            { viewModel.action(CRUDAction.SelectAll(listOf(it))) },
-            { viewModel.action(CRUDAction.RemoveMutations(listOf(it))) },
             if (onDownload == null) {
                 null
             }
@@ -116,11 +114,12 @@ public fun <T : Any> CRUDLazyColumn(
                 { onDownload(listOf(it)) }
             },
             { viewModel.action(CRUDAction.NewFrom(it)) },
-            { viewModel.action(CRUDAction.RemoveMutations(listOf(it))) },
-            { viewModel.action(CRUDAction.Edit(it)) },
-            { index, value -> viewModel.action(CRUDAction.ChangeValue(id, index, value)) },
-            { viewModel.action(CRUDAction.Save(entity)) },
-        ) { viewModel.action(CRUDAction.Delete(id)) }
+            { viewModel.action(CRUDAction.Remove(listOf(it))) },
+            { viewModel.action(CRUDAction.EditOrUnEdit(it)) },
+            { viewModel.action(CRUDAction.Save(it)) },
+            { viewModel.action(CRUDAction.Delete(it)) },
+            { viewModel.action(CRUDAction.SelectOrUnselect(it)) },
+        ) { id, index, value -> viewModel.action(CRUDAction.SetValue(id, index, value)) }
     }
 
     LaunchedEffect(Unit) {

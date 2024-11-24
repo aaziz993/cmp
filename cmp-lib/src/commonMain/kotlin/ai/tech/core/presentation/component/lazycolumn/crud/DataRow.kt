@@ -38,28 +38,17 @@ internal fun <T : Any> DataRow(
     downloadIcon: @Composable () -> Unit,
     properties: List<EntityProperty>,
     item: MutationItem<T>,
-    onSelect: (MutationItem<T>) -> Unit,
-    onUnselect: (id: Any) -> Unit,
     onDownload: ((T) -> Unit)?,
     onNewFrom: (MutationItem<T>) -> Unit,
     onRemove: (id: Any) -> Unit,
     onEdit: () -> Unit,
-    onSave: (T) -> Unit,
+    onSave: (MutationItem<T>) -> Unit,
     onDelete: (id: Any) -> Unit,
-    onValueChange: (index: Int, value: String) -> Unit,
+    onSelect: (MutationItem<T>) -> Unit,
+    onValueChange: (id: Any, index: Int, value: String) -> Unit,
 ) = Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
     if (state.showSelect) {
-        Checkbox(
-            item.isSelected,
-            {
-                if (item.isSelected) {
-                    onUnselect(item.id)
-                }
-                else {
-                    onSelect(item)
-                }
-            },
-        )
+        Checkbox(item.isSelected, { onSelect(item) })
     }
 
     val validations: MutableList<Boolean> = rememberSaveable { item.values.map { true }.toMutableStateList() }
@@ -85,7 +74,7 @@ internal fun <T : Any> DataRow(
 
             else -> AdvancedTextField(
                 value?.toString().orEmpty(),
-                { onValueChange(index, it) },
+                { onValueChange(item.id, index, it) },
                 Modifier.weight(1f).padding(4.dp),
                 readOnly = readOnly || property.isReadOnly || !item.isModify,
                 singleLine = true,
@@ -110,7 +99,7 @@ internal fun <T : Any> DataRow(
                     IconButton(
                         {
                             if (isValuesValid) {
-                                onSave()
+                                onSave(item)
                             }
                         },
                         Modifier.weight(1f),
@@ -127,7 +116,7 @@ internal fun <T : Any> DataRow(
                     }
 
                     if (item.isNew) {
-                        IconButton(onRemove, Modifier.weight(1f)) { Icon(EvaIcons.Outline.Minus, null) }
+                        IconButton({ onRemove(item.id) }, Modifier.weight(1f)) { Icon(EvaIcons.Outline.Minus, null) }
                     }
                     else {
                         IconButton(onEdit, Modifier.weight(1f)) {
@@ -139,7 +128,7 @@ internal fun <T : Any> DataRow(
                             }
                         }
 
-                        IconButton(onDelete, Modifier.weight(1f)) {
+                        IconButton({ onDelete(item.id) }, Modifier.weight(1f)) {
                             Icon(EvaIcons.Outline.Trash2, null)
                         }
                     }

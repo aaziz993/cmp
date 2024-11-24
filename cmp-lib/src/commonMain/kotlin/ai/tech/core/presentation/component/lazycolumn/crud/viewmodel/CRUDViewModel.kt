@@ -20,7 +20,7 @@ public class CRUDViewModel<T : Any>(
     private val repository: CRUDRepository<T>,
     sort: List<Order>? = null,
     predicate: BooleanVariable? = null,
-    create: (Map<String, Any?>?) -> T,
+    create: (Map<String, Any?>) -> T,
     properties: List<EntityProperty>,
     getValues: (T) -> List<Any?>,
     config: PagingConfig = createPagingConfig(10),
@@ -36,6 +36,7 @@ public class CRUDViewModel<T : Any>(
             predicate,
             properties,
             getValues,
+            create,
             config,
             initialKey,
             remoteMediator,
@@ -48,6 +49,20 @@ public class CRUDViewModel<T : Any>(
             is CRUDAction.Load -> pager.load(action.sort, pager.properties.predicate(action.searchFieldStates))
 
             CRUDAction.New -> pager.new()
+
+            is CRUDAction.NewFrom<T> -> pager.newFrom(action.item)
+
+            is CRUDAction.EditOrUnEdit -> pager.editOrUnEdit(action.item)
+
+            is CRUDAction.SelectOrUnselect -> pager.selectOrUnselect(action.item)
+
+            is CRUDAction.SetValue -> pager.setValue(action.id, action.index, action.value)
+
+            is CRUDAction.SelectAll -> pager.selectAll(action.items)
+
+            is CRUDAction.Remove -> pager.remove(action.id)
+
+            CRUDAction.UnselectAll -> pager.unselectAll()
 
             CRUDAction.NewFromSelected -> pager.newFromSelected()
 
@@ -64,13 +79,20 @@ public class CRUDViewModel<T : Any>(
                 pager.selectedIdPredicate?.let { predicate -> repository.delete(predicate) }
             }
 
-            is CRUDAction.SetValue -> pager.setValue(action.id, action.index, action.value)
+            is CRUDAction.Save -> viewModelScope.launch {
+                val entity = pager.createFrom(action.item)
 
-            is CRUDAction.Select -> pager.selectAll(action.items)
+                if (action.item.isNew) {
+                    repository.insert(entity)
+                }
+                else {
+                    repository.update(entity)
+                }
+            }
 
-            CRUDAction.UnselectAll -> pager.unselectAll()
-
-            is CRUDAction.RemoveMutations -> pager.remove(action.ids)
+            is CRUDAction.Delete -> viewModelScope.launch {
+                repository.delete(pager.idPredicate(action.id))
+            }
 
             CRUDAction.Refresh -> pager.refresh()
         }

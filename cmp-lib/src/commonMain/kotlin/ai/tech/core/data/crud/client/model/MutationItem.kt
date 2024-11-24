@@ -22,7 +22,7 @@ public data class MutationItem<T : Any>(
 
     val isSelectedModify: Boolean = isSelected && isModify
 
-    val isActual: Boolean = isSelected || modification != null
+    val isMutated: Boolean = isSelected || modification != null
 
     public fun validate(properties: List<EntityProperty>): Boolean =
         properties.withIndex().all { (index, property) ->
@@ -74,5 +74,5 @@ internal val <T : Any> List<MutationItem<T>>.selectedModifies
 
 internal fun <T : Any> List<MutationItem<T>>.validate(properties: List<EntityProperty>): Boolean = all { it.validate(properties) }
 
-internal val <T : Any> List<MutationItem<T>>.actuals
-    get() = filter(MutationItem<T>::isActual)
+internal val <T : Any> List<MutationItem<T>>.mutations
+    get() = filter(MutationItem<T>::isMutated)
