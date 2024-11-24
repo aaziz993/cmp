@@ -61,7 +61,7 @@ public class SettingsKeyValue(
                     null
                 }
                 else {
-                    json.decodeFromString(it)
+                    json.decodeFromString(deserializer, it)
                 }
             }
         } ?: defaultValue) as T

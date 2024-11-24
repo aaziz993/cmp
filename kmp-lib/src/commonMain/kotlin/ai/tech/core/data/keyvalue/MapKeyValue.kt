@@ -24,11 +24,9 @@ public open class MapKeyValue(
 
     override suspend fun contains(keys: List<String>): Boolean = map.contains(keys)
 
-    override suspend fun <T> set(keys: List<String>, value: T) {
-        value?.let(json::encodeToAny).let { encodedValue ->
-            map.set(keys, encodedValue)
-            stateFlow.update { Entry(keys, encodedValue) }
-        }
+    override suspend fun <T> set(keys: List<String>, value: T): Unit = value?.let(json::encodeToAny).let { encodedValue ->
+        map.set(keys, encodedValue)
+        stateFlow.update { Entry(keys, encodedValue) }
     }
 
     override suspend fun <T> get(
