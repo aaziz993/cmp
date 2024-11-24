@@ -39,7 +39,6 @@ import ai.tech.core.misc.plugin.websockets.configureWebSockets
 import ai.tech.core.misc.plugin.xhttpmethodoverride.configureXHttpMethodOverride
 import com.apurebase.kgraphql.GraphQL
 import freemarker.template.Configuration
-import io.github.flaxoos.ktor.server.plugins.taskscheduling.managers.TaskManager.Companion.host
 import io.github.smiley4.ktorswaggerui.dsl.PluginConfigDsl
 import io.ktor.http.*
 import io.ktor.server.application.*
@@ -252,7 +251,7 @@ public fun Application.configure(
             configureDropwizardMetrics(dropwizardMetrics, dropwizardMetricsBlock)
 
             // Configure the Cohort health checks plugin
-            healthChecks = configureCohort(cohort, auth?.takeIf(EnabledConfig::enable)?.oauth, database)
+            healthChecks = configureCohort(cohort, auth?.takeIf(EnabledConfig::enable)?.oauth, databases)
 
             // Configure the Shutdown plugin
             configureShutdown(shutdown, shutdownBlock)

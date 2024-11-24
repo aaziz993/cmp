@@ -10,5 +10,5 @@ public interface SharedPresentationConfig {
 
     public val signOutRedirectDestination: String
 
-    public val destination: DestinationConfig
+    public val destinations: DestinationConfig
 }

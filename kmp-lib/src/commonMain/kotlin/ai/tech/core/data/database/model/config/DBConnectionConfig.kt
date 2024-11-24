@@ -1,5 +1,6 @@
 package ai.tech.core.data.database.model.config
 
+import ai.tech.core.misc.model.config.EnabledConfig
 import kotlinx.serialization.Serializable
 import kotlin.time.Duration
 import kotlin.time.DurationUnit
@@ -21,7 +22,8 @@ public data class DBConnectionConfig(
     val connectTimeout: Duration? = null,
     val lockWaitTimeout: Duration? = null,
     val statementTimeout: Duration? = null,
-) {
+    override val enable: Boolean = true
+) : EnabledConfig {
 
     @Transient
     val jdbcUrl: String = "jdbc:$driver://$host:$port/$database${

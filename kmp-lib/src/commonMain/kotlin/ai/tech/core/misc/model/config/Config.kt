@@ -8,8 +8,6 @@ import ai.tech.core.misc.model.config.server.SharedHostConfig
 
 public interface Config {
 
-    public val application: ApplicationConfig
-
     public val httpClient: HttpClientConfig
 
     public val consul: ConsulConfig?

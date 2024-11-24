@@ -16,5 +16,5 @@ public data class ClientPresentationConfigImpl(
     override val startDestination: String,
     override val signInRedirectDestination: String = startDestination,
     override val signOutRedirectDestination: String = startDestination,
-    override val destination: SharedDestinationConfig
+    override val destinations: SharedDestinationConfig
 ) : ClientPresentationConfig

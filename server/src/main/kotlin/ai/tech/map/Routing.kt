@@ -9,7 +9,7 @@ import org.koin.ktor.ext.get
 
 public fun Routing.mapRouting(config: ServerConfigImpl) =
     with(config.ui) {
-        with(presentation.destination.map) {
+        with(presentation.destinations.map) {
             CrudRouting(
                 "$databaseName/$route/location",
                 LocationKotysaCRUDRepository(get(named(databaseName)), location.repository.timeZone),
