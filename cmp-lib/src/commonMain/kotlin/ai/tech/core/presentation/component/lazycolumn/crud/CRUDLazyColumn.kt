@@ -1,13 +1,11 @@
 package ai.tech.core.presentation.component.lazycolumn.crud
 
-import ai.tech.core.data.validator.Validator
 import ai.tech.core.misc.type.ifNull
 import ai.tech.core.presentation.component.lazycolumn.crud.model.CRUDLazyColumnLocalization
 import ai.tech.core.presentation.component.lazycolumn.crud.model.CRUDLazyColumnState
 import ai.tech.core.presentation.component.lazycolumn.crud.viewmodel.CRUDAction
 import ai.tech.core.presentation.component.lazycolumn.crud.viewmodel.CRUDViewModel
 import ai.tech.core.presentation.component.lazycolumn.paging.LazyPagingColumn
-import ai.tech.core.presentation.component.textfield.AdvancedTextField
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.gestures.FlingBehavior
 import androidx.compose.foundation.gestures.ScrollableDefaults
@@ -61,15 +59,11 @@ public fun <T : Any> CRUDLazyColumn(
 
     Spacer(modifier = Modifier.height(10.dp))
 
+    OptionRow(state, contentPadding, localization)
+
     val data = viewModel.pager.mutatedData.collectAsLazyPagingItems()
 
     val items = data.itemSnapshotList.items
-
-    OptionRow(
-        state,
-        contentPadding,
-        localization,
-    )
 
     ActionRow(
         contentPadding,
