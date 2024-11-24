@@ -10,15 +10,22 @@ import com.sksamuel.cohort.HealthCheckRegistry
 import com.sksamuel.cohort.db.DatabaseConnectionHealthCheck
 import com.sksamuel.cohort.endpoints.CohortConfiguration
 import com.sksamuel.cohort.healthcheck.http.EndpointHealthCheck
+import com.sksamuel.cohort.logback.LogbackManager
+import com.sksamuel.cohort.micrometer.CohortMetrics
 import io.ktor.client.request.*
 import io.ktor.server.application.*
+import io.micrometer.core.instrument.MeterRegistry
+import io.micrometer.core.instrument.binder.MeterBinder
+import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 
 public fun Application.configureCohort(
     config: CohortConfig?,
+    dispatcher: CoroutineDispatcher = Dispatchers.Default,
+    registries: List<MeterRegistry> = emptyList(),
     oauthConfig: Map<String?, ServerOAuthConfig> = emptyMap(),
     databaseConfig: Map<String?, DBProviderConfig> = emptyMap(),
-    block: (CohortConfiguration.() -> Map<String, String>)? = null
+    block: (CohortConfiguration.(CoroutineDispatcher) -> Map<String, String>)? = null
 ): Map<String, String> {
 
     val configBlock: (CohortConfiguration.() -> Map<String, String>)? = config?.takeIf(EnabledConfig::enable)?.let {
@@ -48,25 +55,27 @@ public fun Application.configureCohort(
 
             endpointPrefix = it.endpointPrefix
 
+            logManager = LogbackManager
+
             // enable health checks for kubernetes
             // each of these is optional and can map to any healthcheck url you wish
             // for example if you just want a single health endpoint, you could use /health
             oauthConfig.filterValues(EnabledConfig::enable).map { (name, config) ->
-                it.getOAuthEndpoint(name).also { (name, endpoint) ->
+                it.getOAuthEndpoint(name).also { (_, endpoint) ->
                     healthcheck(
                         endpoint,
-                        HealthCheckRegistry(Dispatchers.Default) {
+                        HealthCheckRegistry(dispatcher) {
                             register(
                                 EndpointHealthCheck { it.get(config.address) },
                             )
-                        },
+                        }.also { heathCheck -> { CohortMetrics(heathCheck).bindTo(registries) } },
                     )
                 }
             }.toMap() + databaseConfig.filterValues(EnabledConfig::enable).map { (name, config) ->
                 it.getDBEndpoint(name).also { (_, endpoint) ->
-                    HealthCheckRegistry(Dispatchers.Default) {
+                    HealthCheckRegistry(dispatcher) {
                         register(endpoint, DatabaseConnectionHealthCheck(config.connection.hikariDataSource))
-                    }
+                    }.also { heathCheck -> CohortMetrics(heathCheck).bindTo(registries) }
                 }
             }.toMap()
         }
@@ -79,13 +88,11 @@ public fun Application.configureCohort(
     var healthChecks: Map<String, String> = emptyMap()
 
     install(Cohort) {
-        healthChecks = configBlock?.invoke(this).orEmpty() + block?.invoke(this).orEmpty()
+        healthChecks = configBlock?.invoke(this).orEmpty() + block?.invoke(this, dispatcher).orEmpty()
     }
 
     return healthChecks
 }
 
-
-
-
+public fun MeterBinder.bindTo(registries: List<MeterRegistry>) = registries.forEach(::bindTo)
 

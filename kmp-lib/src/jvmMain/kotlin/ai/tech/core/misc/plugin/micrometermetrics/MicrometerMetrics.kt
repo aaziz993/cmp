@@ -23,61 +23,61 @@ import kotlin.time.DurationUnit
 
 public fun Application.configureMicrometerMetrics(config: MicrometerMetricsConfig?, block: (io.ktor.server.metrics.micrometer.MicrometerMetricsConfig.() -> Unit)? = null) {
 
-    var configBlock: (io.ktor.server.metrics.micrometer.MicrometerMetricsConfig.() -> Unit)? = null
+    var configBlock: (io.ktor.server.metrics.micrometer.MicrometerMetricsConfig.() -> Unit)? =
 
-    config?.takeIf(EnabledConfig::enable)?.let {
-        // After installing MicrometerMetrics, you need to create a registry for your monitoring system and assign it to the registry property.
-        // Below, the PrometheusMeterRegistry is created outside the installation block to have the capability to reuse this registry in different route handlers
-        val appMicrometerRegistry: MeterRegistry = when (it.type) {
-            PROMETHEUS -> {
-                PrometheusMeterRegistry(PrometheusConfig.DEFAULT).also {
-                    routing {
-                        get("/metrics") {
-                            call.respond(it.scrape())
+        config?.takeIf(EnabledConfig::enable)?.let {
+            // After installing MicrometerMetrics, you need to create a registry for your monitoring system and assign it to the registry property.
+            // Below, the PrometheusMeterRegistry is created outside the installation block to have the capability to reuse this registry in different route handlers
+            val appMicrometerRegistry: MeterRegistry = when (it.type) {
+                PROMETHEUS -> {
+                    PrometheusMeterRegistry(PrometheusConfig.DEFAULT).also {
+                        routing {
+                            get("/metrics") {
+                                call.respond(it.scrape())
+                            }
                         }
                     }
                 }
             }
-        }
 
-        configBlock = {
-            registry = appMicrometerRegistry
+            {
+                registry = appMicrometerRegistry
 
-            it.metricName?.let { metricName = it }
+                it.metricName?.let { metricName = it }
 
-            it.distinctNotRegisteredRoutes?.let { distinctNotRegisteredRoutes = it }
+                it.distinctNotRegisteredRoutes?.let { distinctNotRegisteredRoutes = it }
 
-            meterBinders = listOfNotNull(
-                if (it.classLoaderMetrics == true) ClassLoaderMetrics() else null,
-                if (it.jvmMemoryMetrics == true) JvmMemoryMetrics() else null,
-                if (it.jvmGcMetrics == true) JvmGcMetrics() else null,
-                if (it.processorMetrics == true) ProcessorMetrics() else null,
-                if (it.jvmThreadMetrics == true) JvmThreadMetrics() else null,
-                if (it.fileDescriptorMetrics == true) FileDescriptorMetrics() else null,
-                if (it.uptimeMetrics == true) UptimeMetrics() else null,
-            )
+                meterBinders = listOfNotNull(
+                    if (it.classLoaderMetrics == true) ClassLoaderMetrics() else null,
+                    if (it.jvmMemoryMetrics == true) JvmMemoryMetrics() else null,
+                    if (it.jvmGcMetrics == true) JvmGcMetrics() else null,
+                    if (it.processorMetrics == true) ProcessorMetrics() else null,
+                    if (it.jvmThreadMetrics == true) JvmThreadMetrics() else null,
+                    if (it.fileDescriptorMetrics == true) FileDescriptorMetrics() else null,
+                    if (it.uptimeMetrics == true) UptimeMetrics() else null,
+                )
 
-            it.distributionStatistics?.takeIf(EnabledConfig::enable)?.let {
+                it.distributionStatistics?.takeIf(EnabledConfig::enable)?.let {
 
-                val distributionStatisticConfigBuilder = DistributionStatisticConfig.Builder()
+                    val distributionStatisticConfigBuilder = DistributionStatisticConfig.Builder()
 
-                it.percentileHistogram?.let {
-                    if (it) {
-                        distributionStatisticConfigBuilder.percentilesHistogram(it)
+                    it.percentileHistogram?.let {
+                        if (it) {
+                            distributionStatisticConfigBuilder.percentilesHistogram(it)
+                        }
                     }
-                }
-                it.percentiles?.let { distributionStatisticConfigBuilder.percentiles(*it.toDoubleArray()) }
-                it.percentilePrecision?.let { distributionStatisticConfigBuilder.percentilePrecision(it) }
-                it.serviceLevelObjectives?.let { distributionStatisticConfigBuilder.serviceLevelObjectives(*it.toDoubleArray()) }
-                it.minimumExpectedValue?.let { distributionStatisticConfigBuilder.minimumExpectedValue(it) }
-                it.maximumExpectedValue?.let { distributionStatisticConfigBuilder.maximumExpectedValue(it) }
-                it.expiry?.let { distributionStatisticConfigBuilder.expiry(Duration.ofNanos(it.toLong(DurationUnit.NANOSECONDS))) }
-                it.bufferLength?.let { distributionStatisticConfigBuilder.bufferLength(it) }
+                    it.percentiles?.let { distributionStatisticConfigBuilder.percentiles(*it.toDoubleArray()) }
+                    it.percentilePrecision?.let { distributionStatisticConfigBuilder.percentilePrecision(it) }
+                    it.serviceLevelObjectives?.let { distributionStatisticConfigBuilder.serviceLevelObjectives(*it.toDoubleArray()) }
+                    it.minimumExpectedValue?.let { distributionStatisticConfigBuilder.minimumExpectedValue(it) }
+                    it.maximumExpectedValue?.let { distributionStatisticConfigBuilder.maximumExpectedValue(it) }
+                    it.expiry?.let { distributionStatisticConfigBuilder.expiry(Duration.ofNanos(it.toLong(DurationUnit.NANOSECONDS))) }
+                    it.bufferLength?.let { distributionStatisticConfigBuilder.bufferLength(it) }
 
-                distributionStatisticConfig = distributionStatisticConfigBuilder.build()
+                    distributionStatisticConfig = distributionStatisticConfigBuilder.build()
+                }
             }
         }
-    }
 
     if (configBlock == null && block == null) {
         return

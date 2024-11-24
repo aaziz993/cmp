@@ -74,6 +74,7 @@ import io.ktor.server.sessions.*
 import io.ktor.server.websocket.*
 import java.io.File
 import korlibs.time.DateTime
+import kotlinx.coroutines.Dispatchers
 import org.koin.core.KoinApplication
 import org.koin.ktor.ext.get
 import org.lighthousegames.logging.logging
@@ -265,7 +266,7 @@ public fun Application.configure(
             configureDropwizardMetrics(dropwizardMetrics, dropwizardMetricsBlock)
 
             // Configure the Cohort health checks plugin
-            val healthChecks = configureCohort(cohort, auth?.takeIf(EnabledConfig::enable)?.oauth.orEmpty(), database, cohortBlock)
+            val healthChecks = configureCohort(cohort, Dispatchers.Default, emptyList(), auth?.takeIf(EnabledConfig::enable)?.oauth.orEmpty(), database, cohortBlock)
 
             // Configure the Shutdown plugin
             configureShutdown(shutdown, shutdownBlock)

@@ -9,6 +9,6 @@ import java.io.File
 internal fun Project.configureKarakumExtension(extension: KarakumExtension): KarakumExtension =
     extension.apply {
         with(settings.extension) {
-            configFile.set(File(karakumConfFile))
+            configFile.set(File(karakumConfPath))
         }
     }

@@ -23,9 +23,9 @@ plugins {
 }
 
 config {
-    versionCatalogFile = "build-logic/gradle/libs.versions.toml"
+    versionCatalogPath = "build-logic/gradle/libs.versions.toml"
 
-    karakumConfFile = "build-logic/karakum.config.json"
+    karakumConfPath = "build-logic/karakum.config.json"
 
     apply()
 }

@@ -9,9 +9,9 @@ internal const val ANDROID_JAVA_TARGET_VERSION = JAVA_SOURCE_VERSION
 // PROJECT
 internal const val VERSION_CATALOG_NAME = "projectLibs"
 
-internal const val VERSION_CATALOG_FILE = "gradle/libs.versions.toml"
+internal const val VERSION_CATALOG_PATH = "gradle/libs.versions.toml"
 
-internal const val KARAKUM_CONF_FILE = "karakum.config.json"
+internal const val KARAKUM_CONF_PATH = "karakum.config.json"
 
 internal const val KOTLIN_COMPILATION_ALL_WARNINGS_AS_ERRORS = false
 

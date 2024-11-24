@@ -3,14 +3,14 @@
 package plugin.settings
 
 import KOTLIN_COMPILATION_ALL_WARNINGS_AS_ERRORS
-import KARAKUM_CONF_FILE
+import KARAKUM_CONF_PATH
 import PROJECT_GROUP
 import PROJECT_VERSION_MAJOR
 import PROJECT_VERSION_MINOR
 import PROJECT_VERSION_NAME
 import PROJECT_VERSION_PATCH
 import PROJECT_VERSION_SUFFIX
-import VERSION_CATALOG_FILE
+import VERSION_CATALOG_PATH
 import VERSION_CATALOG_NAME
 import java.io.Serializable
 import java.net.URI
@@ -38,11 +38,11 @@ public open class SettingsPluginExtension(
         providers.gradleProperty("project.license.text.url").getOrElse(KOTLIN_COMPILATION_ALL_WARNINGS_AS_ERRORS.toString())
             .toBoolean()
 
-    public var versionCatalogFile: String = VERSION_CATALOG_FILE
+    public var versionCatalogPath: String = VERSION_CATALOG_PATH
 
     public lateinit var versionCatalog: TomlParseResult
 
-    public var karakumConfFile: String = KARAKUM_CONF_FILE
+    public var karakumConfPath: String = KARAKUM_CONF_PATH
 
     public val developerName: String = providers.gradleProperty("project.developer.name").get()
 
@@ -75,7 +75,7 @@ public open class SettingsPluginExtension(
     public lateinit var githubUsername: String
 
     public fun apply(): Unit = with(target) {
-        versionCatalog = Toml.parse(target.layout.rootDirectory.file(versionCatalogFile).asFile.readText())
+        versionCatalog = Toml.parse(target.layout.rootDirectory.file(versionCatalogPath).asFile.readText())
 
         with(extension) {
             enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")
@@ -102,7 +102,7 @@ public open class SettingsPluginExtension(
                 }
                 versionCatalogs {
                     create(VERSION_CATALOG_NAME) {
-                        from(layout.rootDirectory.files(versionCatalogFile))
+                        from(layout.rootDirectory.files(versionCatalogPath))
                     }
                 }
             }

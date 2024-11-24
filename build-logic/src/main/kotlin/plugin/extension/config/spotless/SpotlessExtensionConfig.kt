@@ -86,7 +86,7 @@ internal fun Project.configureSpotlessExtension(extension: SpotlessExtension) =
                 // Will add a newline character to the end of files content
                 endWithNewline()
                 // Specifies license header text
-                licenseHeader(projectJavaFilesLicenseHeaderText("project.java.files.license.header.text.file"))
+                licenseHeader(projectJavaFilesLicenseHeaderText("project.java.files.license.header.text.path"))
             }
 
             // Configuration for Kotlin files
@@ -105,7 +105,7 @@ internal fun Project.configureSpotlessExtension(extension: SpotlessExtension) =
                 // Will add a newline character to the end of files content
                 endWithNewline()
                 // Specifies license header text
-                licenseHeader(projectJavaFilesLicenseHeaderText("project.kt.files.license.header.text.file"))
+                licenseHeader(projectJavaFilesLicenseHeaderText("project.kt.files.license.header.text.path"))
             }
 
             // Common configuration for miscellaneous files
@@ -113,51 +113,51 @@ internal fun Project.configureSpotlessExtension(extension: SpotlessExtension) =
                 Format(
                     "kts",
                     listOf("kts"),
-                    projectJavaFilesLicenseHeaderText("project.kt.files.license.header.text.file"),
+                    projectJavaFilesLicenseHeaderText("project.kt.files.license.header.text.path"),
                     providers.gradleProperty("project.kts.files.license.header.text.delimiter").get(),
                 ),
                 Format(
                     "xml",
                     listOf("xml"),
                     "<?xml version=\"1.0\" encoding=\"utf-8\" ?>\n${
-                        projectHtmlFilesLicenseHeaderText("project.xml.files.license.header.text.file")
+                        projectHtmlFilesLicenseHeaderText("project.xml.files.license.header.text.path")
                     }",
                     providers.gradleProperty("project.xml.files.license.header.text.delimiter").get(),
                 ),
                 Format(
                     "yaml",
                     listOf("yaml", "yml"),
-                    projectYamlFilesLicenseHeaderText("project.yaml.files.license.header.text.file"),
+                    projectYamlFilesLicenseHeaderText("project.yaml.files.license.header.text.path"),
                     providers.gradleProperty("project.yaml.files.license.header.text.delimiter").get(),
                 ),
                 Format(
                     "properties",
                     listOf("properties"),
-                    projectYamlFilesLicenseHeaderText("project.properties.files.license.header.text.file"),
+                    projectYamlFilesLicenseHeaderText("project.properties.files.license.header.text.path"),
                     providers.gradleProperty("project.properties.files.license.header.text.delimiter").get(),
                 ),
                 Format(
                     "html",
                     listOf("html"),
-                    projectHtmlFilesLicenseHeaderText("project.html.files.license.header.text.file"),
+                    projectHtmlFilesLicenseHeaderText("project.html.files.license.header.text.path"),
                     providers.gradleProperty("project.html.files.license.header.text.delimiter").get(),
                 ),
                 Format(
                     "md",
                     listOf("md"),
-                    projectHtmlFilesLicenseHeaderText("project.md.files.license.header.text.file"),
+                    projectHtmlFilesLicenseHeaderText("project.md.files.license.header.text.path"),
                     providers.gradleProperty("project.md.files.license.header.text.delimiter").get(),
                 ),
                 Format(
                     "gitignore",
                     listOf("gitignore"),
-                    projectYamlFilesLicenseHeaderText("project.gitignore.files.license.header.text.file"),
+                    projectYamlFilesLicenseHeaderText("project.gitignore.files.license.header.text.path"),
                     providers.gradleProperty("project.gitignore.files.license.header.text.delimiter").get(),
                 ),
                 Format(
                     "gitattributes",
                     listOf("gitattributes"),
-                    projectYamlFilesLicenseHeaderText("project.gitattributes.files.license.header.text.file"),
+                    projectYamlFilesLicenseHeaderText("project.gitattributes.files.license.header.text.path"),
                     providers.gradleProperty("project.gitattributes.files.license.header.text.delimiter").get(),
                 ),
             ).forEach {
