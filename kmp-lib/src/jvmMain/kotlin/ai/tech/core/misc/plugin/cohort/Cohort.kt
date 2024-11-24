@@ -1,6 +1,6 @@
 package ai.tech.core.misc.plugin.cohort
 
-import ai.tech.core.data.database.model.config.DBProviderConfig
+import ai.tech.core.data.database.model.config.DBConfig
 import ai.tech.core.data.database.model.config.hikariDataSource
 import ai.tech.core.misc.model.config.EnabledConfig
 import ai.tech.core.misc.plugin.auth.oauth.model.config.ServerOAuthConfig
@@ -16,19 +16,16 @@ import io.ktor.client.request.*
 import io.ktor.server.application.*
 import io.micrometer.core.instrument.MeterRegistry
 import io.micrometer.core.instrument.binder.MeterBinder
-import kotlinx.coroutines.CoroutineDispatcher
-import kotlinx.coroutines.Dispatchers
 
 public fun Application.configureCohort(
     config: CohortConfig?,
-    dispatcher: CoroutineDispatcher = Dispatchers.Default,
-    registries: List<MeterRegistry> = emptyList(),
+    registries: Set<MeterRegistry> = emptySet(),
     oauthConfig: Map<String?, ServerOAuthConfig> = emptyMap(),
-    databaseConfig: Map<String?, DBProviderConfig> = emptyMap(),
-    block: (CohortConfiguration.(CoroutineDispatcher) -> Map<String, String>)? = null
+    databaseConfig: Map<String?, DBConfig> = emptyMap(),
+    block: (CohortConfiguration.() -> Map<String, String>)? = null
 ): Map<String, String> {
 
-    val configBlock: (CohortConfiguration.() -> Map<String, String>)? = config?.takeIf(EnabledConfig::enable)?.let {
+    val configBlock: (CohortConfiguration.() -> Map<String, String>)? = config?.takeIf(EnabledConfig::enabled)?.let {
         {
             require(it.endpointPrefix.isNotEmpty()) {
                 "Property endpointPrefix can't be empty"
@@ -60,21 +57,21 @@ public fun Application.configureCohort(
             // enable health checks for kubernetes
             // each of these is optional and can map to any healthcheck url you wish
             // for example if you just want a single health endpoint, you could use /health
-            oauthConfig.filterValues(EnabledConfig::enable).map { (name, config) ->
+            oauthConfig.filterValues(EnabledConfig::enabled).map { (name, config) ->
                 it.getOAuthEndpoint(name).also { (_, endpoint) ->
                     healthcheck(
                         endpoint,
-                        HealthCheckRegistry(dispatcher) {
+                        HealthCheckRegistry {
                             register(
                                 EndpointHealthCheck { it.get(config.address) },
                             )
                         }.also { heathCheck -> { CohortMetrics(heathCheck).bindTo(registries) } },
                     )
                 }
-            }.toMap() + databaseConfig.filterValues(EnabledConfig::enable).map { (name, config) ->
+            }.toMap() + databaseConfig.filterValues(EnabledConfig::enabled).map { (name, config) ->
                 it.getDBEndpoint(name).also { (_, endpoint) ->
-                    HealthCheckRegistry(dispatcher) {
-                        register(endpoint, DatabaseConnectionHealthCheck(config.connection.hikariDataSource))
+                    HealthCheckRegistry {
+                        register(endpoint, DatabaseConnectionHealthCheck(config.hikariDataSource))
                     }.also { heathCheck -> CohortMetrics(heathCheck).bindTo(registries) }
                 }
             }.toMap()
@@ -88,11 +85,11 @@ public fun Application.configureCohort(
     var healthChecks: Map<String, String> = emptyMap()
 
     install(Cohort) {
-        healthChecks = configBlock?.invoke(this).orEmpty() + block?.invoke(this, dispatcher).orEmpty()
+        healthChecks = configBlock?.invoke(this).orEmpty() + block?.invoke(this).orEmpty()
     }
 
     return healthChecks
 }
 
-public fun MeterBinder.bindTo(registries: List<MeterRegistry>) = registries.forEach(::bindTo)
+public fun MeterBinder.bindTo(registries: Iterable<MeterRegistry>) = registries.forEach(::bindTo)
 

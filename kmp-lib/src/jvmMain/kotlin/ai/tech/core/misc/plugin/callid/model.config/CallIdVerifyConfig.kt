@@ -7,5 +7,5 @@ import kotlinx.serialization.Serializable
 public data class CallIdVerifyConfig(
     val dictionary: String,
     val reject: Boolean = false,
-    override val enable: Boolean = true
+    override val enabled: Boolean = true
 ) : EnabledConfig

@@ -7,5 +7,5 @@ import kotlinx.serialization.Serializable
 public data class GraphQLConfig(
     val playground: Boolean? = null,
     val endpoint: String? = null,
-    override val enable: Boolean = true,
+    override val enabled: Boolean = true,
 ) : EnabledConfig

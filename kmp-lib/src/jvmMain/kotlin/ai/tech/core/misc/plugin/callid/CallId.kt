@@ -6,9 +6,9 @@ import io.ktor.server.application.*
 import io.ktor.server.plugins.callid.*
 
 public fun Application.configureCallId(config: CallIdConfig?, block: (io.ktor.server.plugins.callid.CallIdConfig.() -> Unit)? = null) {
-    val configBlock: (io.ktor.server.plugins.callid.CallIdConfig.() -> Unit)? = config?.takeIf(EnabledConfig::enable)?.let {
+    val configBlock: (io.ktor.server.plugins.callid.CallIdConfig.() -> Unit)? = config?.takeIf(EnabledConfig::enabled)?.let {
         {
-            it.verify?.takeIf(EnabledConfig::enable)?.let { verify(it.dictionary, it.reject) }
+            it.verify?.takeIf(EnabledConfig::enabled)?.let { verify(it.dictionary, it.reject) }
 
             if (it.header?.let { header(it) } == null) {
                 it.retrieveFromHeader?.let { retrieveFromHeader(it) }

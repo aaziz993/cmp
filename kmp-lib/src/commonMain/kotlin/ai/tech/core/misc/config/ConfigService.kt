@@ -45,7 +45,7 @@ public class ConfigService<T : Any>(
 
         val consul: ConsulConfig? = config["consul"]?.let { Json.Default.decodeFromAny(it) }
 
-        val consulConfigs = consul?.takeIf(EnabledConfig::enable)?.config?.takeIf(EnabledConfig::enable)?.let {
+        val consulConfigs = consul?.takeIf(EnabledConfig::enabled)?.config?.takeIf(EnabledConfig::enabled)?.let {
             readConsulConfigs(
                 createHttpClient {
                     install(ContentNegotiation) {

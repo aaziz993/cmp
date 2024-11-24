@@ -18,5 +18,5 @@ public data class StaticContentConfig(
     val cacheControl: Map<String, List<CacheControlConfig>>? = null,
     val excludePaths: Set<String>? = null,
     val extensions: Set<String>? = null,
-    override val enable: Boolean = true,
+    override val enabled: Boolean = true,
 ) : EnabledConfig

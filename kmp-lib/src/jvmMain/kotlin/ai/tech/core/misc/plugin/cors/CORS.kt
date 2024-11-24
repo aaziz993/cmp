@@ -6,9 +6,9 @@ import io.ktor.server.application.*
 import io.ktor.server.plugins.cors.routing.*
 
 public fun Application.configureCORS(config: CORSConfig?, block: (io.ktor.server.plugins.cors.CORSConfig.() -> Unit)? = null) {
-    val configBlock: (io.ktor.server.plugins.cors.CORSConfig.() -> Unit)? = config?.takeIf(EnabledConfig::enable)?.let {
+    val configBlock: (io.ktor.server.plugins.cors.CORSConfig.() -> Unit)? = config?.takeIf(EnabledConfig::enabled)?.let {
         {
-            it.hosts?.let { it.filter(EnabledConfig::enable).forEach { allowHost(it.host, it.schemes, it.subDomains) } }
+            it.hosts?.let { it.filter(EnabledConfig::enabled).forEach { allowHost(it.host, it.schemes, it.subDomains) } }
             it.headers?.let { it.forEach { allowHeader(it) } }
             it.methods?.let { it.forEach { allowMethod(it) } }
             it.exposedHeaders?.let { it.forEach { exposeHeader(it) } }

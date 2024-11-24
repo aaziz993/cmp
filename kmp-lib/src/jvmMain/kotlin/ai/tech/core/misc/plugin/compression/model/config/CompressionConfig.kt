@@ -8,5 +8,5 @@ public data class CompressionConfig(
     val gzip: CompressionEncoderConfig? = null,
     val deflate: CompressionEncoderConfig? = null,
     val identity: CompressionEncoderConfig? = null,
-    override val enable: Boolean = true,
+    override val enabled: Boolean = true,
 ) : EnabledConfig

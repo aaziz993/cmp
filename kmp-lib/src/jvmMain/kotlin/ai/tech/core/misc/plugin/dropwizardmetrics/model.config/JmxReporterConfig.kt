@@ -11,5 +11,5 @@ public data class JmxReporterConfig(
     val domain: String? = null,
     val specificDurationUnits: Map<String, TimeUnit>? = null,
     val specificRateUnits: Map<String, TimeUnit>? = null,
-    override val enable: Boolean = true,
+    override val enabled: Boolean = true,
 ) : EnabledConfig

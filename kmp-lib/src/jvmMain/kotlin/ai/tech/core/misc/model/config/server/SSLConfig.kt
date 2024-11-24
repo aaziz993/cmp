@@ -29,7 +29,7 @@ public data class SSLConfig(
     val generate: Boolean = false,
     val rewrite: Boolean = false,
     val port: Int = 443,
-    override val enable: Boolean = true
+    override val enabled: Boolean = true
 ) : EnabledConfig{
 
     public val keyStore: KeyStore

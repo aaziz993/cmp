@@ -10,7 +10,7 @@ import java.io.File
 import java.util.*
 
 public fun Application.configureConditionalHeaders(config: ConditionalHeadersConfig?, block: (io.ktor.server.plugins.conditionalheaders.ConditionalHeadersConfig.() -> Unit)? = null) {
-    val configBlock: (io.ktor.server.plugins.conditionalheaders.ConditionalHeadersConfig.() -> Unit)? = config?.takeIf(EnabledConfig::enable)?.let {
+    val configBlock: (io.ktor.server.plugins.conditionalheaders.ConditionalHeadersConfig.() -> Unit)? = config?.takeIf(EnabledConfig::enabled)?.let {
         {
             it.versionHeadersPath?.let {
                 val file = File(it)

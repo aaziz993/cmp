@@ -7,5 +7,5 @@ import kotlinx.serialization.Serializable
 public data class CachingHeadersConfig(
     public val rootOption: CacheControlConfig? = null,
     public val options: Set<CacheContentTypeOptionConfig>? = null,
-    override val enable: Boolean = true,
+    override val enabled: Boolean = true,
 ) : EnabledConfig

@@ -17,9 +17,9 @@ public fun Application.configureKtorServerTaskScheduling(
     config: KtorServerTaskSchedulingConfig?,
     tasks: Map<String?, Map<String?, (executionTime: DateTime) -> Unit>>,
     block: (TaskSchedulingConfiguration.() -> Unit)? = null) {
-    val configBlock: (TaskSchedulingConfiguration.() -> Unit)? = config?.takeIf(EnabledConfig::enable)?.let {
+    val configBlock: (TaskSchedulingConfiguration.() -> Unit)? = config?.takeIf(EnabledConfig::enabled)?.let {
         {
-            it.redis.filterValues(EnabledConfig::enable).forEach { name, config ->
+            it.redis.filterValues(EnabledConfig::enabled).forEach { name, config ->
                 redis(name) {
                     config.host?.let { host = it }
                     config.port?.let { port = it }
@@ -32,20 +32,20 @@ public fun Application.configureKtorServerTaskScheduling(
                 }
             }
 
-            it.jdbc.filterValues(EnabledConfig::enable).forEach { name, config ->
+            it.jdbc.filterValues(EnabledConfig::enabled).forEach { name, config ->
                 jdbc(name) {
                     database = Database.connect(config.hikariDataSource)
                 }
             }
 
-            it.mongodb.filterValues(EnabledConfig::enable).forEach { name, config ->
+            it.mongodb.filterValues(EnabledConfig::enabled).forEach { name, config ->
                 mongoDb(name) {
                     client = MongoClient.create(config.connectionString)
                     databaseName = config.databaseName
                 }
             }
 
-            it.task.filterValues(EnabledConfig::enable).forEach { (name, config) ->
+            it.task.filterValues(EnabledConfig::enabled).forEach { (name, config) ->
                 task(config.taskManagerName) { // if no taskManagerName is provided, the task would be assigned to the default manager
                     name?.let { this.name = it }
 

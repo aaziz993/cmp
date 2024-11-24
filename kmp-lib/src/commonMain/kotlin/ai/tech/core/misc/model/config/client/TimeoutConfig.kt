@@ -8,5 +8,5 @@ public data class TimeoutConfig(
     val requestTimeoutMillis: Long? = null,
     val connectTimeoutMillis: Long? = null,
     val socketTimeoutMillis: Long? = null,
-    override val enable: Boolean = true
+    override val enabled: Boolean = true
 ) : EnabledConfig

@@ -11,5 +11,5 @@ public data class SwaggerInfoConfig(
     val termsOfService: String? = null,
     val contact: SwaggerContactConfig? = null,
     val license: SwaggerLicenseConfig? = null,
-    override val enable: Boolean = true,
+    override val enabled: Boolean = true,
 ) : EnabledConfig

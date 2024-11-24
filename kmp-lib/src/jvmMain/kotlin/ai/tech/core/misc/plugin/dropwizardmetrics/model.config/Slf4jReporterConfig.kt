@@ -15,5 +15,5 @@ public data  class Slf4jReporterConfig(
     val shutdownExecutorOnStop: Boolean? = null,
     val disabledMetricAttributes: Set<MetricAttribute>? = null,
     val start: ScheduledReporterStartConfig,
-    override val enable: Boolean = true,
+    override val enabled: Boolean = true,
 ) : EnabledConfig

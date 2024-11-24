@@ -10,7 +10,7 @@ public interface DigesterAuthProvider {
     public val config: DigestAuthProviderConfig
 
     public fun getDigester(): (String) -> ByteArray =
-        config.digest?.takeIf(EnabledConfig::enable)?.let(DigestConfig::algorithm)?.let(::getDigester)
+        config.digest?.takeIf(EnabledConfig::enabled)?.let(DigestConfig::algorithm)?.let(::getDigester)
             ?: String::toByteArray
 
     public companion object {

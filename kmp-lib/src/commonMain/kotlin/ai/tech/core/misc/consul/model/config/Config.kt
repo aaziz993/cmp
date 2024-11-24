@@ -16,7 +16,7 @@ public data class Config(
     val aclToken: String? = null,
     val retry: Retry = Retry(),
     val failFast: Boolean = false,
-    override val enable: Boolean = true,
+    override val enabled: Boolean = true,
 ) : EnabledConfig {
 
     public fun getKeys(applicationName: String, profiles: List<String> = emptyList()): List<String> {

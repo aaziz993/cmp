@@ -1,5 +1,7 @@
 package ai.tech.core.misc.network.http.client
 
+import ai.tech.core.misc.consul.client.plugin.ConsulDiscovery
+import ai.tech.core.misc.consul.model.config.LoadBalancer
 import ai.tech.core.misc.network.http.client.model.Pin
 import ai.tech.core.misc.type.multiple.filterValuesIsNotNull
 import ai.tech.core.misc.type.serializablePropertyValues
@@ -56,6 +58,12 @@ public expect fun createHttpClient(
     pins: List<Pin> = emptyList(),
     block: HttpClientConfig<*>.() -> Unit = {}
 ): HttpClient
+
+public fun HttpClientConfig<*>.discovery(
+    address: String,
+    loadBalancer: LoadBalancer = LoadBalancer.ROUND_ROBIN,
+    serviceName: String
+) = install(ConsulDiscovery(address, loadBalancer, serviceName))
 
 public suspend fun MultiPartData.readParts(): List<PartData> {
     val parts = mutableListOf<PartData>()

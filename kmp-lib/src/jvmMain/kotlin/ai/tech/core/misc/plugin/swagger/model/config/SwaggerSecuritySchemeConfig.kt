@@ -15,5 +15,5 @@ public data class SwaggerSecuritySchemeConfig(
     val bearerFormat: String? = null,
     val openIdConnectUrl: String? = null,
     val description: String? = null,
-    override val enable: Boolean = true,
+    override val enabled: Boolean = true,
 ) : EnabledConfig

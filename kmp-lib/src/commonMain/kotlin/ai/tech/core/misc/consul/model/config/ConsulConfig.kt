@@ -9,5 +9,5 @@ public data class ConsulConfig(
     val discovery: Discovery? = null,
     val config: Config? = null,
     val loadBalancer: LoadBalancer = LoadBalancer.FIRST_HEALTHY,
-    override val enable: Boolean = true,
+    override val enabled: Boolean = true,
 ) : EnabledConfig

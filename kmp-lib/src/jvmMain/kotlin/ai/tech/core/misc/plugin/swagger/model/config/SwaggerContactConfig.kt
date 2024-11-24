@@ -8,5 +8,5 @@ public data class SwaggerContactConfig(
     val name: String? = null,
     val url: String? = null,
     val email: String? = null,
-    override val enable: Boolean = true,
+    override val enabled: Boolean = true,
 ) : EnabledConfig

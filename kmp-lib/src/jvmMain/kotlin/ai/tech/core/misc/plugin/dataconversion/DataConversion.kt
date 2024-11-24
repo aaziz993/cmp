@@ -5,6 +5,6 @@ import ai.tech.core.misc.plugin.dataconversion.model.config.DataConversionConfig
 import io.ktor.server.application.*
 import io.ktor.server.plugins.dataconversion.*
 
-public fun Application.configureDataConversion(config: DataConversionConfig?) = config?.takeIf(EnabledConfig::enable)?.let {
+public fun Application.configureDataConversion(config: DataConversionConfig?) = config?.takeIf(EnabledConfig::enabled)?.let {
     install(DataConversion)
 }

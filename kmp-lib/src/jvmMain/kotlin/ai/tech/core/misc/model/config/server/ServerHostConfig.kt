@@ -1,6 +1,6 @@
 package ai.tech.core.misc.model.config.server
 
-import ai.tech.core.data.database.model.config.DBProviderConfig
+import ai.tech.core.data.database.model.config.DBConfig
 import ai.tech.core.misc.model.config.ApplicationConfig
 import ai.tech.core.misc.model.config.di.KoinConfig
 import ai.tech.core.misc.plugin.applicationmonitoring.model.config.ApplicationMonitoringConfig
@@ -43,7 +43,7 @@ public data class ServerHostConfig(
     public val application: ApplicationConfig,
     val koin: KoinConfig? = null,
     val taskScheduling: KtorServerTaskSchedulingConfig?=null,
-    val database: Map<String?, DBProviderConfig> = emptyMap(),
+    val database: Map<String?, DBConfig> = emptyMap(),
     val serialization: SerializationConfig? = null,
     val httpsRedirect: HTTPSRedirectConfig? = null,
     val routing: RoutingConfig? = null,

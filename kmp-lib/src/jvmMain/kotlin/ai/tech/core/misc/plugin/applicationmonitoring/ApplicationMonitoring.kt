@@ -26,6 +26,6 @@ private val ApplicationMonitoringPlugin = createApplicationPlugin(name = "Applic
 
 private val NotFoundEvent: EventDefinition<ApplicationCall> = EventDefinition()
 
-public fun Application.configureApplicationMonitoring(config: ApplicationMonitoringConfig?) = config?.takeIf(EnabledConfig::enable)?.let {
+public fun Application.configureApplicationMonitoring(config: ApplicationMonitoringConfig?) = config?.takeIf(EnabledConfig::enabled)?.let {
     install(ApplicationMonitoringPlugin)
 }

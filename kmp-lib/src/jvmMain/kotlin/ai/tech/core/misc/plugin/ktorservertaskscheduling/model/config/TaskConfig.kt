@@ -8,5 +8,5 @@ public data class TaskConfig(
     val taskManagerName: String? = null,
     val scheduler: SchedulerConfig,
     val concurrency: Int? = null,
-    override val enable: Boolean = true,
+    override val enabled: Boolean = true,
 ) : EnabledConfig

@@ -6,7 +6,7 @@ import io.ktor.server.application.*
 import io.ktor.server.plugins.defaultheaders.*
 
 public fun Application.configureDefaultHeaders(config: DefaultHeadersConfig?, block: (io.ktor.server.plugins.defaultheaders.DefaultHeadersConfig.() -> Unit)? = null) {
-    val configBlock: (io.ktor.server.plugins.defaultheaders.DefaultHeadersConfig.() -> Unit)? = config?.takeIf(EnabledConfig::enable)?.let {
+    val configBlock: (io.ktor.server.plugins.defaultheaders.DefaultHeadersConfig.() -> Unit)? = config?.takeIf(EnabledConfig::enabled)?.let {
         {
             it.headers?.forEach {
                 header(it.key, it.value)

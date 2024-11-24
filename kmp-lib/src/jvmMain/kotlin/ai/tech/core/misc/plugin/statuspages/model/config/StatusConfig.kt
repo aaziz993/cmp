@@ -8,5 +8,5 @@ import kotlinx.serialization.Serializable
 public data class StatusConfig(
     val codes: List<HttpStatusCodeSerial>,
     val text: String,
-    override val enable: Boolean = true,
+    override val enabled: Boolean = true,
 ) : EnabledConfig

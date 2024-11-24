@@ -43,7 +43,7 @@ public fun Application.configureAuth(
     roleRepositories: Map<String?, Map<String, CRUDRepository<RoleEntity>>> = emptyMap(),
     block: (AuthenticationConfig.() -> Unit)? = null
 ) = authentication {
-    config?.takeIf(EnabledConfig::enable)?.let {
+    config?.takeIf(EnabledConfig::enabled)?.let {
 
         it.basic.forEach { (name, config) ->
             configureBasic(
@@ -90,7 +90,7 @@ public fun Application.configureAuth(
 
         it.ldapForm.forEach { (name, config) -> configureForm(name, config, LDAPFormAuthService(name, config)) }
 
-        it.jwtHs256.filterValues(EnabledConfig::enable).forEach { (name, config) ->
+        it.jwtHs256.filterValues(EnabledConfig::enabled).forEach { (name, config) ->
             val service = JWTHS256AuthService(name, config)
 
             configureJWT(name, config) {
@@ -110,7 +110,7 @@ public fun Application.configureAuth(
             rbac(name) { roleExtractor = service::roles }
         }
 
-        it.jwtRs256.filterValues(EnabledConfig::enable).forEach { (name, config) ->
+        it.jwtRs256.filterValues(EnabledConfig::enabled).forEach { (name, config) ->
             val service = JWTRS256AuthService(name, config)
 
             configureJWT(name, config) {
@@ -130,7 +130,7 @@ public fun Application.configureAuth(
             rbac(name) { roleExtractor = service::roles }
         }
 
-        it.oauth.filterValues(EnabledConfig::enable).forEach { (name, config) ->
+        it.oauth.filterValues(EnabledConfig::enabled).forEach { (name, config) ->
             configureOAuth(
                 serverURL,
                 httpClient,

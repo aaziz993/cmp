@@ -3,12 +3,10 @@ package ai.tech.core.data.database.model.config
 import ai.tech.core.misc.model.config.EnabledConfig
 import kotlinx.serialization.Serializable
 import kotlin.time.Duration
-import kotlin.time.DurationUnit
-import kotlin.time.toDuration
 import kotlinx.serialization.Transient
 
 @Serializable
-public data class DBConnectionConfig(
+public data class DBConfig(
     val protocol: String = "r2dbc",
     val driver: String,
     val host: String,
@@ -22,7 +20,8 @@ public data class DBConnectionConfig(
     val connectTimeout: Duration? = null,
     val lockWaitTimeout: Duration? = null,
     val statementTimeout: Duration? = null,
-    override val enable: Boolean = true
+    val table: List<DBTableConfig> = emptyList(),
+    override val enabled: Boolean = true
 ) : EnabledConfig {
 
     @Transient
@@ -67,7 +66,7 @@ public data class DBConnectionConfig(
 
     public companion object {
 
-        public operator fun invoke(url: String): DBConnectionConfig {
+        public operator fun invoke(url: String): DBConfig {
 
             // Try matching JDBC first
             val jdbcMatchResult = jdbcUR.matchEntire(url)
@@ -94,7 +93,7 @@ public data class DBConnectionConfig(
                     }
                 }
 
-                return DBConnectionConfig(
+                return DBConfig(
                     driver = driver,
                     host = host,
                     port = port,
@@ -121,7 +120,7 @@ public data class DBConnectionConfig(
                 // Handle query parameters for R2DBC
                 val ssl = r2dbcMatchResult.groups[8]?.value?.contains("ssl=true") == true
 
-                return DBConnectionConfig(
+                return DBConfig(
                     driver = driver,
                     host = host,
                     port = port,

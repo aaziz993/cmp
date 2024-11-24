@@ -6,10 +6,10 @@ import io.ktor.server.application.*
 import io.ktor.server.plugins.compression.*
 
 public fun Application.configureCompression(config: CompressionConfig?, block: (io.ktor.server.plugins.compression.CompressionConfig.() -> Unit)? = null) {
-    val configBlock: (io.ktor.server.plugins.compression.CompressionConfig.() -> Unit)? = config?.takeIf(EnabledConfig::enable)?.let {
+    val configBlock: (io.ktor.server.plugins.compression.CompressionConfig.() -> Unit)? = config?.takeIf(EnabledConfig::enabled)?.let {
         {
             //GZIP
-            it.gzip?.takeIf(EnabledConfig::enable)?.let {
+            it.gzip?.takeIf(EnabledConfig::enabled)?.let {
                 gzip {
                     it.priority?.let {
                         priority = it
@@ -31,7 +31,7 @@ public fun Application.configureCompression(config: CompressionConfig?, block: (
             }
 
             // DEFLATE
-            it.deflate?.takeIf(EnabledConfig::enable)?.let {
+            it.deflate?.takeIf(EnabledConfig::enabled)?.let {
                 deflate {
                     it.priority?.let {
                         priority = it
@@ -53,7 +53,7 @@ public fun Application.configureCompression(config: CompressionConfig?, block: (
             }
 
             // IDENTITY
-            it.identity?.takeIf(EnabledConfig::enable)?.let {
+            it.identity?.takeIf(EnabledConfig::enabled)?.let {
                 identity {
                     // The minimum size of a response that will be compressed
                     it.priority?.let {

@@ -9,7 +9,7 @@ public fun Application.configureXForwardedHeaders(
     config: XForwardedHeadersConfig?,
     block: (io.ktor.server.plugins.forwardedheaders.XForwardedHeadersConfig.() -> Unit)? = null,
 ) {
-    var configBlock: (io.ktor.server.plugins.forwardedheaders.XForwardedHeadersConfig.() -> Unit)? = config?.takeIf(EnabledConfig::enable)?.let {
+    var configBlock: (io.ktor.server.plugins.forwardedheaders.XForwardedHeadersConfig.() -> Unit)? = config?.takeIf(EnabledConfig::enabled)?.let {
         {
             it.hostHeaders?.let { hostHeaders + it }
             it.protoHeaders?.let { protoHeaders + it }

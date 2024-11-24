@@ -9,5 +9,5 @@ public data class CBORConfig(
     val encodeDefaults: Boolean? = null,
     val ignoreUnknownKeys: Boolean? = null,
     override val contentType: ContentTypeSerial = ContentType.Application.Cbor,
-    override val enable: Boolean = true,
+    override val enabled: Boolean = true,
 ) : SerializationFormatConfig

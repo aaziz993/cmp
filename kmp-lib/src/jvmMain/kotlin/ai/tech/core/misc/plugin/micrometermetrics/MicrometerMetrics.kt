@@ -1,12 +1,10 @@
 package ai.tech.core.misc.plugin.micrometermetrics
 
 import ai.tech.core.misc.model.config.EnabledConfig
-import ai.tech.core.misc.plugin.micrometermetrics.model.config.MicrometerMetrics.*
 import ai.tech.core.misc.plugin.micrometermetrics.model.config.MicrometerMetricsConfig
+import ai.tech.core.misc.plugin.micrometermetrics.model.config.meterRegistry
 import io.ktor.server.application.*
 import io.ktor.server.metrics.micrometer.*
-import io.ktor.server.response.*
-import io.ktor.server.routing.*
 import io.micrometer.core.instrument.MeterRegistry
 import io.micrometer.core.instrument.binder.jvm.ClassLoaderMetrics
 import io.micrometer.core.instrument.binder.jvm.JvmGcMetrics
@@ -16,32 +14,24 @@ import io.micrometer.core.instrument.binder.system.FileDescriptorMetrics
 import io.micrometer.core.instrument.binder.system.ProcessorMetrics
 import io.micrometer.core.instrument.binder.system.UptimeMetrics
 import io.micrometer.core.instrument.distribution.DistributionStatisticConfig
-import io.micrometer.prometheus.PrometheusConfig
-import io.micrometer.prometheus.PrometheusMeterRegistry
 import java.time.Duration
 import kotlin.time.DurationUnit
 
-public fun Application.configureMicrometerMetrics(config: MicrometerMetricsConfig?, block: (io.ktor.server.metrics.micrometer.MicrometerMetricsConfig.() -> Unit)? = null) {
+public fun Application.configureMicrometerMetrics(
+    config: MicrometerMetricsConfig?,
+    block: (io.ktor.server.metrics.micrometer.MicrometerMetricsConfig.(MeterRegistry?) -> MeterRegistry)? = null
+): Set<MeterRegistry> {
 
-    var configBlock: (io.ktor.server.metrics.micrometer.MicrometerMetricsConfig.() -> Unit)? =
+    var configBlock: (io.ktor.server.metrics.micrometer.MicrometerMetricsConfig.() -> MeterRegistry)? =
 
-        config?.takeIf(EnabledConfig::enable)?.let {
+        config?.takeIf(EnabledConfig::enabled)?.let {
             // After installing MicrometerMetrics, you need to create a registry for your monitoring system and assign it to the registry property.
-            // Below, the PrometheusMeterRegistry is created outside the installation block to have the capability to reuse this registry in different route handlers
-            val appMicrometerRegistry: MeterRegistry = when (it.type) {
-                PROMETHEUS -> {
-                    PrometheusMeterRegistry(PrometheusConfig.DEFAULT).also {
-                        routing {
-                            get("/metrics") {
-                                call.respond(it.scrape())
-                            }
-                        }
-                    }
-                }
-            }
+            // Below, the MeterRegistry is created outside the installation block to have the capability to reuse this registry in different route handlers
+
+            val micrometerRegistry: MeterRegistry = it.registries.meterRegistry
 
             {
-                registry = appMicrometerRegistry
+                registry = micrometerRegistry
 
                 it.metricName?.let { metricName = it }
 
@@ -57,7 +47,7 @@ public fun Application.configureMicrometerMetrics(config: MicrometerMetricsConfi
                     if (it.uptimeMetrics == true) UptimeMetrics() else null,
                 )
 
-                it.distributionStatistics?.takeIf(EnabledConfig::enable)?.let {
+                it.distributionStatistics?.takeIf(EnabledConfig::enabled)?.let {
 
                     val distributionStatisticConfigBuilder = DistributionStatisticConfig.Builder()
 
@@ -76,16 +66,25 @@ public fun Application.configureMicrometerMetrics(config: MicrometerMetricsConfi
 
                     distributionStatisticConfig = distributionStatisticConfigBuilder.build()
                 }
+
+                micrometerRegistry
             }
         }
 
     if (configBlock == null && block == null) {
-        return
+        return emptySet()
     }
+
+    var meterRegistries = emptySet<MeterRegistry>()
 
     install(MicrometerMetrics) {
-        configBlock?.invoke(this)
+        val meterRegistry = configBlock?.invoke(this)
 
-        block?.invoke(this)
+        meterRegistries = setOfNotNull(
+            meterRegistry,
+            block?.invoke(this, meterRegistry),
+        )
     }
+
+    return meterRegistries
 }

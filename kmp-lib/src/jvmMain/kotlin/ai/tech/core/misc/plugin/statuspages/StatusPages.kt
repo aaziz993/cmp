@@ -11,7 +11,7 @@ import io.ktor.server.plugins.statuspages.*
 import io.ktor.server.response.*
 
 public fun Application.configureStatusPages(config: StatusPagesConfig?, block: (io.ktor.server.plugins.statuspages.StatusPagesConfig.() -> Unit)? = null) {
-    val configBlock: (io.ktor.server.plugins.statuspages.StatusPagesConfig.() -> Unit)? = config?.takeIf(EnabledConfig::enable)?.let {
+    val configBlock: (io.ktor.server.plugins.statuspages.StatusPagesConfig.() -> Unit)? = config?.takeIf(EnabledConfig::enabled)?.let {
         {
             exception<RequestValidationException> { call, cause ->
                 call.respond(HttpStatusCode.BadRequest, cause.reasons.joinToString())
@@ -37,13 +37,13 @@ public fun Application.configureStatusPages(config: StatusPagesConfig?, block: (
                 call.respond(HttpStatusCode.InternalServerError, cause.message.toString())
             }
 
-            it.status?.filter(EnabledConfig::enable)?.forEach {
+            it.status?.filter(EnabledConfig::enabled)?.forEach {
                 status(*it.codes.toTypedArray()) { call, status ->
                     call.respondText(text = it.text, status = status)
                 }
             }
 
-            it.statusFile?.filter(EnabledConfig::enable)?.forEach {
+            it.statusFile?.filter(EnabledConfig::enabled)?.forEach {
                 statusFile(*it.codes.toTypedArray(), filePattern = it.filePattern)
             }
         }

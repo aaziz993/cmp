@@ -12,7 +12,7 @@ public data class CacheControlConfig(
     val mustRevalidate: Boolean = false,
     val proxyRevalidate: Boolean = false,
     val visibility: CacheControl.Visibility? = null,
-    override val enable: Boolean = true
+    override val enabled: Boolean = true
 ) : EnabledConfig {
 
     public fun cacheControl(): CacheControl = when (type) {

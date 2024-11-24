@@ -26,5 +26,5 @@ public data class AuthProvidersConfig(
     val jwtRs256: Map<String?, JWTRS256Config> = emptyMap(),
     val oauth: Map<String?, ServerOAuthConfig> = emptyMap(),
     val session: Map<String?, SessionAuthConfig> = emptyMap(),
-    override val enable: Boolean = true,
+    override val enabled: Boolean = true,
 ) : EnabledConfig

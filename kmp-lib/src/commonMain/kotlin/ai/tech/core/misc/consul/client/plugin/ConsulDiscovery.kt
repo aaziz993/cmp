@@ -9,18 +9,18 @@ import io.ktor.client.request.HttpRequestPipeline
 
 @Suppress("FunctionName")
 public fun ConsulDiscovery(
-    consulAddress: String,
+    address: String,
+    loadBalancer: LoadBalancer = LoadBalancer.ROUND_ROBIN,
     serviceName: String,
-    loadBalancer: LoadBalancer,
 ): ClientPlugin<Unit> = createClientPlugin("ConsulDiscovery", { }) {
 
-    val healthClient = HealthClient(client, consulAddress)
+    val healthClient = HealthClient(client, address)
 
     client.requestPipeline.intercept(HttpRequestPipeline.Render) {
         val nodes = healthClient.getHealthyServiceInstances(serviceName)
 
         val selectedNode = checkNotNull(loadBalancer(nodes)) {
-            "Impossible to find available nodes of the $serviceName"
+            "Impossible to find available instances of the $serviceName"
         }
 
         context.url {

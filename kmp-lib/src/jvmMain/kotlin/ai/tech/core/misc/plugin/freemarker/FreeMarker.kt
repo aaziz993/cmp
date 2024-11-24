@@ -11,7 +11,7 @@ import io.ktor.server.freemarker.*
 import java.io.File
 
 public fun Application.configureFreeMarker(config: FreeMarkerConfig?, block: (Configuration.() -> Unit)? = null) {
-    val configBlock: (Configuration.() -> Unit)? = config?.takeIf(EnabledConfig::enable)?.let {
+    val configBlock: (Configuration.() -> Unit)? = config?.takeIf(EnabledConfig::enabled)?.let {
         {
             val templateLoaders = (it.classPaths?.let {
                 it.map { ClassTemplateLoader(this::class.java.classLoader, it) }

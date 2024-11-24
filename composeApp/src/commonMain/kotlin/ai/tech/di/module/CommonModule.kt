@@ -34,7 +34,7 @@ public class CommonModule {
     @Single
     public fun provideHttpClient(config: ClientConfigImpl, json: Json): HttpClient = with(config.httpClient) {
         createHttpClient {
-            this@with.timeout?.takeIf(EnabledConfig::enable)?.let {
+            this@with.timeout?.takeIf(EnabledConfig::enabled)?.let {
                 install(HttpTimeout) {
                     it.requestTimeoutMillis?.let { requestTimeoutMillis }
                     it.connectTimeoutMillis.let { connectTimeoutMillis }
@@ -42,7 +42,7 @@ public class CommonModule {
                 }
             }
 
-            this@with.cache?.takeIf(EnabledConfig::enable)?.let {
+            this@with.cache?.takeIf(EnabledConfig::enabled)?.let {
                 install(HttpCache) {
                     it.isShared?.let { isShared = it }
                 }
@@ -58,7 +58,7 @@ public class CommonModule {
                 )
             }
 
-            log?.takeIf(EnabledConfig::enable)?.let {
+            log?.takeIf(EnabledConfig::enabled)?.let {
                 install(Logging) {
                     logger = Logger.DEFAULT
                     it.level?.let { level = LogLevel.valueOf(it.uppercase()) }
@@ -75,7 +75,7 @@ public class CommonModule {
         config: ClientConfigImpl,
         httpClient: HttpClient,
     ): AbstractLocalizationService = with(config.localization) {
-        weblate?.takeIf(EnabledConfig::enable)?.let {
+        weblate?.takeIf(EnabledConfig::enabled)?.let {
             WeblateService(
                 WeblateClient(httpClient, it.address, it.apiKey),
                 config.application.name,

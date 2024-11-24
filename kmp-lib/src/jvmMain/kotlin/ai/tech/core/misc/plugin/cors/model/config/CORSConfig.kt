@@ -14,5 +14,5 @@ public data class CORSConfig(
     val maxAgeInSeconds: Long? = null,
     val allowSameOrigin: Boolean? = null,
     val allowNonSimpleContentTypes: Boolean? = null,
-    override val enable: Boolean = true,
+    override val enabled: Boolean = true,
 ) : EnabledConfig

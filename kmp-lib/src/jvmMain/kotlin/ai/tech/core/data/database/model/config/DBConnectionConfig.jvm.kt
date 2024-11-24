@@ -4,14 +4,13 @@ import com.zaxxer.hikari.HikariConfig
 import com.zaxxer.hikari.HikariDataSource
 import javax.sql.DataSource
 
-import ai.tech.core.data.database.model.config.DBConnectionConfig
 import io.r2dbc.pool.PoolingConnectionFactoryProvider
 import io.r2dbc.spi.ConnectionFactories
 import io.r2dbc.spi.ConnectionFactory
 import io.r2dbc.spi.ConnectionFactoryOptions
 import kotlin.time.toJavaDuration
 
-public val DBConnectionConfig.hikariDataSource: DataSource
+public val DBConfig.hikariDataSource: DataSource
     get() =
         HikariDataSource(
             HikariConfig().apply {
@@ -26,7 +25,7 @@ public val DBConnectionConfig.hikariDataSource: DataSource
             },
         )
 
-public val DBConnectionConfig.r2dbcConnectionFactory: ConnectionFactory
+public val DBConfig.r2dbcConnectionFactory: ConnectionFactory
     get() =
         ConnectionFactories.get(
             ConnectionFactoryOptions.builder()

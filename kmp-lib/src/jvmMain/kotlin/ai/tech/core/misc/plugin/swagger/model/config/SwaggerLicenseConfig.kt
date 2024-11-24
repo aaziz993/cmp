@@ -7,5 +7,5 @@ import kotlinx.serialization.Serializable
 public data class SwaggerLicenseConfig(
     val name: String? = null,
     val url: String? = null,
-    override val enable: Boolean = true,
+    override val enabled: Boolean = true,
 ) : EnabledConfig

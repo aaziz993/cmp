@@ -7,5 +7,5 @@ import kotlinx.serialization.Serializable
 public data class MongoDBConfig(
     val connectionString: String,
     val databaseName: String,
-    override val enable: Boolean = true
+    override val enabled: Boolean = true
 ) : EnabledConfig

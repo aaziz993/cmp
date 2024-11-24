@@ -16,7 +16,7 @@ public data class CohortConfig(
     val endpointPrefix: String = "health",
     val oauthEndpointPrefix: String? = null,
     val dbEndpointPrefix: String? = null,
-    override val enable: Boolean = true
+    override val enabled: Boolean = true
 ) : EnabledConfig {
 
     private val oauthEndpointPrefixPart = oauthEndpointPrefix?.let { "$it/" }.orEmpty()

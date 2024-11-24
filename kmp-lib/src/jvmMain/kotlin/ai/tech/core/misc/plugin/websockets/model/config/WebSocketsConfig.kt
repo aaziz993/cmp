@@ -13,5 +13,5 @@ public data class WebSocketsConfig(
     val masking: Boolean? = null,
     val contentConverter: JsonConfig? = null,
     val page: List<WebSocketPageConfig>? = null,
-    override val enable: Boolean = true,
+    override val enabled: Boolean = true,
 ) : EnabledConfig

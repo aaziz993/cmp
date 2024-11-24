@@ -9,7 +9,7 @@ public fun Application.configureForwardedHeaders(
     config: ForwardedHeadersConfig?,
     block: (io.ktor.server.plugins.forwardedheaders.ForwardedHeadersConfig.() -> Unit)? = null,
 ) {
-    var configBlock: (io.ktor.server.plugins.forwardedheaders.ForwardedHeadersConfig.() -> Unit)? = config?.takeIf(EnabledConfig::enable)?.let {
+    var configBlock: (io.ktor.server.plugins.forwardedheaders.ForwardedHeadersConfig.() -> Unit)? = config?.takeIf(EnabledConfig::enabled)?.let {
         {
             it.useFirst?.let {
                 if (it) {

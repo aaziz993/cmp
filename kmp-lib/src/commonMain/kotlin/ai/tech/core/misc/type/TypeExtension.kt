@@ -2,6 +2,7 @@
 
 package ai.tech.core.misc.type
 
+import ai.tech.core.data.expression.Expression
 import ai.tech.core.data.validator.Validation
 import ai.tech.core.data.validator.Validator
 import ai.tech.core.data.validator.ValidatorRule
@@ -9,6 +10,7 @@ import ai.tech.core.misc.type.accessor.Accessor
 import ai.tech.core.misc.type.accessor.ListAccessor
 import ai.tech.core.misc.type.accessor.MapLikeAccessor
 import ai.tech.core.misc.type.multiple.depthIterator
+import ai.tech.core.misc.type.multiple.removeLast
 import ai.tech.core.misc.type.multiple.takeIfNotEmpty
 import ai.tech.core.misc.type.serializer.encodeToAny
 import ai.tech.core.misc.type.single.parseOrNull
@@ -495,7 +497,6 @@ public fun <T : Any> Any.mapTo(
     valueTransform: (List<Accessor>, key: String, value: Any?, valueType: KType) -> Any? = { _, _, value, _ -> value },
     accessor: (List<Accessor>, key: Any?, value: Any?) -> Accessor? = { _, key, value -> value?.accessor(key) },
 ) {
-
 }
 
 public fun List<Map<String, Any?>>.deepMerge(
@@ -503,7 +504,7 @@ public fun List<Map<String, Any?>>.deepMerge(
 ): Map<String, Any?> = emptyMap()
 
 @Suppress("UNCHECKED_CAST")
-public fun <T : Any> T.depthTraverse(
+public fun <T : Any> T.depthIterator(
     transform: (vertices: List<T>, value: Any?) -> Iterator<Any?>?,
     removeLast: (vertices: List<T>, transform: Any?) -> Unit
 ) {
@@ -515,5 +516,36 @@ public fun <T : Any> T.depthTraverse(
         val last = vertices.removeLast()
 
         removeLast(vertices, last)
-    }?.forEach { _ -> }
+    }
+}
+
+public fun <T : Any> T.evaluate(
+    children: T.() -> Iterator<T>?,
+    transform: T.(args: List<Any?>) -> Any?
+): Any? {
+    val values = mutableListOf<Any?>()
+
+    depthTraverse(
+        { _, value ->
+            val children = (value as T).children()
+
+            if (children == null) {
+
+            }
+
+            if (value is Expression) {
+                if (value.isArgumentsAllValue) {
+                    values.add(value.transform(value.arguments))
+                }
+                else {
+                    return@depthTraverse value.arguments.iterator()
+                }
+            }
+            null
+        },
+    ) { _, transform ->
+        values.add((transform as Expression).transform(values.removeLast(transform.arguments.size)))
+    }
+
+    return values[0]
 }

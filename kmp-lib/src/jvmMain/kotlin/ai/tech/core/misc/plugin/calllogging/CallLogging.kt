@@ -7,9 +7,9 @@ import io.ktor.server.plugins.calllogging.CallLogging
 import org.slf4j.event.Level
 
 public fun Application.configureCallLogging(config: CallLoggingConfig?, block: (io.ktor.server.plugins.calllogging.CallLoggingConfig.() -> Unit)? = null) {
-    val configBlock: (io.ktor.server.plugins.calllogging.CallLoggingConfig.() -> Unit)? = config?.takeIf(EnabledConfig::enable)?.let {
+    val configBlock: (io.ktor.server.plugins.calllogging.CallLoggingConfig.() -> Unit)? = config?.takeIf(EnabledConfig::enabled)?.let {
         {
-            it.logging?.takeIf(EnabledConfig::enable)?.let {
+            it.logging?.takeIf(EnabledConfig::enabled)?.let {
                 it.level?.let { level = Level.valueOf(it) }
             }
             it.disableDefaultColors?.let {

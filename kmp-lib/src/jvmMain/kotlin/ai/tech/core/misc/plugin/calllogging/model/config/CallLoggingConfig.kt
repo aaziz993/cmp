@@ -9,5 +9,5 @@ public data class CallLoggingConfig(
     val logging: LogConfig? = null,
     val disableDefaultColors: Boolean? = null,
     val disableForStaticContent: Boolean? = null,
-    override val enable: Boolean = true,
+    override val enabled: Boolean = true,
 ) : EnabledConfig

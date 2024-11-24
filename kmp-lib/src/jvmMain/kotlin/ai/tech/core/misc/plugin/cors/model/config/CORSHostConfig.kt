@@ -8,5 +8,5 @@ public data class CORSHostConfig(
     val host: String,
     val schemes: List<String> = listOf("http"),
     val subDomains: List<String> = emptyList(),
-    override val enable: Boolean = true,
+    override val enabled: Boolean = true,
 ) : EnabledConfig

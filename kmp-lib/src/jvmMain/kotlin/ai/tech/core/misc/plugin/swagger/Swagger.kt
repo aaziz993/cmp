@@ -7,7 +7,7 @@ import io.github.smiley4.ktorswaggerui.dsl.PluginConfigDsl
 import io.ktor.server.application.*
 
 public fun Application.configureSwagger(config: SwaggerConfig?, block: (PluginConfigDsl.() -> Unit)? = null) {
-    val configBlock: (PluginConfigDsl.() -> Unit)? = config?.takeIf(EnabledConfig::enable)?.let {
+    val configBlock: (PluginConfigDsl.() -> Unit)? = config?.takeIf(EnabledConfig::enabled)?.let {
         {
             swagger {
                 it.forwardRoot?.let { forwardRoot = it }
@@ -15,20 +15,20 @@ public fun Application.configureSwagger(config: SwaggerConfig?, block: (PluginCo
                 it.rootHostPath?.let { rootHostPath = it }
                 it.authentication?.let { authentication = it }
             }
-            it.info?.takeIf(EnabledConfig::enable)?.let {
+            it.info?.takeIf(EnabledConfig::enabled)?.let {
                 info {
                     it.title?.let { title = it }
                     it.version?.let { version = it }
                     it.description?.let { description = it }
                     it.termsOfService?.let { termsOfService = it }
-                    it.contact?.takeIf(EnabledConfig::enable)?.let {
+                    it.contact?.takeIf(EnabledConfig::enabled)?.let {
                         contact {
                             it.name?.let { name = it }
                             it.url?.let { url = it }
                             it.email?.let { email = it }
                         }
                     }
-                    it.license?.takeIf(EnabledConfig::enable)?.let {
+                    it.license?.takeIf(EnabledConfig::enabled)?.let {
                         license {
                             it.name?.let { name = it }
                             it.url?.let { url = it }
@@ -36,7 +36,7 @@ public fun Application.configureSwagger(config: SwaggerConfig?, block: (PluginCo
                     }
                 }
             }
-            it.securityScheme?.filterValues(EnabledConfig::enable)?.forEach {
+            it.securityScheme?.filterValues(EnabledConfig::enabled)?.forEach {
                 // We can add security
                 securityScheme(it.key) {
                     it.value.type?.let { type = it }

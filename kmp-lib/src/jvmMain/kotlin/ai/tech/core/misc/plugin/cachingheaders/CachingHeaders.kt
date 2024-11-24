@@ -7,12 +7,12 @@ import io.ktor.server.application.*
 import io.ktor.server.plugins.cachingheaders.*
 
 public fun Application.configureCachingHeaders(config: CachingHeadersConfig?, block: (io.ktor.server.plugins.cachingheaders.CachingHeadersConfig.() -> Unit)? = null) {
-    val configBlock: (io.ktor.server.plugins.cachingheaders.CachingHeadersConfig.() -> Unit)? = config?.takeIf(EnabledConfig::enable)?.let {
+    val configBlock: (io.ktor.server.plugins.cachingheaders.CachingHeadersConfig.() -> Unit)? = config?.takeIf(EnabledConfig::enabled)?.let {
         {
             options { call, outgoingContent ->
-                it.rootOption?.takeIf(EnabledConfig::enable)?.let { CachingOptions(it.cacheControl()) }
+                it.rootOption?.takeIf(EnabledConfig::enabled)?.let { CachingOptions(it.cacheControl()) }
                 val contentType = outgoingContent.contentType?.withoutParameters()
-                it.options?.filter(EnabledConfig::enable)?.find { it.contentType == contentType }
+                it.options?.filter(EnabledConfig::enabled)?.find { it.contentType == contentType }
                     ?.let { CachingOptions(it.cacheControl.cacheControl()) }
             }
         }

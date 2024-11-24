@@ -5,5 +5,5 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 public data class ApplicationMonitoringConfig(
-    override val enable: Boolean = true,
+    override val enabled: Boolean = true,
 ) : EnabledConfig

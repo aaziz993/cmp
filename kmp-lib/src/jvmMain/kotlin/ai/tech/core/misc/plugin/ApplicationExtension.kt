@@ -72,9 +72,9 @@ import io.ktor.server.response.*
 import io.ktor.server.routing.*
 import io.ktor.server.sessions.*
 import io.ktor.server.websocket.*
+import io.micrometer.core.instrument.MeterRegistry
 import java.io.File
 import korlibs.time.DateTime
-import kotlinx.coroutines.Dispatchers
 import org.koin.core.KoinApplication
 import org.koin.ktor.ext.get
 import org.lighthousegames.logging.logging
@@ -137,7 +137,7 @@ public fun Application.configure(
     sessionBlock: (SessionsConfig.() -> Unit)? = null,
     freeMarkerBlock: (Configuration.() -> Unit)? = null,
     swaggerBlock: (PluginConfigDsl.() -> Unit)? = null,
-    micrometerMetricsBlock: (MicrometerMetricsConfig.() -> Unit)? = null,
+    micrometerMetricsBlock: (MicrometerMetricsConfig.(MeterRegistry?) -> MeterRegistry)? = null,
     dropwizardMetricsBlock: (DropwizardMetricsConfig.() -> Unit)? = null,
     cohortBlock: (CohortConfiguration.() -> Map<String, String>)? = null,
     shutdownBlock: (ShutDownUrl.Config.() -> Unit)? = null
@@ -227,16 +227,16 @@ public fun Application.configure(
 
             // Configure session with cookies
             configureSession(auth) {
-//            it.jwtHs256.filterValues(EnabledConfig::enable).forEach { (name, config) ->
-//                cookie<UserSession>(name, config.cookie?.takeIf(EnabledConfig::enable))
+//            it.jwtHs256.filterValues(EnabledConfig::enabled).forEach { (name, config) ->
+//                cookie<UserSession>(name, config.cookie?.takeIf(EnabledConfig::enabled))
 //            }
 //
-//            it.jwtRs256.filterValues(EnabledConfig::enable).forEach { (name, config) ->
-//                cookie<UserSession>(name, config.cookie?.takeIf(EnabledConfig::enable))
+//            it.jwtRs256.filterValues(EnabledConfig::enabled).forEach { (name, config) ->
+//                cookie<UserSession>(name, config.cookie?.takeIf(EnabledConfig::enabled))
 //            }
 //
-//            it.oauth.filterValues(EnabledConfig::enable).forEach { (name, config) ->
-//                cookie<UserSession>(name, config.cookie?.takeIf(EnabledConfig::enable))
+//            it.oauth.filterValues(EnabledConfig::enabled).forEach { (name, config) ->
+//                cookie<UserSession>(name, config.cookie?.takeIf(EnabledConfig::enabled))
 //            }
 
                 sessionBlock?.invoke(this)
@@ -250,7 +250,7 @@ public fun Application.configure(
 
             // Configure the Routing plugin
             configureRouting(routing) {
-                consul?.takeIf(EnabledConfig::enable)?.discovery?.takeIf(EnabledConfig::enable)?.let {
+                consul?.takeIf(EnabledConfig::enabled)?.discovery?.takeIf(EnabledConfig::enabled)?.let {
                     get(it.healthCheckPath) { call.respond(HttpStatusCode.OK) }
                 }
                 routingBlock?.invoke(this)
@@ -260,18 +260,18 @@ public fun Application.configure(
             configureApplicationMonitoring(applicationMonitoring)
 
             // Configure the MicrometerMetrics plugin
-            configureMicrometerMetrics(micrometerMetrics, micrometerMetricsBlock)
+            val micrometerRegistries = configureMicrometerMetrics(micrometerMetrics, micrometerMetricsBlock)
 
             // Configure the DropwizardMetrics plugin
             configureDropwizardMetrics(dropwizardMetrics, dropwizardMetricsBlock)
 
             // Configure the Cohort health checks plugin
-            val healthChecks = configureCohort(cohort, Dispatchers.Default, emptyList(), auth?.takeIf(EnabledConfig::enable)?.oauth.orEmpty(), database, cohortBlock)
+            val healthChecks = configureCohort(cohort, micrometerRegistries, auth?.takeIf(EnabledConfig::enabled)?.oauth.orEmpty(), database, cohortBlock)
 
             // Configure the Shutdown plugin
             configureShutdown(shutdown, shutdownBlock)
 
-            consul?.takeIf(EnabledConfig::enable)?.let {
+            consul?.takeIf(EnabledConfig::enabled)?.let {
                 configureConsulDiscovery(
                     get(),
                     it.address,

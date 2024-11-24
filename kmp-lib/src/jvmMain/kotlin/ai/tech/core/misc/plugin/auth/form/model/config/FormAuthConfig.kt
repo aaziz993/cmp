@@ -19,5 +19,5 @@ public data class FormAuthConfig(
     override val roleTable: String? = null,
     override val cookie: CookieConfig? = null,
     override val exception: Boolean = false,
-    override val enable: Boolean = true
+    override val enabled: Boolean = true
 ) : AuthProviderConfig, BaseFormAuthConfig, DigestAuthProviderConfig, StoreAuthProviderConfig, ChallengeAuthProviderConfig

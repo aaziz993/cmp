@@ -18,5 +18,5 @@ public data class BasicAuthConfig(
     override val principalTable: String,
     override val roleTable: String? = null,
     override val cookie: CookieConfig? = null,
-    override val enable: Boolean = true
+    override val enabled: Boolean = true
 ) : AuthProviderConfig, BaseBasicAuthConfig, RealmAuthProviderConfig, DigestAuthProviderConfig, StoreAuthProviderConfig

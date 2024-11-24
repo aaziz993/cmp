@@ -8,15 +8,15 @@ import io.ktor.server.application.*
 import io.ktor.server.metrics.dropwizard.*
 
 public fun Application.configureDropwizardMetrics(config: DropwizardMetricsConfig?, block: (io.ktor.server.metrics.dropwizard.DropwizardMetricsConfig.() -> Unit)? = null) {
-    val configBlock: (io.ktor.server.metrics.dropwizard.DropwizardMetricsConfig.() -> Unit)? = config?.takeIf(EnabledConfig::enable)?.let {
+    val configBlock: (io.ktor.server.metrics.dropwizard.DropwizardMetricsConfig.() -> Unit)? = config?.takeIf(EnabledConfig::enabled)?.let {
         {
             it.baseName?.let { baseName = it }
             it.registerJvmMetricSets?.let { registerJvmMetricSets = it }
 
-            it.slf4jReporter?.takeIf(EnabledConfig::enable)?.let {
+            it.slf4jReporter?.takeIf(EnabledConfig::enabled)?.let {
                 val slf4jReporter = Slf4jReporter.forRegistry(registry)
 
-                it.logging?.takeIf(EnabledConfig::enable)?.let {
+                it.logging?.takeIf(EnabledConfig::enabled)?.let {
                     it.level?.let {
                         slf4jReporter.withLoggingLevel(Slf4jReporter.LoggingLevel.valueOf(it))
                     }
@@ -32,7 +32,7 @@ public fun Application.configureDropwizardMetrics(config: DropwizardMetricsConfi
                     .start(it.start.initialDelay, it.start.period, it.start.unit)
             }
 
-            it.jmxReporter?.takeIf(EnabledConfig::enable)?.let {
+            it.jmxReporter?.takeIf(EnabledConfig::enabled)?.let {
                 val jmxReporter = JmxReporter.forRegistry(registry)
 
                 it.rateUnit?.let { jmxReporter.convertRatesTo(it) }

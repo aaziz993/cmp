@@ -5,7 +5,8 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 public data class MicrometerMetricsConfig(
-    val type: MicrometerMetrics,
+    val registries: List<RegistryConfig> = listOf(RegistryConfig(Registry.PROMETHEUS)),
+    val path: String = "metrics",
     val metricName: String? = null,
     val distinctNotRegisteredRoutes: Boolean? = null,
     val classLoaderMetrics: Boolean? = null,
@@ -16,5 +17,5 @@ public data class MicrometerMetricsConfig(
     val fileDescriptorMetrics: Boolean? = null,
     val uptimeMetrics: Boolean? = null,
     val distributionStatistics: DistributionStatisticsConfig? = null,
-    override val enable: Boolean = true
+    override val enabled: Boolean = true
 ) : EnabledConfig

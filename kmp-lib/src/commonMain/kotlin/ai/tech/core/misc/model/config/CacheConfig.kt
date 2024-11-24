@@ -9,5 +9,5 @@ public data class CacheConfig(
     val maximumCacheSize: Long? = null,
     val expireAfterAccess: Duration? = null,
     val expireAfterWrite: Duration? = null,
-    override val enable: Boolean = false,
+    override val enabled: Boolean = false,
 ) : EnabledConfig

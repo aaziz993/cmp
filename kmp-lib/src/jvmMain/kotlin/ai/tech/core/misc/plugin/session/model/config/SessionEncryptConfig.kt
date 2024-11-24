@@ -9,5 +9,5 @@ public data class SessionEncryptConfig(
     val signKey: String,
     val encryptAlgorithm: String = "AES",
     val signAlgorithm: String = "HmacSHA256",
-    override val enable: Boolean = true,
+    override val enabled: Boolean = true,
 ) : EnabledConfig

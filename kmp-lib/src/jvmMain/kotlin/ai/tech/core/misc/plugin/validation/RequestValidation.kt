@@ -12,7 +12,7 @@ import io.ktor.server.plugins.requestvalidation.*
  * like routes
  */
 public fun Application.configureRequestValidation(config: RequestValidationConfig?, block: (io.ktor.server.plugins.requestvalidation.RequestValidationConfig.() -> Unit)? = null) {
-    val configBlock: (io.ktor.server.plugins.requestvalidation.RequestValidationConfig.() -> Unit)? = config?.takeIf(EnabledConfig::enable)?.let {
+    val configBlock: (io.ktor.server.plugins.requestvalidation.RequestValidationConfig.() -> Unit)? = config?.takeIf(EnabledConfig::enabled)?.let {
         {
             //            userValidation() // User validation
         }

@@ -16,11 +16,11 @@ import nl.adaptivity.xmlutil.serialization.XML
 
 @OptIn(ExperimentalSerializationApi::class)
 public fun Application.configureSerialization(config: SerializationConfig?, block: (ContentNegotiationConfig.() -> Unit)? = null) {
-    val configBlock: (ContentNegotiationConfig.() -> Unit)? = config?.takeIf(EnabledConfig::enable)?.let {
+    val configBlock: (ContentNegotiationConfig.() -> Unit)? = config?.takeIf(EnabledConfig::enabled)?.let {
         {
 
             // JSON
-            it.json?.takeIf(EnabledConfig::enable)?.let {
+            it.json?.takeIf(EnabledConfig::enabled)?.let {
                 json(
                     Json {
                         it.let {
@@ -44,7 +44,7 @@ public fun Application.configureSerialization(config: SerializationConfig?, bloc
             }
 
             // XML
-            it.xml?.takeIf(EnabledConfig::enable)?.let {
+            it.xml?.takeIf(EnabledConfig::enabled)?.let {
                 xml(
                     XML {
                         it.let {
@@ -61,7 +61,7 @@ public fun Application.configureSerialization(config: SerializationConfig?, bloc
             }
 
             // CBOR
-            it.cbor?.takeIf(EnabledConfig::enable)?.let {
+            it.cbor?.takeIf(EnabledConfig::enabled)?.let {
                 cbor(
                     Cbor {
                         it.let {
@@ -74,7 +74,7 @@ public fun Application.configureSerialization(config: SerializationConfig?, bloc
             }
 
             // PROTOBUF
-            it.protobuf?.takeIf(EnabledConfig::enable)?.let {
+            it.protobuf?.takeIf(EnabledConfig::enabled)?.let {
                 protobuf(
                     ProtoBuf {
                         it.let {

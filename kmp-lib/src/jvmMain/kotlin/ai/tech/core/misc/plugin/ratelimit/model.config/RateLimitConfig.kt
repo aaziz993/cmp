@@ -9,5 +9,5 @@ public data class RateLimitConfig(
     val limit: Int,
     val refillPeriod: Duration,
     val initialSize: Int = limit,
-    override val enable: Boolean = true,
+    override val enabled: Boolean = true,
 ) : EnabledConfig

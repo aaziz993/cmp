@@ -24,5 +24,5 @@ public data class ServerOAuthConfig(
     val extraAuthParameters: List<Pair<String, String>> = emptyList(),
     val extraTokenParameters: List<Pair<String, String>> = emptyList(),
     override val cookie: CookieConfig? = null,
-    override val enable: Boolean = true
+    override val enabled: Boolean = true
 ) : OAuthConfig, AuthProviderConfig

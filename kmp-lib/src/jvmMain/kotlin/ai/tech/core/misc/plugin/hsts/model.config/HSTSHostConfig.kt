@@ -9,5 +9,5 @@ public data class HSTSHostConfig(
     val includeSubDomains: Boolean? = null,
     val maxAgeInSeconds: Long? = null,
     val customDirectives: Map<String, String?>? = null,
-    override val enable: Boolean = true,
+    override val enabled: Boolean = true,
 ) : EnabledConfig

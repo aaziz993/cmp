@@ -1,6 +1,6 @@
 package ai.tech.core.misc.kotysa
 
-import ai.tech.core.data.database.model.config.DBProviderConfig
+import ai.tech.core.data.database.model.config.DBConfig
 import ai.tech.core.data.database.model.config.DBTableConfig
 import ai.tech.core.data.database.model.config.TableCreation
 import ai.tech.core.data.database.model.config.r2dbcConnectionFactory
@@ -46,14 +46,14 @@ public fun <T : Any, U : Any> ForeignKey<T, U>.referencedTables(tables: List<Tab
     tables.single { table -> table.columns.contains(referencedColumn) }
 }
 
-public suspend fun createKotysaR2dbcSqlClient(config: DBProviderConfig): R2dbcSqlClient {
-    val r2dbcConnectionFactory = config.connection.r2dbcConnectionFactory
+public suspend fun createKotysaR2dbcSqlClient(config: DBConfig): R2dbcSqlClient {
+    val r2dbcConnectionFactory = config.r2dbcConnectionFactory
 
     val createTables: List<Pair<List<Table<*>>, TableCreation>>
 
     val client: R2dbcSqlClient
 
-    when (config.connection.driver) {
+    when (config.driver) {
         "h2" -> {
             createTables = config.table.map { getKotysaH2Tables(it) to it.create }
             client = r2dbcConnectionFactory.coSqlClient(tables().h2(* createTables.flatMap { (tables, _) -> tables }.toTypedArray()))
@@ -84,7 +84,7 @@ public suspend fun createKotysaR2dbcSqlClient(config: DBProviderConfig): R2dbcSq
             client = r2dbcConnectionFactory.coSqlClient(tables().oracle(*createTables.flatMap { (tables, _) -> tables }.toTypedArray()))
         }
 
-        else -> throw UnsupportedOperationException("Unknown database type \"${config.connection.driver}\"")
+        else -> throw UnsupportedOperationException("Unknown database type \"${config.driver}\"")
     }
 
     createTables.forEach { (tables, create) ->
@@ -173,8 +173,8 @@ public fun getKotysaPostgresqlTables(config: DBTableConfig): List<IPostgresqlTab
 public fun getKotysaOracleTables(config: DBTableConfig): List<OracleTable<*>> =
     getTables(config, OracleTable::class)
 
-public fun getKotysaTables(config: DBProviderConfig): List<Table<*>> =
-    when (config.connection.driver) {
+public fun getKotysaTables(config: DBConfig): List<Table<*>> =
+    when (config.driver) {
         "h2" -> config.table.flatMap(::getKotysaH2Tables)
 
         "postgresql" -> config.table.flatMap(::getKotysaPostgresqlTables)
@@ -187,5 +187,5 @@ public fun getKotysaTables(config: DBProviderConfig): List<Table<*>> =
 
         "oracle" -> config.table.flatMap(::getKotysaOracleTables)
 
-        else -> throw UnsupportedOperationException("Unknown database type \"${config.connection.driver}\"")
+        else -> throw UnsupportedOperationException("Unknown database type \"${config.driver}\"")
     }

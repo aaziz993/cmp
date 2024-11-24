@@ -8,5 +8,5 @@ import kotlinx.serialization.Serializable
 public data class ProtobufConfig(
     val encodeDefaults: Boolean? = null,
     override val contentType: ContentTypeSerial = ContentType.Application.ProtoBuf,
-    override val enable: Boolean = true,
+    override val enabled: Boolean = true,
 ) : SerializationFormatConfig

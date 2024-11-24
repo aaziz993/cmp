@@ -6,5 +6,5 @@ import kotlinx.serialization.Serializable
 @Serializable
 public data class DigestConfig(
     val algorithm: String,
-    override val enable: Boolean = true
+    override val enabled: Boolean = true
 ) : EnabledConfig

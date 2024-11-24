@@ -15,15 +15,15 @@ public fun Application.configureKoin(
     application: KoinApplication.() -> Unit = {}
 ) {
     install(Koin) {
-        config.koin?.takeIf(EnabledConfig::enable)?.let {
-            it.logging?.takeIf(EnabledConfig::enable)?.level?.let { slf4jLogger(Level.valueOf(it)) } ?: slf4jLogger()
+        config.host.koin?.takeIf(EnabledConfig::enabled)?.let {
+            it.logging?.takeIf(EnabledConfig::enabled)?.level?.let { slf4jLogger(Level.valueOf(it)) } ?: slf4jLogger()
         }
 
         application()
 
         modules(
             module { single { config } },
-            databaseModule(config.database),
+            databaseModule(config.host.database),
         )
     }
 }

@@ -21,5 +21,5 @@ public data class Discovery(
     val healthCheckCriticalTimeout: Duration? = null,
     val retry: Retry = Retry(),
     val failFast: Boolean = false,
-    override val enable: Boolean = true
+    override val enabled: Boolean = true
 ) : EnabledConfig

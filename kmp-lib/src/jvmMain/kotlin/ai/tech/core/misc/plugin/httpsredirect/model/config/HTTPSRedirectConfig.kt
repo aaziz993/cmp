@@ -9,5 +9,5 @@ public data class HTTPSRedirectConfig(
     val permanentRedirect: Boolean? = null,
     val excludePrefix: String? = null,
     val excludeSuffix: String? = null,
-    override val enable: Boolean = true,
+    override val enabled: Boolean = true,
 ) : EnabledConfig

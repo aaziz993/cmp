@@ -14,5 +14,5 @@ public data class DistributionStatisticsConfig(
     val maximumExpectedValue: Double? = null,
     val expiry: Duration? = null,
     val bufferLength: Int? = null,
-    override val enable: Boolean = true,
+    override val enabled: Boolean = true,
 ) : EnabledConfig

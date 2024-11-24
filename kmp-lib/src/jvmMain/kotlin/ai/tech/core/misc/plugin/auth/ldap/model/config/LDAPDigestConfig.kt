@@ -13,5 +13,5 @@ public data class LDAPDigestConfig(
     override val ldapServerURL: String,
     override val userDNFormat: String,
     override val cookie: CookieConfig? = null,
-    override val enable: Boolean = true
+    override val enabled: Boolean = true
 ) : AuthProviderConfig, LDAPAuthConfig, BaseDigestAuthConfig, RealmAuthProviderConfig

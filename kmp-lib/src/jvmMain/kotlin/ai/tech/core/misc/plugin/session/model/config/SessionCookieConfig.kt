@@ -7,5 +7,5 @@ import kotlinx.serialization.Serializable
 public data class SessionCookieConfig(
     val name: String,
     val cookie: CookieConfig? = null,
-    override val enable: Boolean = true,
+    override val enabled: Boolean = true,
 ) : EnabledConfig

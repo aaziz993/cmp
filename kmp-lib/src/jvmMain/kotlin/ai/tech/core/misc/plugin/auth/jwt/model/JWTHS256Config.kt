@@ -19,5 +19,5 @@ public data class JWTHS256Config(
     override val usernameClaimKeys: List<String> = listOf("preferred_username"),
     override val rolesClaimKeys: List<String> = listOf("realm_access", "roles"),
     override val exception: Boolean = false,
-    override val enable: Boolean = true
+    override val enabled: Boolean = true
 ) : JWTConfig

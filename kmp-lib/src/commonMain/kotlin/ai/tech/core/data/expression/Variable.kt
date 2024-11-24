@@ -1,5 +1,6 @@
 package ai.tech.core.data.expression
 
+import ai.tech.core.misc.type.depthIterator
 import com.benasher44.uuid.Uuid
 import com.ionspin.kotlin.bignum.decimal.BigDecimal
 import com.ionspin.kotlin.bignum.integer.BigInteger
@@ -18,6 +19,7 @@ import kotlinx.serialization.Transient
 public sealed class Variable
 
 public interface ComparableOperand {
+
     public infix fun eq(other: ComparableOperand): Equals = CompareExpression.eq(this, other)
 
     public infix fun <T> eq(other: T): Equals = eq(other.v)
@@ -60,6 +62,7 @@ public inline infix fun <reified T> ComparableOperand.nin(other: Collection<T>):
 public sealed class ComparableVariable : Variable(), ComparableOperand
 
 public interface BooleanOperand {
+
     public fun and(vararg values: BooleanOperand): And = LogicExpression.and(this, *values)
 
     public fun and(vararg values: Boolean): And = and(*values.map { it.v }.toTypedArray())
@@ -80,6 +83,7 @@ public interface BooleanOperand {
 public sealed class BooleanVariable : ComparableVariable(), BooleanOperand
 
 public interface NumberOperand {
+
     public fun add(vararg values: NumberOperand): Add = ArithmeticExpression.add(this, *values)
 
     public fun add(vararg values: Number): Add = add(*values.map { it.v }.toTypedArray())
@@ -115,6 +119,7 @@ public sealed class NumberVariable : ComparableVariable(), NumberOperand
 public sealed class CharVariable : ComparableVariable()
 
 public interface StringOperand {
+
     public fun eq(other: StringOperand, matchAll: BooleanOperand, ignoreCase: BooleanOperand): Equals =
         StringExpression.eq(this, other, matchAll, ignoreCase)
 
@@ -235,6 +240,7 @@ public interface StringOperand {
 public sealed class StringVariable : ComparableVariable(), StringOperand
 
 public interface TemporalOperand {
+
     public val time: Time
         get() = TemporalExpression.time(this)
 
@@ -256,25 +262,29 @@ public sealed class TemporalVariable : ComparableVariable(), TemporalOperand
 public sealed class CollectionVariable : Variable()
 
 public interface Expression {
+
     public val arguments: List<Variable>
 
-    public val isSimple: Boolean
+    public val isArgumentsAllValue: Boolean
         get() = arguments.all { it is Value<*> }
 
     public fun evaluate(
         childExpression: Expression.(expressions: List<Expression>) -> Unit,
         parentExpression: Expression.(expressions: List<Expression>) -> Unit
     ): Unit =
-        depthTraverse({ transforms, value ->
-            if (value is Expression) {
-                if (value.isSimple) {
-                    value.childExpression(transforms)
-                } else {
-                    return@depthTraverse value.arguments.iterator()
-                }
-            }
-            null
-        }) { transforms, transform ->
+        depthTraverse(
+                { transforms, value ->
+                    if (value is Expression) {
+                        if (value.isArgumentsAllValue) {
+                            value.childExpression(transforms)
+                        }
+                        else {
+                            return@depthTraverse value.arguments.iterator()
+                        }
+                    }
+                    null
+                },
+        ) { transforms, transform ->
             (transform as Expression).parentExpression(transforms)
         }
 
@@ -284,16 +294,19 @@ public interface Expression {
     ): Any? {
         val values = mutableListOf<Any?>()
 
-        depthTraverse({ _, value ->
-            if (value is Expression) {
-                if (value.isSimple) {
-                    values.add(value.childExpression())
-                } else {
-                    return@depthTraverse value.arguments.iterator()
-                }
-            }
-            null
-        }) { _, transform ->
+        depthIterator(
+                { _, value ->
+                    if (value is Expression) {
+                        if (value.isArgumentsAllValue) {
+                            values.add(value.childExpression())
+                        }
+                        else {
+                            return@depthTraverse value.arguments.iterator()
+                        }
+                    }
+                    null
+                },
+        ) { _, transform ->
             values.add((transform as Expression).parentExpression(values.removeLast(transform.arguments.size)))
         }
 
@@ -301,11 +314,12 @@ public interface Expression {
     }
 }
 
-
 @Suppress("UNCHECKED_CAST")
 @Serializable
 public sealed class CompareExpression : BooleanVariable(), Expression {
+
     public companion object {
+
         public fun eq(left: ComparableOperand, right: ComparableOperand): Equals =
             Equals(listOf(left, right) as List<Variable>)
 
@@ -338,7 +352,9 @@ public sealed class CompareExpression : BooleanVariable(), Expression {
 @Suppress("UNCHECKED_CAST")
 @Serializable
 public sealed class LogicExpression : BooleanVariable(), Expression {
+
     public companion object {
+
         public fun and(vararg values: BooleanOperand): And = And(values.toList() as List<Variable>)
 
         public fun or(vararg values: BooleanOperand): Or = Or(values.toList() as List<Variable>)
@@ -391,7 +407,9 @@ public data class NotIn(override val arguments: List<Variable>) : LogicExpressio
 
 @Serializable
 public sealed class AggregateExpression<T> {
+
     public companion object {
+
         public fun count(projection: Projection? = null): Count = Count(projection)
 
         public fun <T> max(projection: Projection): Max<T> = Max(projection)
@@ -422,7 +440,9 @@ public data class Sum<T>(val projection: Projection) : AggregateExpression<T>()
 @Suppress("UNCHECKED_CAST")
 @Serializable
 public sealed class ArithmeticExpression : NumberVariable(), Expression {
+
     public companion object {
+
         public fun add(vararg values: NumberOperand): Add = Add(values.toList() as List<Variable>)
 
         public fun subtract(vararg values: NumberOperand): Subtract = Subtract(values.toList() as List<Variable>)
@@ -465,7 +485,9 @@ public data class Square(override val arguments: List<Variable>) : ArithmeticExp
 @Suppress("UNCHECKED_CAST")
 @Serializable
 public sealed class TemporalExpression : TemporalVariable(), Expression {
+
     public companion object {
+
         public val now: Now = Now
 
         public fun time(variable: TemporalOperand): Time = Time(listOf(variable) as List<Variable>)
@@ -484,6 +506,7 @@ public sealed class TemporalExpression : TemporalVariable(), Expression {
 
 @Serializable
 public data object Now : TemporalExpression() {
+
     override val arguments: List<Variable> = emptyList()
 }
 
@@ -506,7 +529,9 @@ public data class TemporalFormat(override val arguments: List<Variable>) :
 @Suppress("UNCHECKED_CAST")
 @Serializable
 public sealed class StringExpression : StringVariable(), Expression {
+
     public companion object {
+
         public fun eq(
             left: StringOperand,
             right: StringOperand,
@@ -560,7 +585,6 @@ public sealed class StringExpression : StringVariable(), Expression {
 
         public fun trimStart(variable: StringOperand, vararg trimValues: CharVariable): TrimStart =
             TrimStart((listOf(variable) + trimValues.toList()) as List<Variable>)
-
 
         public fun trimEnd(variable: StringOperand, vararg trimValues: CharVariable): TrimEnd =
             TrimEnd((listOf(variable) + trimValues.toList()) as List<Variable>)
@@ -672,6 +696,7 @@ public data class Split(override val arguments: List<Variable>) : StringExpressi
 public data class SplitPattern(override val arguments: List<Variable>) : StringExpression()
 
 public interface Value<T> {
+
     public val value: T
 }
 
@@ -807,6 +832,7 @@ public data class UUIDCollection(override val value: Collection<UuidSerial?>) : 
 public data object NullValue : Variable(), Value<Nothing?>, ComparableOperand, BooleanOperand, NumberOperand,
     StringOperand,
     TemporalOperand {
+
     override val value: Nothing?
         get() = null
 }
@@ -821,6 +847,7 @@ public data class Field(override val value: String) : Variable(),
 
 @Serializable
 public data class Projection(val value: String, val alias: String? = null, val distinct: Boolean = false) : Variable() {
+
     @Transient
     public val count: Count = AggregateExpression.count(this)
 

@@ -7,5 +7,5 @@ import kotlinx.serialization.Serializable
 public data class RateLimitsConfig(
     val global: RateLimitConfig? = null,
     val specific: Map<String, RateLimitConfig>? = null,
-    override val enable: Boolean = true,
+    override val enabled: Boolean = true,
 ) : EnabledConfig

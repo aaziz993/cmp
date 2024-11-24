@@ -17,10 +17,10 @@ public fun Application.configureWebSockets(
 ) {
     var configBlock: (WebSockets.WebSocketOptions.() -> Unit)? = null
 
-    config?.takeIf(EnabledConfig::enable)?.let {
+    config?.takeIf(EnabledConfig::enabled)?.let {
         // Websocket page for testing
         routing {
-            it.page?.filter(EnabledConfig::enable)?.forEach {
+            it.page?.filter(EnabledConfig::enabled)?.forEach {
                 get(it.uri) {
                     call.respond(
                         FreeMarkerContent(
@@ -40,7 +40,7 @@ public fun Application.configureWebSockets(
             it.masking?.let { masking = it }
             // Configure WebSockets
             // Serializer for WebSockets
-            it.contentConverter?.takeIf(EnabledConfig::enable)?.let {
+            it.contentConverter?.takeIf(EnabledConfig::enabled)?.let {
                 contentConverter = KotlinxWebsocketSerializationConverter(
                     Json {
                         it.encodeDefaults?.let { encodeDefaults = it }

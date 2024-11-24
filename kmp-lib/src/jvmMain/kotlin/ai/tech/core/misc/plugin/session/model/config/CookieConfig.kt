@@ -16,5 +16,5 @@ public data class CookieConfig(
     val httpOnly: Boolean? = null,
     val extensions: MutableMap<String, String?>? = null,
     val encryption: SessionEncryptConfig? = null,
-    override val enable: Boolean = true,
+    override val enabled: Boolean = true,
 ) : EnabledConfig

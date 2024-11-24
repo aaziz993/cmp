@@ -13,5 +13,5 @@ public data class RedisConfig(
     val connectionPoolInitialSize: Int? = null,
     val connectionPoolMaxSize: Int? = null,
     val connectionAcquisitionTimeoutMs: Long? = null,
-    override val enable: Boolean = true,
+    override val enabled: Boolean = true,
 ) : EnabledConfig

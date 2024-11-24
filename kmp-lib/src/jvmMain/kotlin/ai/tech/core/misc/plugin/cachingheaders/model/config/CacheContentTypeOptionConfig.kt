@@ -8,5 +8,5 @@ import kotlinx.serialization.Serializable
 public data class CacheContentTypeOptionConfig(
     val contentType: ContentTypeSerial,
     val cacheControl: CacheControlConfig,
-    override val enable: Boolean = true
+    override val enabled: Boolean = true
 ) : EnabledConfig

@@ -12,5 +12,5 @@ public data class KtorServerTaskSchedulingConfig(
     val jdbc: Map<String?, DBConnectionConfig> = emptyMap(),
     val mongodb: Map<String?, MongoDBConfig> = emptyMap(),
     val task: Map<String?, TaskConfig> = emptyMap(),
-    override val enable: Boolean = true,
+    override val enabled: Boolean = true,
 ) : EnabledConfig

@@ -21,7 +21,7 @@ public fun Application.configureConsulDiscovery(
     applicationConfig: ApplicationConfig? = null,
     healthChecks: Map<String, String> = emptyMap(),
     failureBlock: (Exception, attempt: Int) -> Unit = { _, _ -> },
-) = config?.takeIf(EnabledConfig::enable)?.let {
+) = config?.takeIf(EnabledConfig::enabled)?.let {
     val id = it.instanceId
         ?: applicationConfig?.let { "${it.name}:${it.environment}${servicePort?.let { ":$it" }.orEmpty()}" }
 
