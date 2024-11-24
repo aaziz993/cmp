@@ -43,7 +43,7 @@ public data class ServerHostConfig(
     public val application: ApplicationConfig,
     val koin: KoinConfig? = null,
     val taskScheduling: KtorServerTaskSchedulingConfig?=null,
-    val databases: Map<String?, DBProviderConfig>? = null,
+    val database: Map<String?, DBProviderConfig>? = null,
     val serialization: SerializationConfig? = null,
     val httpsRedirect: HTTPSRedirectConfig? = null,
     val routing: RoutingConfig? = null,

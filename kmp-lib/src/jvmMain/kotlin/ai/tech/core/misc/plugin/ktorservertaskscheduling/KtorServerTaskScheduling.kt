@@ -45,67 +45,67 @@ public fun Application.configureKtorServerTaskScheduling(
                 }
             }
 
-            it.tasks?.filter(EnabledConfig::enable)?.forEach {
-                task(it.taskManagerName) { // if no taskManagerName is provided, the task would be assigned to the default manager
-                    it.name?.let { name = it }
+            it.task.filterValues(EnabledConfig::enable).forEach { (name, config) ->
+                task(config.taskManagerName) { // if no taskManagerName is provided, the task would be assigned to the default manager
+                    name?.let { this.name = it }
 
                     task = { executionTime ->
-                        log.info("Task \"$name\"  ${it.taskManagerName?.let { "with task manager \"$it\"" }} is running: $executionTime")
+                        log.info("Task \"$name\"  ${config.taskManagerName?.let { "with task manager \"$it\"" }} is running: $executionTime")
 
-                        tasks[it.taskManagerName]?.get(it.name)?.invoke(executionTime)
+                        tasks[config.taskManagerName]?.get(name)?.invoke(executionTime)
                     }
 
                     kronSchedule = {
-                        it.scheduler.milliseconds?.let {
+                        config.scheduler.milliseconds?.let {
                             milliseconds {
                                 include(it.toTypedArray())
                             }
                         }
 
-                        it.scheduler.seconds?.let {
+                        config.scheduler.seconds?.let {
                             seconds {
                                 include(it.toTypedArray())
                             }
                         }
 
-                        it.scheduler.minutes?.let {
+                        config.scheduler.minutes?.let {
                             minutes {
                                 include(it.toTypedArray())
                             }
                         }
 
-                        it.scheduler.hours?.let {
+                        config.scheduler.hours?.let {
                             hours {
                                 include(it.toTypedArray())
                             }
                         }
 
-                        it.scheduler.dayOfWeek?.let {
+                        config.scheduler.dayOfWeek?.let {
                             dayOfWeek {
                                 include(it.toTypedArray())
                             }
                         }
 
-                        it.scheduler.dayOfMonth?.let {
+                        config.scheduler.dayOfMonth?.let {
                             dayOfMonth {
                                 include(it.toTypedArray())
                             }
                         }
 
-                        it.scheduler.month?.let {
+                        config.scheduler.month?.let {
                             months {
                                 include(it.toTypedArray())
                             }
                         }
 
-                        it.scheduler.year?.let {
+                        config.scheduler.year?.let {
                             years {
                                 include(it.toTypedArray())
                             }
                         }
                     }
 
-                    it.concurrency?.let { concurrency = it }
+                    config.concurrency?.let { concurrency = it }
                 }
             }
         }

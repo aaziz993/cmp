@@ -6,7 +6,6 @@ import kotlinx.serialization.Serializable
 @Serializable
 public data class TaskConfig(
     val taskManagerName: String? = null,
-    val name: String? = null,
     val scheduler: SchedulerConfig,
     val concurrency: Int? = null,
     override val enable: Boolean = true,

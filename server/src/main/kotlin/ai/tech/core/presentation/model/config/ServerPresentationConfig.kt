@@ -8,5 +8,5 @@ public data class ServerPresentationConfig(
     override val startDestination: String,
     override val signInRedirectDestination: String,
     override val signOutRedirectDestination: String,
-    override val destinations: SharedDestinationConfig
+    override val destination: SharedDestinationConfig
 ) : SharedPresentationConfig
