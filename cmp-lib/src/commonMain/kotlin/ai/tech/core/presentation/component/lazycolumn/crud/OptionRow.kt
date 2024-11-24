@@ -1,5 +1,6 @@
 package ai.tech.core.presentation.component.lazycolumn.crud
 
+import ai.tech.core.data.validator.Validator
 import ai.tech.core.presentation.component.column.expandable.ExpandableSection
 import ai.tech.core.presentation.component.lazycolumn.crud.model.CRUDLazyColumnLocalization
 import ai.tech.core.presentation.component.lazycolumn.crud.model.CRUDLazyColumnState
