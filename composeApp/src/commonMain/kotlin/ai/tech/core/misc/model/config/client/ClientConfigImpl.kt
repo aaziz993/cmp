@@ -9,7 +9,6 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 public data class ClientConfigImpl(
-    override val application: ApplicationConfig,
     override val httpClient: HttpClientConfig = HttpClientConfig(),
     override val consul: ConsulConfig? = null,
     override val localization: LocalizationConfig,

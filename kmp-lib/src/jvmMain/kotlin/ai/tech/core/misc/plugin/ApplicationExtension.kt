@@ -1,10 +1,13 @@
 package ai.tech.core.misc.plugin
 
+import ai.tech.core.data.crud.CRUDRepository
 import ai.tech.core.misc.model.config.EnabledConfig
 import ai.tech.core.misc.model.config.server.ServerConfig
 import ai.tech.core.misc.model.config.server.ServerHostConfig
 import ai.tech.core.misc.plugin.applicationmonitoring.configureApplicationMonitoring
 import ai.tech.core.misc.plugin.auth.configureAuth
+import ai.tech.core.misc.plugin.auth.database.kotysa.principal.model.PrincipalEntity
+import ai.tech.core.misc.plugin.auth.database.kotysa.role.model.RoleEntity
 import ai.tech.core.misc.plugin.authheadresponse.configureAutoHeadResponse
 import ai.tech.core.misc.plugin.cachingheaders.configureCachingHeaders
 import ai.tech.core.misc.plugin.callid.configureCallId
@@ -24,6 +27,7 @@ import ai.tech.core.misc.plugin.graphql.configureGraphQL
 import ai.tech.core.misc.plugin.hsts.configureHSTS
 import ai.tech.core.misc.plugin.httpsredirect.configureHttpsRedirect
 import ai.tech.core.misc.plugin.koin.configureKoin
+import ai.tech.core.misc.plugin.ktorservertaskscheduling.configureKtorServerTaskScheduling
 import ai.tech.core.misc.plugin.micrometermetrics.configureMicrometerMetrics
 import ai.tech.core.misc.plugin.partialcontent.configurePartialContent
 import ai.tech.core.misc.plugin.ratelimit.configureRateLimit
@@ -38,7 +42,9 @@ import ai.tech.core.misc.plugin.validation.configureRequestValidation
 import ai.tech.core.misc.plugin.websockets.configureWebSockets
 import ai.tech.core.misc.plugin.xhttpmethodoverride.configureXHttpMethodOverride
 import com.apurebase.kgraphql.GraphQL
+import com.sksamuel.cohort.endpoints.CohortConfiguration
 import freemarker.template.Configuration
+import io.github.flaxoos.ktor.server.plugins.taskscheduling.TaskSchedulingConfiguration
 import io.github.smiley4.ktorswaggerui.dsl.PluginConfigDsl
 import io.ktor.http.*
 import io.ktor.server.application.*
@@ -67,6 +73,7 @@ import io.ktor.server.routing.*
 import io.ktor.server.sessions.*
 import io.ktor.server.websocket.*
 import java.io.File
+import korlibs.time.DateTime
 import org.koin.core.KoinApplication
 import org.koin.ktor.ext.get
 import org.lighthousegames.logging.logging
@@ -101,6 +108,11 @@ public fun ApplicationEngine.Configuration.configure(config: ServerHostConfig) {
 public fun Application.configure(
     config: ServerConfig,
     koinApplication: KoinApplication.() -> Unit = {},
+    taskSchedulingBlock: (TaskSchedulingConfiguration.() -> Unit)? = null,
+    tasks: Map<String?, Map<String?, (executionTime: DateTime) -> Unit>>,
+    authBlock: (AuthenticationConfig.() -> Unit)? = null,
+    principalRepositories: Map<String?, Map<String, CRUDRepository<PrincipalEntity>>> = emptyMap(),
+    roleRepositories: Map<String?, Map<String, CRUDRepository<RoleEntity>>> = emptyMap(),
     serializationBlock: (ContentNegotiationConfig.() -> Unit)? = null,
     httpsRedirectBlock: (HttpsRedirectConfig.() -> Unit)? = null,
     routingBlock: (Routing.() -> Unit)? = null,
@@ -122,32 +134,35 @@ public fun Application.configure(
     hstsBlock: (HSTSConfig.() -> Unit)? = null,
     xHttpMethodOverrideBlock: (XHttpMethodOverrideConfig.() -> Unit)? = null,
     sessionBlock: (SessionsConfig.() -> Unit)? = null,
-    authBlock: (AuthenticationConfig.() -> Unit)? = null,
     freeMarkerBlock: (Configuration.() -> Unit)? = null,
     swaggerBlock: (PluginConfigDsl.() -> Unit)? = null,
     micrometerMetricsBlock: (MicrometerMetricsConfig.() -> Unit)? = null,
     dropwizardMetricsBlock: (DropwizardMetricsConfig.() -> Unit)? = null,
+    cohortBlock: (CohortConfiguration.() -> Map<String, String>)? = null,
     shutdownBlock: (ShutDownUrl.Config.() -> Unit)? = null
 ) {
     configureKoin(config, koinApplication)
 
-    var healthChecks: Map<String, String>? = null
-
     with(config) {
         with(host) {
+            // Configure the KtorServerTaskScheduling plugin
+            configureKtorServerTaskScheduling(taskScheduling, tasks, taskSchedulingBlock)
+
+            // Configure the security plugin with JWT
+            configureAuth(
+                preferredHttpsURL,
+                get(),
+                auth,
+                principalRepositories,
+                roleRepositories,
+                authBlock,
+            )
+
             // Configure the Serialization plugin
             configureSerialization(serialization, serializationBlock)
 
             // Configure the HttpsRedirect plugin
             configureHttpsRedirect(httpsRedirect, ssl?.port, httpsRedirectBlock)
-
-            // Configure the Routing plugin
-            configureRouting(routing) {
-                consul?.takeIf(EnabledConfig::enable)?.discovery?.takeIf(EnabledConfig::enable)?.let {
-                    get(it.healthCheckPath) { call.respond(HttpStatusCode.OK) }
-                }
-                routingBlock?.invoke(this)
-            }
 
             // Configure the Websockets plugin
             configureWebSockets(websockets, preferredWSSURL, websocketsBlock)
@@ -226,20 +241,19 @@ public fun Application.configure(
                 sessionBlock?.invoke(this)
             }
 
-            // Configure the security plugin with JWT
-            configureAuth(
-                preferredHttpsURL,
-                get(),
-                auth,
-                { provider, database, principalTable, roleTable -> null },
-                authBlock,
-            )
-
             // Configure the FreeMarker plugin for templating .ftl files
             configureFreeMarker(freeMarker, freeMarkerBlock)
 
             // Configure the Swagger plugin
             configureSwagger(swagger, swaggerBlock)
+
+            // Configure the Routing plugin
+            configureRouting(routing) {
+                consul?.takeIf(EnabledConfig::enable)?.discovery?.takeIf(EnabledConfig::enable)?.let {
+                    get(it.healthCheckPath) { call.respond(HttpStatusCode.OK) }
+                }
+                routingBlock?.invoke(this)
+            }
 
             // Configure the Application monitoring plugin
             configureApplicationMonitoring(applicationMonitoring)
@@ -251,23 +265,23 @@ public fun Application.configure(
             configureDropwizardMetrics(dropwizardMetrics, dropwizardMetricsBlock)
 
             // Configure the Cohort health checks plugin
-            healthChecks = configureCohort(cohort, auth?.takeIf(EnabledConfig::enable)?.oauth, databases)
+            val healthChecks = configureCohort(cohort, auth?.takeIf(EnabledConfig::enable)?.oauth, databases, cohortBlock)
 
             // Configure the Shutdown plugin
             configureShutdown(shutdown, shutdownBlock)
-        }
 
-        consul?.takeIf(EnabledConfig::enable)?.let {
-            configureConsulDiscovery(
-                get(),
-                it.address,
-                it.discovery,
-                host.preferredHttpsURL,
-                host.preferredSslPort,
-                application,
-                healthChecks,
-            ) { exception, attempt ->
-                appLog.w(exception) { "Couldn't register in consul \"${it.address}\" in attempt \"$attempt\"" }
+            consul?.takeIf(EnabledConfig::enable)?.let {
+                configureConsulDiscovery(
+                    get(),
+                    it.address,
+                    it.discovery,
+                    preferredHttpsURL,
+                    preferredSslPort,
+                    application,
+                    healthChecks,
+                ) { exception, attempt ->
+                    appLog.w(exception) { "Couldn't register in consul \"${it.address}\" in attempt \"$attempt\"" }
+                }
             }
         }
     }

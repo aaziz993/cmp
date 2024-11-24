@@ -16,9 +16,10 @@ import kotlinx.coroutines.Dispatchers
 
 public fun Application.configureCohort(
     config: CohortConfig?,
-    oauthConfig: Map<String, ServerOAuthConfig>?,
-    databaseConfig: Map<String, DBProviderConfig>?,
-    block: (CohortConfiguration.() -> Map<String, String>)? = null): Map<String, String> {
+    oauthConfig: Map<String, ServerOAuthConfig>? = null,
+    databaseConfig: Map<String, DBProviderConfig>? = null,
+    block: (CohortConfiguration.() -> Map<String, String>)? = null
+): Map<String, String> {
 
     val configBlock: (CohortConfiguration.() -> Map<String, String>)? = config?.takeIf(EnabledConfig::enable)?.let {
         {

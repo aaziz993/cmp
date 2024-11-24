@@ -9,6 +9,6 @@ import kotlinx.serialization.Serializable
 public data class ClientUIConfig(
     public val application: ApplicationConfig,
     override val auth: ClientAuthConfig,
-    override val databaseName: String,
+    override val databaseName: String? = null,
     override val presentation: ClientPresentationConfigImpl
 ) : SharedUIConfig

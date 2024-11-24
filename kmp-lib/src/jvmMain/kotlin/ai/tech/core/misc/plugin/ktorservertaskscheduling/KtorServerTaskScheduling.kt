@@ -4,17 +4,14 @@ import ai.tech.core.data.database.model.config.hikariDataSource
 import ai.tech.core.misc.model.config.EnabledConfig
 import ai.tech.core.misc.plugin.ktorservertaskscheduling.model.config.KtorServerTaskSchedulingConfig
 import com.mongodb.kotlin.client.coroutine.MongoClient
-import dev.inmo.krontab.createSimpleScheduler
 import io.github.flaxoos.ktor.server.plugins.taskscheduling.TaskScheduling
 import io.github.flaxoos.ktor.server.plugins.taskscheduling.TaskSchedulingConfiguration
 import io.github.flaxoos.ktor.server.plugins.taskscheduling.managers.lock.database.jdbc
 import io.github.flaxoos.ktor.server.plugins.taskscheduling.managers.lock.database.mongoDb
 import io.github.flaxoos.ktor.server.plugins.taskscheduling.managers.lock.redis.redis
 import io.ktor.server.application.*
-import io.ktor.server.plugins.hsts.HSTS
 import korlibs.time.DateTime
 import org.jetbrains.exposed.sql.Database
-import org.jetbrains.exposed.sql.DatabaseConfig
 
 public fun Application.configureKtorServerTaskScheduling(
     config: KtorServerTaskSchedulingConfig?,

@@ -1,5 +1,6 @@
 package ai.tech.core.misc.plugin.auth
 
+import ai.tech.core.data.crud.CRUDRepository
 import ai.tech.core.misc.plugin.auth.jwt.JWTHS256AuthService
 import ai.tech.core.misc.plugin.auth.jwt.JWTRS256AuthService
 import ai.tech.core.misc.plugin.auth.jwt.model.JWTConfig
@@ -10,7 +11,8 @@ import ai.tech.core.misc.plugin.auth.rbac.rbac
 import ai.tech.core.misc.model.config.EnabledConfig
 import ai.tech.core.misc.plugin.auth.basic.BasicAuthService
 import ai.tech.core.misc.plugin.auth.basic.model.config.BaseBasicAuthConfig
-import ai.tech.core.misc.plugin.auth.database.AuthRepository
+import ai.tech.core.misc.plugin.auth.database.kotysa.principal.model.PrincipalEntity
+import ai.tech.core.misc.plugin.auth.database.kotysa.role.model.RoleEntity
 import ai.tech.core.misc.plugin.auth.digest.DigestAuthService
 import ai.tech.core.misc.plugin.auth.digest.model.config.BaseDigestAuthConfig
 import ai.tech.core.misc.plugin.auth.form.FormAuthService
@@ -37,16 +39,50 @@ public fun Application.configureAuth(
     serverURL: String,
     httpClient: HttpClient,
     config: AuthProvidersConfig?,
-    getRepository: (provider: String, database: String?, principalTable: String?, roleTable: String?) -> AuthRepository? = { _, _, _, _ -> null },
+    principalRepositories: Map<String?, Map<String, CRUDRepository<PrincipalEntity>>> = emptyMap(),
+    roleRepositories: Map<String?, Map<String, CRUDRepository<RoleEntity>>> = emptyMap(),
     block: (AuthenticationConfig.() -> Unit)? = null
 ) = authentication {
     config?.takeIf(EnabledConfig::enable)?.let {
 
-        it.basic.forEach { (name, config) -> configureBasic(name, config, BasicAuthService(name, config, getRepository)) }
+        it.basic.forEach { (name, config) ->
+            configureBasic(
+                name,
+                config,
+                BasicAuthService(
+                    name,
+                    config,
+                    { databaseName, tableName -> principalRepositories[databaseName]?.get(tableName) },
+                    { databaseName, tableName -> roleRepositories[databaseName]?.get(tableName) },
+                ),
+            )
+        }
 
-        it.digest.forEach { (name, config) -> configureDigest(name, config, DigestAuthService(name, config, getRepository)) }
+        it.digest.forEach { (name, config) ->
+            configureDigest(
+                name,
+                config,
+                DigestAuthService(
+                    name,
+                    config,
+                    { databaseName, tableName -> principalRepositories[databaseName]?.get(tableName) },
+                    { databaseName, tableName -> roleRepositories[databaseName]?.get(tableName) },
+                ),
+            )
+        }
 
-        it.form.forEach { (name, config) -> configureForm(name, config, FormAuthService(name, config, getRepository)) }
+        it.form.forEach { (name, config) ->
+            configureForm(
+                name,
+                config,
+                FormAuthService(
+                    name,
+                    config,
+                    { databaseName, tableName -> principalRepositories[databaseName]?.get(tableName) },
+                    { databaseName, tableName -> roleRepositories[databaseName]?.get(tableName) },
+                ),
+            )
+        }
 
         it.ldapBasic.forEach { (name, config) -> configureBasic(name, config, LDAPAuthService(name, config)) }
 

@@ -22,6 +22,7 @@ import ai.tech.core.misc.plugin.freemarker.model.config.FreeMarkerConfig
 import ai.tech.core.misc.plugin.graphql.model.config.GraphQLConfig
 import ai.tech.core.misc.plugin.hsts.model.config.HSTSConfig
 import ai.tech.core.misc.plugin.httpsredirect.model.config.HTTPSRedirectConfig
+import ai.tech.core.misc.plugin.ktorservertaskscheduling.model.config.KtorServerTaskSchedulingConfig
 import ai.tech.core.misc.plugin.micrometermetrics.model.config.MicrometerMetricsConfig
 import ai.tech.core.misc.plugin.partialcontent.model.config.PartialContentConfig
 import ai.tech.core.misc.plugin.ratelimit.model.config.RateLimitsConfig
@@ -41,7 +42,8 @@ import kotlinx.serialization.Transient
 public data class ServerHostConfig(
     public val application: ApplicationConfig,
     val koin: KoinConfig? = null,
-    val databases: Map<String, DBProviderConfig>? = null,
+    val taskScheduling: KtorServerTaskSchedulingConfig?=null,
+    val databases: Map<String?, DBProviderConfig>? = null,
     val serialization: SerializationConfig? = null,
     val httpsRedirect: HTTPSRedirectConfig? = null,
     val routing: RoutingConfig? = null,
