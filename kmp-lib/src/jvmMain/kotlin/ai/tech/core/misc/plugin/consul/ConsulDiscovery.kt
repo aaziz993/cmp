@@ -19,7 +19,7 @@ public fun Application.configureConsulDiscovery(
     serviceAddress: String,
     servicePort: Int? = null,
     applicationConfig: ApplicationConfig? = null,
-    healthChecks: Map<String, String>? = null,
+    healthChecks: Map<String, String> = emptyMap(),
     failureBlock: (Exception, attempt: Int) -> Unit = { _, _ -> },
 ) = config?.takeIf(EnabledConfig::enable)?.let {
     val id = it.instanceId
@@ -39,7 +39,7 @@ public fun Application.configureConsulDiscovery(
                     deregisterCriticalServiceAfter = it.healthCheckCriticalTimeout,
                     header = it.header,
                 ),
-            ) + healthChecks?.map { (name, route) ->
+            ) + healthChecks.map { (name, route) ->
                 Check(
                     "$id:$name",
                     name,
@@ -48,7 +48,7 @@ public fun Application.configureConsulDiscovery(
                     deregisterCriticalServiceAfter = it.healthCheckCriticalTimeout,
                     header = it.header,
                 )
-            }.orEmpty(),
+            },
             enableTagOverride = false,
             serviceWeights = it.serviceWeights,
         )

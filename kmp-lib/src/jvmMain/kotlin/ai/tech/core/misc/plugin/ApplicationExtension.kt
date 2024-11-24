@@ -265,7 +265,7 @@ public fun Application.configure(
             configureDropwizardMetrics(dropwizardMetrics, dropwizardMetricsBlock)
 
             // Configure the Cohort health checks plugin
-            val healthChecks = configureCohort(cohort, auth?.takeIf(EnabledConfig::enable)?.oauth, database, cohortBlock)
+            val healthChecks = configureCohort(cohort, auth?.takeIf(EnabledConfig::enable)?.oauth.orEmpty(), database, cohortBlock)
 
             // Configure the Shutdown plugin
             configureShutdown(shutdown, shutdownBlock)

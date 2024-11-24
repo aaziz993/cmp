@@ -16,8 +16,8 @@ import kotlinx.coroutines.Dispatchers
 
 public fun Application.configureCohort(
     config: CohortConfig?,
-    oauthConfig: Map<String?, ServerOAuthConfig>? = null,
-    databaseConfig: Map<String?, DBProviderConfig>? = null,
+    oauthConfig: Map<String?, ServerOAuthConfig> = emptyMap(),
+    databaseConfig: Map<String?, DBProviderConfig> = emptyMap(),
     block: (CohortConfiguration.() -> Map<String, String>)? = null
 ): Map<String, String> {
 
@@ -51,7 +51,7 @@ public fun Application.configureCohort(
             // enable health checks for kubernetes
             // each of these is optional and can map to any healthcheck url you wish
             // for example if you just want a single health endpoint, you could use /health
-            oauthConfig?.filterValues(EnabledConfig::enable)?.map { (name, config) ->
+            oauthConfig.filterValues(EnabledConfig::enable).map { (name, config) ->
                 it.getOAuthEndpoint(name).also { (name, endpoint) ->
                     healthcheck(
                         endpoint,
@@ -62,13 +62,13 @@ public fun Application.configureCohort(
                         },
                     )
                 }
-            }?.toMap().orEmpty() + databaseConfig?.filterValues(EnabledConfig::enable)?.map { (name, config) ->
+            }.toMap() + databaseConfig.filterValues(EnabledConfig::enable).map { (name, config) ->
                 it.getDBEndpoint(name).also { (_, endpoint) ->
                     HealthCheckRegistry(Dispatchers.Default) {
                         register(endpoint, DatabaseConnectionHealthCheck(config.connection.hikariDataSource))
                     }
                 }
-            }?.toMap().orEmpty()
+            }.toMap()
         }
     }
 

@@ -16,15 +16,15 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 public data class AuthProvidersConfig(
-    val basic: Map<String, BasicAuthConfig> = emptyMap(),
-    val digest: Map<String, DigestAuthConfig> = emptyMap(),
-    val form: Map<String, FormAuthConfig> = emptyMap(),
-    val ldapBasic: Map<String, LDAPBasicConfig> = emptyMap(),
-    val ldapDigest: Map<String, LDAPDigestConfig> = emptyMap(),
-    val ldapForm: Map<String, LDAPFormConfig> = emptyMap(),
-    val jwtHs256: Map<String, JWTHS256Config> = emptyMap(),
-    val jwtRs256: Map<String, JWTRS256Config> = emptyMap(),
-    val oauth: Map<String, ServerOAuthConfig> = emptyMap(),
-    val session: Map<String, SessionAuthConfig> = emptyMap(),
+    val basic: Map<String?, BasicAuthConfig> = emptyMap(),
+    val digest: Map<String?, DigestAuthConfig> = emptyMap(),
+    val form: Map<String?, FormAuthConfig> = emptyMap(),
+    val ldapBasic: Map<String?, LDAPBasicConfig> = emptyMap(),
+    val ldapDigest: Map<String?, LDAPDigestConfig> = emptyMap(),
+    val ldapForm: Map<String?, LDAPFormConfig> = emptyMap(),
+    val jwtHs256: Map<String?, JWTHS256Config> = emptyMap(),
+    val jwtRs256: Map<String?, JWTRS256Config> = emptyMap(),
+    val oauth: Map<String?, ServerOAuthConfig> = emptyMap(),
+    val session: Map<String?, SessionAuthConfig> = emptyMap(),
     override val enable: Boolean = true,
 ) : EnabledConfig
