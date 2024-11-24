@@ -22,7 +22,7 @@ public data class CohortConfig(
 
     private val dbEndpointPrefixPart = dbEndpointPrefix?.let { "$it/" }.orEmpty()
 
-    public fun getOAuthEndpoint(path: String): String = "$oauthEndpointPrefixPart$path"
+    public fun getOAuthEndpoint(path: String?): String = "$oauthEndpointPrefixPart${path.orEmpty()}"
 
-    public fun getDBEndpoint(path: String): String = "$dbEndpointPrefixPart$path"
+    public fun getDBEndpoint(path: String?): String = "$dbEndpointPrefixPart${path.orEmpty()}"
 }
