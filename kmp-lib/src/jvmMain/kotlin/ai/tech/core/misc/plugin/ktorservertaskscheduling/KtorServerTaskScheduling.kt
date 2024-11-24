@@ -20,6 +20,11 @@ import org.jetbrains.exposed.sql.SchemaUtils
 public fun Application.configureKtorServerTaskScheduling(
 ) {
     install(TaskScheduling) {
+        redis{ //<-- this will be the default manager
 
+        }
+        jdbc("my jdbc manager"){
+
+        }
     }
 }

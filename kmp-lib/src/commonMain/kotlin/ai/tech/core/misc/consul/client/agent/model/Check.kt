@@ -7,12 +7,12 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 public data class Check(
+    @SerialName("ID")
+    val id: String? = null,
     @SerialName("Name")
     val name: String? = null,
     @SerialName("Args")
     val args: List<String>? = null,
-    @SerialName("ID")
-    val id: String? = null,
     @Serializable(with = ConsulDurationSerializer::class)
     @SerialName("Interval")
     val interval: Duration? = null,

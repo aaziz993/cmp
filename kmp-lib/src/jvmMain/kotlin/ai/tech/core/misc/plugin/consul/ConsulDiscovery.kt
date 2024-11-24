@@ -4,6 +4,7 @@ import ai.tech.core.misc.consul.client.agent.model.Check
 import ai.tech.core.misc.consul.client.agent.model.Registration
 import ai.tech.core.misc.consul.model.config.Discovery
 import ai.tech.core.misc.consul.server.plugin.ConsulDiscovery
+import ai.tech.core.misc.model.config.ApplicationConfig
 import ai.tech.core.misc.model.config.EnabledConfig
 import io.ktor.client.*
 import io.ktor.server.application.*
@@ -15,20 +16,22 @@ public fun Application.configureConsulDiscovery(
     httpClient: HttpClient,
     address: String,
     config: Discovery?,
-    instanceId: String? = null,
     serviceAddress: String,
-    tags: List<String> = emptyList(),
-    oauth: Set<String>? = null,
-    database: Set<String>? = null,
+    servicePort: Int? = null,
+    applicationConfig: ApplicationConfig? = null,
+    healthChecks: Map<String, String>? = null,
     failureBlock: (Exception, attempt: Int) -> Unit = { _, _ -> },
 ) = config?.takeIf(EnabledConfig::enable)?.let {
-    val id = it.instanceId ?: instanceId
+    val id = it.instanceId
+        ?: applicationConfig?.let { "${it.name}:${it.environment}${servicePort?.let { ":$it" }.orEmpty()}" }
+
     val registration =
         Registration(
-            it.serviceName,
             id,
-            it.tags ?: tags,
+            it.serviceName,
             serviceAddress,
+            servicePort,
+            it.tags ?: applicationConfig?.configurations,
             meta = it.meta,
             checks = listOf(
                 Check(
@@ -36,20 +39,11 @@ public fun Application.configureConsulDiscovery(
                     deregisterCriticalServiceAfter = it.healthCheckCriticalTimeout,
                     header = it.header,
                 ),
-            ) + oauth?.map { name ->
+            ) + healthChecks?.map { (name, route) ->
                 Check(
-                    name = name,
-                    id = "$id:$name",
-                    http = "$serviceAddress/$name",
-                    interval = it.healthCheckInterval,
-                    deregisterCriticalServiceAfter = it.healthCheckCriticalTimeout,
-                    header = it.header,
-                )
-            }.orEmpty() + database?.map { name ->
-                Check(
-                    name = name,
-                    id = "$id:$name",
-                    http = "$serviceAddress/$name",
+                    "$id:$name",
+                    name,
+                    http = "$serviceAddress/$route",
                     interval = it.healthCheckInterval,
                     deregisterCriticalServiceAfter = it.healthCheckCriticalTimeout,
                     header = it.header,

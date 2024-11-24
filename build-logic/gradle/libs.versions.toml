@@ -35,6 +35,8 @@ binary-compatibility-validator = "0.16.3"
 # publishing
 vanniktech-maven-publish = "0.30.0"
 # Java
+# google java format code formatter
+google-java-format = "1.25.0"
 # logging
 logback-classic = "1.5.11"
 # access class members
@@ -58,6 +60,8 @@ sshj = "0.38.0"
 jsch = "0.1.55"
 # Kotlin
 kotlin = "2.0.21"
+# ktlint code formatter
+ktlint = "1.4.1"
 # compiler processor for generating code during compilation
 ksp = "2.0.21-1.0.28"
 # multiplatform logging
@@ -579,8 +583,11 @@ micrometer-registry-prometheus = { module = "io.micrometer:micrometer-registry-p
 # dropwizard
 metrics-jmx = { module = "io.dropwizard.metrics:metrics-jmx", version.ref = "dropwizard" }
 # health
+cohort-logback = { module = "com.sksamuel.cohort:cohort-logback", version.ref = "cohort" }
 cohort-ktor = { module = "com.sksamuel.cohort:cohort-ktor", version.ref = "cohort" }
 cohort-http = { module = "com.sksamuel.cohort:cohort-http", version.ref = "cohort-http" }
+cohort-dbcp = { module = "com.sksamuel.cohort:cohort-dbcp", version.ref = "cohort" }
+cohort-hikari = { module = "com.sksamuel.cohort:cohort-hikari", version.ref = "cohort" }
 cohort-micrometer = { module = "com.sksamuel.cohort:cohort-micrometer", version.ref = "cohort" }
 
 # Koin DI
@@ -873,8 +880,11 @@ apollo = [
 metrics = [
     "micrometer-registry-prometheus",
     "metrics-jmx",
+    "cohort-logback",
     "cohort-ktor",
     "cohort-http",
+    "cohort-dbcp",
+    "cohort-hikari",
     "cohort-micrometer"
 ]
 

@@ -13,5 +13,16 @@ public data class CohortConfig(
     val threadDump: Boolean? = null,
     val sysprops: Boolean? = null,
     val endpointPrefix: String = "health",
+    val oauthEndpointPrefix: String? = null,
+    val dbEndpointPrefix: String? = null,
     override val enable: Boolean = true
-) : EnabledConfig
+) : EnabledConfig {
+
+    private val oauthEndpointPrefixPart = oauthEndpointPrefix?.let { "$it/" }.orEmpty()
+
+    private val dbEndpointPrefixPart = dbEndpointPrefix?.let { "$it/" }.orEmpty()
+
+    public fun getOAuthEndpoint(path: String): String = "$oauthEndpointPrefixPart$path"
+
+    public fun getDBEndpoint(path: String): String = "$dbEndpointPrefixPart$path"
+}

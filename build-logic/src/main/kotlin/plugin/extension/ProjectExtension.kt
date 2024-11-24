@@ -12,6 +12,7 @@ import org.gradle.api.internal.GradleInternal
 import org.gradle.api.provider.Provider
 import org.gradle.kotlin.dsl.getByType
 import org.jetbrains.compose.ComposeExtension
+import org.tomlj.Toml
 
 internal val Project.libs: VersionCatalog
     get(): VersionCatalog = extensions.getByType<VersionCatalogsExtension>().named(VERSION_CATALOG_NAME)
@@ -29,3 +30,4 @@ internal val Project.settings: Settings
 
 internal val Project.compose
     get() = extensions.getByType<ComposeExtension>().dependencies
+

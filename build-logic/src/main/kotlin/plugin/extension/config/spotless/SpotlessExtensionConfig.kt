@@ -1,15 +1,17 @@
-package plugin.extension.config
+package plugin.extension.config.spotless
 
 import com.diffplug.gradle.spotless.SpotlessExtension
 import com.diffplug.spotless.LineEnding
 import org.gradle.api.Project
 import org.gradle.kotlin.dsl.extension
+import plugin.extension.config.spotless.model.Format
 import plugin.extension.settings
-import java.io.File
 
 internal fun Project.configureSpotlessExtension(extension: SpotlessExtension) =
     extension.apply {
         with(settings.extension) {
+            val versionCatalogVersions = versionCatalog.getTable("versions")!!
+
             lineEndings = LineEnding.UNIX
 
             val excludeSourceFileTargets = listOf(
@@ -26,7 +28,8 @@ internal fun Project.configureSpotlessExtension(extension: SpotlessExtension) =
             )
 
             fun getProjectLicenseHeaderText(file: String) = layout.projectDirectory.file(
-                providers.gradleProperty(file).get()).asFile.readText()
+                providers.gradleProperty(file).get(),
+            ).asFile.readText()
                 .replace(
                     providers
                         .gradleProperty("project.license.header.text.file.project.inception.year.placeholder")
@@ -65,13 +68,19 @@ internal fun Project.configureSpotlessExtension(extension: SpotlessExtension) =
                 target("**/*.java")
                 // Exclude source files
                 targetExclude(*excludeSourceFileTargets.toTypedArray())
+                // Use the default importOrder configuration
+                importOrder()
                 // Adds the ability to have spotless ignore specific portions of a project. The usage looks like the following
                 toggleOffOn()
                 // Tells spotless to format according to the Google Style Guide
                 // (https://google.github.io/styleguide/javaguide.html)
-                googleJavaFormat()
+                googleJavaFormat(versionCatalogVersions.getString("google-java-format")).aosp().reflowLongStrings().formatJavadoc(false).reorderImports(false).groupArtifact("com.google.googlejavaformat:google-java-format")
+                // fixes formatting of type annotations
+                formatAnnotations()
                 // Will remove any unused imports from any of your Java classes
                 removeUnusedImports()
+                // Cleanthat will refactor your code, but it may break your style: apply it before your formatter
+                cleanthat()          // has its own section below
                 // Will remove any extra whitespace at the end of lines
                 trimTrailingWhitespace()
                 // Will add a newline character to the end of files content
@@ -88,8 +97,8 @@ internal fun Project.configureSpotlessExtension(extension: SpotlessExtension) =
                 targetExclude(*excludeSourceFileTargets.toTypedArray())
                 // Adds the ability to have spotless ignore specific portions of a project. The usage looks like the following
                 toggleOffOn()
-                // Use ktlint with version 1.2.1 and custom .editorconfig
-                ktlint("1.2.1")
+                // Use ktlint with version and custom .editorconfig
+                ktlint(versionCatalogVersions.getString("ktlint"))
                     .setEditorConfigPath(providers.gradleProperty("spotless.editor.config.file").get())
                 // Will remove any extra whitespace at the end of lines
                 trimTrailingWhitespace()
@@ -100,53 +109,61 @@ internal fun Project.configureSpotlessExtension(extension: SpotlessExtension) =
             }
 
             // Common configuration for miscellaneous files
-            mapOf(
-                "kts" to Triple(
+            listOf(
+                Format(
+                    "kts",
                     listOf("kts"),
                     projectJavaFilesLicenseHeaderText("project.kt.files.license.header.text.file"),
                     providers.gradleProperty("project.kts.files.license.header.text.delimiter").get(),
                 ),
-                "xml" to Triple(
+                Format(
+                    "xml",
                     listOf("xml"),
                     "<?xml version=\"1.0\" encoding=\"utf-8\" ?>\n${
                         projectHtmlFilesLicenseHeaderText("project.xml.files.license.header.text.file")
                     }",
                     providers.gradleProperty("project.xml.files.license.header.text.delimiter").get(),
                 ),
-                "yaml" to Triple(
+                Format(
+                    "yaml",
                     listOf("yaml", "yml"),
                     projectYamlFilesLicenseHeaderText("project.yaml.files.license.header.text.file"),
                     providers.gradleProperty("project.yaml.files.license.header.text.delimiter").get(),
                 ),
-                "properties" to Triple(
+                Format(
+                    "properties",
                     listOf("properties"),
                     projectYamlFilesLicenseHeaderText("project.properties.files.license.header.text.file"),
                     providers.gradleProperty("project.properties.files.license.header.text.delimiter").get(),
                 ),
-                "html" to Triple(
+                Format(
+                    "html",
                     listOf("html"),
                     projectHtmlFilesLicenseHeaderText("project.html.files.license.header.text.file"),
                     providers.gradleProperty("project.html.files.license.header.text.delimiter").get(),
                 ),
-                "md" to Triple(
+                Format(
+                    "md",
                     listOf("md"),
                     projectHtmlFilesLicenseHeaderText("project.md.files.license.header.text.file"),
                     providers.gradleProperty("project.md.files.license.header.text.delimiter").get(),
                 ),
-                "gitignore" to Triple(
+                Format(
+                    "gitignore",
                     listOf("gitignore"),
                     projectYamlFilesLicenseHeaderText("project.gitignore.files.license.header.text.file"),
                     providers.gradleProperty("project.gitignore.files.license.header.text.delimiter").get(),
                 ),
-                "gitattributes" to Triple(
+                Format(
+                    "gitattributes",
                     listOf("gitattributes"),
                     projectYamlFilesLicenseHeaderText("project.gitattributes.files.license.header.text.file"),
                     providers.gradleProperty("project.gitattributes.files.license.header.text.delimiter").get(),
                 ),
-            ).forEach { entry ->
-                format(entry.key) {
+            ).forEach {
+                format(it.name) {
                     // Include source files
-                    target(*entry.value.first.map { "**/*.$it" }.toTypedArray())
+                    target(*it.formats.map { "**/*.$it" }.toTypedArray())
                     // Exclude source files
                     targetExclude(*excludeSourceFileTargets.toTypedArray())
                     // Adds the ability to have spotless ignore specific portions of a project.
@@ -157,7 +174,7 @@ internal fun Project.configureSpotlessExtension(extension: SpotlessExtension) =
                     // Will add a newline character to the end of files content
                     endWithNewline()
                     // Specifies license header text
-                    licenseHeader(entry.value.second, entry.value.third)
+                    licenseHeader(it.licenseHeaderPath, it.delimiter)
                 }
             }
 
@@ -171,7 +188,9 @@ internal fun Project.configureSpotlessExtension(extension: SpotlessExtension) =
             kotlinGradle {
                 target("*.gradle.kts")
                 // Apply ktlint to Gradle Kotlin scripts
-                ktlint("1.2.1")
+                ktlint(versionCatalogVersions.getString("ktlint"))
             }
         }
     }
+
+

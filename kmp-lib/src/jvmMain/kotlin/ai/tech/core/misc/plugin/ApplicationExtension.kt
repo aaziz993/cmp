@@ -39,6 +39,7 @@ import ai.tech.core.misc.plugin.websockets.configureWebSockets
 import ai.tech.core.misc.plugin.xhttpmethodoverride.configureXHttpMethodOverride
 import com.apurebase.kgraphql.GraphQL
 import freemarker.template.Configuration
+import io.github.flaxoos.ktor.server.plugins.taskscheduling.managers.TaskManager.Companion.host
 import io.github.smiley4.ktorswaggerui.dsl.PluginConfigDsl
 import io.ktor.http.*
 import io.ktor.server.application.*
@@ -131,22 +132,9 @@ public fun Application.configure(
 ) {
     configureKoin(config, koinApplication)
 
-    with(config) {
-        consul?.takeIf(EnabledConfig::enable)?.let {
-            configureConsulDiscovery(
-                get(),
-                it.address,
-                it.discovery,
-                "${application.name}:${application.environment}:${host.preferredSslPort}",
-                host.preferredHttpsURL,
-                application.configurations,
-                host.auth?.takeIf(EnabledConfig::enable)?.oauth?.keys,
-                host.database?.keys,
-            ) { exception, attempt ->
-                appLog.w(exception) { "Couldn't register in consul \"${it.address}\" in attempt \"$attempt\"" }
-            }
-        }
+    var healthChecks: Map<String, String>? = null
 
+    with(config) {
         with(host) {
             // Configure the Serialization plugin
             configureSerialization(serialization, serializationBlock)
@@ -264,10 +252,24 @@ public fun Application.configure(
             configureDropwizardMetrics(dropwizardMetrics, dropwizardMetricsBlock)
 
             // Configure the Cohort health checks plugin
-            configureCohort(cohort, auth?.takeIf(EnabledConfig::enable)?.oauth, database)
+            healthChecks = configureCohort(cohort, auth?.takeIf(EnabledConfig::enable)?.oauth, database)
 
             // Configure the Shutdown plugin
             configureShutdown(shutdown, shutdownBlock)
+        }
+
+        consul?.takeIf(EnabledConfig::enable)?.let {
+            configureConsulDiscovery(
+                get(),
+                it.address,
+                it.discovery,
+                host.preferredHttpsURL,
+                host.preferredSslPort,
+                application,
+                healthChecks,
+            ) { exception, attempt ->
+                appLog.w(exception) { "Couldn't register in consul \"${it.address}\" in attempt \"$attempt\"" }
+            }
         }
     }
 }

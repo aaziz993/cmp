@@ -294,7 +294,7 @@ public interface Expression {
             }
             null
         }) { _, transform ->
-            values.add((transform as Expression).parentExpression(values.removeLast((transform.arguments.size))))
+            values.add((transform as Expression).parentExpression(values.removeLast(transform.arguments.size)))
         }
 
         return values[0]

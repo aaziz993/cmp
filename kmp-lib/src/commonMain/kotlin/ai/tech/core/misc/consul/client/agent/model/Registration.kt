@@ -7,20 +7,20 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 public data class Registration(
-    @SerialName("Name")
-    val name: String,
     @SerialName("Id")
     val id: String? = null,
-    @SerialName("Tags")
-    val tags: List<String>? = null,
+    @SerialName("Name")
+    val name: String,
     @SerialName("Address")
     val address: String? = null,
+    @SerialName("Port")
+    val port: Int? = null,
+    @SerialName("Tags")
+    val tags: List<String>? = null,
     @SerialName("TaggedAddress")
     val taggedAddress: Map<String, *>? = null,
     @SerialName("Meta")
     val meta: Map<String, String>? = null,
-    @SerialName("Port")
-    val port: Int? = null,
     @SerialName("Kind")
     val kind: String? = null,
     @SerialName("Proxy")

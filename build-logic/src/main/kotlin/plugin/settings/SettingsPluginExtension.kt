@@ -1,4 +1,4 @@
-@file:Suppress("UnstableApiUsage", "DSL_SCOPE_VIOLATION")
+@file:Suppress("UnstableApiUsage")
 
 package plugin.settings
 
@@ -15,11 +15,9 @@ import VERSION_CATALOG_NAME
 import java.io.Serializable
 import java.net.URI
 import java.util.*
-import kotlin.properties.Delegates
 import org.gradle.api.initialization.Settings
 import org.gradle.caching.http.HttpBuildCache
 import org.gradle.internal.os.OperatingSystem
-import org.gradle.internal.snapshot.Snapshot
 import org.gradle.kotlin.dsl.extension
 import org.gradle.kotlin.dsl.gitHooks
 import org.gradle.kotlin.dsl.maven
@@ -41,6 +39,8 @@ public open class SettingsPluginExtension(
             .toBoolean()
 
     public var versionCatalogFile: String = VERSION_CATALOG_FILE
+
+    public lateinit var versionCatalog: TomlParseResult
 
     public var karakumConfFile: String = KARAKUM_CONF_FILE
 
@@ -75,14 +75,14 @@ public open class SettingsPluginExtension(
     public lateinit var githubUsername: String
 
     public fun apply(): Unit = with(target) {
-        val versionCatalogToml = Toml.parse(target.layout.rootDirectory.file(versionCatalogFile).asFile.readText())
+        versionCatalog = Toml.parse(target.layout.rootDirectory.file(versionCatalogFile).asFile.readText())
 
         with(extension) {
             enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")
 
             with(pluginManager) {
-                apply(versionCatalogToml.getTable("plugins")!!.getTable("foojay-resolver-convention")!!.getString("id")!!)
-                apply(versionCatalogToml.getTable("plugins")!!.getTable("gradle-pre-commit-git-hooks")!!.getString("id")!!)
+                apply(versionCatalog.getTable("plugins")!!.getTable("foojay-resolver-convention")!!.getString("id")!!)
+                apply(versionCatalog.getTable("plugins")!!.getTable("gradle-pre-commit-git-hooks")!!.getString("id")!!)
             }
 
             dependencyResolutionManagement {
@@ -141,7 +141,7 @@ public open class SettingsPluginExtension(
             }
         }
 
-        versionCatalogToml.getTable("versions")!!.let {
+        versionCatalog.getTable("versions")!!.let {
             projectVersionName = it.getString("project-version-name") ?: PROJECT_VERSION_NAME
             projectVersionSuffix = it.getString("project-version-suffix") ?: PROJECT_VERSION_SUFFIX
             projectVersion = calculateProjectVersion(it)

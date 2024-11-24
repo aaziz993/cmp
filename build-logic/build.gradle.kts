@@ -1,5 +1,3 @@
-@file:Suppress("DSL_SCOPE_VIOLATION")
-
 import java.util.Properties
 import kotlin.apply
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile

@@ -1,7 +1,6 @@
 package ai.tech.core.misc.plugin.cohort
 
 import ai.tech.core.data.database.model.config.DBProviderConfig
-import ai.tech.core.data.database.model.config.createHikariDataSource
 import ai.tech.core.data.database.model.config.hikariDataSource
 import ai.tech.core.misc.model.config.EnabledConfig
 import ai.tech.core.misc.plugin.auth.oauth.model.config.ServerOAuthConfig
@@ -19,10 +18,14 @@ public fun Application.configureCohort(
     config: CohortConfig?,
     oauthConfig: Map<String, ServerOAuthConfig>?,
     databaseConfig: Map<String, DBProviderConfig>?,
-    block: (CohortConfiguration.() -> Unit)? = null) {
+    block: (CohortConfiguration.() -> Map<String, String>)? = null): Map<String, String> {
 
-    val configBlock: (CohortConfiguration.() -> Unit)? = config?.takeIf(EnabledConfig::enable)?.let {
+    val configBlock: (CohortConfiguration.() -> Map<String, String>)? = config?.takeIf(EnabledConfig::enable)?.let {
         {
+            require(it.endpointPrefix.isNotEmpty()) {
+                "Property endpointPrefix can't be empty"
+            }
+
             // enable an endpoint to dump the heap in hprof format
             it.heapDump?.let { heapDump = it }
 
@@ -47,35 +50,38 @@ public fun Application.configureCohort(
             // enable health checks for kubernetes
             // each of these is optional and can map to any healthcheck url you wish
             // for example if you just want a single health endpoint, you could use /health
-            oauthConfig?.filterValues(EnabledConfig::enable)?.forEach { name, config ->
-                healthcheck(
-                    "oauth",
-                    HealthCheckRegistry(Dispatchers.Default) {
-                        register(
-                            EndpointHealthCheck { it.get(config.address) },
-                        )
-                    },
-                )
-            }
-
-            databaseConfig?.filterValues(EnabledConfig::enable)?.forEach { name, config ->
-                HealthCheckRegistry(Dispatchers.Default) {
-                    register(name, DatabaseConnectionHealthCheck(config.connection.hikariDataSource))
+            oauthConfig?.filterValues(EnabledConfig::enable)?.mapValues { (name, config) ->
+                it.getOAuthEndpoint(name).also { endpoint ->
+                    healthcheck(
+                        endpoint,
+                        HealthCheckRegistry(Dispatchers.Default) {
+                            register(
+                                EndpointHealthCheck { it.get(config.address) },
+                            )
+                        },
+                    )
                 }
-            }
+            }.orEmpty() + databaseConfig?.filterValues(EnabledConfig::enable)?.mapValues { (name, config) ->
+                it.getDBEndpoint(name).also { endpoint ->
+                    HealthCheckRegistry(Dispatchers.Default) {
+                        register(endpoint, DatabaseConnectionHealthCheck(config.connection.hikariDataSource))
+                    }
+                }
+            }.orEmpty()
         }
     }
 
     if (configBlock == null && block == null) {
-        return
+        return emptyMap()
     }
 
+    var healthChecks: Map<String, String> = emptyMap()
 
     install(Cohort) {
-        configBlock?.invoke(this)
-
-        block?.invoke(this)
+        healthChecks = configBlock?.invoke(this).orEmpty() + block?.invoke(this).orEmpty()
     }
+
+    return healthChecks
 }
 
 

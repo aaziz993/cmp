@@ -5,7 +5,6 @@ import com.diffplug.gradle.spotless.SpotlessApply
 import com.diffplug.gradle.spotless.SpotlessExtension
 import com.github.gmazzo.gradle.plugins.BuildConfigExtension
 import com.google.devtools.ksp.gradle.KspExtension
-import de.jensklingenberg.ktorfit.gradle.KtorfitGradleConfiguration
 import plugin.extension.id
 import kotlinx.kover.gradle.plugin.dsl.KoverProjectExtension
 import org.gradle.api.Plugin
@@ -25,6 +24,7 @@ import plugin.extension.config.configureApolloExtension
 import plugin.extension.config.configureKotlinCompilationTask
 import plugin.extension.config.configurePowerAssertGradleExtension
 import plugin.extension.config.configureSonarExtension
+import plugin.extension.config.spotless.configureSpotlessExtension
 
 internal class BasePlugin : Plugin<Project> {
 
@@ -55,7 +55,7 @@ internal class BasePlugin : Plugin<Project> {
         }
 
         // Code format check and fix
-//        extensions.configure<SpotlessExtension>(::configureSpotlessExtension)
+        extensions.configure<SpotlessExtension>(::configureSpotlessExtension)
 
         tasks.withType<SpotlessApply> {
             dependsOn("synchronizeRootFiles")
