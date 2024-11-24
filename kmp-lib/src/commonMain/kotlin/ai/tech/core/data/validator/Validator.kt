@@ -84,7 +84,7 @@ public data class Validator(
             required = required,
         )
 
-        public fun kotlinduration(
+        public fun kotlinDuration(
             required: Boolean = true,
             patternMessage: String = "value_is_invalid_duration",
         ): Validator = Validator(

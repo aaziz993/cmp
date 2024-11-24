@@ -38,7 +38,7 @@ internal fun OptionRow(
                 AdvancedTextField(
                     state.liveSearchDebounce,
                     { state.liveSearchDebounce = it },
-                    validator = Validator.kotlinduration(),
+                    validator = Validator.kotlinDuration(),
                 )
             }
             Switch(state.isLiveSearch, { state.isLiveSearch = it })
