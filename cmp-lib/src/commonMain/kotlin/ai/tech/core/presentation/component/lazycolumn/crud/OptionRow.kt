@@ -33,8 +33,14 @@ internal fun OptionRow(
 
         Row(verticalAlignment = Alignment.CenterVertically) {
             Text(localization.liveSearch)
+            if (state.isLiveSearch) {
+                AdvancedTextField(
+                    state.liveSearchDebounce,
+                    { state.liveSearchDebounce = it },
+                    validator = Validator.kotlinduration(),
+                )
+            }
             Switch(state.isLiveSearch, { state.isLiveSearch = it })
-            AdvancedTextField()
         }
 
         Row(verticalAlignment = Alignment.CenterVertically) {

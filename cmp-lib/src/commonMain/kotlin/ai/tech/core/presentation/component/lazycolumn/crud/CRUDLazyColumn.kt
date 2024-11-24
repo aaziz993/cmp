@@ -65,6 +65,12 @@ public fun <T : Any> CRUDLazyColumn(
 
     val items = data.itemSnapshotList.items
 
+    OptionRow(
+        state,
+        contentPadding,
+        localization,
+    )
+
     ActionRow(
         contentPadding,
         readOnly,
@@ -82,11 +88,7 @@ public fun <T : Any> CRUDLazyColumn(
     ) { viewModel.action(CRUDAction.DeleteSelected) }
 
     val headers = viewModel.pager.properties.mapNotNull { getHeader(it.name) }
-    AdvancedTextField(
-        state.liveSearchDebounce,
-        { state.liveSearchDebounce = it },
-        validator = Validator.kotlinduration(),
-    )
+
     LazyPagingColumn(
         modifier,
         rememberLazyListState(),
