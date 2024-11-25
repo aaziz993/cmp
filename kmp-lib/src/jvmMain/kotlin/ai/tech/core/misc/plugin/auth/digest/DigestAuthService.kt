@@ -13,7 +13,7 @@ import io.ktor.server.application.*
 import io.ktor.server.auth.*
 
 public class DigestAuthService(
-    override val name: String,
+    override val name: String?,
     public val config: DigestAuthConfig,
     getPrincipalRepository: (databaseName: String?, tableName: String) -> CRUDRepository<PrincipalEntity>? = { _, _ -> null },
     getRoleRepository: (databaseName: String?, tableName: String) -> CRUDRepository<RoleEntity>? = { _, _ -> null }

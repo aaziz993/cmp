@@ -8,7 +8,7 @@ import com.auth0.jwt.JWTVerifier
 import com.auth0.jwt.algorithms.Algorithm
 import io.ktor.http.auth.*
 
-public class JWTHS256AuthService(name: String, config: JWTHS256Config) : AbstractJWTAuthService<JWTHS256Config>(name, config) {
+public class JWTHS256AuthService(name: String?, config: JWTHS256Config) : AbstractJWTAuthService<JWTHS256Config>(name, config) {
     public fun jwtVerifier(httpAuthHeader: HttpAuthHeader): JWTVerifier {
         try {
             val publicKey = ServerPublicKeyCache.getPublicKey(UrlJwkProvider(config.jwkUri), httpAuthHeader)

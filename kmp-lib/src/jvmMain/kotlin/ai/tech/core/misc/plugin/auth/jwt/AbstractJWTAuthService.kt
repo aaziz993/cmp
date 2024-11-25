@@ -12,7 +12,7 @@ import io.ktor.server.auth.jwt.*
 import io.ktor.server.sessions.*
 import java.util.*
 
-public abstract class AbstractJWTAuthService<out T : JWTConfig>(override val name: String, public val config: T) :
+public abstract class AbstractJWTAuthService<out T : JWTConfig>(override val name: String?, public val config: T) :
     AuthProvider,
     ValidateAuthProvider<JWTCredential>,
     ChallengeAuthProvider {
@@ -24,14 +24,6 @@ public abstract class AbstractJWTAuthService<out T : JWTConfig>(override val nam
             credential.expiresAt?.after(Date()) != false
         ) {
             credential.payload.getClaim<Claim?>(*config.usernameClaimKeys.toTypedArray())?.asString()?.let {
-                call.sessions.set(
-                    name,
-                    UserSession(
-                        it,
-                        credential.payload.roles,
-                        1,
-                    ),
-                )
                 JWTPrincipal(credential.payload)
             }
         }

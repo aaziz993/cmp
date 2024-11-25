@@ -14,7 +14,7 @@ import io.ktor.server.auth.*
 import kotlinx.serialization.InternalSerializationApi
 
 public class BasicAuthService(
-    override val name: String,
+    override val name: String?,
     override val config: BasicAuthConfig,
     getPrincipalRepository: (databaseName: String?, tableName: String) -> CRUDRepository<PrincipalEntity>? = { _, _ -> null },
     getRoleRepository: (databaseName: String?, tableName: String) -> CRUDRepository<RoleEntity>? = { _, _ -> null }

@@ -39,8 +39,8 @@ public fun Application.configureAuth(
     serverURL: String,
     httpClient: HttpClient,
     config: AuthProvidersConfig?,
-    principalRepositories: Map<String?, Map<String, CRUDRepository<PrincipalEntity>>> = emptyMap(),
-    roleRepositories: Map<String?, Map<String, CRUDRepository<RoleEntity>>> = emptyMap(),
+    getPrincipalRepository: (databaseName: String?, tableName: String) -> CRUDRepository<PrincipalEntity>? = { _, _ -> null },
+    getRoleRepository: (databaseName: String?, tableName: String) -> CRUDRepository<RoleEntity>? = { _, _ -> null },
     block: (AuthenticationConfig.() -> Unit)? = null
 ) = authentication {
     config?.takeIf(EnabledConfig::enabled)?.let {
@@ -52,8 +52,8 @@ public fun Application.configureAuth(
                 BasicAuthService(
                     name,
                     config,
-                    { databaseName, tableName -> principalRepositories[databaseName]?.get(tableName) },
-                    { databaseName, tableName -> roleRepositories[databaseName]?.get(tableName) },
+                    getPrincipalRepository,
+                    getRoleRepository,
                 ),
             )
         }
@@ -65,8 +65,8 @@ public fun Application.configureAuth(
                 DigestAuthService(
                     name,
                     config,
-                    { databaseName, tableName -> principalRepositories[databaseName]?.get(tableName) },
-                    { databaseName, tableName -> roleRepositories[databaseName]?.get(tableName) },
+                    getPrincipalRepository,
+                    getRoleRepository,
                 ),
             )
         }
@@ -78,8 +78,8 @@ public fun Application.configureAuth(
                 FormAuthService(
                     name,
                     config,
-                    { databaseName, tableName -> principalRepositories[databaseName]?.get(tableName) },
-                    { databaseName, tableName -> roleRepositories[databaseName]?.get(tableName) },
+                    getPrincipalRepository,
+                    getRoleRepository,
                 ),
             )
         }
@@ -132,10 +132,10 @@ public fun Application.configureAuth(
 
         it.oauth.filterValues(EnabledConfig::enabled).forEach { (name, config) ->
             configureOAuth(
-                serverURL,
-                httpClient,
                 name,
+                httpClient,
                 config,
+                serverURL,
             )
         }
 
@@ -158,7 +158,7 @@ public fun Application.configureAuth(
 }
 
 private fun <C, S> AuthenticationConfig.configureBasic(
-    name: String,
+    name: String?,
     config: C,
     service: S,
 ) where C : BaseBasicAuthConfig, C : RealmAuthProviderConfig, S : AuthProvider, S : ValidateAuthProvider<UserPasswordCredential> {
@@ -176,7 +176,7 @@ private fun <C, S> AuthenticationConfig.configureBasic(
 }
 
 private fun <C, S> AuthenticationConfig.configureDigest(
-    name: String,
+    name: String?,
     config: C,
     service: S,
 ) where C : BaseDigestAuthConfig, C : RealmAuthProviderConfig, S : AuthProvider, S : DigestAuthProvider, S : ValidateAuthProvider<DigestCredential> {
@@ -196,7 +196,7 @@ private fun <C, S> AuthenticationConfig.configureDigest(
 }
 
 private fun <C, S> AuthenticationConfig.configureForm(
-    name: String,
+    name: String?,
     config: C,
     service: S,
 ) where C : BaseFormAuthConfig, S : AuthProvider, S : ValidateAuthProvider<UserPasswordCredential>, S : ChallengeAuthProvider {
@@ -216,7 +216,7 @@ private fun <C, S> AuthenticationConfig.configureForm(
 }
 
 private fun AuthenticationConfig.configureJWT(
-    name: String,
+    name: String?,
     config: JWTConfig,
     configure: JWTAuthenticationProvider.Config.() -> Unit
 ) {
@@ -235,10 +235,10 @@ private fun AuthenticationConfig.configureJWT(
 }
 
 private fun AuthenticationConfig.configureOAuth(
-    redirectUrl: String,
+    name: String?,
     httpClient: HttpClient,
-    name: String,
     config: ServerOAuthConfig,
+    redirectUrl: String,
 ) = with(config) {
     val redirects = mutableMapOf<String, String>()
 

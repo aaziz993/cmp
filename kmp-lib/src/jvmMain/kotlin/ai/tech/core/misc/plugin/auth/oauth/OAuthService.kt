@@ -5,6 +5,6 @@ import ai.tech.core.misc.plugin.auth.AuthProvider
 import io.ktor.server.application.ApplicationCall
 
 public class OAuthService(
-    override val name: String,
+    override val name: String?,
     public val config: OAuthConfig,
 ) : AuthProvider

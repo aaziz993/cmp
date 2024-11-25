@@ -8,7 +8,7 @@ import ai.tech.core.misc.plugin.auth.session.model.UserSession
 import io.ktor.server.application.ApplicationCall
 
 public class SessionAuthService(
-    override val name: String,
+    override val name: String?,
     public val config: SessionAuthConfig,
 ) : AuthProvider, ValidateAuthProvider<UserSession>, ChallengeAuthProvider {
 

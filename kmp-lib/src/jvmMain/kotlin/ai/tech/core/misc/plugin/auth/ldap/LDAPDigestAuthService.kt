@@ -14,7 +14,7 @@ import javax.naming.directory.InitialDirContext
 import javax.naming.ldap.LdapContext
 
 public open class LDAPDigestAuthService(
-    override val name: String,
+    override val name: String?,
     public val config: LDAPAuthConfig,
 ) : AuthProvider, DigestAuthProvider, ValidateAuthProvider<DigestCredential> {
 

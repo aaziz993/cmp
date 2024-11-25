@@ -10,7 +10,7 @@ import io.ktor.server.auth.*
 import io.ktor.server.auth.ldap.*
 
 public open class LDAPAuthService(
-    override val name: String,
+    override val name: String?,
     public val config: LDAPAuthConfig,
 ) : AuthProvider, ValidateAuthProvider<UserPasswordCredential> {
 

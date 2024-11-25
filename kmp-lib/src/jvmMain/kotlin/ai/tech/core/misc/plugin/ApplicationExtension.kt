@@ -1,10 +1,9 @@
 package ai.tech.core.misc.plugin
 
 import ai.tech.core.data.crud.CRUDRepository
-import ai.tech.core.data.database.kotysa.getKotysaTables
-import ai.tech.core.data.database.kotysa.name
+import ai.tech.core.data.database.exposed.getExposedTable
+import ai.tech.core.data.database.kotysa.getKotysaTable
 import ai.tech.core.data.database.model.config.DBConfig
-import ai.tech.core.data.database.model.config.TableConfig
 import ai.tech.core.misc.model.config.EnabledConfig
 import ai.tech.core.misc.model.config.server.ServerConfig
 import ai.tech.core.misc.model.config.server.ServerHostConfig
@@ -13,6 +12,8 @@ import ai.tech.core.misc.plugin.auth.configureAuth
 import ai.tech.core.misc.plugin.auth.database.kotysa.principal.PrincipalExposedCRUDRepository
 import ai.tech.core.misc.plugin.auth.database.kotysa.principal.PrincipalKotysaCRUDRepository
 import ai.tech.core.misc.plugin.auth.database.kotysa.principal.model.PrincipalEntity
+import ai.tech.core.misc.plugin.auth.database.kotysa.role.RoleExposedCRUDRepository
+import ai.tech.core.misc.plugin.auth.database.kotysa.role.RoleKotysaCRUDRepository
 import ai.tech.core.misc.plugin.auth.database.kotysa.role.model.RoleEntity
 import ai.tech.core.misc.plugin.authheadresponse.configureAutoHeadResponse
 import ai.tech.core.misc.plugin.cachingheaders.configureCachingHeaders
@@ -81,9 +82,14 @@ import io.ktor.server.websocket.*
 import io.micrometer.core.instrument.MeterRegistry
 import java.io.File
 import korlibs.time.DateTime
+import org.jetbrains.exposed.sql.Database
 import org.koin.core.KoinApplication
+import org.koin.core.module.Module
+import org.koin.core.qualifier.named
+import org.koin.dsl.module
 import org.koin.ktor.ext.get
 import org.lighthousegames.logging.logging
+import org.ufoss.kotysa.R2dbcSqlClient
 import org.ufoss.kotysa.Table
 
 private val appLog = logging("Application")
@@ -162,8 +168,8 @@ public fun Application.configure(
                 preferredHttpsURL,
                 get(),
                 auth,
-                principalRepositories,
-                roleRepositories,
+                { databaseName, tableName -> database[databaseName]?.let { getPrincipalRepository(databaseName, tableName, it) } },
+                { databaseName, tableName -> database[databaseName]?.let { getRoleRepository(databaseName, tableName, it) } },
                 authBlock,
             )
 
@@ -296,12 +302,43 @@ public fun Application.configure(
     }
 }
 
-private fun Application.getPrincipalRepository(tableName: String, database: Map<String?, DBConfig>): CRUDRepository<PrincipalEntity>? =
-    database.mapValues {
-        if (config.protocol == "jdbc") {
-            PrincipalExposedCRUDRepository(get())
-        }
-        else {
-            PrincipalKotysaCRUDRepository()
+@Suppress("UNCHECKED_CAST")
+private fun <T : Any> Application.getRepository(
+    databaseName: String?,
+    tableName: String,
+    config: DBConfig,
+    getExposedRepository: (database: Database, org.jetbrains.exposed.sql.Table) -> CRUDRepository<T>,
+    getKotysaRepository: (r2dbcSqlClient: R2dbcSqlClient, Table<T>) -> CRUDRepository<T>,
+): CRUDRepository<T>? {
+    if (config.protocol == "jdbc") {
+        val table = getExposedTable(tableName, config.table)
+
+        if (table != null) {
+            return getExposedRepository(get(databaseName?.let { named(it) }), table)
         }
     }
+
+    val table = getKotysaTable(tableName, config.driver, config.table) as Table<T>?
+
+    if (table != null) {
+        return getKotysaRepository(get(databaseName?.let { named(it) }), table)
+    }
+
+    return null
+}
+
+private fun Application.getPrincipalRepository(
+    databaseName: String?,
+    tableName: String,
+    config: DBConfig) = getRepository(
+    databaseName, tableName, config,
+    { database, table -> PrincipalExposedCRUDRepository(database, table = table) },
+) { r2dbcSqlClient, table -> PrincipalKotysaCRUDRepository(r2dbcSqlClient, table) }
+
+private fun Application.getRoleRepository(
+    databaseName: String?,
+    tableName: String,
+    config: DBConfig) = getRepository(
+    databaseName, tableName, config,
+    { database, table -> RoleExposedCRUDRepository(database, table = table) },
+) { r2dbcSqlClient, table -> RoleKotysaCRUDRepository(r2dbcSqlClient, table) }

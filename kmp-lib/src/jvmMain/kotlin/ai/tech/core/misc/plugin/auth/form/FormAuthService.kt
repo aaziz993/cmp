@@ -14,7 +14,7 @@ import io.ktor.server.application.*
 import io.ktor.server.auth.*
 
 public class FormAuthService(
-    override val name: String,
+    override val name: String?,
     override val config: FormAuthConfig,
     getPrincipalRepository: (databaseName: String?, tableName: String) -> CRUDRepository<PrincipalEntity>? = { _, _ -> null },
     getRoleRepository: (databaseName: String?, tableName: String) -> CRUDRepository<RoleEntity>? = { _, _ -> null },
