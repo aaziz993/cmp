@@ -74,6 +74,7 @@ public class JavaAppPlugin : Plugin<Project> {
                     implementation(lib("dataframe"))
                     implementation(lib("kandy"))
                     implementation(bundle("kotysa"))
+                    implementation(bundle("kotysa"))
                     implementation(bundle("ktor.serialization"))
                     implementation(lib("ktor.serialization.kotlinx.xml"))
                     implementation(bundle("ktor.server"))

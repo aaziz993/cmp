@@ -1,9 +1,7 @@
 package plugin.extension.config
 
 import KOTLIN_JVM_TOOLCHAIN_VERSION
-import plugin.extension.settings
 import org.gradle.api.Project
-import org.gradle.kotlin.dsl.extension
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import org.jetbrains.kotlin.gradle.dsl.KotlinProjectExtension
 

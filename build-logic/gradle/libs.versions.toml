@@ -177,6 +177,8 @@ r2dbc-mariadb = "1.1.4"
 r2dbc-mysql = "2.2.4"
 r2dbc-mssql = "1.0.2.RELEASE"
 r2dbc-postgresql = "1.0.3.RELEASE"
+# Exposed is a lightweight SQL library on top of a JDBC driver for the Kotlin language. Exposed has two flavors of database access: typesafe SQL wrapping DSL and lightweight Data Access Objects (DAO).
+exposed = "0.56.0"
 # Kotysa ORM (postgresql, my sql, Microsoft SQL server, maria db, oracle, h 2 for jvm, android)
 kotysa = "3.2.2"
 kotysa-r2dbc = "3.2.1"
@@ -461,6 +463,16 @@ compass-geolocation = { module = "dev.jordond.compass:geolocation", version.ref 
 compass-geolocation-mobile = { module = "dev.jordond.compass:geolocation-mobile", version.ref = "compass" }
 compass-geolocation-browser = { module = "dev.jordond.compass:geolocation-browser", version.ref = "compass" }
 compass-permissions-mobile = { module = "dev.jordond.compass:permissions-mobile", version.ref = "compass" }
+
+# Exposed is a lightweight SQL library on top of a JDBC driver for the Kotlin language.
+# Exposed has two flavors of database access: typesafe SQL wrapping DSL and lightweight Data Access Objects (DAO).
+exposed = { module = "org.jetbrains.exposed:exposed-core", version.ref = "exposed" }
+exposed-crypt = { module = "org.jetbrains.exposed:exposed-crypt", version.ref = "exposed" }
+exposed-dao = { module = "org.jetbrains.exposed:exposed-dao", version.ref = "exposed" }
+exposed-jdbc = { module = "org.jetbrains.exposed:exposed-jdbc", version.ref = "exposed" }
+exposed-kotlin-datetime = { module = "org.jetbrains.exposed:exposed-kotlin-datetime", version.ref = "exposed" }
+exposed-json = { module = "org.jetbrains.exposed:exposed-json", version.ref = "exposed" }
+exposed-money = { module = "org.jetbrains.exposed:exposed-money", version.ref = "exposed" }
 
 # Kotysa ORM (postgresql, my sql, microsoft sql server, maria db, oracle, h 2 for jvm, android)
 kotysa = { module = "org.ufoss.kotysa:kotysa-core", version.ref = "kotysa" }
@@ -774,6 +786,17 @@ compass-mobile = [
 sqldelight = [
     "sqldelight-coroutines-extension",
     "sqldelight-primitive-adapters"
+]
+
+# Exposed ORM
+exposed = [
+    "exposed",
+    "exposed-crypt",
+    "exposed-dao",
+    "exposed-jdbc",
+    "exposed-kotlin-datetime",
+    "exposed-json",
+    "exposed-money",
 ]
 
 # Kotysa ORM

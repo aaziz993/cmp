@@ -1,3 +1,5 @@
+@file:Suppress("PackageDirectoryMismatch")
+
 package org.gradle.kotlin.dsl
 
 import org.gradle.api.initialization.Settings

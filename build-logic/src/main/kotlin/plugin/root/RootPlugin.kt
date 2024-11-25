@@ -6,7 +6,6 @@ import java.io.IOException
 import java.net.URI
 import org.gradle.api.Plugin
 import org.gradle.api.Project
-import org.gradle.api.Task
 import org.gradle.kotlin.dsl.extension
 import plugin.extension.settings
 import plugin.root.model.ProjectFileOverrideType

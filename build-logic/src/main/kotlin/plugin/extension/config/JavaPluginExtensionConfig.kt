@@ -2,13 +2,11 @@ package plugin.extension.config
 
 import JAVA_SOURCE_VERSION
 import JAVA_TARGET_VERSION
-import plugin.extension.settings
 import org.gradle.api.JavaVersion
 import org.gradle.api.Project
 import org.gradle.api.artifacts.dsl.DependencyHandler
 import org.gradle.api.plugins.JavaPlugin
 import org.gradle.api.plugins.JavaPluginExtension
-import org.gradle.kotlin.dsl.extension
 
 internal fun Project.configureJavaPluginExtension(extension: JavaPluginExtension) =
     extension.apply {

@@ -1,8 +1,9 @@
 package ai.tech.core.misc.plugin.koin.module
 
 import ai.tech.core.data.database.model.config.DBConfig
+import ai.tech.core.data.database.model.config.createExposedDatabase
+import ai.tech.core.data.database.model.config.createKotysaR2dbcClient
 import ai.tech.core.data.database.model.config.hikariDataSource
-import ai.tech.core.data.database.kotysa.createKotysaR2dbcSqlClient
 import ai.tech.core.misc.model.config.EnabledConfig
 import kotlinx.coroutines.runBlocking
 import org.jetbrains.exposed.sql.Database
@@ -18,17 +19,13 @@ public fun databaseModule(config: Map<String?, DBConfig>?): Module = module {
 
         // JDBC Exposed with Hikary
         jdbc.forEach { (name, config) ->
-            single<Database>(name?.let { named(it) }) {
-                Database.connect(config.hikariDataSource)
-            }
+            single<Database>(name?.let { named(it) }) { config.createExposedDatabase() }
         }
 
         // R2DBC Kotysa
         r2dbc.forEach { (name, config) ->
             single<R2dbcSqlClient>(name?.let { named(it) }) {
-                runBlocking {
-                    createKotysaR2dbcSqlClient(config)
-                }
+                runBlocking { config.createKotysaR2dbcClient() }
             }
         }
     }

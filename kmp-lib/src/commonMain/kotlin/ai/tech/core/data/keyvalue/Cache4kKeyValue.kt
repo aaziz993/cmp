@@ -1,6 +1,5 @@
 package ai.tech.core.data.keyvalue
 
-import ai.tech.core.misc.type.exhaustive
 import ai.tech.core.misc.type.model.Entry
 import io.github.reactivecircus.cache4k.Cache
 import io.github.reactivecircus.cache4k.CacheEvent
@@ -13,7 +12,7 @@ import kotlinx.serialization.DeserializationStrategy
 import kotlinx.serialization.encodeToString
 
 @Suppress("UNCHECKED_CAST")
-public open class CacheKeyValue(
+public open class Cache4kKeyValue(
     config: Cache.Builder<String, String>.() -> Cache.Builder<String, String>,
     public val keyDelimiter: Char = '.',
     public val nullValue: String = "null",

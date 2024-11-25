@@ -77,8 +77,6 @@ import java.io.File
 import korlibs.time.DateTime
 import org.koin.core.KoinApplication
 import org.koin.ktor.ext.get
-import org.lighthousegames.logging.KmLogging
-import org.lighthousegames.logging.LogLevel
 import org.lighthousegames.logging.logging
 
 private val appLog = logging("Application")

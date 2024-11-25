@@ -1,5 +1,6 @@
 package ai.tech.core.data.database.kotysa
 
+import ai.tech.core.data.crud.AbstractCRUDRepository
 import ai.tech.core.data.crud.CRUDRepository
 import ai.tech.core.data.crud.model.LimitOffset
 import ai.tech.core.data.crud.model.Order
@@ -29,7 +30,10 @@ import ai.tech.core.data.expression.Value
 import ai.tech.core.data.expression.Variable
 import ai.tech.core.data.database.kotysa.model.KotysaTable
 import ai.tech.core.misc.type.kClass
+import ai.tech.core.misc.type.serializablePropertyValues
+import ai.tech.core.misc.type.serializer.Json
 import ai.tech.core.misc.type.serializer.copy
+import ai.tech.core.misc.type.serializer.new
 import kotlin.reflect.KClass
 import kotlin.reflect.KTypeParameter
 import kotlin.reflect.full.declaredMemberProperties
@@ -52,17 +56,42 @@ import org.ufoss.kotysa.WholeNumberColumn
 
 @OptIn(InternalSerializationApi::class)
 public abstract class KotysaCRUDRepository<T : Any>(
-    public val kClass: KClass<T>,
     public val client: R2dbcSqlClient,
     public val table: Table<T>,
-    public val createdAtProperty: String? = "createdAt",
-    public val updatedAtProperty: String? = "updatedAt",
-    public val timeZone: TimeZone = TimeZone.UTC,
-) : CRUDRepository<T> {
+    getEntityPropertyValues: (T) -> Map<String, Any?>,
+    private val createEntity: (Map<String, Any?>) -> T,
+    createdAtProperty: String? = "createdAt",
+    updatedAtProperty: String? = "updatedAt",
+    timeZone: TimeZone = TimeZone.UTC,
+) : AbstractCRUDRepository<T>(
+    getEntityPropertyValues,
+    createdAtProperty,
+    updatedAtProperty,
+    timeZone,
+) {
+
+    public constructor(kClass: KClass<T>,
+                       client: R2dbcSqlClient,
+                       table: Table<T>,
+                       createdAtProperty: String? = "createdAt",
+                       updatedAtProperty: String? = "updatedAt",
+                       timeZone: TimeZone = TimeZone.UTC) : this(
+        client,
+        table,
+        { it.serializablePropertyValues },
+        { Json.Default.new(kClass.serializer(), it) },
+        createdAtProperty,
+        updatedAtProperty,
+        timeZone,
+    )
 
     private val logger = LoggerFactory.getLogger(this::class.java)
 
     private val kotysaTable = KotysaTable(table, createdAtProperty, updatedAtProperty)
+
+    override val createdAtNow: ((TimeZone) -> Any)? = kotysaTable.createdAtColumn?.value?.now
+
+    override val updatedAtNow: ((TimeZone) -> Any)? = kotysaTable.updatedAtColumn?.value?.now
 
     final override suspend fun <R> transactional(block: suspend CRUDRepository<T>.() -> R): R =
         client.transactional {
@@ -70,29 +99,35 @@ public abstract class KotysaCRUDRepository<T : Any>(
         }!!
 
     @Suppress("UNCHECKED_CAST")
-    final override suspend fun insert(entities: List<T>) {
+    final override suspend fun insert(entities: List<T>): Unit =
         client.insert(
-            *((kotysaTable.createdAtColumn?.let {
-                val temporal = it.value.now!!(timeZone)
-                entities.map { Json.Default.copy(kClass.serializer(), it) { mapOf(createdAtProperty!! to temporal) } }
-            } ?: entities).toTypedArray<Any>() as Array<T>),
+            *(if (kotysaTable.createdAtColumn == null) {
+                entities
+            }
+            else {
+                entities.map { entity -> createEntity(entityCreatedAtAware(entity)) }
+            }.toTypedArray<Any>() as Array<T>),
         )
-    }
 
     override suspend fun update(entities: List<T>): List<Boolean> = client.transactional {
-        kotysaTable.updatedAtColumn?.let {
-            val temporal = it.value.now!!(timeZone)
-            entities.map { update(Json.Default.copy(kClass.serializer(), it) { mapOf(updatedAtProperty!! to temporal) }).execute() > 0L }
-        } ?: entities.map { update(it).execute() > 0L }
+        if (kotysaTable.updatedAtColumn == null) {
+            entities.map { update(it).execute() > 0L }
+        }
+        else {
+            entities.map { update(createEntity(entityUpdatedAtAware(it))).execute() > 0L }
+        }
     }!!
 
     final override suspend fun update(
         entities: List<Map<String, Any?>>,
         predicate: BooleanVariable?,
     ): List<Long> = client.transactional {
-        predicate?.let { p ->
-            entities.map { update(it).predicate(p).execute() }
-        } ?: entities.map { update(it).execute() }
+        if (predicate == null) {
+            entities.map { update(it).execute() }
+        }
+        else {
+            entities.map { update(it).predicate(predicate).execute() }
+        }
     }!!
 
     final override fun find(
@@ -113,23 +148,70 @@ public abstract class KotysaCRUDRepository<T : Any>(
     } ?: client.deleteAllFrom(kotysaTable.table)
 
     @Suppress("UNCHECKED_CAST")
-    override suspend fun <T> aggregate(aggregate: AggregateExpression<T>, predicate: BooleanVariable?): T =
-        when (aggregate) {
-            is Count -> aggregate.projection?.let { client.selectCount(kotysaTable[it.value].column).from(kotysaTable.table) }
-                ?: client.selectCountFrom(kotysaTable.table)
+    override suspend fun <T : Comparable<T>> aggregate(aggregate: AggregateExpression<T>, predicate: BooleanVariable?): T {
+        val column = aggregate.projection?.let { kotysaTable[it.value] }?.column
 
-            is Max -> client.selectMax(kotysaTable[aggregate.projection.value].column as MinMaxColumn<*, *>).from(kotysaTable.table)
-            is Min -> client.selectMin(kotysaTable[aggregate.projection.value].column as MinMaxColumn<*, *>).from(kotysaTable.table)
-            is Avg -> client.selectAvg(kotysaTable[aggregate.projection.value].column as NumericColumn<*, *>)
-                .from(kotysaTable.table)
+        if (column == null) {
+            require(aggregate is Count) {
+                "Only in count aggregation column is optional"
+            }
 
-            is Sum -> client.selectSum(kotysaTable[aggregate.projection.value].column as WholeNumberColumn<*, *>)
-                .from(kotysaTable.table)
-        }.let { select ->
-            predicate?.let {
-                select.predicate(it)
-            } ?: select
+            return client.selectCountFrom(kotysaTable.table) as T
+        }
+
+        val distinct = aggregate.projection!!.distinct
+
+        return when (aggregate) {
+            is Count -> if (distinct) {
+                client.selectDistinct(column).andCount(column)
+            }
+            else {
+                client.selectCount(column)
+            }
+
+            is Max -> {
+                column as MinMaxColumn<*, *>
+                if (distinct) {
+                    client.selectDistinct(column).andMax(column)
+                }
+                else {
+                    client.selectMax(column)
+                }
+            }
+
+            is Min -> {
+                column as MinMaxColumn<*, *>
+                if (distinct) {
+                    client.selectDistinct(column).andMin(column)
+                }
+                else {
+                    client.selectMin(column)
+                }
+            }
+
+            is Avg -> {
+                column as NumericColumn<*, *>
+                if (distinct) {
+                    client.selectDistinct(column).andAvg(column)
+                }
+                else {
+                    client.selectAvg(column)
+                }
+            }
+
+            is Sum -> {
+                column as WholeNumberColumn<*, *>
+                if (distinct) {
+                    client.selectDistinct(column).andSum(column)
+                }
+                else {
+                    client.selectSum(column)
+                }
+            }
+        }.from(kotysaTable.table).let { select ->
+            predicate?.let { select.predicate(it) } ?: select
         }.fetchOne() as T
+    }
 
     private fun update(entity: T): CoroutinesSqlClientDeleteOrUpdate.Return = client.update(kotysaTable.table).let {
         kotysaTable.columns.values.fold(it) { acc, v -> v.updateFromEntity(acc, entity) }
@@ -185,6 +267,7 @@ public abstract class KotysaCRUDRepository<T : Any>(
     @Suppress("UNCHECKED_CAST")
     private fun <T : SqlClientQuery.Where<T>> SqlClientQuery.Whereable<T>.predicate(predicate: BooleanVariable): T {
         var value: Any? = null
+
         var expression: Expression? = null
 
         val logValue = StringBuilder()

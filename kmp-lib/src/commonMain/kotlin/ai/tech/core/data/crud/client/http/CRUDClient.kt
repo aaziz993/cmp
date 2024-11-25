@@ -89,7 +89,7 @@ public open class CRUDClient<T : Any>(
         api.delete(predicate)
 
     @Suppress("UNCHECKED_CAST")
-    override suspend fun <T> aggregate(aggregate: AggregateExpression<T>, predicate: BooleanVariable?): T =
+    override suspend fun <T : Comparable<T>> aggregate(aggregate: AggregateExpression<T>, predicate: BooleanVariable?): T =
         api.aggregate(
             MultiPartFormDataContent(
                 formData {

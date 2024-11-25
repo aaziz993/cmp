@@ -408,6 +408,8 @@ public data class NotIn(override val arguments: List<Variable>) : LogicExpressio
 @Serializable
 public sealed class AggregateExpression<T> {
 
+    public abstract val projection: Projection?
+
     public companion object {
 
         public fun count(projection: Projection? = null): Count = Count(projection)
@@ -423,19 +425,19 @@ public sealed class AggregateExpression<T> {
 }
 
 @Serializable
-public data class Count(val projection: Projection?) : AggregateExpression<Long>()
+public data class Count(override val projection: Projection?) : AggregateExpression<Long>()
 
 @Serializable
-public data class Max<T>(val projection: Projection) : AggregateExpression<T>()
+public data class Max<T>(override val projection: Projection) : AggregateExpression<T>()
 
 @Serializable
-public data class Min<T>(val projection: Projection) : AggregateExpression<T>()
+public data class Min<T>(override val projection: Projection) : AggregateExpression<T>()
 
 @Serializable
-public data class Avg<T>(val projection: Projection) : AggregateExpression<T>()
+public data class Avg<T>(override val projection: Projection) : AggregateExpression<T>()
 
 @Serializable
-public data class Sum<T>(val projection: Projection) : AggregateExpression<T>()
+public data class Sum<T>(override val projection: Projection) : AggregateExpression<T>()
 
 @Suppress("UNCHECKED_CAST")
 @Serializable

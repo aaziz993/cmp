@@ -20,7 +20,7 @@ public data class DBConfig(
     val connectTimeout: Duration? = null,
     val lockWaitTimeout: Duration? = null,
     val statementTimeout: Duration? = null,
-    val table: List<DBTableConfig> = emptyList(),
+    val table: List<TableConfig> = emptyList(),
     override val enabled: Boolean = true
 ) : EnabledConfig {
 

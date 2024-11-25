@@ -30,7 +30,8 @@ public open class KStoreKeyValue(
         deserializer: DeserializationStrategy<T>,
         defaultValue: T?
     ): T = keys.toKey().let { key ->
-        (store.get()?.find { it.key == key }?.value?.let { json.decodeFromString(deserializer, it) } ?: defaultValue) as T
+        (store.get()?.find { it.key == key }?.value?.let { json.decodeFromString(deserializer, it) }
+            ?: defaultValue) as T
     }
 
     override suspend fun <T> getFlow(
@@ -50,7 +51,7 @@ public open class KStoreKeyValue(
 
     override suspend fun flush(): Unit = Unit
 
-    override suspend fun size(): Int = store.get()?.size ?: 0
+    override suspend fun size(): Long = store.get()?.size?.toLong() ?: 0L
 
     private fun List<String>.toKey() = reduce { acc, v -> "$acc$keyDelimiter$v" }
 }
