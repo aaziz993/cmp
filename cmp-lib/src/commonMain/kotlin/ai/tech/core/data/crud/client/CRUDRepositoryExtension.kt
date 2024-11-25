@@ -63,3 +63,33 @@ public fun <Value : Any> CRUDRepository<Value>.mutablePager(
     remoteMediator,
     cacheCoroutineScope,
 ) { sort, predicate -> pagingSource(sort, predicate, firstItemOffset, disablePrepend) }
+
+@OptIn(ExperimentalPagingApi::class)
+public fun CRUDRepository<*>.pagingSource(
+    projections: List<Variable>,
+    sort: List<Order>? = null,
+    predicate: BooleanVariable? = null,
+    firstItemOffset: Int = 0,
+    disablePrepend: Boolean = false,
+): PagingSource<Int, List<Any?>> = CRUDPagingSource({ find(projections, sort, predicate, it).toList() }, firstItemOffset, disablePrepend)
+
+@OptIn(ExperimentalPagingApi::class)
+public fun CRUDRepository<*>.pager(
+    projections: List<Variable>,
+    sort: List<Order>? = null,
+    predicate: BooleanVariable? = null,
+    config: PagingConfig,
+    initialKey: Int? = null,
+    remoteMediator: RemoteMediator<Int, List<Any?>>? = null,
+    cacheCoroutineScope: CoroutineScope? = null,
+    firstItemOffset: Int = 0,
+    disablePrepend: Boolean = false,
+): CRUDProjectionRefreshablePager = CRUDProjectionRefreshablePager(
+    projections,
+    sort,
+    predicate,
+    config,
+    initialKey,
+    remoteMediator,
+    cacheCoroutineScope,
+) { projections, sort, predicate -> pagingSource(projections, sort, predicate, firstItemOffset, disablePrepend) }

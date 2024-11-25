@@ -2,7 +2,7 @@ package ai.tech.core.misc.plugin.koin.module
 
 import ai.tech.core.data.database.model.config.DBConfig
 import ai.tech.core.data.database.model.config.hikariDataSource
-import ai.tech.core.misc.kotysa.createKotysaR2dbcSqlClient
+import ai.tech.core.data.database.kotysa.createKotysaR2dbcSqlClient
 import ai.tech.core.misc.model.config.EnabledConfig
 import kotlinx.coroutines.runBlocking
 import org.jetbrains.exposed.sql.Database

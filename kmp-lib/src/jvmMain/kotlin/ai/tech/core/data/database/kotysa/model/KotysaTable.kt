@@ -1,4 +1,4 @@
-package ai.tech.core.misc.kotysa.model
+package ai.tech.core.data.database.kotysa.model
 
 import ai.tech.core.data.expression.Equals
 import ai.tech.core.data.expression.f

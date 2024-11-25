@@ -52,6 +52,7 @@ public fun Application.configureCohort(
 
             endpointPrefix = it.endpointPrefix
 
+            // Once instance of LogManager passed to logManager, the endpoint GET /{endpointPrefix}/logging can be used to show current log information and PUT /{endpointPrefix}/logging/{name}/{level} can be used to modify a log level at runtime
             logManager = LogbackManager
 
             // enable health checks for kubernetes

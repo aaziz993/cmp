@@ -77,6 +77,8 @@ import java.io.File
 import korlibs.time.DateTime
 import org.koin.core.KoinApplication
 import org.koin.ktor.ext.get
+import org.lighthousegames.logging.KmLogging
+import org.lighthousegames.logging.LogLevel
 import org.lighthousegames.logging.logging
 
 private val appLog = logging("Application")
@@ -110,7 +112,7 @@ public fun Application.configure(
     config: ServerConfig,
     koinApplication: KoinApplication.() -> Unit = {},
     taskSchedulingBlock: (TaskSchedulingConfiguration.() -> Unit)? = null,
-    tasks: Map<String?, Map<String?, (executionTime: DateTime) -> Unit>>,
+    tasks: Map<String?, Map<String?, (executionTime: DateTime) -> Unit>> = emptyMap(),
     authBlock: (AuthenticationConfig.() -> Unit)? = null,
     principalRepositories: Map<String?, Map<String, CRUDRepository<PrincipalEntity>>> = emptyMap(),
     roleRepositories: Map<String?, Map<String, CRUDRepository<RoleEntity>>> = emptyMap(),
@@ -142,6 +144,9 @@ public fun Application.configure(
     cohortBlock: (CohortConfiguration.() -> Map<String, String>)? = null,
     shutdownBlock: (ShutDownUrl.Config.() -> Unit)? = null
 ) {
+
+    config.log.configureKmLogging()
+
     configureKoin(config, koinApplication)
 
     with(config) {

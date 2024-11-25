@@ -154,6 +154,17 @@ public abstract class AbstractViewModel<T : Any>(protected val savedStateHandle:
         disablePrepend,
     )
 
+    @OptIn(ExperimentalPagingApi::class)
+    protected fun CRUDRepository<*>.viewModelPagingFlow(
+        projections: List<Variable>,
+        sort: List<Order>? = null,
+        predicate: BooleanVariable? = null,
+        config: PagingConfig = createPagingConfig(10),
+        initialKey: Int? = null,
+        remoteMediator: RemoteMediator<Int, List<Any?>>? = null,
+        firstItemOffset: Int = 0,
+    ) = pager(projections, sort, predicate, config, initialKey, remoteMediator, viewModelScope, firstItemOffset)
+
     public companion object {
 
         // The reasoning 5_000 was chosen for the stopTimeoutMillis can be found in the official Android documentation, which discusses the ANR (Application Not Responding) timeout threshold.

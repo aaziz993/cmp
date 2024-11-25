@@ -1,4 +1,4 @@
-package ai.tech.core.misc.kotysa
+package ai.tech.core.data.database.kotysa
 
 import ai.tech.core.data.database.model.config.DBConfig
 import ai.tech.core.data.database.model.config.DBTableConfig

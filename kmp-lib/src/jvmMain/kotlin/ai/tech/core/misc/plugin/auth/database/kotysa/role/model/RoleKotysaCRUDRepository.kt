@@ -1,6 +1,6 @@
 package ai.tech.core.misc.plugin.auth.database.kotysa.role.model
 
-import ai.tech.core.misc.kotysa.KotysaCRUDRepository
+import ai.tech.core.data.database.kotysa.KotysaCRUDRepository
 import kotlinx.datetime.TimeZone
 import org.ufoss.kotysa.R2dbcSqlClient
 import org.ufoss.kotysa.Table

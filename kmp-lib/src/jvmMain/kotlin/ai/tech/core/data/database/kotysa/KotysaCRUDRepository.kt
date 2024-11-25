@@ -1,4 +1,4 @@
-package ai.tech.core.misc.kotysa
+package ai.tech.core.data.database.kotysa
 
 import ai.tech.core.data.crud.CRUDRepository
 import ai.tech.core.data.crud.model.LimitOffset
@@ -27,7 +27,7 @@ import ai.tech.core.data.expression.Projection
 import ai.tech.core.data.expression.Sum
 import ai.tech.core.data.expression.Value
 import ai.tech.core.data.expression.Variable
-import ai.tech.core.misc.kotysa.model.KotysaTable
+import ai.tech.core.data.database.kotysa.model.KotysaTable
 import ai.tech.core.misc.type.kClass
 import ai.tech.core.misc.type.serializer.copy
 import kotlin.reflect.KClass

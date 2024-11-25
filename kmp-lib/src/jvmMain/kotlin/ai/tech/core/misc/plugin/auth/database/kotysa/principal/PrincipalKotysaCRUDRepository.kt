@@ -1,6 +1,6 @@
 package ai.tech.core.misc.plugin.auth.database.kotysa.principal
 
-import ai.tech.core.misc.kotysa.KotysaCRUDRepository
+import ai.tech.core.data.database.kotysa.KotysaCRUDRepository
 import ai.tech.core.misc.plugin.auth.database.kotysa.principal.model.PrincipalEntity
 import kotlinx.datetime.TimeZone
 import org.ufoss.kotysa.R2dbcSqlClient
