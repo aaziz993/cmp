@@ -1,9 +1,7 @@
 package ai.tech.core.data.database.kotysa
 
 import ai.tech.core.data.database.getTables
-import ai.tech.core.data.database.model.config.DBConfig
 import ai.tech.core.data.database.model.config.TableConfig
-import java.lang.IllegalArgumentException
 import kotlin.reflect.KClass
 import kotlin.reflect.full.declaredMemberProperties
 import org.ufoss.kotysa.ForeignKey
@@ -24,20 +22,20 @@ public val Table<*>.name: String
     get() = this::class.declaredMemberProperties.find { it.name == "tableName" }!!.getter.call(this)!!.toString()
 
 @Suppress("UNCHECKED_CAST")
-private val <T:Table<*>> T.columns: Set<AbstractColumn<T, *>>
+public val <T : Table<*>> T.columns: Set<AbstractColumn<T, *>>
     get() = this::class.declaredMemberProperties.find { it.name == "kotysaColumns" }!!.getter.call(this)!! as Set<AbstractColumn<T, *>>
 
 @Suppress("UNCHECKED_CAST")
-private val <T: Table<*>> T.foreignKeys: Set<ForeignKey<T, *>>
+public val <T : Table<*>> T.foreignKeys: Set<ForeignKey<T, *>>
     get() = this::class.declaredMemberProperties.find { it.name == "kotysaForeignKeys" }!!.getter.call(this)!! as Set<ForeignKey<T, *>>
 
 @Suppress("UNCHECKED_CAST")
-private val <T : Table<*>> ForeignKey<T, *>.referencedColumns: Map<AbstractDbColumn<T, *>, AbstractDbColumn<*, *>>
+public val <T : Table<*>> ForeignKey<T, *>.referencedColumns: Map<AbstractDbColumn<T, *>, AbstractDbColumn<*, *>>
     get() = this::class.declaredMemberProperties.find { it.name == "references" }!!.getter.call(this)!! as Map<AbstractDbColumn<T, *>, AbstractDbColumn<*, *>>
 
 @Suppress("UNCHECKED_CAST")
-private fun <T : Table<*>> ForeignKey<T, *>.referencedTables(tables: List<T>): List<T> = referencedColumns.keys.map { referencedColumn ->
-    tables.single { table -> table.columns.contains(referencedColumn) }
+public fun <T : Table<*>> ForeignKey<T, *>.referencedTable(tables: List<T>): T = referencedColumns.entries.first().let { (_, referencedColumn) ->
+    tables.single { table -> table.columns.any { it === referencedColumn } }
 }
 
 private fun <T : Table<*>> getKotysaTables(
@@ -46,33 +44,33 @@ private fun <T : Table<*>> getKotysaTables(
 ): List<T> = getTables<T>(
     kClass,
     config,
-) { it.foreignKeys.flatMap { foreignKey -> foreignKey.referencedTables<T>(this) } }
+) { it.foreignKeys.map { foreignKey -> foreignKey.referencedTable(this) } }
 
-private fun getKotysaH2Tables(config: TableConfig): List<IH2Table<*>> =
+public fun getKotysaH2Tables(config: TableConfig): List<IH2Table<*>> =
     getKotysaTables(IH2Table::class, config) + getKotysaTables(
         GenericTable::class,
         config,
     )
 
-private fun getKotysaMariadbTables(config: TableConfig): List<MariadbTable<*>> =
+public fun getKotysaMariadbTables(config: TableConfig): List<MariadbTable<*>> =
     getKotysaTables(MariadbTable::class, config)
 
-private fun getKotysaMysqlTables(config: TableConfig): List<MysqlTable<*>> =
+public fun getKotysaMysqlTables(config: TableConfig): List<MysqlTable<*>> =
     getKotysaTables(MysqlTable::class, config)
 
-private fun getKotysaMssqlTables(config: TableConfig): List<IMssqlTable<*>> =
+public fun getKotysaMssqlTables(config: TableConfig): List<IMssqlTable<*>> =
     getKotysaTables(MssqlTable::class, config) + getKotysaTables(
         GenericTable::class,
         config,
     )
 
-private fun getKotysaPostgresqlTables(config: TableConfig): List<IPostgresqlTable<*>> =
+public fun getKotysaPostgresqlTables(config: TableConfig): List<IPostgresqlTable<*>> =
     getKotysaTables(PostgresqlTable::class, config) + getKotysaTables(
         GenericTable::class,
         config,
     )
 
-private fun getKotysaOracleTables(config: TableConfig): List<OracleTable<*>> =
+public fun getKotysaOracleTables(config: TableConfig): List<OracleTable<*>> =
     getKotysaTables(OracleTable::class, config)
 
 public fun getKotysaTables(driver: String, configs: List<TableConfig>): List<Table<*>> =
@@ -91,3 +89,6 @@ public fun getKotysaTables(driver: String, configs: List<TableConfig>): List<Tab
 
         else -> throw IllegalArgumentException("Unknown database driver \"$driver\"")
     }
+
+public fun getKotysaTable(tableName: String, driver: String, configs: List<TableConfig>): Table<*>? =
+    getKotysaTables(driver, configs).find { it.name == tableName }

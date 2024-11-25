@@ -31,8 +31,6 @@ import ai.tech.core.data.expression.Variable
 import ai.tech.core.data.database.kotysa.model.KotysaTable
 import ai.tech.core.misc.type.kClass
 import ai.tech.core.misc.type.serializablePropertyValues
-import ai.tech.core.misc.type.serializer.Json
-import ai.tech.core.misc.type.serializer.copy
 import ai.tech.core.misc.type.serializer.new
 import kotlin.reflect.KClass
 import kotlin.reflect.KTypeParameter
@@ -55,7 +53,7 @@ import org.ufoss.kotysa.Table
 import org.ufoss.kotysa.WholeNumberColumn
 
 @OptIn(InternalSerializationApi::class)
-public abstract class KotysaCRUDRepository<T : Any>(
+public abstract class AbstractKotysaCRUDRepository<T : Any>(
     public val client: R2dbcSqlClient,
     public val table: Table<T>,
     getEntityPropertyValues: (T) -> Map<String, Any?>,

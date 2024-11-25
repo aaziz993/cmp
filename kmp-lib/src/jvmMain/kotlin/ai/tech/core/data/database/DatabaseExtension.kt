@@ -1,13 +1,16 @@
 package ai.tech.core.data.database
 
+import ai.tech.core.data.database.kotysa.getKotysaTables
+import ai.tech.core.data.database.kotysa.name
 import ai.tech.core.data.database.model.config.TableConfig
 import ai.tech.core.misc.type.multiple.whileIndexed
 import kotlin.reflect.KClass
 import org.reflections.Reflections
 import org.reflections.scanners.Scanners.SubTypes
+import org.ufoss.kotysa.Table
 
 @Suppress("UNCHECKED_CAST")
-internal fun <T : Any> getTables(
+public fun <T : Any> getTables(
     kClass: KClass<T>,
     config: TableConfig,
     getReferencedTables: List<T>.(T) -> List<T>

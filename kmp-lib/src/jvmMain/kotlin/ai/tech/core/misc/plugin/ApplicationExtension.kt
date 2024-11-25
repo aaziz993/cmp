@@ -1,11 +1,17 @@
 package ai.tech.core.misc.plugin
 
 import ai.tech.core.data.crud.CRUDRepository
+import ai.tech.core.data.database.kotysa.getKotysaTables
+import ai.tech.core.data.database.kotysa.name
+import ai.tech.core.data.database.model.config.DBConfig
+import ai.tech.core.data.database.model.config.TableConfig
 import ai.tech.core.misc.model.config.EnabledConfig
 import ai.tech.core.misc.model.config.server.ServerConfig
 import ai.tech.core.misc.model.config.server.ServerHostConfig
 import ai.tech.core.misc.plugin.applicationmonitoring.configureApplicationMonitoring
 import ai.tech.core.misc.plugin.auth.configureAuth
+import ai.tech.core.misc.plugin.auth.database.kotysa.principal.PrincipalExposedCRUDRepository
+import ai.tech.core.misc.plugin.auth.database.kotysa.principal.PrincipalKotysaCRUDRepository
 import ai.tech.core.misc.plugin.auth.database.kotysa.principal.model.PrincipalEntity
 import ai.tech.core.misc.plugin.auth.database.kotysa.role.model.RoleEntity
 import ai.tech.core.misc.plugin.authheadresponse.configureAutoHeadResponse
@@ -78,6 +84,7 @@ import korlibs.time.DateTime
 import org.koin.core.KoinApplication
 import org.koin.ktor.ext.get
 import org.lighthousegames.logging.logging
+import org.ufoss.kotysa.Table
 
 private val appLog = logging("Application")
 
@@ -112,8 +119,6 @@ public fun Application.configure(
     taskSchedulingBlock: (TaskSchedulingConfiguration.() -> Unit)? = null,
     tasks: Map<String?, Map<String?, (executionTime: DateTime) -> Unit>> = emptyMap(),
     authBlock: (AuthenticationConfig.() -> Unit)? = null,
-    principalRepositories: Map<String?, Map<String, CRUDRepository<PrincipalEntity>>> = emptyMap(),
-    roleRepositories: Map<String?, Map<String, CRUDRepository<RoleEntity>>> = emptyMap(),
     serializationBlock: (ContentNegotiationConfig.() -> Unit)? = null,
     httpsRedirectBlock: (HttpsRedirectConfig.() -> Unit)? = null,
     routingBlock: (Routing.() -> Unit)? = null,
@@ -290,3 +295,13 @@ public fun Application.configure(
         }
     }
 }
+
+private fun Application.getPrincipalRepository(tableName: String, database: Map<String?, DBConfig>): CRUDRepository<PrincipalEntity>? =
+    database.mapValues {
+        if (config.protocol == "jdbc") {
+            PrincipalExposedCRUDRepository(get())
+        }
+        else {
+            PrincipalKotysaCRUDRepository()
+        }
+    }

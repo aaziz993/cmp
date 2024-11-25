@@ -7,3 +7,6 @@ import org.jetbrains.exposed.sql.Table
 
 public fun getExposedTables(config: TableConfig): List<Table> =
     getTables(Table::class, config) { it.foreignKeys.map(ForeignKeyConstraint::targetTable) }
+
+public fun getExposedTable(tableName: String, configs: List<TableConfig>): Table? =
+    configs.flatMap { getExposedTables(it) }.find { it.tableName == tableName }

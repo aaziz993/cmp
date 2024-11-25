@@ -4,7 +4,6 @@ import ai.tech.core.data.crud.AbstractCRUDRepository
 import ai.tech.core.data.crud.CRUDRepository
 import ai.tech.core.data.crud.model.LimitOffset
 import ai.tech.core.data.crud.model.Order
-import ai.tech.core.data.database.kotysa.KotysaCRUDRepository
 import ai.tech.core.data.expression.AggregateExpression
 import ai.tech.core.data.expression.Avg
 import ai.tech.core.data.expression.BooleanVariable
@@ -20,9 +19,7 @@ import ai.tech.core.misc.type.single.now
 import kotlin.reflect.KClass
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.asFlow
 import kotlinx.coroutines.flow.flow
-import kotlinx.coroutines.flow.map
 import kotlinx.datetime.LocalTime
 import kotlinx.datetime.TimeZone
 import kotlinx.serialization.InternalSerializationApi
@@ -42,6 +39,7 @@ import org.jetbrains.exposed.sql.count
 import org.jetbrains.exposed.sql.deleteAll
 import org.jetbrains.exposed.sql.deleteWhere
 import org.jetbrains.exposed.sql.insert
+import org.jetbrains.exposed.sql.insertIgnore
 import org.jetbrains.exposed.sql.kotlin.datetime.KotlinLocalDateColumnType
 import org.jetbrains.exposed.sql.kotlin.datetime.KotlinLocalDateTimeColumnType
 import org.jetbrains.exposed.sql.kotlin.datetime.KotlinLocalTimeColumnType
@@ -53,9 +51,8 @@ import org.jetbrains.exposed.sql.statements.UpdateBuilder
 import org.jetbrains.exposed.sql.sum
 import org.jetbrains.exposed.sql.transactions.experimental.newSuspendedTransaction
 import org.jetbrains.exposed.sql.update
-import org.ufoss.kotysa.R2dbcSqlClient
 
-public class ExposedCRUDRepository<T : Any>(
+public abstract class AbstractExposedCRUDRepository<T : Any>(
     private val database: Database,
     public val transactionIsolation: Int? = null,
     private val table: Table,
@@ -240,6 +237,7 @@ public class ExposedCRUDRepository<T : Any>(
     }
 
     private fun ISqlExpressionBuilder.predicate(predicate: BooleanVariable): Op<Boolean> {
+        table.columns[0]
     }
 }
 
