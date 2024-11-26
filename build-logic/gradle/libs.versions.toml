@@ -183,17 +183,23 @@ exposed = "0.56.0"
 kotysa = "3.2.2"
 kotysa-r2dbc = "3.2.1"
 # Ktor
-ktor = "3.0.0"
+ktor = "3.0.1"
 ktor-swagger-ui = "2.9.0"
 # RPC
 kotlinx-rpc = "0.3.0"
 # generates http client
-ktorfit = "2.1.0"
+ktorfit = "2.2.0"
 # http2
 tcnative = "2.0.62.Final"
 # GraphQL
 apollo3 = "4.0.0-beta.3"
 kgraphql = "0.19.0"
+# Firebase
+firebase-bom = "32.7.4"
+firebase-crashlytics-plugin = "2.9.9"
+# Google play services
+google-play-services = "4.4.1"
+
 # Metrics
 prometheus = "1.12.2"
 dropwizard = "4.2.25"
@@ -575,10 +581,10 @@ kotlinx-rpc-krpc-server = { module = "org.jetbrains.kotlinx:kotlinx-rpc-krpc-ser
 kotlinx-rpc-krpc-ktor-server = { module = "org.jetbrains.kotlinx:kotlinx-rpc-krpc-ktor-server", version.ref = "kotlinx-rpc" }
 
 # Generates http client
-ktorfit-lib = { module = "de.jensklingenberg.ktorfit:ktorfit-lib-ktor-3.0.0", version.ref = "ktorfit" }
-ktorfit-converters-call = { module = "de.jensklingenberg.ktorfit:ktorfit-converters-call-ktor-3.0.0", version.ref = "ktorfit" }
-ktorfit-converters-flow = { module = "de.jensklingenberg.ktorfit:ktorfit-converters-flow-ktor-3.0.0", version.ref = "ktorfit" }
-ktorfit-converters-response = { module = "de.jensklingenberg.ktorfit:ktorfit-converters-response-ktor-3.0.0", version.ref = "ktorfit" }
+ktorfit-lib = { module = "de.jensklingenberg.ktorfit:ktorfit-lib", version.ref = "ktorfit" }
+ktorfit-converters-call = { module = "de.jensklingenberg.ktorfit:ktorfit-converters-call", version.ref = "ktorfit" }
+ktorfit-converters-flow = { module = "de.jensklingenberg.ktorfit:ktorfit-converters-flow", version.ref = "ktorfit" }
+ktorfit-converters-response = { module = "de.jensklingenberg.ktorfit:ktorfit-converters-response", version.ref = "ktorfit" }
 ktorfit-ksp = { module = "de.jensklingenberg.ktorfit:ktorfit-ksp", version.ref = "ktorfit" }
 
 # GraphQL
@@ -588,6 +594,10 @@ kgraphql-ktor = { module = "com.apurebase:kgraphql-ktor", version.ref = "kgraphq
 # client
 apollo-runtime = { module = "com.apollographql.apollo3:apollo-runtime", version.ref = "apollo3" }
 apollo-normalized-cache = { module = "com.apollographql.apollo3:apollo-normalized-cache", version.ref = "apollo3" }
+
+# Firebase
+firebase-bom = { module = "com.google.firebase:firebase-bom", version.ref = "firebase-bom" }
+firebase-crashlyticsKtx = { module = "com.google.firebase:firebase-crashlytics-ktx" }
 
 # Metrics
 # prometheus
@@ -1013,6 +1023,12 @@ ktorfit = { id = "de.jensklingenberg.ktorfit", version.ref = "ktorfit" }
 # GraphQL
 # client
 apollo3 = { id = "com.apollographql.apollo3", version.ref = "apollo3" }
+
+# Firebase
+firebase-crashlytics = { id = "com.google.firebase.crashlytics", version.ref = "firebase-crashlytics-plugin"}
+
+# Google play services
+google-playServices = { id = "com.google.gms.google-services", version.ref = "google-play-services" }
 
 # Convensions
 settings-convention = { id = "settings.convention" }

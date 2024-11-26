@@ -8,6 +8,13 @@ import kotlinx.serialization.descriptors.SerialDescriptor
 import kotlinx.serialization.encoding.Decoder
 import kotlinx.serialization.encoding.Encoder
 import kotlin.time.Duration
+import kotlin.time.Duration.Companion.days
+import kotlin.time.Duration.Companion.hours
+import kotlin.time.Duration.Companion.microseconds
+import kotlin.time.Duration.Companion.milliseconds
+import kotlin.time.Duration.Companion.minutes
+import kotlin.time.Duration.Companion.nanoseconds
+import kotlin.time.Duration.Companion.seconds
 import kotlin.time.DurationUnit
 import kotlin.time.toDuration
 
@@ -73,13 +80,13 @@ public object ConsulDurationSerializer : KSerializer<Duration> {
             val durationValue = value.toDouble()
 
             val duration = when (unit) {
-                "ns" -> durationValue.toDuration(DurationUnit.NANOSECONDS)
-                "us", "µs" -> durationValue.toDuration(DurationUnit.MICROSECONDS)
-                "ms" -> durationValue.toDuration(DurationUnit.MILLISECONDS)
-                "s" -> durationValue.toDuration(DurationUnit.SECONDS)
-                "m" -> durationValue.toDuration(DurationUnit.MINUTES)
-                "h" -> durationValue.toDuration(DurationUnit.HOURS)
-                "d" -> durationValue.toDuration(DurationUnit.DAYS)
+                "ns" -> durationValue.nanoseconds
+                "us", "µs" -> durationValue.microseconds
+                "ms" -> durationValue.milliseconds
+                "s" -> durationValue.seconds
+                "m" -> durationValue.minutes
+                "h" -> durationValue.hours
+                "d" -> durationValue.days
                 else -> throw IllegalArgumentException("Unknown duration unit: $unit")
             }
 

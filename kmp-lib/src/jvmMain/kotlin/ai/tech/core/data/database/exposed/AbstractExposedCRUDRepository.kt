@@ -237,7 +237,9 @@ public abstract class AbstractExposedCRUDRepository<T : Any>(
     }
 
     private fun ISqlExpressionBuilder.predicate(predicate: BooleanVariable): Op<Boolean> {
-        table.columns[0]
+        val v = (table.columns[0] eq 8)
+
+        v and true
     }
 }
 

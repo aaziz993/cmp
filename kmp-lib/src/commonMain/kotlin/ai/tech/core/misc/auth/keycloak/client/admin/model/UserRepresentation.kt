@@ -49,19 +49,20 @@ public data class UserRepresentation(
         id = id,
     )
 
-    public fun toUser(): User = User(
-        username,
-        firstName,
-        lastName,
-        attributes?.get(USER_PHONE_ATTRIBUTE_KEY)?.get(0),
-        email,
-        attributes?.get(USER_IMAGE_ATTRIBUTE_KEY)?.get(0),
-        realmRoles,
-        attributes?.toMutableMap()?.apply {
-            remove(USER_PHONE_ATTRIBUTE_KEY)
-            remove(USER_IMAGE_ATTRIBUTE_KEY)
-        },
-    )
+    public val asUser: User
+        get() = User(
+            username,
+            firstName,
+            lastName,
+            attributes?.get(USER_PHONE_ATTRIBUTE_KEY)?.get(0),
+            email,
+            attributes?.get(USER_IMAGE_ATTRIBUTE_KEY)?.get(0),
+            realmRoles,
+            attributes?.toMutableMap()?.apply {
+                remove(USER_PHONE_ATTRIBUTE_KEY)
+                remove(USER_IMAGE_ATTRIBUTE_KEY)
+            },
+        )
 
     public companion object {
 

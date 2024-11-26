@@ -11,20 +11,20 @@ import ai.tech.core.misc.auth.keycloak.client.token.KeycloakTokenClient
 import ai.tech.core.misc.auth.model.User
 import ai.tech.core.misc.auth.model.bearer.Token
 import io.ktor.client.*
+import io.ktor.http.ParametersBuilder
 
 public class KeycloakService(
     name: String,
     httpClient: HttpClient,
     address: String,
     public val realm: String,
-    clientId: String,
+    public val clientId: String,
     keyValue: AbstractKeyValue,
 ) : ClientBearerAuthService(
     name,
     httpClient,
     address,
     "realms/{realm}/protocol/openid-connect/token",
-    clientId,
     keyValue,
 ) {
 
@@ -35,17 +35,21 @@ public class KeycloakService(
         clientId,
     )
 
-    private val adminClient: KeycloakAdminClient = KeycloakAdminClient(
+    private val adminClient = KeycloakAdminClient(
         authHttpClient,
         address,
         realm,
     )
 
+    override fun ParametersBuilder.refreshTokenParameters() {
+        append("client_id", clientId)
+    }
+
     override suspend fun getToken(username: String, password: String): Token = tokenClient.getToken(username, password)
 
     override suspend fun getTokenByRefreshToken(refreshToken: String): Token = tokenClient.getTokenByRefreshToken(refreshToken)
 
-    override suspend fun getTokenByClientSecret(clientSecret: String): Token = tokenClient.getTokenByClientSecret(clientSecret)
+    public suspend fun getTokenByClientSecret(clientSecret: String): Token = tokenClient.getTokenByClientSecret(clientSecret)
 
     override suspend fun getUser(): User? {
         val userId = adminClient.getUserInfo().let(UserInfo::sub)
@@ -53,12 +57,12 @@ public class KeycloakService(
         return adminClient.getUsers(UserRepresentation(id = userId), true).singleOrNull()?.let {
             val roles = adminClient.getUserRealmRoles(userId)
 
-            it.copy(realmRoles = roles.map { it.name!! }.toSet()).toUser()
+            it.copy(realmRoles = roles.map { it.name!! }.toSet()).asUser
         }
     }
 
     override suspend fun getUsers(): Set<User> =
-        adminClient.getUsers().map(UserRepresentation::toUser).toSet()
+        adminClient.getUsers().map(UserRepresentation::asUser).toSet()
 
     override suspend fun createUsers(users: Set<User>, password: String): Unit =
         users.forEach { adminClient.createUser(UserRepresentation(it)) }

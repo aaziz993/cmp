@@ -10,6 +10,7 @@ import io.ktor.client.call.body
 import io.ktor.client.plugins.auth.*
 import io.ktor.client.plugins.auth.providers.*
 import io.ktor.client.request.forms.submitForm
+import io.ktor.http.ParametersBuilder
 import io.ktor.http.parameters
 import kotlinx.datetime.Clock.System
 
@@ -18,7 +19,6 @@ public abstract class ClientBearerAuthService(
     httpClient: HttpClient,
     address: String,
     public val tokenUri: String,
-    public val clientId: String,
     public val keyValue: AbstractKeyValue
 ) : ClientAuthService {
 
@@ -31,8 +31,8 @@ public abstract class ClientBearerAuthService(
                     val token: TokenImpl = client.submitForm(
                         url = "$address/$tokenUri",
                         formParameters = parameters {
+                            refreshTokenParameters()
                             append("grant_type", "refresh_token")
-                            append("client_id", clientId)
                             append("refresh_token", oldTokens?.refreshToken.orEmpty())
                         },
                     ) { markAsRefreshTokenRequest() }.body()
@@ -53,6 +53,8 @@ public abstract class ClientBearerAuthService(
     private val tokenKey = "${name}_token"
     private val tokenEpochSecondsKey = "${name}_token_epoch_seconds"
 
+    protected open fun ParametersBuilder.refreshTokenParameters()= Unit
+
     protected abstract suspend fun getToken(username: String, password: String): Token
 
     final override suspend fun authIn(username: String, password: String): Unit =
@@ -62,8 +64,6 @@ public abstract class ClientBearerAuthService(
 
     public suspend fun authByRefreshToken(refreshToken: String): Unit =
         setToken(getTokenByRefreshToken(refreshToken))
-
-    protected abstract suspend fun getTokenByClientSecret(clientSecret: String): Token
 
     public suspend fun authByClientSecret(clientSecret: String): Unit =
         setToken(getTokenByClientSecret(clientSecret))

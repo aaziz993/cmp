@@ -25,6 +25,7 @@ import kotlin.reflect.KClass
 import kotlin.reflect.KType
 import kotlin.reflect.typeOf
 import kotlin.time.Duration
+import kotlin.time.Duration.Companion.seconds
 import kotlin.time.DurationUnit
 import kotlin.time.toDuration
 import kotlinx.datetime.DatePeriod
@@ -75,7 +76,7 @@ public val LOCALDATE_DEFAULT: LocalDate = LocalDate(0, 0, 0)
 
 public val LOCALDATETIME_DEFAULT: LocalDateTime = LocalDateTime(0, 0, 0, 0, 0)
 
-public val DURATION_DEFAULT: Duration = 0.toDuration(DurationUnit.SECONDS)
+public val DURATION_DEFAULT: Duration = 0.seconds
 
 public val DATEPERIOD_DEFAULT: DatePeriod = DatePeriod()
 

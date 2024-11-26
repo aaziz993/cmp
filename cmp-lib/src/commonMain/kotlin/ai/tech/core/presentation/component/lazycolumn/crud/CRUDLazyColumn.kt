@@ -30,6 +30,7 @@ import com.ionspin.kotlin.bignum.integer.Quadruple
 import compose.icons.SimpleIcons
 import compose.icons.simpleicons.Microsoftexcel
 import kotlin.time.Duration
+import kotlin.time.Duration.Companion.seconds
 import kotlin.time.DurationUnit
 import kotlin.time.toDuration
 import kotlinx.coroutines.FlowPreview
@@ -130,7 +131,7 @@ public fun <T : Any> CRUDLazyColumn(
         if (state.isLiveSearch) {
             snapshotFlow {
                 state.searchFieldStates.map { it.query }
-            }.debounce(Duration.parseOrNull(state.liveSearchDebounce).ifNull { 1.toDuration(DurationUnit.SECONDS) }.inWholeMilliseconds).collect {
+            }.debounce(Duration.parseOrNull(state.liveSearchDebounce).ifNull { 1.seconds }.inWholeMilliseconds).collect {
                 viewModel.action(CRUDAction.Find(state.sort, state.searchFieldStates))
             }
         }
