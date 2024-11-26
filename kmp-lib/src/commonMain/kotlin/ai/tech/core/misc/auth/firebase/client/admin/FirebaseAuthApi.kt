@@ -1,11 +1,9 @@
 package ai.tech.core.misc.auth.firebase.client.admin
 
-import ai.tech.core.misc.auth.firebase.client.admin.model.BatchDeleteRequest
 import ai.tech.core.misc.auth.firebase.client.admin.model.CreateAuthUriRequest
 import ai.tech.core.misc.auth.firebase.client.admin.model.CreateAuthUriResponse
 import ai.tech.core.misc.auth.firebase.client.admin.model.CreateRequest
 import ai.tech.core.misc.auth.firebase.client.admin.model.DeleteRequest
-import ai.tech.core.misc.auth.firebase.client.admin.model.ListResponse
 import ai.tech.core.misc.auth.firebase.client.admin.model.LookupRequest
 import ai.tech.core.misc.auth.firebase.client.admin.model.LookupResponse
 import ai.tech.core.misc.auth.firebase.client.admin.model.SendOobResponse
@@ -25,12 +23,9 @@ import ai.tech.core.misc.auth.firebase.client.admin.model.UpdateRequest
 import ai.tech.core.misc.auth.firebase.client.admin.model.UpdateResponse
 import ai.tech.core.misc.auth.firebase.client.admin.model.UserRecord
 import de.jensklingenberg.ktorfit.http.Body
-import de.jensklingenberg.ktorfit.http.GET
 import de.jensklingenberg.ktorfit.http.POST
-import de.jensklingenberg.ktorfit.http.Query
-import kotlinx.serialization.Serializable
 
-public interface FirebaseAdminApi {
+public interface FirebaseAuthApi {
 
     @POST("accounts:signInWithCustomToken")
     public suspend fun signInWithCustomToken(@Body request: SignInWithCustomTokenRequest): SignInWithCustomTokenResponse
@@ -50,12 +45,6 @@ public interface FirebaseAdminApi {
     @POST("accounts:lookup")
     public suspend fun lookup(@Body request: LookupRequest): LookupResponse
 
-    @GET("accounts:batchGet")
-    public suspend fun batchGet(
-        @Query("maxResults") maxResults: Int,
-        @Query("pageToken") pageToken: String? = null
-    ): ListResponse
-
     @POST("accounts")
     public suspend fun create(@Body request: CreateRequest): UserRecord
 
@@ -63,10 +52,7 @@ public interface FirebaseAdminApi {
     public suspend fun update(@Body request: UpdateRequest): UpdateResponse
 
     @POST("accounts:delete")
-    public suspend fun batchDelete(@Body request: DeleteRequest)
-
-    @POST("accounts:batchDelete")
-    public suspend fun batchDelete(@Body request: BatchDeleteRequest)
+    public suspend fun delete(@Body request: DeleteRequest)
 
     @POST("accounts:createAuthUri")
     public suspend fun createAuthUri(@Body request: CreateAuthUriRequest): CreateAuthUriResponse

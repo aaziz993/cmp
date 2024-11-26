@@ -6,4 +6,5 @@ import kotlinx.serialization.Serializable
 public data class SendOobRequest(
     val requestType: OobRequest,
     val email: String,
+    val returnOobLink: Boolean = true,
 )

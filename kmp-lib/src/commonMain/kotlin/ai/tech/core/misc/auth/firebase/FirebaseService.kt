@@ -34,7 +34,7 @@ public class FirebaseService(
     override suspend fun getTokenByRefreshToken(refreshToken: String): BearerToken =
         adminClient.getToken(refreshToken)
 
-    override suspend fun getCurrentUser(): User? = adminClient.lookup("")?.asUser
+    override suspend fun getUser(): User? = adminClient.lookup("")?.asUser
 
     override suspend fun getUsers(): Set<User> =
         adminClient.batchGet().toList().flatten().map { it.asUser }.toSet()

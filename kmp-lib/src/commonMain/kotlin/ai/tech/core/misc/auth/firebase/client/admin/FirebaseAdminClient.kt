@@ -4,6 +4,7 @@ import ai.tech.core.misc.auth.firebase.client.admin.FirebaseAdminClient.Companio
 import ai.tech.core.misc.auth.firebase.client.admin.model.SignRequest
 import ai.tech.core.misc.auth.firebase.client.admin.model.SignUpResponse
 import ai.tech.core.misc.auth.firebase.client.admin.model.BatchDeleteRequest
+import ai.tech.core.misc.auth.firebase.client.admin.model.BatchDeleteResponse
 import ai.tech.core.misc.auth.firebase.client.admin.model.CreateAuthUriRequest
 import ai.tech.core.misc.auth.firebase.client.admin.model.CreateAuthUriResponse
 import ai.tech.core.misc.auth.firebase.client.admin.model.CreateRequest
@@ -162,9 +163,9 @@ public class FirebaseAdminClient(
     )
 
     public suspend fun delete(localId: String): Unit =
-        api.batchDelete(DeleteRequest(localId))
+        api.delete(DeleteRequest(localId))
 
-    public suspend fun batchDelete(localIds: List<String>, force: Boolean = true): Unit =
+    public suspend fun batchDelete(localIds: List<String>, force: Boolean = true): BatchDeleteResponse =
         api.batchDelete(BatchDeleteRequest(localIds, force))
 
     public suspend fun createAuthUri(

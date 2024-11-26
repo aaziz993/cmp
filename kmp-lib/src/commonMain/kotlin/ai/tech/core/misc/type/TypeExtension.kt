@@ -471,9 +471,6 @@ public fun <T : Any> T.remove(
 ): Any? = accessorOrNull(keys.dropLast(1), accessor)?.remove(keys.last())
 
 // /////////////////////////////////////////////////////TRANSFORM///////////////////////////////////////////////////////
-public val <T> T.exhaustive: T
-    get() = this
-
 public inline fun <T : R, R> T.letIf(
     noinline condition: (T) -> Boolean,
     block: (T) -> R,

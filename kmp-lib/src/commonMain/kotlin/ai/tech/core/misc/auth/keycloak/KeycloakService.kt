@@ -64,7 +64,7 @@ public class KeycloakService(
 
     public suspend fun getTokenByClientSecret(clientSecret: String): BearerToken = tokenClient.getTokenByClientSecret(clientSecret)
 
-    override suspend fun getCurrentUser(): User? {
+    override suspend fun getUser(): User? {
         val userId = adminClient.getUserInfo().let(UserInfo::sub)
 
         return adminClient.getUsers(UserRepresentation(id = userId), true).singleOrNull()?.let {

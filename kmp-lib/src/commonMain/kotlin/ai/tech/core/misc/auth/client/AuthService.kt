@@ -1,6 +1,7 @@
 package ai.tech.core.misc.auth.client
 
 import ai.tech.core.misc.auth.model.User
+import ai.tech.core.misc.type.multiple.model.AsyncIterator
 
 public interface AuthService {
 
@@ -10,17 +11,17 @@ public interface AuthService {
 
     public suspend fun signOut()
 
-    public suspend fun getCurrentUser(): User?
+    public suspend fun getUser(): User?
 
-    public suspend fun getUsers(): Set<User>
+    public suspend fun resetPassword(password: String, newPassword: String)
+
+    public suspend fun forgotPassword()
+
+    public fun getUsers(): AsyncIterator<User>
 
     public suspend fun createUsers(users: Set<User>, password: String)
 
     public suspend fun updateUsers(users: Set<User>, password: String)
 
     public suspend fun deleteUsers(usernames: Set<String>, password: String)
-
-    public suspend fun resetPassword(password: String, newPassword: String)
-
-    public suspend fun forgotPassword()
 }
