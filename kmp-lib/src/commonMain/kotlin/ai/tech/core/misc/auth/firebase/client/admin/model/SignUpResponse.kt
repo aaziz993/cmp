@@ -1,11 +1,12 @@
 package ai.tech.core.misc.auth.firebase.client.admin.model
 
-import ai.tech.core.misc.auth.model.bearer.Token
+import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 @Serializable
 public data class SignUpResponse(
-    override val idToken: String,
+    @SerialName("idToken")
+    override val token: String,
     override val email: String,
     override val refreshToken: String,
     override val expiresIn: String,

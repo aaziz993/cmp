@@ -8,7 +8,7 @@ import ai.tech.core.data.crud.model.Order
 import ai.tech.core.data.expression.AggregateExpression
 import ai.tech.core.data.expression.BooleanVariable
 import ai.tech.core.data.expression.Variable
-import ai.tech.core.misc.auth.client.ClientAuthService
+import ai.tech.core.misc.auth.client.AuthService
 import ai.tech.core.misc.network.http.client.AbstractApiHttpClient
 import ai.tech.core.misc.type.serializer.decodeAnyFromString
 import ai.tech.core.misc.type.serializer.json
@@ -31,7 +31,7 @@ public open class CRUDClient<T : Any>(
     public val serializer: KSerializer<T>,
     httpClient: HttpClient,
     public val address: String,
-    public val authService: ClientAuthService? = null,
+    public val authService: AuthService? = null,
 ) : AbstractApiHttpClient(httpClient, address), CRUDRepository<T> {
 
     private val api = ktorfit.createCRUDApi()

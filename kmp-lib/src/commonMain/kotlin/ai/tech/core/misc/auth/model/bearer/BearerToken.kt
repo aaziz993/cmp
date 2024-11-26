@@ -1,7 +1,7 @@
 package ai.tech.core.misc.auth.model.bearer
 
-public interface Token {
+public interface BearerToken {
 
-    public val idToken: String?
+    public val token: String
     public val refreshToken: String
 }

@@ -1,8 +1,8 @@
 package ai.tech.core.misc.auth.firebase.client.admin.model
 
-import ai.tech.core.misc.auth.model.bearer.Token
+import ai.tech.core.misc.auth.model.bearer.BearerToken
 
-public interface SignResponse : Token {
+public interface SignResponse : BearerToken {
 
     public val email: String
 

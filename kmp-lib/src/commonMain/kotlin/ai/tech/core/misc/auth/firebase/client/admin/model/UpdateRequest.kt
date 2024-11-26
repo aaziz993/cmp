@@ -5,7 +5,8 @@ import kotlinx.serialization.json.JsonObject
 
 @Serializable
 public data class UpdateRequest(
-    val localId: String,
+    val localId: String? = null,
+    val oobCode: String? = null,
     val email: String? = null,
     val passwordHash: String? = null,
     val providerUserInfo: UserInfo? = null,

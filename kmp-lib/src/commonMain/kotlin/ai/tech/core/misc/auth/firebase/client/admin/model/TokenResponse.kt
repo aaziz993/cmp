@@ -1,6 +1,6 @@
 package ai.tech.core.misc.auth.firebase.client.admin.model
 
-import ai.tech.core.misc.auth.model.bearer.Token
+import ai.tech.core.misc.auth.model.bearer.BearerToken
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
@@ -18,4 +18,4 @@ public data class TokenResponse(
     val userId: String,
     @SerialName("project_id")
     val projectId: String
-) : Token
+) : BearerToken

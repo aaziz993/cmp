@@ -2,15 +2,15 @@ package ai.tech.core.misc.auth.client
 
 import ai.tech.core.misc.auth.model.User
 
-public interface ClientAuthService {
+public interface AuthService {
 
     public val name: String
 
-    public suspend fun authIn(username: String, password: String)
+    public suspend fun signIn(username: String, password: String)
 
-    public suspend fun authOut()
+    public suspend fun signOut()
 
-    public suspend fun getUser(): User?
+    public suspend fun getCurrentUser(): User?
 
     public suspend fun getUsers(): Set<User>
 
@@ -23,6 +23,4 @@ public interface ClientAuthService {
     public suspend fun resetPassword(password: String, newPassword: String)
 
     public suspend fun forgotPassword()
-
-    public suspend fun isAuth(): Boolean
 }

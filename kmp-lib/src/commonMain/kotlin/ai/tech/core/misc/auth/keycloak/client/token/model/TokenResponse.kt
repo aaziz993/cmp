@@ -1,13 +1,13 @@
 package ai.tech.core.misc.auth.keycloak.client.token.model
 
-import ai.tech.core.misc.auth.model.bearer.Token
+import ai.tech.core.misc.auth.model.bearer.BearerToken
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 @Serializable
 public data class TokenResponse(
     @SerialName("access_token")
-    val accessToken: String,
+    override val token: String,
     @SerialName("expires_in")
     val expiresIn: Int,
     @SerialName("refresh_expires_in")
@@ -23,5 +23,5 @@ public data class TokenResponse(
     @SerialName("scope")
     val scope: String,
     @SerialName("id_token")
-    override val idToken: String? = null
-) : Token
+    val idToken: String? = null
+) : BearerToken

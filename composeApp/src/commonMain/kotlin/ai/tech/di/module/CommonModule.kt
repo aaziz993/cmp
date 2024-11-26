@@ -1,7 +1,7 @@
 package ai.tech.di.module
 
 import ai.tech.core.data.keyvalue.SettingsKeyValue
-import ai.tech.core.misc.auth.client.ClientAuthService
+import ai.tech.core.misc.auth.client.AuthService
 import ai.tech.core.misc.auth.keycloak.KeycloakService
 import ai.tech.core.misc.location.localization.AbstractLocalizationService
 import ai.tech.core.misc.location.localization.MapLocalizationService
@@ -89,7 +89,7 @@ public class CommonModule {
         config: ClientConfigImpl,
         httpClient: HttpClient,
         keyValue: SettingsKeyValue
-    ): ClientAuthService = with(config.ui.auth) {
+    ): AuthService = with(config.ui.auth) {
         require(providerConfig.provider == "keycloak") {
             "Only keycloak auth provider is supported for now."
         }
