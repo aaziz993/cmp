@@ -4,23 +4,30 @@ import ai.tech.core.data.crud.AbstractCRUDRepository
 import ai.tech.core.data.crud.CRUDRepository
 import ai.tech.core.data.crud.model.LimitOffset
 import ai.tech.core.data.crud.model.Order
+import ai.tech.core.data.database.exp
 import ai.tech.core.data.expression.AggregateExpression
 import ai.tech.core.data.expression.Avg
 import ai.tech.core.data.expression.BooleanVariable
 import ai.tech.core.data.expression.Count
+import ai.tech.core.data.expression.Expression
+import ai.tech.core.data.expression.Field
 import ai.tech.core.data.expression.Max
 import ai.tech.core.data.expression.Min
 import ai.tech.core.data.expression.Projection
 import ai.tech.core.data.expression.Sum
 import ai.tech.core.data.expression.Value
 import ai.tech.core.data.expression.Variable
+import ai.tech.core.misc.location.model.LocationExposedTable
 import ai.tech.core.misc.type.serializablePropertyValues
 import ai.tech.core.misc.type.serializer.new
 import ai.tech.core.misc.type.single.now
+import kotlin.coroutines.CoroutineContext
+import kotlin.coroutines.coroutineContext
 import kotlin.reflect.KClass
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
+import kotlinx.datetime.LocalDateTime
 import kotlinx.datetime.LocalTime
 import kotlinx.datetime.TimeZone
 import kotlinx.serialization.InternalSerializationApi
@@ -36,7 +43,9 @@ import org.jetbrains.exposed.sql.SortOrder
 import org.jetbrains.exposed.sql.SqlExpressionBuilder
 import org.jetbrains.exposed.sql.Table
 import org.jetbrains.exposed.sql.alias
+import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.avg
+import org.jetbrains.exposed.sql.batchInsert
 import org.jetbrains.exposed.sql.count
 import org.jetbrains.exposed.sql.deleteAll
 import org.jetbrains.exposed.sql.deleteWhere
@@ -53,18 +62,19 @@ import org.jetbrains.exposed.sql.statements.UpdateBuilder
 import org.jetbrains.exposed.sql.sum
 import org.jetbrains.exposed.sql.transactions.experimental.newSuspendedTransaction
 import org.jetbrains.exposed.sql.update
+import org.jetbrains.exposed.sql.upsert
 
-public abstract class AbstractExposedCRUDRepository<T : Any>(
+public abstract class AbstractExposedCRUDRepository<T : Any, ID : Any>(
     private val database: Database,
     public val transactionIsolation: Int? = null,
     private val table: Table,
-    getEntityPropertyValues: (T) -> Map<String, Any?>,
+    private val getEntityPropertyValues: (T) -> Map<String, Any?>,
     private val createEntity: (ResultRow) -> T,
     createdAtProperty: String? = "createdAt",
     updatedAtProperty: String? = "updatedAt",
     timeZone: TimeZone = TimeZone.UTC,
-) : AbstractCRUDRepository<T>(
-    getEntityPropertyValues,
+    private val coroutineContext: CoroutineContext = Dispatchers.IO,
+) : AbstractCRUDRepository<T, ID>(
     createdAtProperty,
     updatedAtProperty,
     timeZone,
@@ -92,11 +102,25 @@ public abstract class AbstractExposedCRUDRepository<T : Any>(
 
     override val updatedAtNow: ((TimeZone) -> Any)? = updatedAtProperty?.let { table.columns[it]?.now }
 
-    override suspend fun <R> transactional(block: suspend CRUDRepository<T>.() -> R): R =
-        newSuspendedTransaction(Dispatchers.IO, database, transactionIsolation) { block() }
+    private val List<T>.insertable: List<Map<String, Any?>>
+        get() = map { entityCreatedAtAware(it) }
+
+    override val T.propertyValues: Map<String, Any?>
+        get() = getEntityPropertyValues(this)
+
+    override suspend fun <R> transactional(block: suspend CRUDRepository<T, ID>.() -> R): R =
+        newSuspendedTransaction(coroutineContext, database, transactionIsolation) { block() }
 
     override suspend fun insert(entities: List<T>): Unit = transactional {
-        entities.forEach { entity -> table.insert { it.set(entityCreatedAtAware(entity)) } }
+        table.batchInsert(entities.insertable) { entity -> set(entity) }
+    }
+
+    override suspend fun insertAndReturn(entities: List<T>): List<ID> = transactional {
+        table.batchInsert(entities.insertable) { entity -> set(entity) }.map { it[table.primaryKey!!.columns[0]] as ID }
+    }
+
+    override suspend fun upsert(entities: List<T>): Unit = transactional {
+        entities.forEach { entity -> table.upsert { it.set(entityCreatedAtAware(entity)) } }
     }
 
     override suspend fun update(entities: List<T>): List<Boolean> = transactional {
@@ -216,14 +240,21 @@ public abstract class AbstractExposedCRUDRepository<T : Any>(
         }
     }
 
-    private fun ISqlExpressionBuilder.predicate(predicate: BooleanVariable): Op<Boolean> {
+    @Suppress("UNCHECKED_CAST")
+    private fun ISqlExpressionBuilder.predicate(predicate: BooleanVariable): Op<Boolean> =
+        (predicate as Expression).evaluate(
+            { _, args ->
 
-    }
+            },
+        ) {
+            LocationExposedTable.updatedAt.eq(LocalDateTime.now()).and()
+            table.columns[(arguments[0] as Field).value]!!.exposedExp(, arguments[1] as Value<*>)
+        } as Op<Boolean>
 
-    private fun Any.exp(name: String, value: Value<*>): Any {
-    }
+    private fun Any.exposedExp(name: String, value: Value<*>): Any = exp(name, value) { table.columns[it]!! }
 }
-public operator fun List<Column<*>>.get(name: String): Column<*>? = find { it.name == name }
+
+private operator fun List<Column<*>>.get(name: String): Column<*>? = find { it.name == name }
 
 public val Column<*>.now: ((TimeZone) -> Any)?
     get() = when (columnType) {

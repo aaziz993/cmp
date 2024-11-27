@@ -16,6 +16,9 @@ import io.r2dbc.spi.ConnectionFactoryOptions
 import javax.sql.DataSource
 import kotlin.time.toJavaDuration
 import org.jetbrains.exposed.sql.Database
+import org.jetbrains.exposed.sql.DatabaseConfig
+import org.jetbrains.exposed.sql.ExperimentalKeywordApi
+import org.jetbrains.exposed.sql.Schema
 import org.jetbrains.exposed.sql.SchemaUtils
 import org.jetbrains.exposed.sql.StdOutSqlLogger
 import org.jetbrains.exposed.sql.addLogger
@@ -37,25 +40,65 @@ public val DBConfig.hikariDataSource: DataSource
                 this@hikariDataSource.connectTimeout?.let { connectionTimeout = it.inWholeMilliseconds }
                 this@hikariDataSource.lockWaitTimeout?.let { idleTimeout = it.inWholeMilliseconds }
                 this@hikariDataSource.statementTimeout?.let { maxLifetime = it.inWholeMilliseconds }
+                this@hikariDataSource.validationTimeout?.let { validationTimeout = it.inWholeMilliseconds }
+                this@hikariDataSource.initializationFailTimeout?.let { initializationFailTimeout = it.inWholeMilliseconds }
+                this@hikariDataSource.keepaliveTime?.let { keepaliveTime = it.inWholeMilliseconds }
+                this@hikariDataSource.isAutoCommit?.let { isAutoCommit = it }
+                isReadOnly = this@hikariDataSource.isReadOnly
+                transactionIsolation = this@hikariDataSource.transactionIsolation
             },
         )
 
-public fun DBConfig.createExposedDatabase(): Database = Database.connect(hikariDataSource).also { database ->
-    transaction(database) {
-        addLogger(StdOutSqlLogger)
+@OptIn(ExperimentalKeywordApi::class)
+public val DBConfig.exposedDatabase: Database
+    get() = Database.connect(
+        hikariDataSource,
+        databaseConfig = DatabaseConfig {
+            this@exposedDatabase.defaultFetchSize?.let { defaultFetchSize = it }
+            this@exposedDatabase.defaultIsolationLevel?.let { defaultIsolationLevel = it }
+            this@exposedDatabase.defaultMaxAttempts?.let { defaultMaxAttempts = it }
+            this@exposedDatabase.defaultMinRetryDelay?.let { defaultMinRetryDelay = it }
+            this@exposedDatabase.defaultMaxRetryDelay?.let { defaultMaxRetryDelay = it }
+            this@exposedDatabase.warnLongQueriesDuration?.let { warnLongQueriesDuration = it }
+            this@exposedDatabase.maxEntitiesToStoreInCachePerEntity?.let { maxEntitiesToStoreInCachePerEntity = it }
+            this@exposedDatabase.keepLoadedReferencesOutOfTransaction?.let { keepLoadedReferencesOutOfTransaction = it }
+            this@exposedDatabase.logTooMuchResultSetsThreshold?.let { logTooMuchResultSetsThreshold = it }
+            this@exposedDatabase.preserveKeywordCasing?.let { preserveKeywordCasing = it }
+        },
+    ).also { database ->
+        transaction(database) {
+            addLogger(StdOutSqlLogger)
 
-        this@createExposedDatabase.table.filterNot { it.create == TableCreation.SKIP }.forEach {
+            this@exposedDatabase.defaultSchema?.let {
+                val schema = Schema(it.name)
 
-            val tables = getExposedTables(it).toTypedArray()
+                SchemaUtils.createSchema(schema)
 
-            if (it.create == TableCreation.OVERRIDE) {
-                SchemaUtils.drop(*tables, inBatch = true)
+                if (it.create != Creation.SKIP) {
+                    if (it.create != Creation.IF_NOT_EXISTS) {
+                        SchemaUtils.dropSchema(schema)
+                    }
+
+                    SchemaUtils.createSchema(schema, inBatch = it.createInBatch)
+                }
+
+                SchemaUtils.setSchema(schema)
             }
 
-            SchemaUtils.create(*tables, inBatch = true)
+
+
+            this@exposedDatabase.table.filterNot { it.create == Creation.SKIP }.forEach {
+
+                val tables = getExposedTables(it).toTypedArray()
+
+                if (it.create == Creation.OVERRIDE) {
+                    SchemaUtils.drop(*tables, inBatch = it.createInBatch)
+                }
+
+                SchemaUtils.create(*tables, inBatch = it.createInBatch)
+            }
         }
     }
-}
 
 public val DBConfig.r2dbcConnectionFactory: ConnectionFactory
     get() =
@@ -93,10 +136,10 @@ public val DBConfig.r2dbcConnectionFactory: ConnectionFactory
                 .build(),
         )
 
-public suspend fun DBConfig.createKotysaR2dbcClient(): R2dbcSqlClient {
+public suspend fun DBConfig.getKotysaR2dbcClient(): R2dbcSqlClient {
     val r2dbcConnectionFactory = r2dbcConnectionFactory
 
-    val createTables: List<Pair<List<Table<*>>, TableCreation>>
+    val createTables: List<Pair<List<Table<*>>, Creation>>
 
     val client: R2dbcSqlClient
 
@@ -136,9 +179,9 @@ public suspend fun DBConfig.createKotysaR2dbcClient(): R2dbcSqlClient {
 
     createTables.forEach { (tables, create) ->
         when (create) {
-            TableCreation.IF_NOT_EXISTS -> tables.forEach { client createTableIfNotExists it }
+            Creation.IF_NOT_EXISTS -> tables.forEach { client createTableIfNotExists it }
 
-            TableCreation.OVERRIDE -> tables.forEach() {
+            Creation.OVERRIDE -> tables.forEach() {
                 client deleteAllFrom it
                 client createTable it
             }

@@ -1,5 +1,8 @@
 package ai.tech.core.data.database.kotysa.model
 
+import ai.tech.core.data.expression.BooleanVariable
+import ai.tech.core.data.expression.Equals
+import ai.tech.core.data.expression.f
 import ai.tech.core.misc.type.single.now
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.LocalDateTime
@@ -17,11 +20,13 @@ import org.ufoss.kotysa.StringColumn
 import org.ufoss.kotysa.UuidColumn
 
 public data class KotysaColumn<T : Any>(
+    val name: String,
     val column: Column<T, *>,
     val isIdentity: Boolean = false,
-    val valueGetter: (T) -> Any?,
+    private val valueGetter: (T) -> Any?,
     private val valueSetter: (CoroutinesSqlClientDeleteOrUpdate.Update<T>, value: Any?) -> CoroutinesSqlClientDeleteOrUpdate.Update<T>
 ) {
+
     public val isInt: Boolean = column is IntColumn
 
     public val isLong: Boolean = column is LongColumn
@@ -57,6 +62,10 @@ public data class KotysaColumn<T : Any>(
 
         else -> null
     }
+
+    public operator fun get(entity: T): Any? = valueGetter(entity)
+
+    public fun getIdPredicate(entity: T): BooleanVariable = name.f eq get(entity)
 
     public fun updateFromEntity(
         update: CoroutinesSqlClientDeleteOrUpdate.Update<T>,

@@ -7,7 +7,7 @@ import org.ufoss.kotysa.columns.LongDbIdentityColumnNotNull
 import org.ufoss.kotysa.columns.StringDbVarcharColumnNullable
 import org.ufoss.kotysa.timestamp
 
-public object LocationTable : GenericTable<LocationEntity>("location") {
+public object LocationKotysaTable : GenericTable<LocationEntity>("location") {
 
     // Primary key
     public val id: LongDbIdentityColumnNotNull<LocationEntity> = bigInt(LocationEntity::id)

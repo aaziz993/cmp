@@ -4,6 +4,9 @@ import ai.tech.core.data.crud.AbstractCRUDRepository
 import ai.tech.core.data.crud.CRUDRepository
 import ai.tech.core.data.crud.model.LimitOffset
 import ai.tech.core.data.crud.model.Order
+import ai.tech.core.data.database.exp
+import ai.tech.core.data.database.kotysa.model.KotysaColumn
+import ai.tech.core.data.database.kotysa.model.KotysaTable
 import ai.tech.core.data.expression.AggregateExpression
 import ai.tech.core.data.expression.And
 import ai.tech.core.data.expression.Avg
@@ -28,21 +31,18 @@ import ai.tech.core.data.expression.Projection
 import ai.tech.core.data.expression.Sum
 import ai.tech.core.data.expression.Value
 import ai.tech.core.data.expression.Variable
-import ai.tech.core.data.database.kotysa.model.KotysaTable
-import ai.tech.core.misc.type.kClass
 import ai.tech.core.misc.type.serializablePropertyValues
 import ai.tech.core.misc.type.serializer.new
 import kotlin.reflect.KClass
-import kotlin.reflect.KTypeParameter
-import kotlin.reflect.full.declaredMemberProperties
-import kotlin.reflect.full.isSubclassOf
-import kotlin.reflect.full.memberFunctions
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.toList
 import kotlinx.datetime.TimeZone
 import kotlinx.serialization.InternalSerializationApi
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.serializer
 import org.slf4j.LoggerFactory
+import org.ufoss.kotysa.Column
 import org.ufoss.kotysa.CoroutinesSqlClientDeleteOrUpdate
 import org.ufoss.kotysa.CoroutinesSqlClientSelect
 import org.ufoss.kotysa.MinMaxColumn
@@ -53,16 +53,14 @@ import org.ufoss.kotysa.Table
 import org.ufoss.kotysa.WholeNumberColumn
 
 @OptIn(InternalSerializationApi::class)
-public abstract class AbstractKotysaCRUDRepository<T : Any>(
+public abstract class AbstractKotysaCRUDRepository<T : Any, ID : Any>(
     public val client: R2dbcSqlClient,
     public val table: Table<T>,
-    getEntityPropertyValues: (T) -> Map<String, Any?>,
     private val createEntity: (Map<String, Any?>) -> T,
     createdAtProperty: String? = "createdAt",
     updatedAtProperty: String? = "updatedAt",
     timeZone: TimeZone = TimeZone.UTC,
-) : AbstractCRUDRepository<T>(
-    getEntityPropertyValues,
+) : AbstractCRUDRepository<T, ID>(
     createdAtProperty,
     updatedAtProperty,
     timeZone,
@@ -76,7 +74,6 @@ public abstract class AbstractKotysaCRUDRepository<T : Any>(
                        timeZone: TimeZone = TimeZone.UTC) : this(
         client,
         table,
-        { it.serializablePropertyValues },
         { Json.Default.new(kClass.serializer(), it) },
         createdAtProperty,
         updatedAtProperty,
@@ -87,32 +84,43 @@ public abstract class AbstractKotysaCRUDRepository<T : Any>(
 
     private val kotysaTable = KotysaTable(table, createdAtProperty, updatedAtProperty)
 
-    override val createdAtNow: ((TimeZone) -> Any)? = kotysaTable.createdAtColumn?.value?.now
+    override val createdAtNow: ((TimeZone) -> Any)? = kotysaTable.createdAtColumn?.now
 
-    override val updatedAtNow: ((TimeZone) -> Any)? = kotysaTable.updatedAtColumn?.value?.now
-
-    final override suspend fun <R> transactional(block: suspend CRUDRepository<T>.() -> R): R =
-        client.transactional {
-            block()
-        }!!
+    override val updatedAtNow: ((TimeZone) -> Any)? = kotysaTable.updatedAtColumn?.now
 
     @Suppress("UNCHECKED_CAST")
-    final override suspend fun insert(entities: List<T>): Unit =
-        client.insert(
-            *(if (kotysaTable.createdAtColumn == null) {
-                entities
-            }
-            else {
-                entities.map { entity -> createEntity(entityCreatedAtAware(entity)) }
-            }.toTypedArray<Any>() as Array<T>),
-        )
+    private val List<T>.insertable: Array<T>
+        get() = if (kotysaTable.createdAtColumn == null) {
+            this
+        }
+        else {
+            map { entity -> createEntity(entityCreatedAtAware(entity)) }
+        }.toTypedArray<Any>() as Array<T>
+
+    private val T.updatable: T
+        get() = createEntity(entityUpdatedAtAware(this))
+
+    override val T.propertyValues: Map<String, Any?>
+        get() = kotysaTable.columns.associate { column -> column.name to column[this] }
+
+    final override suspend fun <R> transactional(block: suspend CRUDRepository<T, ID>.() -> R): R =
+        client.transactional { block() }!!
+
+    @Suppress("UNCHECKED_CAST")
+    final override suspend fun insert(entities: List<T>): Unit = client.insert(*entities.insertable)
+
+    @Suppress("UNCHECKED_CAST")
+    final override suspend fun insertAndReturn(entities: List<T>): List<ID> =
+        client.insertAndReturn(*entities.insertable).map { kotysaTable.identityColumn[it] as ID }.toList()
+
+    final override suspend fun upsert(entities: List<T>): Nothing = throw UnsupportedOperationException()
 
     override suspend fun update(entities: List<T>): List<Boolean> = client.transactional {
         if (kotysaTable.updatedAtColumn == null) {
-            entities.map { update(it).execute() > 0L }
+            entities.map { entity -> update(entity).execute() > 0L }
         }
         else {
-            entities.map { update(createEntity(entityUpdatedAtAware(it))).execute() > 0L }
+            entities.map { entity -> update(entity.updatable).execute() > 0L }
         }
     }!!
 
@@ -147,7 +155,7 @@ public abstract class AbstractKotysaCRUDRepository<T : Any>(
 
     @Suppress("UNCHECKED_CAST")
     override suspend fun <T : Comparable<T>> aggregate(aggregate: AggregateExpression<T>, predicate: BooleanVariable?): T {
-        val column = aggregate.projection?.let { kotysaTable[it.value] }?.column
+        val column = aggregate.projection?.let { kotysaTable.columns[it.value] }?.column
 
         if (column == null) {
             require(aggregate is Count) {
@@ -211,13 +219,13 @@ public abstract class AbstractKotysaCRUDRepository<T : Any>(
         }.fetchOne() as T
     }
 
-    private fun update(entity: T): CoroutinesSqlClientDeleteOrUpdate.Return = client.update(kotysaTable.table).let {
-        kotysaTable.columns.values.fold(it) { acc, v -> v.updateFromEntity(acc, entity) }
-    }.predicate(kotysaTable.getIdPredicate(entity))
+    private fun update(entity: T): CoroutinesSqlClientDeleteOrUpdate.Return = client.update(kotysaTable.table).apply {
+        kotysaTable.columns.forEach { column -> column.updateFromEntity(this, entity) }
+    }.predicate(kotysaTable.identityColumn.getIdPredicate(entity))
 
     private fun update(map: Map<String, Any?>): CoroutinesSqlClientDeleteOrUpdate.Update<T> =
-        client.update(kotysaTable.table).let {
-            map.entries.fold(it) { acc, (k, v) -> kotysaTable[k].updateFromValue(acc, v) }
+        client.update(kotysaTable.table).apply {
+            map.entries.forEach { (columnName, value) -> kotysaTable.columns[columnName]!!.updateFromValue(this, value) }
         }
 
     private fun findHelper(sort: List<Order>?, predicate: BooleanVariable?, limitOffset: LimitOffset? = null): Flow<T> =
@@ -230,7 +238,7 @@ public abstract class AbstractKotysaCRUDRepository<T : Any>(
         limitOffset: LimitOffset? = null,
     ): Flow<List<Any?>> = client.selects().apply {
         projections.filterIsInstance<Projection>().forEach { projection ->
-            val column = kotysaTable[projection.value].column
+            val column = kotysaTable.columns[projection.value]!!.column
 
             if (projection.distinct) {
                 selectDistinct(column)
@@ -251,7 +259,7 @@ public abstract class AbstractKotysaCRUDRepository<T : Any>(
         predicate?.let { predicate(it) }
 
         sort?.forEach { order ->
-            val column = kotysaTable[order.name].column
+            val column = kotysaTable.columns[order.name]!!.column
 
             if (order.ascending) {
                 orderByAsc(column)
@@ -275,25 +283,25 @@ public abstract class AbstractKotysaCRUDRepository<T : Any>(
         val logValue = StringBuilder()
 
         (predicate as Expression).evaluate(
-            { _ ->
-                when {
-                    value == null -> {
-                        val field = arguments[0] as Field
+            {
+                value = value!!.logicExp(this, (expression!!.arguments[0] as Field), logValue)
+                    .compareExp(expression!!, logValue)
 
-                        logValue.append("where(${field.value})")
-                        value = this@predicate.exp("where", field).compareExp(this, logValue)
-                    }
-
-                    expression == null -> expression = this
-
-                    else -> throw IllegalArgumentException("Unsupported expression tree")
-                }
+                expression = null
             },
         ) {
-            value = value!!.logicExp(this, (expression!!.arguments[0] as Field), logValue)
-                .compareExp(expression!!, logValue)
+            when {
+                value == null -> {
+                    val field = arguments[0] as Field
 
-            expression = null
+                    logValue.append("where(${field.value})")
+                    value = this@predicate.kotysaExp("where", field).compareExp(this, logValue)
+                }
+
+                expression == null -> expression = this
+
+                else -> throw IllegalArgumentException("Unsupported expression tree")
+            }
         }
 
         logger.debug(logValue.toString())
@@ -304,16 +312,18 @@ public abstract class AbstractKotysaCRUDRepository<T : Any>(
     private fun Any.compareExp(expression: Expression, logValue: StringBuilder): Any {
         expression.arguments[0]
 
-        val isTemporal = kotysaTable[(expression.arguments[0] as Field).value].isTemporal
+        val isTemporal = kotysaTable.columns[(expression.arguments[0] as Field).value]!!.isTemporal
 
         return if (expression is Between) {
             if (isTemporal) {
-                exp("afterOrEq", expression.arguments[1] as Value<*>).exp("and", expression.arguments[0] as Value<*>)
-                    .exp("beforeOrEq", expression.arguments[2] as Value<*>)
+                kotysaExp("afterOrEq", expression.arguments[1] as Value<*>)
+                    .kotysaExp("and", expression.arguments[0] as Value<*>)
+                    .kotysaExp("beforeOrEq", expression.arguments[2] as Value<*>)
             }
             else {
-                exp("supOrEq", expression.arguments[1] as Value<*>).exp("and", expression.arguments[0] as Value<*>)
-                    .exp("infOrEq", expression.arguments[2] as Value<*>)
+                kotysaExp("supOrEq", expression.arguments[1] as Value<*>)
+                    .kotysaExp("and", expression.arguments[0] as Value<*>)
+                    .kotysaExp("infOrEq", expression.arguments[2] as Value<*>)
             }
         }
         else {
@@ -377,7 +387,7 @@ public abstract class AbstractKotysaCRUDRepository<T : Any>(
 
                 logValue.append(".$it(${otherArg.value})")
 
-                exp(it, otherArg)
+                kotysaExp(it, otherArg)
             }
         }
     }
@@ -388,29 +398,11 @@ public abstract class AbstractKotysaCRUDRepository<T : Any>(
         else -> throw IllegalArgumentException("Unsupported expression type \"${this::class.simpleName}\"")
     }.let {
         logValue.append(".$it(${field.value})")
-        exp(it, field)
+        kotysaExp(it, field)
     }
 
-    private fun Any.exp(name: String, value: Value<*>): Any {
-        val vkClass: KClass<*>
-        val v: Any?
-
-        when (value) {
-            is Field -> kotysaTable[value.value].column.let {
-                vkClass = it::class
-                v = it
-            }
-
-            else -> {
-                vkClass = value::class.declaredMemberProperties.find { it.name == "value" }!!.returnType.kClass
-                v = value.value
-            }
-        }
-
-        return this::class.memberFunctions.filter { it.name == name && it.parameters.size == 2 }.let {
-            it.find { (it.parameters[1].type.classifier !is KTypeParameter) && vkClass.isSubclassOf(it.parameters[1].type.kClass) }
-                ?: it.find { it.parameters[1].type.classifier is KTypeParameter }
-        }!!.call(this, v)!!
-    }
+    private fun Any.kotysaExp(name: String, value: Value<*>): Any = exp(name, value) { kotysaTable.columns[it]!! }
 }
+
+private operator fun <T : Any> List<KotysaColumn<T>>.get(name: String): KotysaColumn<T>? = find { it.name == name }
 

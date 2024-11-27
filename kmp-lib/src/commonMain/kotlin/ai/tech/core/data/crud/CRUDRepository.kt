@@ -7,13 +7,21 @@ import ai.tech.core.data.expression.BooleanVariable
 import ai.tech.core.data.expression.Variable
 import kotlinx.coroutines.flow.Flow
 
-public interface CRUDRepository<T : Any> {
+public interface CRUDRepository<T : Any,ID:Any> {
 
-    public suspend fun <R> transactional(block: suspend CRUDRepository<T>.() -> R): R
+    public suspend fun <R> transactional(block: suspend CRUDRepository<T,ID>.() -> R): R
+
+    public suspend fun insertAndReturn(entities: List<T>): List<ID>
+
+    public suspend fun insertAndReturn(vararg entities: T): List<ID> = insertAndReturn(entities.toList())
 
     public suspend fun insert(entities: List<T>)
 
     public suspend fun insert(vararg entities: T): Unit = insert(entities.toList())
+
+    public suspend fun upsert(entities: List<T>)
+
+    public suspend fun upsert(vararg entities: T): Unit = upsert(entities.toList())
 
     public suspend fun update(entities: List<T>): List<Boolean>
 

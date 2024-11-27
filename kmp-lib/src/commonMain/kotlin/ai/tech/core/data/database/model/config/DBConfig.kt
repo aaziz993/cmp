@@ -21,6 +21,31 @@ public data class DBConfig(
     val lockWaitTimeout: Duration? = null,
     val statementTimeout: Duration? = null,
     val table: List<TableConfig> = emptyList(),
+    // Only Exposed with Hikary properties
+    // hikary
+    val validationTimeout: Duration? = null,
+    val initializationFailTimeout: Duration? = null,
+    val keepaliveTime: Duration? = null,
+    val isAutoCommit: Boolean? = null,
+    val isReadOnly: Boolean = false,
+    val transactionIsolation: String = "TRANSACTION_SERIALIZABLE",
+    val useNestedTransactions: Boolean = false,
+    // exposed
+    val defaultFetchSize: Int? = null,
+    val defaultIsolationLevel: Int? = null,
+    val defaultMaxAttempts: Int? = null,
+    val defaultMinRetryDelay: Long? = null,
+    val defaultMaxRetryDelay: Long? = null,
+    val warnLongQueriesDuration: Long?? = null,
+    val maxEntitiesToStoreInCachePerEntity: Int? = null,
+    val keepLoadedReferencesOutOfTransaction: Boolean? = null,
+    val defaultSchema: SchemaConfig? = null,
+    val logTooMuchResultSetsThreshold: Int? = null,
+    val preserveKeywordCasing: Boolean? = null,
+//    val maxAttempts: Int = 1,
+//    val minRetryDelay: Long? = null,
+//    val maxRetryDelay: Long? = null,
+//    val queryTimeout: Long? = null,
     override val enabled: Boolean = true
 ) : EnabledConfig {
 

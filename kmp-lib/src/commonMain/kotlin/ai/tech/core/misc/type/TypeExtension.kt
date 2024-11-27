@@ -2,7 +2,6 @@
 
 package ai.tech.core.misc.type
 
-import ai.tech.core.data.expression.Expression
 import ai.tech.core.data.validator.Validation
 import ai.tech.core.data.validator.Validator
 import ai.tech.core.data.validator.ValidatorRule
@@ -10,7 +9,6 @@ import ai.tech.core.misc.type.accessor.Accessor
 import ai.tech.core.misc.type.accessor.ListAccessor
 import ai.tech.core.misc.type.accessor.MapLikeAccessor
 import ai.tech.core.misc.type.multiple.depthIterator
-import ai.tech.core.misc.type.multiple.removeLast
 import ai.tech.core.misc.type.multiple.takeIfNotEmpty
 import ai.tech.core.misc.type.serializer.encodeToAny
 import ai.tech.core.misc.type.single.parseOrNull
@@ -26,8 +24,6 @@ import kotlin.reflect.KType
 import kotlin.reflect.typeOf
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.seconds
-import kotlin.time.DurationUnit
-import kotlin.time.toDuration
 import kotlinx.datetime.DatePeriod
 import kotlinx.datetime.DateTimePeriod
 import kotlinx.datetime.LocalDate
@@ -506,47 +502,37 @@ public fun List<Map<String, Any?>>.deepMerge(
 
 @Suppress("UNCHECKED_CAST")
 public fun <T : Any> T.depthIterator(
-    transform: (vertices: List<T>, value: Any?) -> Iterator<Any?>?,
-    removeLast: (vertices: List<T>, transform: Any?) -> Unit
-) {
-    val vertices = mutableListOf(this)
+    transform: (transforms: List<T>, value: Any?) -> Iterator<Any?>?,
+    removeLast: (transforms: List<T>, transform: Any?) -> Unit
+): Iterator<Any?>? {
+    val transforms = mutableListOf(this)
 
-    transform(emptyList(), this)?.depthIterator(
-        { _, value -> transform(vertices, value)?.also { vertices.add(value as T) } },
+    return transform(emptyList(), this)?.depthIterator(
+        { _, value -> transform(transforms, value)?.also { transforms.add(value as T) } },
     ) {
-        val last = vertices.removeLast()
+        val last = transforms.removeLast()
 
-        removeLast(vertices, last)
+        removeLast(transforms, last)
     }
 }
 
-public fun <T : Any> T.evaluate(
-    children: T.() -> Iterator<T>?,
-    transform: T.(args: List<Any?>) -> Any?
-): Any? {
-    val values = mutableListOf<Any?>()
-
-    depthTraverse(
-        { _, value ->
-            val children = (value as T).children()
-
-            if (children == null) {
-
+@Suppress("UNCHECKED_CAST")
+public inline fun <reified T : Any> T.depthTraverse(
+    crossinline getChildren: T.(List<T>) -> Iterator<Any?>?,
+    crossinline handleLeaf: T.(List<T>) -> Unit,
+    crossinline handleInline: T.(List<T>) -> Unit
+) {
+    depthIterator(
+        { transforms, value ->
+            if (value is T) {
+                return@depthIterator value.getChildren(transforms).also {
+                    if (it == null) {
+                        handleLeaf(transforms)
+                    }
+                }?.iterator()
             }
 
-            if (value is Expression) {
-                if (value.isArgumentsAllValue) {
-                    values.add(value.transform(value.arguments))
-                }
-                else {
-                    return@depthTraverse value.arguments.iterator()
-                }
-            }
             null
         },
-    ) { _, transform ->
-        values.add((transform as Expression).transform(values.removeLast(transform.arguments.size)))
-    }
-
-    return values[0]
+    ) { transforms, inlineExpression -> (inlineExpression as T).handleInline(transforms) }?.forEach {}
 }

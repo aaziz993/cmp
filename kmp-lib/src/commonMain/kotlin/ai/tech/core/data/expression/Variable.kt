@@ -1,14 +1,13 @@
 package ai.tech.core.data.expression
 
-import ai.tech.core.misc.type.depthIterator
 import com.benasher44.uuid.Uuid
 import com.ionspin.kotlin.bignum.decimal.BigDecimal
 import com.ionspin.kotlin.bignum.integer.BigInteger
 import ai.tech.core.misc.type.serializer.bignum.BigDecimalSerial
 import ai.tech.core.misc.type.serializer.bignum.BigIntegerSerial
 import ai.tech.core.misc.type.serializer.UuidSerial
-import ai.tech.core.misc.type.multiple.removeLast
 import ai.tech.core.misc.type.depthTraverse
+import ai.tech.core.misc.type.multiple.removeLast
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.LocalDateTime
 import kotlinx.datetime.LocalTime
@@ -269,48 +268,41 @@ public interface Expression {
         get() = arguments.all { it is Value<*> }
 
     public fun evaluate(
-        childExpression: Expression.(expressions: List<Expression>) -> Unit,
-        parentExpression: Expression.(expressions: List<Expression>) -> Unit
+        inlineExpression: Expression.(List<Expression>) -> Unit,
+        leafExpression: Expression.(List<Expression>) -> Unit
     ): Unit =
         depthTraverse(
-                { transforms, value ->
-                    if (value is Expression) {
-                        if (value.isArgumentsAllValue) {
-                            value.childExpression(transforms)
-                        }
-                        else {
-                            return@depthTraverse value.arguments.iterator()
-                        }
-                    }
+            {
+                if (isArgumentsAllValue) {
                     null
-                },
-        ) { transforms, transform ->
-            (transform as Expression).parentExpression(transforms)
-        }
+                }
+                else {
+                    arguments.iterator()
+                }
+            },
+            inlineExpression,
+            leafExpression,
+        )
 
     public fun evaluate(
-        childExpression: Expression.() -> Any?,
-        parentExpression: Expression.(args: List<Any?>) -> Any?
+        inlineExpression: Expression.(List<Expression>, args: List<Any?>) -> Any?,
+        leafExpression: Expression.(List<Expression>) -> Any?
     ): Any? {
-        val values = mutableListOf<Any?>()
+        val evaluations = mutableListOf<Any?>()
 
-        depthIterator(
-                { _, value ->
-                    if (value is Expression) {
-                        if (value.isArgumentsAllValue) {
-                            values.add(value.childExpression())
-                        }
-                        else {
-                            return@depthTraverse value.arguments.iterator()
-                        }
-                    }
+        depthTraverse(
+            {
+                if (isArgumentsAllValue) {
                     null
-                },
-        ) { _, transform ->
-            values.add((transform as Expression).parentExpression(values.removeLast(transform.arguments.size)))
-        }
+                }
+                else {
+                    arguments.iterator()
+                }
+            },
+            { evaluations.add(leafExpression(it)) },
+        ) { evaluations.add(inlineExpression(it, evaluations.removeLast(arguments.size))) }
 
-        return values[0]
+        return evaluations[0]
     }
 }
 
