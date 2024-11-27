@@ -220,11 +220,11 @@ public infix fun Number.powExp(power: Number): Pow = v.pow(power)
 public val Number.squareExp: Square
     get() = v.square
 
-public fun String.eqExp(other: String, matchAll: Boolean, ignoreCase: Boolean): Equals =
-    v.eq(other, matchAll, ignoreCase)
+public fun String.eqExp(other: String, ignoreCase: Boolean = false, matchAll: Boolean = false): Equals =
+    v.eq(other, ignoreCase, matchAll)
 
-public fun String.eqPatternExp(pattern: String, matchAll: Boolean, ignoreCase: Boolean): EqualsPattern =
-    v.eqPattern(pattern, matchAll, ignoreCase)
+public fun String.eqPatternExp(pattern: String, ignoreCase: Boolean = false, matchAll: Boolean = false): EqualsPattern =
+    v.eqPattern(pattern, ignoreCase, matchAll)
 
 public val String.asciiExp: Ascii
     get() = v.ascii

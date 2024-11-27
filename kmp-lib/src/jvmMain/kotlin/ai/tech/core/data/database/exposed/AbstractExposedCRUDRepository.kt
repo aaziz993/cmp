@@ -6,13 +6,27 @@ import ai.tech.core.data.crud.model.LimitOffset
 import ai.tech.core.data.crud.model.Order
 import ai.tech.core.data.database.exp
 import ai.tech.core.data.expression.AggregateExpression
+import ai.tech.core.data.expression.And
 import ai.tech.core.data.expression.Avg
+import ai.tech.core.data.expression.Between
+import ai.tech.core.data.expression.BooleanValue
 import ai.tech.core.data.expression.BooleanVariable
 import ai.tech.core.data.expression.Count
+import ai.tech.core.data.expression.Equals
+import ai.tech.core.data.expression.EqualsPattern
 import ai.tech.core.data.expression.Expression
 import ai.tech.core.data.expression.Field
+import ai.tech.core.data.expression.GreaterEqualThan
+import ai.tech.core.data.expression.GreaterThan
+import ai.tech.core.data.expression.In
+import ai.tech.core.data.expression.LessEqualThan
+import ai.tech.core.data.expression.LessThan
 import ai.tech.core.data.expression.Max
 import ai.tech.core.data.expression.Min
+import ai.tech.core.data.expression.Not
+import ai.tech.core.data.expression.NotEquals
+import ai.tech.core.data.expression.NotIn
+import ai.tech.core.data.expression.Or
 import ai.tech.core.data.expression.Projection
 import ai.tech.core.data.expression.Sum
 import ai.tech.core.data.expression.Value
@@ -56,6 +70,7 @@ import org.jetbrains.exposed.sql.kotlin.datetime.KotlinLocalDateTimeColumnType
 import org.jetbrains.exposed.sql.kotlin.datetime.KotlinLocalTimeColumnType
 import org.jetbrains.exposed.sql.max
 import org.jetbrains.exposed.sql.min
+import org.jetbrains.exposed.sql.or
 import org.jetbrains.exposed.sql.select
 import org.jetbrains.exposed.sql.selectAll
 import org.jetbrains.exposed.sql.statements.UpdateBuilder
@@ -63,6 +78,7 @@ import org.jetbrains.exposed.sql.sum
 import org.jetbrains.exposed.sql.transactions.experimental.newSuspendedTransaction
 import org.jetbrains.exposed.sql.update
 import org.jetbrains.exposed.sql.upsert
+import org.slf4j.LoggerFactory
 
 public abstract class AbstractExposedCRUDRepository<T : Any, ID : Any>(
     private val database: Database,
@@ -98,9 +114,11 @@ public abstract class AbstractExposedCRUDRepository<T : Any, ID : Any>(
         timeZone,
     )
 
-    override val createdAtNow: ((TimeZone) -> Any)? = createdAtProperty?.let { table.columns[it]?.now }
+    private val logger = LoggerFactory.getLogger(this::class.java)
 
-    override val updatedAtNow: ((TimeZone) -> Any)? = updatedAtProperty?.let { table.columns[it]?.now }
+    override val createdAtNow: ((TimeZone) -> Any)? = createdAtProperty?.let { table[it]?.now }
+
+    override val updatedAtNow: ((TimeZone) -> Any)? = updatedAtProperty?.let { table[it]?.now }
 
     private val List<T>.insertable: List<Map<String, Any?>>
         get() = map { entityCreatedAtAware(it) }
@@ -152,7 +170,7 @@ public abstract class AbstractExposedCRUDRepository<T : Any, ID : Any>(
         flow {
             transactional {
                 val columns = projections.filterIsInstance<Projection>().map { projection ->
-                    table.columns[projection.value]!!.let { column ->
+                    table[projection.value]!!.let { column ->
                         projection.alias?.let { column.alias(it) } ?: column
                     }
                 }
@@ -173,9 +191,9 @@ public abstract class AbstractExposedCRUDRepository<T : Any, ID : Any>(
     }
 
     @Suppress("UNCHECKED_CAST")
-    override suspend fun <T : Comparable<T>> aggregate(aggregate: AggregateExpression<T>, predicate: BooleanVariable?): T = transactional {
+    override suspend fun <T> aggregate(aggregate: AggregateExpression<T>, predicate: BooleanVariable?): T = transactional {
 
-        val column: Column<T>? = aggregate.projection?.let { table.columns[it.value]!! } as Column<T>?
+        val column: Column<Comparable<Any>>? = aggregate.projection?.let { table[it.value]!! } as Column<Comparable<Any>>?
 
         if (column == null) {
             require(aggregate is Count) {
@@ -206,7 +224,7 @@ public abstract class AbstractExposedCRUDRepository<T : Any, ID : Any>(
         predicate(predicate).apply {
             sort?.forEach {
                 orderBy(
-                    table.columns[it.name]!!,
+                    table[it.name]!!,
                     if (it.ascending) {
                         when (it.nullFirst) {
                             true -> SortOrder.ASC_NULLS_FIRST
@@ -235,26 +253,90 @@ public abstract class AbstractExposedCRUDRepository<T : Any, ID : Any>(
 
     @Suppress("UNCHECKED_CAST")
     private fun <T> UpdateBuilder<T>.set(map: Map<String, Any?>) {
-        map.forEach { (key, value) ->
-            set(table.columns[key] as Column<Any?>, value)
+        map.forEach { (property, value) ->
+            set(table[property] as Column<Any?>, value)
         }
     }
 
     @Suppress("UNCHECKED_CAST")
-    private fun ISqlExpressionBuilder.predicate(predicate: BooleanVariable): Op<Boolean> =
-        (predicate as Expression).evaluate(
+    private fun compareExp(expression: Expression, logValue: StringBuilder): Any {
+        val field = expression.arguments[0] as Field
+
+        var exposedExpArgs = listOf(expression.arguments[1] as Value<*>)
+
+        val exposedExpName = when (expression) {
+            is Equals -> {
+                if (expression.arguments.size > 2) {
+                    throw IllegalArgumentException("Unsupported \"${this::class.simpleName}\" with match all or ignore case options")
+                }
+                "eq"
+            }
+
+            is NotEquals -> "neq"
+
+            is EqualsPattern -> {
+                val matchAll = (expression.arguments[3] as BooleanValue).value
+
+                if (matchAll) {
+                    throw IllegalArgumentException("Unsupported \"${this::class.simpleName}\" with match all option")
+                }
+
+                exposedExpArgs = expression.arguments.subList(1, 3) as List<Value<*>>
+
+                "regexp"
+            }
+
+            is Between -> "between"
+
+            is GreaterThan -> "grater"
+
+            is GreaterEqualThan -> "greaterEq"
+
+            is LessThan -> "less"
+
+            is LessEqualThan -> "lessEq"
+
+            is In -> "inList"
+
+            is NotIn -> "notInList"
+
+            else -> throw IllegalArgumentException("Unsupported expression type \"${this::class.simpleName}\"")
+        }
+
+        logValue.append("${field.value}.$exposedExpName(${exposedExpArgs.joinToString()})")
+
+        return table[field.value]!!.exposedExp(exposedExpName, exposedExpArgs)
+    }
+
+    private fun Any.logicExp(expression: Expression, args: List<Any?>, logValue: StringBuilder): Any = when (expression) {
+        is And -> "and"
+        is Or -> "or"
+        is Not -> "not"
+        else -> throw IllegalArgumentException("Unsupported expression type \"${this::class.simpleName}\"")
+    }.let {
+        logValue.append(".$it(${field.value})")
+        kotysaExp(it, field)
+    }
+
+    @Suppress("UNCHECKED_CAST")
+    private fun ISqlExpressionBuilder.predicate(predicate: BooleanVariable): Op<Boolean> {
+        val logValue = StringBuilder()
+
+        val value = (predicate as Expression).evaluate(
             { _, args ->
-
+                logicExp(this, ,logValue)
             },
-        ) {
-            LocationExposedTable.updatedAt.eq(LocalDateTime.now()).and()
-            table.columns[(arguments[0] as Field).value]!!.exposedExp(, arguments[1] as Value<*>)
-        } as Op<Boolean>
+        ) { compareExp(this, logValue) }
 
-    private fun Any.exposedExp(name: String, value: Value<*>): Any = exp(name, value) { table.columns[it]!! }
+        logger.debug("where {}", logValue)
+
+        return value as Op<Boolean>
+    }
+
+    private fun Any.exposedExp(name: String, values: List<Value<*>>): Any = exp(name, value) { table[it]!! }
 }
 
-private operator fun List<Column<*>>.get(name: String): Column<*>? = find { it.name == name }
+private operator fun Table.get(name: String): Column<*>? = columns.find { it.name == name }
 
 public val Column<*>.now: ((TimeZone) -> Any)?
     get() = when (columnType) {

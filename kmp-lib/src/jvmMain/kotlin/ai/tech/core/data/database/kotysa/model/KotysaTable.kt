@@ -1,7 +1,12 @@
 package ai.tech.core.data.database.kotysa.model
 
-import ai.tech.core.data.expression.Equals
-import ai.tech.core.data.expression.f
+import java.math.BigDecimal
+import java.time.OffsetDateTime
+import java.util.*
+import kotlin.reflect.full.declaredMemberProperties
+import kotlin.reflect.full.isSubtypeOf
+import kotlin.reflect.full.memberProperties
+import kotlin.reflect.typeOf
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.LocalDateTime
 import kotlinx.datetime.LocalTime
@@ -44,13 +49,6 @@ import org.ufoss.kotysa.columns.AbstractDbColumn
 import org.ufoss.kotysa.columns.IntDbIdentityColumnNotNull
 import org.ufoss.kotysa.columns.LongDbIdentityColumnNotNull
 import org.ufoss.kotysa.columns.UuidDbUuidColumnNotNull
-import java.math.BigDecimal
-import java.time.OffsetDateTime
-import java.util.*
-import kotlin.reflect.full.declaredMemberProperties
-import kotlin.reflect.full.isSubtypeOf
-import kotlin.reflect.full.memberProperties
-import kotlin.reflect.typeOf
 
 public class KotysaTable<T : Any>(
     public val table: Table<T>,
@@ -239,10 +237,12 @@ public class KotysaTable<T : Any>(
     public val identityColumn: KotysaColumn<T> = columns.find { it.isIdentity }!!
 
     public val createdAtColumn: KotysaColumn<T>? =
-        createdAtProperty?.let { property -> columns.find { it.name == property }!! }
+        createdAtProperty?.let { property -> get(property)!! }
 
     public val updatedAtColumn: KotysaColumn<T>? =
-        updatedAtProperty?.let { property -> columns.find { it.name == property }!! }
+        updatedAtProperty?.let { property -> get(property)!! }
+
+    public operator fun get(columnName: String): KotysaColumn<T>? = columns.find { it.name == columnName }
 
     public companion object {
 

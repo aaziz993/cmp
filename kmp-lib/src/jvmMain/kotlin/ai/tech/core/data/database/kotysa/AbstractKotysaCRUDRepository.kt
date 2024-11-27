@@ -5,7 +5,6 @@ import ai.tech.core.data.crud.CRUDRepository
 import ai.tech.core.data.crud.model.LimitOffset
 import ai.tech.core.data.crud.model.Order
 import ai.tech.core.data.database.exp
-import ai.tech.core.data.database.kotysa.model.KotysaColumn
 import ai.tech.core.data.database.kotysa.model.KotysaTable
 import ai.tech.core.data.expression.AggregateExpression
 import ai.tech.core.data.expression.And
@@ -31,7 +30,6 @@ import ai.tech.core.data.expression.Projection
 import ai.tech.core.data.expression.Sum
 import ai.tech.core.data.expression.Value
 import ai.tech.core.data.expression.Variable
-import ai.tech.core.misc.type.serializablePropertyValues
 import ai.tech.core.misc.type.serializer.new
 import kotlin.reflect.KClass
 import kotlinx.coroutines.flow.Flow
@@ -42,7 +40,6 @@ import kotlinx.serialization.InternalSerializationApi
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.serializer
 import org.slf4j.LoggerFactory
-import org.ufoss.kotysa.Column
 import org.ufoss.kotysa.CoroutinesSqlClientDeleteOrUpdate
 import org.ufoss.kotysa.CoroutinesSqlClientSelect
 import org.ufoss.kotysa.MinMaxColumn
@@ -154,8 +151,8 @@ public abstract class AbstractKotysaCRUDRepository<T : Any, ID : Any>(
     } ?: client.deleteAllFrom(kotysaTable.table)
 
     @Suppress("UNCHECKED_CAST")
-    override suspend fun <T : Comparable<T>> aggregate(aggregate: AggregateExpression<T>, predicate: BooleanVariable?): T {
-        val column = aggregate.projection?.let { kotysaTable.columns[it.value] }?.column
+    override suspend fun <T> aggregate(aggregate: AggregateExpression<T>, predicate: BooleanVariable?): T {
+        val column = aggregate.projection?.let { kotysaTable[it.value]!! }?.column
 
         if (column == null) {
             require(aggregate is Count) {
@@ -225,7 +222,7 @@ public abstract class AbstractKotysaCRUDRepository<T : Any, ID : Any>(
 
     private fun update(map: Map<String, Any?>): CoroutinesSqlClientDeleteOrUpdate.Update<T> =
         client.update(kotysaTable.table).apply {
-            map.entries.forEach { (columnName, value) -> kotysaTable.columns[columnName]!!.updateFromValue(this, value) }
+            map.entries.forEach { (columnName, value) -> kotysaTable[columnName]!!.updateFromValue(this, value) }
         }
 
     private fun findHelper(sort: List<Order>?, predicate: BooleanVariable?, limitOffset: LimitOffset? = null): Flow<T> =
@@ -238,7 +235,7 @@ public abstract class AbstractKotysaCRUDRepository<T : Any, ID : Any>(
         limitOffset: LimitOffset? = null,
     ): Flow<List<Any?>> = client.selects().apply {
         projections.filterIsInstance<Projection>().forEach { projection ->
-            val column = kotysaTable.columns[projection.value]!!.column
+            val column = kotysaTable[projection.value]!!.column
 
             if (projection.distinct) {
                 selectDistinct(column)
@@ -259,7 +256,7 @@ public abstract class AbstractKotysaCRUDRepository<T : Any, ID : Any>(
         predicate?.let { predicate(it) }
 
         sort?.forEach { order ->
-            val column = kotysaTable.columns[order.name]!!.column
+            val column = kotysaTable[order.name]!!.column
 
             if (order.ascending) {
                 orderByAsc(column)
@@ -295,6 +292,7 @@ public abstract class AbstractKotysaCRUDRepository<T : Any, ID : Any>(
                     val field = arguments[0] as Field
 
                     logValue.append("where(${field.value})")
+
                     value = this@predicate.kotysaExp("where", field).compareExp(this, logValue)
                 }
 
@@ -310,9 +308,7 @@ public abstract class AbstractKotysaCRUDRepository<T : Any, ID : Any>(
     }
 
     private fun Any.compareExp(expression: Expression, logValue: StringBuilder): Any {
-        expression.arguments[0]
-
-        val isTemporal = kotysaTable.columns[(expression.arguments[0] as Field).value]!!.isTemporal
+        val isTemporal = kotysaTable[(expression.arguments[0] as Field).value]!!.isTemporal
 
         return if (expression is Between) {
             if (isTemporal) {
@@ -327,14 +323,16 @@ public abstract class AbstractKotysaCRUDRepository<T : Any, ID : Any>(
             }
         }
         else {
-            when (expression) {
+            val kotysaExpName = when (expression) {
                 is Equals -> {
                     if (expression.arguments.size == 2) {
                         "eq"
                     }
                     else {
-                        val matchAll = (expression.arguments[2] as BooleanValue).value
-                        val ignoreCase = (expression.arguments[3] as BooleanValue).value
+                        val ignoreCase = (expression.arguments[2] as BooleanValue).value
+
+                        val matchAll = (expression.arguments[3] as BooleanValue).value
+
                         if (matchAll) {
                             "eq"
                         }
@@ -382,13 +380,13 @@ public abstract class AbstractKotysaCRUDRepository<T : Any, ID : Any>(
                 is NotIn -> "notIn"
 
                 else -> throw IllegalArgumentException("Unsupported expression type \"${this::class.simpleName}\"")
-            }.let {
-                val otherArg = expression.arguments[1] as Value<*>
-
-                logValue.append(".$it(${otherArg.value})")
-
-                kotysaExp(it, otherArg)
             }
+
+            val otherArg = expression.arguments[1] as Value<*>
+
+            logValue.append(".$kotysaExpName(${otherArg.value})")
+
+            kotysaExp(kotysaExpName, otherArg)
         }
     }
 
@@ -401,8 +399,5 @@ public abstract class AbstractKotysaCRUDRepository<T : Any, ID : Any>(
         kotysaExp(it, field)
     }
 
-    private fun Any.kotysaExp(name: String, value: Value<*>): Any = exp(name, value) { kotysaTable.columns[it]!! }
+    private fun Any.kotysaExp(name: String, value: Value<*>): Any = exp(name, value) { kotysaTable[it]!! }
 }
-
-private operator fun <T : Any> List<KotysaColumn<T>>.get(name: String): KotysaColumn<T>? = find { it.name == name }
-

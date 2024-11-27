@@ -47,7 +47,7 @@ public interface CRUDRepository<T : Any,ID:Any> {
 
     public suspend fun delete(predicate: BooleanVariable? = null): Long
 
-    public suspend fun <T : Comparable<T>> aggregate(
+    public suspend fun <T> aggregate(
         aggregate: AggregateExpression<T>,
         predicate: BooleanVariable? = null,
     ): T

@@ -119,21 +119,21 @@ public sealed class CharVariable : ComparableVariable()
 
 public interface StringOperand {
 
-    public fun eq(other: StringOperand, matchAll: BooleanOperand, ignoreCase: BooleanOperand): Equals =
-        StringExpression.eq(this, other, matchAll, ignoreCase)
+    public fun eq(other: StringOperand, ignoreCase: BooleanOperand, matchAll: BooleanOperand): Equals =
+        StringExpression.eq(this, other, ignoreCase, matchAll)
 
-    public fun eq(other: String, matchAll: Boolean, ignoreCase: Boolean): Equals =
-        eq(other.v, matchAll.v, ignoreCase.v)
+    public fun eq(other: String, ignoreCase: Boolean, matchAll: Boolean): Equals =
+        eq(other.v, ignoreCase.v, matchAll.v)
 
     public fun eqPattern(
         pattern: StringOperand,
-        matchAll: BooleanOperand,
-        ignoreCase: BooleanOperand
+        ignoreCase: BooleanOperand,
+        matchAll: BooleanOperand
     ): EqualsPattern =
-        StringExpression.eqPattern(this, pattern, matchAll, ignoreCase)
+        StringExpression.eqPattern(this, pattern, ignoreCase, matchAll)
 
-    public fun eqPattern(pattern: String, matchAll: Boolean, ignoreCase: Boolean): EqualsPattern =
-        eqPattern(pattern.v, matchAll.v, ignoreCase.v)
+    public fun eqPattern(pattern: String, ignoreCase: Boolean, matchAll: Boolean): EqualsPattern =
+        eqPattern(pattern.v, ignoreCase.v, matchAll.v)
 
     public val ascii: Ascii
         get() = StringExpression.ascii(this)
@@ -529,18 +529,18 @@ public sealed class StringExpression : StringVariable(), Expression {
         public fun eq(
             left: StringOperand,
             right: StringOperand,
+            ignoreCase: BooleanOperand,
             matchAll: BooleanOperand,
-            ignoreCase: BooleanOperand
         ): Equals =
-            Equals(listOf(left, right, matchAll, ignoreCase) as List<Variable>)
+            Equals(listOf(left, right, ignoreCase, matchAll) as List<Variable>)
 
         public fun eqPattern(
             left: StringOperand,
             right: StringOperand,
-            matchAll: BooleanOperand,
-            ignoreCase: BooleanOperand
+            ignoreCase: BooleanOperand,
+            matchAll: BooleanOperand
         ): EqualsPattern =
-            EqualsPattern(listOf(left, right, matchAll, ignoreCase) as List<Variable>)
+            EqualsPattern(listOf(left, right, ignoreCase, matchAll) as List<Variable>)
 
         public fun ascii(variable: StringOperand): Ascii = Ascii(listOf(variable) as List<Variable>)
 

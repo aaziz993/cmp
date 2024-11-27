@@ -42,10 +42,6 @@ public data class DBConfig(
     val defaultSchema: SchemaConfig? = null,
     val logTooMuchResultSetsThreshold: Int? = null,
     val preserveKeywordCasing: Boolean? = null,
-//    val maxAttempts: Int = 1,
-//    val minRetryDelay: Long? = null,
-//    val maxRetryDelay: Long? = null,
-//    val queryTimeout: Long? = null,
     override val enabled: Boolean = true
 ) : EnabledConfig {
 

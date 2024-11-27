@@ -72,7 +72,7 @@ internal fun Any.exp(name: String, value: Value<*>, getColumn: (name: String) ->
     }
 
     return this::class.memberFunctions.filter { it.name == name && it.parameters.size == 2 }.let {
-        it.find { (it.parameters[1].type.classifier !is KTypeParameter) && vkClass.isSubclassOf(it.parameters[1].type.kClass) }
+        it.find { function-> (function.parameters[1].type.classifier !is KTypeParameter) && vkClass.isSubclassOf(function.parameters[1].type.kClass) }
             ?: it.find { it.parameters[1].type.classifier is KTypeParameter }
     }!!.call(this, v)!!
 }
