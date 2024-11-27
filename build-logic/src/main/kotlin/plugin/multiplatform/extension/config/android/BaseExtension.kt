@@ -110,7 +110,6 @@ internal fun Project.configureBaseExtension(
 //            }
 //        }
 
-
         packaging {
             resources {
                 excludes += "/META-INF/{AL2.0,LGPL2.1}"
@@ -119,6 +118,10 @@ internal fun Project.configureBaseExtension(
         lint {
             checkReleaseBuilds = false
             abortOnError = false
+        }
+
+        dependencies {
+            add("lintChecks", lib("compose.lint.checks"))
         }
     }
 

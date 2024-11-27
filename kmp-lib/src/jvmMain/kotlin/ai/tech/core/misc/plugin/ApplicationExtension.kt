@@ -4,6 +4,7 @@ import ai.tech.core.data.crud.CRUDRepository
 import ai.tech.core.data.database.exposed.getExposedTable
 import ai.tech.core.data.database.kotysa.getKotysaTable
 import ai.tech.core.data.database.model.config.DBConfig
+import ai.tech.core.misc.firebase.FirebaseAdmin
 import ai.tech.core.misc.model.config.EnabledConfig
 import ai.tech.core.misc.model.config.server.ServerConfig
 import ai.tech.core.misc.model.config.server.ServerHostConfig
@@ -155,6 +156,8 @@ public fun Application.configure(
 ) {
 
     config.log.configureKmLogging()
+
+    FirebaseAdmin.init()
 
     configureKoin(config, koinApplication)
 

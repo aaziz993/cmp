@@ -22,17 +22,18 @@ import kotlinx.coroutines.flow.flow
 import kotlinx.serialization.InternalSerializationApi
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.PolymorphicSerializer
+import kotlinx.serialization.builtins.ListSerializer
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonArray
 import kotlinx.serialization.serializer
 
-public open class CRUDClient<T : Any>(
+public open class CRUDClient<T : Any, ID : Any>(
     public val serializer: KSerializer<T>,
     httpClient: HttpClient,
     public val address: String,
     public val authService: AuthService? = null,
-) : AbstractApiHttpClient(httpClient, address), CRUDRepository<T> {
+) : AbstractApiHttpClient(httpClient, address), CRUDRepository<T, ID> {
 
     private val api = ktorfit.createCRUDApi()
 
@@ -40,11 +41,16 @@ public open class CRUDClient<T : Any>(
         append(HttpHeaders.ContentType, ContentType.Application.Json)
     }
 
-    override suspend fun <R> transactional(block: suspend CRUDRepository<T>.() -> R): R {
+    override suspend fun <R> transactional(block: suspend CRUDRepository<T, ID>.() -> R): R {
         throw UnsupportedOperationException("Not supported by remote client yet")
     }
 
     override suspend fun insert(entities: List<T>): Unit = api.insert(entities)
+
+    @Suppress("UNCHECKED_CAST")
+    override suspend fun insertAndReturn(entities: List<T>): List<ID> = api.insertAndReturn(entities).execute {
+        Json.Default.decodeFromString(ListSerializer(PolymorphicSerializer(Any::class)), it.bodyAsText()) as List<ID>
+    }
 
     override suspend fun update(entities: List<T>): List<Boolean> = api.update(entities)
 
@@ -57,6 +63,8 @@ public open class CRUDClient<T : Any>(
                 },
             ),
         )
+
+    override suspend fun upsert(entities: List<T>): Unit = api.upsert(entities)
 
     override fun find(sort: List<Order>?, predicate: BooleanVariable?, limitOffset: LimitOffset?): Flow<T> =
         flow {
@@ -89,7 +97,7 @@ public open class CRUDClient<T : Any>(
         api.delete(predicate)
 
     @Suppress("UNCHECKED_CAST")
-    override suspend fun <T : Comparable<T>> aggregate(aggregate: AggregateExpression<T>, predicate: BooleanVariable?): T =
+    override suspend fun <T> aggregate(aggregate: AggregateExpression<T>, predicate: BooleanVariable?): T =
         api.aggregate(
             MultiPartFormDataContent(
                 formData {

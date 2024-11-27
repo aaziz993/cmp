@@ -201,8 +201,10 @@ kgraphql = "0.19.0"
 # Firebase
 firebase-bom = "33.6.0"
 firebase-crashlytics-plugin = "3.0.2"
-# Google play services
-google-play-services = "4.4.1"
+# Google services
+google-play-services = "4.4.2"
+# firebase auth
+firebase-admin = "9.4.1"
 
 # Metrics
 prometheus = "1.12.2"
@@ -614,6 +616,7 @@ apollo-normalized-cache = { module = "com.apollographql.apollo3:apollo-normalize
 # Firebase
 firebase-bom = { module = "com.google.firebase:firebase-bom", version.ref = "firebase-bom" }
 firebase-crashlyticsKtx = { module = "com.google.firebase:firebase-crashlytics-ktx" }
+firebase-admin = { module = "com.google.firebase:firebase-admin", version.ref = "firebase-admin" }
 
 # Metrics
 # prometheus

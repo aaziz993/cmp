@@ -143,6 +143,7 @@ internal fun Project.configureKotlinMultiplatformExtension(extension: KotlinMult
                 implementation(lib("jsch"))
                 implementation(lib("sshj"))
                 implementation(lib("ktor.client.okhttp"))
+                implementation(lib("firebase.admin"))
             }
 
             jvmMain.dependencies {

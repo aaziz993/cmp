@@ -137,9 +137,6 @@ public abstract class AbstractExposedCRUDRepository<T : Any, ID : Any>(
         table.batchInsert(entities.insertable) { entity -> set(entity) }.map { it[table.primaryKey!!.columns[0]] as ID }
     }
 
-    override suspend fun upsert(entities: List<T>): Unit = transactional {
-        entities.forEach { entity -> table.upsert { it.set(entityCreatedAtAware(entity)) } }
-    }
 
     override suspend fun update(entities: List<T>): List<Boolean> = transactional {
         entities.map { entity -> table.update { it.set(entityUpdatedAtAware(entity)) } > 0 }
@@ -156,6 +153,10 @@ public abstract class AbstractExposedCRUDRepository<T : Any, ID : Any>(
                 }
             }
         }.map(Int::toLong)
+    }
+
+    override suspend fun upsert(entities: List<T>): Unit = transactional {
+        entities.forEach { entity -> table.upsert { it.set(entityCreatedAtAware(entity)) } }
     }
 
     override fun find(sort: List<Order>?, predicate: BooleanVariable?, limitOffset: LimitOffset?): Flow<T> = flow {

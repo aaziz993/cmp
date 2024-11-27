@@ -44,6 +44,7 @@ public val DBConfig.hikariDataSource: DataSource
                 this@hikariDataSource.initializationFailTimeout?.let { initializationFailTimeout = it.inWholeMilliseconds }
                 this@hikariDataSource.keepaliveTime?.let { keepaliveTime = it.inWholeMilliseconds }
                 this@hikariDataSource.isAutoCommit?.let { isAutoCommit = it }
+                // As of exposed version 0.46.0, if these options are set here, they do not need to be duplicated in DatabaseConfig
                 isReadOnly = this@hikariDataSource.isReadOnly
                 transactionIsolation = this@hikariDataSource.transactionIsolation
             },

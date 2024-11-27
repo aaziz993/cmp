@@ -110,8 +110,6 @@ public abstract class AbstractKotysaCRUDRepository<T : Any, ID : Any>(
     final override suspend fun insertAndReturn(entities: List<T>): List<ID> =
         client.insertAndReturn(*entities.insertable).map { kotysaTable.identityColumn[it] as ID }.toList()
 
-    final override suspend fun upsert(entities: List<T>): Nothing = throw UnsupportedOperationException()
-
     override suspend fun update(entities: List<T>): List<Boolean> = client.transactional {
         if (kotysaTable.updatedAtColumn == null) {
             entities.map { entity -> update(entity).execute() > 0L }
@@ -132,6 +130,8 @@ public abstract class AbstractKotysaCRUDRepository<T : Any, ID : Any>(
             entities.map { update(it).predicate(predicate).execute() }
         }
     }!!
+
+    final override suspend fun upsert(entities: List<T>): Nothing = throw UnsupportedOperationException()
 
     final override fun find(
         sort: List<Order>?,

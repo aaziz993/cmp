@@ -10,6 +10,7 @@ import arrow.continuations.SuspendApp
 import arrow.continuations.ktor.server
 import arrow.fx.coroutines.resourceScope
 import io.ktor.server.application.*
+import io.ktor.server.engine.embeddedServer
 import io.ktor.server.netty.*
 import kotlinx.coroutines.awaitCancellation
 import kotlinx.serialization.InternalSerializationApi
