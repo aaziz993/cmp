@@ -1,14 +1,13 @@
 package ai.tech.core.misc.auth.firebase.server
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.FirebaseToken
 import io.ktor.http.auth.*
-import io.ktor.serialization.*
 import io.ktor.server.application.*
 import io.ktor.server.auth.*
 import io.ktor.server.request.*
 import io.ktor.server.response.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
-import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.auth.FirebaseToken
 
 public class FirebaseAuthProvider(config: FirebaseConfig): AuthenticationProvider(config) {
     public val authHeader: (ApplicationCall) -> HttpAuthHeader? = config.authHeader
@@ -83,7 +82,7 @@ private fun HttpAuthHeader.Companion.bearerAuthChallenge(realm: String): HttpAut
 
 private fun ApplicationRequest.parseAuthorizationHeaderOrNull() = try {
     parseAuthorizationHeader()
-} catch (ex: IllegalArgumentException) {
+} catch (_: IllegalArgumentException) {
     println("failed to parse token")
     null
 }
