@@ -93,7 +93,6 @@ public class JavaAppPlugin : Plugin<Project> {
                     ksp(lib("ktorfit.ksp"))
                     ksp(lib("koin.ksp.compiler"))
                     // Testing
-                    testImplementation(lib("kotlin.test"))
                     testImplementation(bundle("kotest.multiplatform"))
                     testImplementation(lib("kotest.runner.junit5"))
                     testImplementation(lib("kotlinx.coroutines.test"))
