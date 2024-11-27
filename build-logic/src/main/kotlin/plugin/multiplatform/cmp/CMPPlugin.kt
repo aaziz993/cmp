@@ -7,8 +7,8 @@ import org.jetbrains.compose.ComposeExtension
 import org.jetbrains.compose.ExperimentalComposeLibrary
 import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
 import plugin.extension.compose
-import plugin.multiplatform.extension.config.androidTestImplementation
-import plugin.multiplatform.extension.config.configureComposeKotlinMultiplatformExtension
+import plugin.multiplatform.extension.config.android.androidTestImplementation
+import plugin.multiplatform.extension.config.kmp.configureComposeKotlinMultiplatformExtension
 import plugin.extension.config.debugImplementation
 import plugin.extension.id
 import plugin.extension.lib

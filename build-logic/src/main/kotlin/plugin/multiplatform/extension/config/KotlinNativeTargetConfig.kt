@@ -9,6 +9,18 @@ internal fun Project.configureKotlinNativeTarget(target: KotlinNativeTarget) =
         compilations["main"].compileTaskProvider.configure {
             compilerOptions {
                 freeCompilerArgs.add("-Xexport-kdoc")
+                freeCompilerArgs.add("-Xallocator=custom")
+                freeCompilerArgs.add("-XXLanguage:+ImplicitSignedToUnsignedIntegerConversion")
+                freeCompilerArgs.add("-Xadd-light-debug=enable")
+
+                freeCompilerArgs.addAll(
+                    "-opt-in=kotlin.RequiresOptIn",
+                    "-opt-in=kotlin.time.ExperimentalTime",
+                    "-opt-in=kotlinx.coroutines.ExperimentalCoroutinesApi",
+                    "-opt-in=kotlinx.coroutines.FlowPreview",
+                    "-opt-in=kotlinx.cinterop.ExperimentalForeignApi",
+                    "-opt-in=kotlinx.cinterop.BetaInteropApi",
+                )
             }
         }
     }

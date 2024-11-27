@@ -88,7 +88,16 @@ public abstract class AbstractStoreFactory<Network : Any, Local : Any, Domain : 
             .build()
 
     private fun createUpdater(): Updater<Operation, Domain, Long> =
-        Updater.by(post = { _, entity -> UpdaterResult.Success.Typed(networkRepository.update(domainToNetwork(entity))[0]) })
+        Updater.by(
+            post = { _, entity ->
+                try {
+                    UpdaterResult.Success.Typed(networkRepository.update(domainToNetwork(entity))[0])
+                }
+                catch (e: Exception) {
+                    UpdaterResult.Error.Message(e.stackTraceToString())
+                }
+            },
+        )
 
     public fun createBookkeeper(): Bookkeeper<Operation> =
         Bookkeeper.by(
@@ -96,14 +105,31 @@ public abstract class AbstractStoreFactory<Network : Any, Local : Any, Domain : 
                 bookKeeperRepository.find(predicate = "operationId".f eq operation.id).firstOrNull()?.timestamp
             },
             setLastFailedSync = { operation, timestamp ->
-                bookKeeperRepository.insert(BookKeeperEntity(operationId = operation.id, timestamp = timestamp))
-                true
+                try {
+                    bookKeeperRepository.insert(BookKeeperEntity(operationId = operation.id, timestamp = timestamp))
+                    true
+                }
+                catch (e: Exception) {
+                    false
+                }
             },
             clear = { operation ->
-                bookKeeperRepository.delete("operationId".f eq operation.id) > 0
+                try {
+                    bookKeeperRepository.delete("operationId".f eq operation.id)
+                    true
+                }
+                catch (e: Exception) {
+                    false
+                }
             },
             clearAll = {
-                bookKeeperRepository.delete() > 0
+                try {
+                    bookKeeperRepository.delete()
+                    true
+                }
+                catch (e: Exception) {
+                    false
+                }
             },
         )
 }

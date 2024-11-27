@@ -1,15 +1,19 @@
-package plugin.multiplatform.extension.config
+package plugin.multiplatform.extension.config.kmp
 
 import org.gradle.api.Project
 import org.gradle.kotlin.dsl.withType
 import org.jetbrains.compose.ExperimentalComposeLibrary
 import org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi
 import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
+import org.jetbrains.kotlin.gradle.dsl.KotlinTargetContainerWithPresetFunctions
 import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTarget
 import plugin.extension.bundle
 import plugin.extension.compose
 import plugin.extension.lib
 import plugin.extension.version
+import plugin.multiplatform.extension.config.configureKotlinAndroidTarget
+import plugin.multiplatform.extension.config.configureKotlinIosTarget
+import plugin.multiplatform.extension.config.configureKotlinNativeTarget
 
 internal fun Project.configureKotlinMultiplatformExtension(extension: KotlinMultiplatformExtension) =
     extension.apply {
@@ -101,7 +105,7 @@ internal fun Project.configureKotlinMultiplatformExtension(extension: KotlinMult
                     implementation(bundle("multiplatform.settings"))
                     implementation(lib("kstore"))
                     implementation(bundle("sqldelight"))
-                    implementation(lib("store5"))
+                    implementation(bundle("store"))
                     implementation(bundle("ktor.serialization"))
                     implementation(bundle("ktor.client"))
                     implementation(bundle("kotlinx.rpc.serialization"))
@@ -153,6 +157,7 @@ internal fun Project.configureKotlinMultiplatformExtension(extension: KotlinMult
                 implementation(bundle("jdbc"))
                 implementation(bundle("r2dbc"))
                 implementation(bundle("kotysa"))
+                implementation(bundle("exposed"))
                 implementation(lib("dataframe"))
                 implementation(lib("kandy"))
                 implementation(lib("ktor.serialization.kotlinx.xml"))
@@ -233,56 +238,3 @@ internal fun Project.configureKotlinMultiplatformExtension(extension: KotlinMult
         // https://kotlinlang.org/docs/native-objc-interop.html#export-of-kdoc-comments-to-generated-objective-c-headers
         targets.withType<KotlinNativeTarget> { configureKotlinNativeTarget(this) }
     }
-
-internal fun Project.configureComposeKotlinMultiplatformExtension(extension: KotlinMultiplatformExtension) = extension.apply {
-    sourceSets.apply {
-        commonMain.dependencies {
-            implementation(compose.runtime)
-            implementation(compose.foundation)
-            implementation(compose.material3)
-            implementation(compose.ui)
-            implementation(compose.components.resources)
-            implementation(compose.components.uiToolingPreview)
-            implementation(compose.material3AdaptiveNavigationSuite)
-            implementation(compose.materialIconsExtended)
-            implementation(lib("compose.colorpicker"))
-            implementation(bundle("compose.icons"))
-//                            implementation(lib("squircle.shape"))
-            implementation(bundle("material3.adaptive"))
-            implementation(bundle("compose.settings.ui"))
-            implementation(bundle("androidx.paging"))
-            implementation(bundle("androidx.lifecycle"))
-            implementation(bundle("androidx.navigation"))
-            implementation(lib("filekit.compose"))
-            implementation(bundle("koin.compose.multiplatform"))
-        }
-
-        commonTest.dependencies {
-            @OptIn(ExperimentalComposeLibrary::class)
-            implementation(compose.uiTest)
-        }
-
-        jvmMain {
-            dependencies {
-                implementation(compose.desktop.currentOs)
-            }
-        }
-
-        getByName("mobileMain").dependencies {
-            implementation(lib("permissions.compose"))
-        }
-
-        androidMain.dependencies {
-            implementation(compose.preview)
-            implementation(lib("androidx.activity.compose"))
-        }
-
-        iosMain.dependencies {
-            implementation(lib("androidx.paging.runtime.uikit"))
-        }
-
-        jsMain.dependencies {
-            implementation(compose.html.core)
-        }
-    }
-}

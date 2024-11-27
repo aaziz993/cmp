@@ -16,7 +16,7 @@ import org.jetbrains.kotlin.gradle.dsl.KotlinProjectExtension
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompilationTask
 import plugin.BasePlugin
 import plugin.extension.config.*
-import plugin.multiplatform.extension.config.configureBaseExtension
+import plugin.multiplatform.extension.config.android.configureBaseExtension
 import plugin.extension.config.configureKotlinProjectExtension
 import plugin.extension.config.configureRoomExtension
 import plugin.extension.config.configureSqlDelightExtension
@@ -25,7 +25,7 @@ import plugin.extension.config.configureKarakumExtension
 import io.github.sgrishchenko.karakum.gradle.plugin.KarakumExtension
 import io.github.sgrishchenko.karakum.gradle.plugin.tasks.KarakumGenerate
 import org.jetbrains.kotlin.gradle.tasks.Kotlin2JsCompile
-import plugin.multiplatform.extension.config.configureKotlinMultiplatformExtension
+import plugin.multiplatform.extension.config.kmp.configureKotlinMultiplatformExtension
 
 internal class KMPPlugin(
     private val androidPluginId: String,

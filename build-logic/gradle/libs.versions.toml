@@ -114,6 +114,8 @@ androidx-constraint-layout = "2.2.0"
 androidx-core-ktx = "1.15.0"
 androidx-espresso-core = "3.6.1"
 androidx-ui-test = "1.7.5"
+desugar = "2.1.2"
+compose-lint-checks = "1.2.0"
 # Desktop
 # in project version
 desktop-package-version = "1.0.0"
@@ -134,6 +136,7 @@ androidx-test-junit = "1.2.1"
 compose-multiplatform = "1.7.0"
 colorpicker = "1.1.2"
 compose-icons = "1.1.1"
+coil3 = "3.0.0-rc01"
 squircle-shape = "2.0.10"
 material3-adaptive = "1.0.0"
 compose-settings = "2.4.0"
@@ -141,6 +144,7 @@ androidx-paging = "3.3.0-alpha02-0.5.1"
 androidx-navigation-compose = "2.8.0-alpha10"
 androidx-material-navigation = "1.7.0-beta02"
 filekit-compose = "0.8.1"
+circuit = "0.24.0"
 # Multiplatform settings
 multiplatform-settings = "1.1.1"
 compass = "1.2.4"
@@ -160,8 +164,6 @@ room = "2.7.0-alpha11"
 realm = "10.19.0"
 # SQLite
 sqlite = "2.5.0-alpha11"
-# Store is a typed repository that returns a flow of Data /Loading /Error from local and network data sources
-store5 = "5.1.0-alpha05"
 # JDBC
 mariadb-java-client = "3.5.0"
 postgresql = "42.7.4"
@@ -182,6 +184,8 @@ exposed = "0.56.0"
 # Kotysa ORM (postgresql, my sql, Microsoft SQL server, maria db, oracle, h 2 for jvm, android)
 kotysa = "3.2.2"
 kotysa-r2dbc = "3.2.1"
+# Store is a typed repository that returns a flow of Data /Loading /Error from local and network data sources
+store = "5.1.0-alpha05"
 # Ktor
 ktor = "3.0.1"
 ktor-swagger-ui = "2.9.0"
@@ -357,6 +361,9 @@ androidx-material = { group = "com.google.android.material", name = "material", 
 androidx-constraintlayout = { group = "androidx.constraintlayout", name = "constraintlayout", version.ref = "androidx-constraint-layout" }
 androidx-uitest-test-manifest = { module = "androidx.compose.ui:ui-test-manifest", version.ref = "androidx-ui-test" }
 androidx-uitest-junit4 = { module = "androidx.compose.ui:ui-test-junit4", version.ref = "androidx-ui-test" }
+# tooling
+android-desugar-jdk-libs = { module = "com.android.tools:desugar_jdk_libs", version.ref = "desugar" }
+compose-lint-checks = { module = "com.slack.lint.compose:compose-lint-checks", version.ref = "compose-lint-checks" }
 
 # Web
 seskar = { module = "io.github.turansky.seskar:seskar-core", version.ref = "seskar" }
@@ -376,6 +383,11 @@ compose-icons-linea = { module = "br.com.devsrsouza.compose.icons:linea", versio
 compose-icons-octicons = { module = "br.com.devsrsouza.compose.icons:octicons", version.ref = "compose-icons" }
 compose-icons-simple-icons = { module = "br.com.devsrsouza.compose.icons:simple-icons", version.ref = "compose-icons" }
 compos-icons-tabler-icons = { module = "br.com.devsrsouza.compose.icons:tabler-icons", version.ref = "compose-icons" }
+# network image
+coil = { module = "io.coil-kt.coil3:coil", version.ref = "coil3" }
+coil-compose-core = { module = "io.coil-kt.coil3:coil-compose-core", version.ref = "coil3" }
+coil-compose = { module = "io.coil-kt.coil3:coil-compose", version.ref = "coil3" }
+coil-network-ktor = { module = "io.coil-kt.coil3:coil-network-ktor3", version.ref = "coil3" }
 # additional cricle shapes
 squircle-shape = { group = "io.github.stoyan-vuchev", name = "squircle-shape", version.ref = "squircle-shape" }
 # material3 Adaptive
@@ -403,6 +415,9 @@ androidx-material-navigation = { module = "org.jetbrains.compose.material:materi
 # File picker
 filekit-compose = { module = "io.github.vinceglb:filekit-compose", version.ref = "filekit-compose" }
 
+# Circuit is a simple, lightweight, and extensible framework for building Kotlin applications that’s Compose from the ground up.
+circuit-foundation = { module = "com.slack.circuit:circuit-foundation", version.ref = "circuit" }
+
 # Multiplatform settings
 multiplatform-settings = { module = "com.russhwolf:multiplatform-settings", version.ref = "multiplatform-settings" }
 multiplatform-settings-coroutines = { module = "com.russhwolf:multiplatform-settings-coroutines", version.ref = "multiplatform-settings" }
@@ -414,6 +429,29 @@ multiplatform-settings-serialization = { module = "com.russhwolf:multiplatform-s
 permissions = { module = "dev.icerock.moko:permissions", version.ref = "permissions" }
 permissions-compose = { module = "dev.icerock.moko:permissions-compose", version.ref = "permissions" }
 permissions-test = { module = "dev.icerock.moko:permissions-test", version.ref = "permissions" }
+
+# Map for Js, Jvm and Android
+worldwind = { module = "earth.worldwind:worldwind", version.ref = "worldwind" }
+
+# JVM map
+jxmapviewer2 = { module = "org.jxmapviewer:jxmapviewer2", version.ref = "jxmapviewer2" }
+
+# Compass Geolocation
+compass-autocomplete = { module = "dev.jordond.compass:autocomplete", version.ref = "compass" }
+compass-autocomplete-mobile = { module = "dev.jordond.compass:autocomplete-mobile", version.ref = "compass" }
+compass-autocomplete-web = { module = "dev.jordond.compass:autocomplete-web", version.ref = "compass" }
+compass-autocomplete-geocoder-googlemaps = { module = "dev.jordond.compass:autocomplete-geocoder-googlemaps", version.ref = "compass" }
+compass-autocomplete-geocoder-mapbox = { module = "dev.jordond.compass:autocomplete-geocoder-mapbox", version.ref = "compass" }
+compass-geocoder = { module = "dev.jordond.compass:geocoder", version.ref = "compass" }
+compass-geocoder-mobile = { module = "dev.jordond.compass:geocoder-mobile", version.ref = "compass" }
+compass-geocoder-web = { module = "dev.jordond.compass:geocoder-web", version.ref = "compass" }
+compass-geocoder-web-googlemaps = { module = "dev.jordond.compass:geocoder-web-googlemaps", version.ref = "compass" }
+compass-geocoder-web-mapbox = { module = "dev.jordond.compass:geocoder-web-mapbox", version.ref = "compass" }
+compass-geocoder-web-opencage = { module = "dev.jordond.compass:geocoder-web-opencage", version.ref = "compass" }
+compass-geolocation = { module = "dev.jordond.compass:geolocation", version.ref = "compass" }
+compass-geolocation-mobile = { module = "dev.jordond.compass:geolocation-mobile", version.ref = "compass" }
+compass-geolocation-browser = { module = "dev.jordond.compass:geolocation-browser", version.ref = "compass" }
+compass-permissions-mobile = { module = "dev.jordond.compass:permissions-mobile", version.ref = "compass" }
 
 # Library that assists in saving and restoring objects to and from disk using kotlinx.coroutines, kotlinx.serialization and kotlinx.io
 # for common
@@ -444,32 +482,6 @@ androidx-sqlite-bundled = { module = "androidx.sqlite:sqlite-bundled", version.r
 # Realm database
 realm = { module = "io.realm:realm-gradle-plugin", version.ref = "realm" }
 
-# Store is a typed repository that returns a flow of Data /Loading /Error from local and network data sources
-store5 = { group = "org.mobilenativefoundation.store", name = "store5", version.ref = "store5" }
-
-# Map for Js, Jvm and Android
-worldwind = { module = "earth.worldwind:worldwind", version.ref = "worldwind" }
-
-# JVM map
-jxmapviewer2 = { module = "org.jxmapviewer:jxmapviewer2", version.ref = "jxmapviewer2" }
-
-# Compass Geolocation
-compass-autocomplete = { module = "dev.jordond.compass:autocomplete", version.ref = "compass" }
-compass-autocomplete-mobile = { module = "dev.jordond.compass:autocomplete-mobile", version.ref = "compass" }
-compass-autocomplete-web = { module = "dev.jordond.compass:autocomplete-web", version.ref = "compass" }
-compass-autocomplete-geocoder-googlemaps = { module = "dev.jordond.compass:autocomplete-geocoder-googlemaps", version.ref = "compass" }
-compass-autocomplete-geocoder-mapbox = { module = "dev.jordond.compass:autocomplete-geocoder-mapbox", version.ref = "compass" }
-compass-geocoder = { module = "dev.jordond.compass:geocoder", version.ref = "compass" }
-compass-geocoder-mobile = { module = "dev.jordond.compass:geocoder-mobile", version.ref = "compass" }
-compass-geocoder-web = { module = "dev.jordond.compass:geocoder-web", version.ref = "compass" }
-compass-geocoder-web-googlemaps = { module = "dev.jordond.compass:geocoder-web-googlemaps", version.ref = "compass" }
-compass-geocoder-web-mapbox = { module = "dev.jordond.compass:geocoder-web-mapbox", version.ref = "compass" }
-compass-geocoder-web-opencage = { module = "dev.jordond.compass:geocoder-web-opencage", version.ref = "compass" }
-compass-geolocation = { module = "dev.jordond.compass:geolocation", version.ref = "compass" }
-compass-geolocation-mobile = { module = "dev.jordond.compass:geolocation-mobile", version.ref = "compass" }
-compass-geolocation-browser = { module = "dev.jordond.compass:geolocation-browser", version.ref = "compass" }
-compass-permissions-mobile = { module = "dev.jordond.compass:permissions-mobile", version.ref = "compass" }
-
 # Exposed is a lightweight SQL library on top of a JDBC driver for the Kotlin language.
 # Exposed has two flavors of database access: typesafe SQL wrapping DSL and lightweight Data Access Objects (DAO).
 exposed = { module = "org.jetbrains.exposed:exposed-core", version.ref = "exposed" }
@@ -483,6 +495,10 @@ exposed-money = { module = "org.jetbrains.exposed:exposed-money", version.ref = 
 # Kotysa ORM (postgresql, my sql, microsoft sql server, maria db, oracle, h 2 for jvm, android)
 kotysa = { module = "org.ufoss.kotysa:kotysa-core", version.ref = "kotysa" }
 kotysa-r2dbc = { module = "org.ufoss.kotysa:kotysa-r2dbc", version.ref = "kotysa-r2dbc" }
+
+# Store is a typed repository that returns a flow of Data /Loading /Error from local and network data sources
+store = { group = "org.mobilenativefoundation.store", name = "store5", version.ref = "store" }
+store-cache = { group = "org.mobilenativefoundation.store", name = "cache5", version.ref = "store" }
 
 # Ktor
 ktor-serialization-kotlinx-json = { module = "io.ktor:ktor-serialization-kotlinx-json", version.ref = "ktor" }
@@ -748,6 +764,12 @@ compose-icons = [
     "compose-icons-simple-icons",
     "compos-icons-tabler-icons"
 ]
+coil-compose = [
+    "coil",
+    "coil-compose-core",
+    "coil-compose",
+    "coil-network-ktor"
+]
 material3-adaptive = [
     "material3-window-size-clazz",
     #    "material3-adaptive-navigation-suite",
@@ -813,6 +835,12 @@ exposed = [
 kotysa = [
     "kotysa",
     "kotysa-r2dbc",
+]
+
+# Store
+store = [
+    "store",
+    "store-cache"
 ]
 
 # Ktor
@@ -1025,7 +1053,7 @@ ktorfit = { id = "de.jensklingenberg.ktorfit", version.ref = "ktorfit" }
 apollo3 = { id = "com.apollographql.apollo3", version.ref = "apollo3" }
 
 # Firebase
-firebase-crashlytics = { id = "com.google.firebase.crashlytics", version.ref = "firebase-crashlytics-plugin"}
+firebase-crashlytics = { id = "com.google.firebase.crashlytics", version.ref = "firebase-crashlytics-plugin" }
 
 # Google play services
 google-playServices = { id = "com.google.gms.google-services", version.ref = "google-play-services" }

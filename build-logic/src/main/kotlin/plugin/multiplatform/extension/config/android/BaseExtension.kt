@@ -1,20 +1,21 @@
-@file:Suppress("UnstableApiUsage")
-
-package plugin.multiplatform.extension.config
+package plugin.multiplatform.extension.config.android
 
 import ANDROID_JAVA_SOURCE_VERSION
 import ANDROID_JAVA_TARGET_VERSION
+import com.android.build.api.dsl.ApplicationExtension
+import com.android.build.api.dsl.ApplicationProductFlavor
 import com.android.build.api.dsl.CommonExtension
-import com.android.build.gradle.AppExtension
 import com.android.build.gradle.BaseExtension
-import com.android.build.gradle.LibraryExtension
-import com.android.build.gradle.internal.dsl.BaseAppModuleExtension
+import kotlin.text.get
 import org.gradle.api.Project
-import org.gradle.api.artifacts.Dependency
-import org.gradle.api.artifacts.dsl.DependencyHandler
+import org.gradle.kotlin.dsl.dependencies
 import org.gradle.kotlin.dsl.get
 import plugin.extension.config.toJavaVersion
+import plugin.extension.lib
 import plugin.extension.version
+import plugin.multiplatform.extension.config.android.model.BuildFlavor
+import plugin.multiplatform.extension.config.android.model.BuildType
+import plugin.multiplatform.extension.config.android.model.FlavorDimension
 
 internal fun Project.configureBaseExtension(
     extension: BaseExtension,
@@ -40,7 +41,12 @@ internal fun Project.configureBaseExtension(
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
 
-        consumerProguardFiles(consumerProguardFile)
+        manifestPlaceholders["appAuthRedirectScheme"] = "empty"
+
+        missingDimensionStrategy(
+            FlavorDimension.contentType.name,
+            BuildFlavor.demo.name,
+        )
 
         vectorDrawables {
             useSupportLibrary = true
@@ -52,10 +58,12 @@ internal fun Project.configureBaseExtension(
                     "$projectDir/schemas"
             }
         }
+
+        consumerProguardFiles(consumerProguardFile)
     }
 
     buildTypes {
-        getByName("release") {
+        getByName(BuildType.RELEASE.applicationIdSuffix) {
             isMinifyEnabled = true
             debuggable(false)
             proguardFiles(
@@ -79,7 +87,7 @@ internal fun Project.configureBaseExtension(
                 "test-proguard-rules.pro",
             )
         }
-        getByName("debug") {
+        getByName(BuildType.DEBUG.applicationIdSuffix) {
             isMinifyEnabled = false
             debuggable(true)
             proguardFile(proguardFile)
@@ -87,6 +95,22 @@ internal fun Project.configureBaseExtension(
     }
 
     (this as CommonExtension<*, *, *, *, *, *>).apply {
+//        flavorDimensions += FlavorDimension.contentType.name
+//
+//        productFlavors {
+//            BuildFlavor.values().forEach {
+//                create(it.name) {
+//                    dimension = it.dimension.name
+//                    if (this is ApplicationExtension && this is ApplicationProductFlavor) {
+//                        if (it.applicationIdSuffix != null) {
+//                            this.applicationIdSuffix = it.applicationIdSuffix
+//                        }
+//                    }
+//                }
+//            }
+//        }
+
+
         packaging {
             resources {
                 excludes += "/META-INF/{AL2.0,LGPL2.1}"
@@ -103,37 +127,11 @@ internal fun Project.configureBaseExtension(
             providers.gradleProperty("android.compile.options.source.compatibility").getOrElse(ANDROID_JAVA_SOURCE_VERSION.toString()).toInt().toJavaVersion()
         targetCompatibility =
             providers.gradleProperty("android.compile.options.target.compatibility").getOrElse(ANDROID_JAVA_TARGET_VERSION.toString()).toInt().toJavaVersion()
+
+        isCoreLibraryDesugaringEnabled = true
+    }
+
+    dependencies {
+        coreLibraryDesugaring(lib("android.desugar.jdk.libs"))
     }
 }
-
-internal fun Project.configureLibraryExtension(extension: LibraryExtension) = extension.apply {
-
-}
-
-internal fun Project.configureBaseAppModuleExtension(extension: BaseAppModuleExtension) = extension.apply {
-    defaultConfig {
-        applicationId = group.toString()
-    }
-
-    (this as AppExtension).apply {
-
-        buildTypes {
-            getByName("release") {
-                isShrinkResources = true
-            }
-            getByName("debug") {
-                isShrinkResources = false
-            }
-        }
-    }
-
-    buildFeatures {
-        compose = true
-    }
-}
-
-public fun DependencyHandler.androidTestImplementation(dependencyNotation: Any): Dependency? =
-    add("androidTestImplementation", dependencyNotation)
-
-
-

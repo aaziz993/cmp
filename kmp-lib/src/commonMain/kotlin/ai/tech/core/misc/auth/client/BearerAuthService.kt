@@ -10,20 +10,26 @@ import io.ktor.client.call.body
 import io.ktor.client.plugins.auth.*
 import io.ktor.client.plugins.auth.providers.*
 import io.ktor.client.plugins.defaultRequest
+import io.ktor.client.request.forms.formData
 import io.ktor.client.request.forms.submitForm
 import io.ktor.http.ParametersBuilder
 import io.ktor.http.parameters
 
 public abstract class BearerAuthService(
-    override val name: String,
+    override val name: String?,
     httpClient: HttpClient,
     address: String,
     public val tokenUri: String,
     public val keyValue: AbstractKeyValue
 ) : AuthService {
 
-    public val authHttpClient: HttpClient = httpClient.config {
+    private val tokenKey = "${name?.let { "${it}_" }.orEmpty()}token"
+
+    override val authHttpClient: HttpClient = httpClient.config {
         install(Auth) {
+            digest()
+            formData()
+
             bearer {
                 loadTokens { getToken()?.let { BearerTokens(it.token, it.refreshToken) } }
 
@@ -42,12 +48,9 @@ public abstract class BearerAuthService(
         }
     }
 
-    private val tokenKey = "${name}_token"
-
     protected abstract suspend fun RefreshTokensParams.getTokenByRefreshToken(): BearerToken
 
     protected abstract suspend fun getToken(username: String, password: String): BearerToken
-
 
     final override suspend fun signIn(username: String, password: String): Unit =
         setToken(getToken(username, password))

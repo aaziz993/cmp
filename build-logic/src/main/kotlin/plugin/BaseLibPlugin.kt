@@ -2,7 +2,7 @@ package plugin
 
 import com.android.build.gradle.LibraryExtension
 import com.vanniktech.maven.publish.MavenPublishBaseExtension
-import plugin.multiplatform.extension.config.configureLibraryExtension
+import plugin.multiplatform.extension.config.android.configureLibraryExtension
 import plugin.extension.config.configureMavenPublishBaseExtension
 import plugin.extension.id
 import org.gradle.api.Plugin
