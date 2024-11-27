@@ -1,17 +1,16 @@
 package ai.tech.core.misc.auth.firebase.server
-
-import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.auth.FirebaseToken
 import io.ktor.http.auth.*
+import io.ktor.serialization.*
 import io.ktor.server.application.*
 import io.ktor.server.auth.*
 import io.ktor.server.request.*
 import io.ktor.server.response.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.FirebaseToken
 
-public class FirebaseAuthProvider(config: FirebaseConfig) : AuthenticationProvider(config) {
-
+public class FirebaseAuthProvider(config: FirebaseConfig): AuthenticationProvider(config) {
     public val authHeader: (ApplicationCall) -> HttpAuthHeader? = config.authHeader
     private val authFunction = config.firebaseAuthenticationFunction
 
@@ -32,8 +31,7 @@ public class FirebaseAuthProvider(config: FirebaseConfig) : AuthenticationProvid
             if (principal != null) {
                 context.principal(principal)
             }
-        }
-        catch (cause: Throwable) {
+        } catch (cause: Throwable) {
             val message = cause.message ?: cause.javaClass.simpleName
             context.error(FirebaseJWTAuthKey, AuthenticationFailedCause.Error(message))
         }
@@ -41,9 +39,9 @@ public class FirebaseAuthProvider(config: FirebaseConfig) : AuthenticationProvid
 }
 
 public class FirebaseConfig(name: String?) : AuthenticationProvider.Config(name) {
-
     internal var authHeader: (ApplicationCall) -> HttpAuthHeader? =
         { call -> call.request.parseAuthorizationHeaderOrNull() }
+
 
     public var firebaseAuthenticationFunction: AuthenticationFunction<FirebaseToken> = {
         throw NotImplementedError(FirebaseImplementationError)
@@ -54,7 +52,7 @@ public class FirebaseConfig(name: String?) : AuthenticationProvider.Config(name)
     }
 }
 
-public fun AuthenticationConfig.firebase(name: String? = null, configure: FirebaseConfig.() -> Unit) {
+public fun AuthenticationConfig.firebase(name: String? = FIREBASE_AUTH, configure: FirebaseConfig.() -> Unit) {
     val provider = FirebaseAuthProvider(FirebaseConfig(name).apply(configure))
     register(provider)
 }
@@ -69,16 +67,13 @@ public suspend fun verifyFirebaseIdToken(
             withContext(Dispatchers.IO) {
                 FirebaseAuth.getInstance().verifyIdToken(authHeader.blob)
             }
-        }
-        else {
+        } else {
             null
         }
-    }
-    catch (ex: Exception) {
+    } catch (ex: Exception) {
         ex.printStackTrace()
         return null
     } ?: return null
-
     return tokenData(call, token)
 }
 
@@ -88,13 +83,11 @@ private fun HttpAuthHeader.Companion.bearerAuthChallenge(realm: String): HttpAut
 
 private fun ApplicationRequest.parseAuthorizationHeaderOrNull() = try {
     parseAuthorizationHeader()
-}
-catch (_: IllegalArgumentException) {
+} catch (ex: IllegalArgumentException) {
     println("failed to parse token")
     null
 }
-
-private const val FirebaseJWTAuthKey: String = "FirebaseAuth"
-
+internal const val FIREBASE_AUTH = "FIREBASE_AUTH"
+internal const val FirebaseJWTAuthKey: String = "FirebaseAuth"
 private const val FirebaseImplementationError =
     "Firebase  auth validate function is not specified, use firebase { { ... } }to fix"
