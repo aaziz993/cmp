@@ -24,7 +24,7 @@ public abstract class AbstractLocalizationService {
     }
 
     public fun translateOrNull(key: String, quantity: Int = 0, vararg formatArgs: Any): String? = translations[key]?.let {
-        it[quantity].replaceWithArgs(formatArgs.map { it.toString() })
+        it[quantity].replaceWithArgs(formatArgs.map(Any::toString))
     }
 
     public fun translate(key: String, quantity: Int = 0, vararg formatArgs: Any): String =

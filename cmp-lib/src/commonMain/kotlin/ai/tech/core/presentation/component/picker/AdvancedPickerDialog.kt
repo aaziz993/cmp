@@ -48,7 +48,7 @@ public fun <T : Any> AdvancedPickerDialog(
     compareMatchers: List<Int> = listOf(0, 1, 2, 3, -3, -2, -1),
     items: List<PickerItem<T>>,
     currentItem: PickerItem<T> = items.first(),
-    itemText: (T) -> String = { it.toString() },
+    itemText: (T) -> String = T::toString,
     onItemClick: (PickerItem<T>) -> Unit,
     onDismissRequest: () -> Unit,
 ) {
@@ -60,19 +60,19 @@ public fun <T : Any> AdvancedPickerDialog(
         onDismissRequest = onDismissRequest,
     ) {
         Card(
-            modifier,
-            shape,
-            colors,
-            elevation,
-            border
+                modifier,
+                shape,
+                colors,
+                elevation,
+                border,
         ) {
             Column {
                 if (searchFieldState != null) {
                     Box(
-                        modifier = Modifier
-                            .background(
-                                color = Color.White.copy(alpha = 0.1f)
-                            )
+                            modifier = Modifier
+                                    .background(
+                                            color = Color.White.copy(alpha = 0.1f),
+                                    ),
                     ) {
                         val equalityMatcher =
                             (searchFieldState.compareMatch == 0 || searchFieldState.compareMatch == -3)
@@ -93,26 +93,28 @@ public fun <T : Any> AdvancedPickerDialog(
                 }
                 LazyColumn {
                     items(
-                        (if (searchFieldState?.query?.isEmpty() != false) {
-                            items
-                        } else {
-                            items.filter {
-                                matcher!!(itemText(it.value!!), searchFieldState.query)
+                            (if (searchFieldState?.query?.isEmpty() != false) {
+                                items
                             }
-                        })
+                            else {
+                                items.filter {
+                                    matcher!!(itemText(it.value!!), searchFieldState.query)
+                                }
+                            }),
                     ) { item ->
                         Row(
-                            Modifier
-                                .fillMaxWidth()
-                                .padding(
-                                    horizontal = 18.dp,
-                                    vertical = 18.dp
-                                )
-                                .clickable {
-                                    onItemClick(item)
-                                    currentItemState = item
-                                    onDismissRequest()
-                                }) {
+                                Modifier
+                                        .fillMaxWidth()
+                                        .padding(
+                                                horizontal = 18.dp,
+                                                vertical = 18.dp,
+                                        )
+                                        .clickable {
+                                            onItemClick(item)
+                                            currentItemState = item
+                                            onDismissRequest()
+                                        },
+                        ) {
                             item.icon?.invoke(Modifier)
                             item.text?.invoke(Modifier)
                         }

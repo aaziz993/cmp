@@ -12,6 +12,7 @@ import ai.tech.core.data.expression.Max
 import ai.tech.core.data.expression.Min
 import ai.tech.core.data.expression.Projection
 import ai.tech.core.data.expression.Sum
+import ai.tech.core.data.expression.Value
 import ai.tech.core.data.expression.Variable
 import ai.tech.core.misc.type.serializablePropertyValues
 import ai.tech.core.misc.type.serializer.new
@@ -32,6 +33,7 @@ import org.jetbrains.exposed.sql.Op
 import org.jetbrains.exposed.sql.Query
 import org.jetbrains.exposed.sql.ResultRow
 import org.jetbrains.exposed.sql.SortOrder
+import org.jetbrains.exposed.sql.SqlExpressionBuilder
 import org.jetbrains.exposed.sql.Table
 import org.jetbrains.exposed.sql.alias
 import org.jetbrains.exposed.sql.avg
@@ -102,21 +104,21 @@ public abstract class AbstractExposedCRUDRepository<T : Any>(
     }
 
     override suspend fun update(entities: List<Map<String, Any?>>, predicate: BooleanVariable?): List<Long> = transactional {
-        entities.map { entity ->
-            table.update(predicate?.let { { predicate(it) } }) {
-                it.set(entity)
-            }.toLong()
+        if (predicate == null) {
+            entities.map { entity -> table.update { it.set(entity) } }
         }
+        else {
+            entities.map { entity ->
+                table.update({ predicate(predicate) }) {
+                    it.set(entity)
+                }
+            }
+        }.map(Int::toLong)
     }
 
     override fun find(sort: List<Order>?, predicate: BooleanVariable?, limitOffset: LimitOffset?): Flow<T> = flow {
         transactional {
-            if (predicate == null) {
-                table.selectAll()
-            }
-            else {
-                table.select { predicate(predicate) }
-            }.findHelper(sort, predicate, limitOffset).forEach {
+            table.selectAll().findHelper(sort, predicate, limitOffset).forEach {
                 emit(createEntity(it))
             }
         }
@@ -131,26 +133,53 @@ public abstract class AbstractExposedCRUDRepository<T : Any>(
                     }
                 }
 
-                table.slice(columns).let {
-                    if (predicate == null) {
-                        it.selectAll()
-                    }
-                    else {
-                        it.select { predicate(predicate) }
-                    }
-                }.findHelper(sort, predicate, limitOffset).forEach { resultSet ->
+                table.select(columns).findHelper(sort, predicate, limitOffset).forEach { resultSet ->
                     emit(columns.map { resultSet[it] })
                 }
             }
         }
 
-    private fun Query.findHelper(sort: List<Order>?, predicate: BooleanVariable?, limitOffset: LimitOffset?) =
-        apply {
+    override suspend fun delete(predicate: BooleanVariable?): Long = transactional {
+        if (predicate == null) {
+            table.deleteAll()
+        }
+        else {
+            table.deleteWhere { it.predicate(predicate) }
+        }.toLong()
+    }
 
-            if (limitOffset != null) {
-                limit(limitOffset.limit.toInt(), limitOffset.offset)
+    @Suppress("UNCHECKED_CAST")
+    override suspend fun <T : Comparable<T>> aggregate(aggregate: AggregateExpression<T>, predicate: BooleanVariable?): T = transactional {
+
+        val column: Column<T>? = aggregate.projection?.let { table.columns[it.value]!! } as Column<T>?
+
+        if (column == null) {
+            require(aggregate is Count) {
+                "Only in count aggregation column is optional"
             }
 
+            return@transactional table.selectAll().predicate(predicate).count() as T
+        }
+
+        val distinct = aggregate.projection!!.distinct
+
+        when (aggregate) {
+            is Count -> {
+                table.select(column.count())
+            }
+
+            is Max -> table.select(column.max())
+
+            is Min -> table.select(column.min())
+
+            is Avg -> table.select(column.avg())
+
+            is Sum -> table.select(column.sum())
+        }.withDistinct(distinct).predicate(predicate).singleOrNull() as T
+    }
+
+    private fun Query.findHelper(sort: List<Order>?, predicate: BooleanVariable?, limitOffset: LimitOffset?) =
+        predicate(predicate).apply {
             sort?.forEach {
                 orderBy(
                     table.columns[it.name]!!,
@@ -170,63 +199,14 @@ public abstract class AbstractExposedCRUDRepository<T : Any>(
                     },
                 )
             }
+
+            limitOffset?.offset?.let { offset(it) }
+
+            limitOffset?.limit?.let { limit(it.toInt()) }
         }
 
-    override suspend fun delete(predicate: BooleanVariable?): Long = transactional {
-        if (predicate == null) {
-            table.deleteAll().toLong()
-        }
-        else {
-            table.deleteWhere { it.predicate(predicate) }.toLong()
-        }
-    }
-
-    @Suppress("UNCHECKED_CAST")
-    override suspend fun <T : Comparable<T>> aggregate(aggregate: AggregateExpression<T>, predicate: BooleanVariable?): T = transactional {
-
-        val column = aggregate.projection?.let { table.columns[it.value]!! }
-
-        if (column == null) {
-            require(aggregate is Count) {
-                "Only in count aggregation column is optional"
-            }
-
-            return@transactional table.select(predicate).count() as T
-        }
-
-        val distinct = aggregate.projection!!.distinct
-
-        when (aggregate) {
-            is Count -> {
-                table.slice(column.count())
-            }
-
-            is Max -> table.slice(column.max())
-
-            is Min -> table.slice(column.min())
-
-            is Avg -> table.slice(column.avg())
-
-            is Sum -> table.slice(column.sum())
-        }.let {
-            if (predicate == null) {
-                it.selectAll()
-            }
-            else {
-                it.select { predicate(predicate) }
-            }
-        }.apply {
-            if (distinct) {
-                withDistinct(true)
-            }
-        }.singleOrNull() as T
-    }
-
-    private fun Table.select(predicate: BooleanVariable?): Query = if (predicate == null) {
-        table.selectAll()
-    }
-    else {
-        table.select { predicate(predicate) }
+    private fun Query.predicate(predicate: BooleanVariable?): Query = apply {
+        predicate?.let { where { predicate(it) } }
     }
 
     @Suppress("UNCHECKED_CAST")
@@ -237,12 +217,12 @@ public abstract class AbstractExposedCRUDRepository<T : Any>(
     }
 
     private fun ISqlExpressionBuilder.predicate(predicate: BooleanVariable): Op<Boolean> {
-        val v = (table.columns[0] eq 8)
 
-        v and true
+    }
+
+    private fun Any.exp(name: String, value: Value<*>): Any {
     }
 }
-
 public operator fun List<Column<*>>.get(name: String): Column<*>? = find { it.name == name }
 
 public val Column<*>.now: ((TimeZone) -> Any)?

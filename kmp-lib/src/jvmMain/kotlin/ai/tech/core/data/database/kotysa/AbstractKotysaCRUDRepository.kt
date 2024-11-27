@@ -206,8 +206,8 @@ public abstract class AbstractKotysaCRUDRepository<T : Any>(
                     client.selectSum(column)
                 }
             }
-        }.from(kotysaTable.table).let { select ->
-            predicate?.let { select.predicate(it) } ?: select
+        }.from(kotysaTable.table).apply {
+            predicate?.let { predicate(it) }
         }.fetchOne() as T
     }
 
@@ -228,17 +228,17 @@ public abstract class AbstractKotysaCRUDRepository<T : Any>(
         sort: List<Order>?,
         predicate: BooleanVariable?,
         limitOffset: LimitOffset? = null,
-    ): Flow<List<Any?>> = client.selects().let {
-        projections.filterIsInstance<Projection>().fold(it) { acc, v ->
-            kotysaTable[v.value].let {
-                if (v.distinct) {
-                    acc.selectDistinct(it.column)
-                }
-                else {
-                    acc.select(it.column)
-                }.let { select ->
-                    v.alias?.let { select.`as`(it) } ?: select
-                }
+    ): Flow<List<Any?>> = client.selects().apply {
+        projections.filterIsInstance<Projection>().forEach { projection ->
+            val column = kotysaTable[projection.value].column
+
+            if (projection.distinct) {
+                selectDistinct(column)
+            }
+            else {
+                select(column)
+            }.apply {
+                projection.alias?.let { `as`(it) }
             }
         }
     }.froms().from(kotysaTable.table).wheres().execute(sort, predicate, limitOffset)
@@ -247,19 +247,23 @@ public abstract class AbstractKotysaCRUDRepository<T : Any>(
         sort: List<Order>?,
         predicate: BooleanVariable?,
         limitOffset: LimitOffset?,
-    ): Flow<R> = (predicate?.let { predicate(it) } ?: this).let {
-        sort?.fold(it.ordersBy()) { acc, v ->
-            if (v.ascending) {
-                acc.orderByAsc(kotysaTable[v.name].column)
+    ): Flow<R> = apply {
+        predicate?.let { predicate(it) }
+
+        sort?.forEach { order ->
+            val column = kotysaTable[order.name].column
+
+            if (order.ascending) {
+                orderByAsc(column)
             }
             else {
-                acc.orderByDesc(kotysaTable[v.name].column)
+                orderByDesc(column)
             }
-        } ?: it
-    }.let { select ->
-        limitOffset?.offset?.let { select.offset(it) } ?: select
-    }.let { select ->
-        limitOffset?.limit?.let { select.limit(it) } ?: select
+        }
+
+        limitOffset?.offset?.let { offset(it) }
+
+        limitOffset?.limit?.let { limit(it) }
     }.fetchAll()
 
     @Suppress("UNCHECKED_CAST")
@@ -298,6 +302,8 @@ public abstract class AbstractKotysaCRUDRepository<T : Any>(
     }
 
     private fun Any.compareExp(expression: Expression, logValue: StringBuilder): Any {
+        expression.arguments[0]
+
         val isTemporal = kotysaTable[(expression.arguments[0] as Field).value].isTemporal
 
         return if (expression is Between) {

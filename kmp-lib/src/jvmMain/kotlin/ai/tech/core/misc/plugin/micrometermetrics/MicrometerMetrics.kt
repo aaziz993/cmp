@@ -16,6 +16,7 @@ import io.micrometer.core.instrument.binder.system.UptimeMetrics
 import io.micrometer.core.instrument.distribution.DistributionStatisticConfig
 import java.time.Duration
 import kotlin.time.DurationUnit
+import kotlin.time.toJavaDuration
 
 public fun Application.configureMicrometerMetrics(
     config: MicrometerMetricsConfig?,
@@ -49,22 +50,16 @@ public fun Application.configureMicrometerMetrics(
 
                 it.distributionStatistics?.takeIf(EnabledConfig::enabled)?.let {
 
-                    val distributionStatisticConfigBuilder = DistributionStatisticConfig.Builder()
-
-                    it.percentileHistogram?.let {
-                        if (it) {
-                            distributionStatisticConfigBuilder.percentilesHistogram(it)
-                        }
-                    }
-                    it.percentiles?.let { distributionStatisticConfigBuilder.percentiles(*it.toDoubleArray()) }
-                    it.percentilePrecision?.let { distributionStatisticConfigBuilder.percentilePrecision(it) }
-                    it.serviceLevelObjectives?.let { distributionStatisticConfigBuilder.serviceLevelObjectives(*it.toDoubleArray()) }
-                    it.minimumExpectedValue?.let { distributionStatisticConfigBuilder.minimumExpectedValue(it) }
-                    it.maximumExpectedValue?.let { distributionStatisticConfigBuilder.maximumExpectedValue(it) }
-                    it.expiry?.let { distributionStatisticConfigBuilder.expiry(Duration.ofNanos(it.toLong(DurationUnit.NANOSECONDS))) }
-                    it.bufferLength?.let { distributionStatisticConfigBuilder.bufferLength(it) }
-
-                    distributionStatisticConfig = distributionStatisticConfigBuilder.build()
+                    distributionStatisticConfig = DistributionStatisticConfig.Builder().apply {
+                        it.percentileHistogram?.let { percentilesHistogram(it) }
+                        it.percentiles?.let { percentiles(*it.toDoubleArray()) }
+                        it.percentilePrecision?.let { percentilePrecision(it) }
+                        it.serviceLevelObjectives?.let { serviceLevelObjectives(*it.toDoubleArray()) }
+                        it.minimumExpectedValue?.let { minimumExpectedValue(it) }
+                        it.maximumExpectedValue?.let { maximumExpectedValue(it) }
+                        it.expiry?.let { expiry(it.toJavaDuration()) }
+                        it.bufferLength?.let { bufferLength(it) }
+                    }.build()
                 }
 
                 micrometerRegistry

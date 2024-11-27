@@ -170,7 +170,7 @@ public actual suspend fun ByteArray.pgpChangeKeyPassword(
     }.await()
 }
 
-public actual suspend fun ByteArray.pgpPublicKey(armored: Boolean): ByteArray = readKey().then { it.toPublic() }.then { if (armored) it.armor().encode() else it.write().toByteArray() }.await()
+public actual suspend fun ByteArray.pgpPublicKey(armored: Boolean): ByteArray = readKey().then(Key::toPublic).then { if (armored) it.armor().encode() else it.write().toByteArray() }.await()
 
 public actual suspend fun ByteArray.pgpPrivateKeys(armored: Boolean): List<ByteArray> = readPrivateKeys(
     Object {

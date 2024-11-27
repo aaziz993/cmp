@@ -54,6 +54,7 @@ import java.io.InputStream
 import java.security.InvalidAlgorithmParameterException
 import java.security.NoSuchAlgorithmException
 import java.util.*
+import org.bouncycastle.openpgp.PGPSecretKeyRing
 
 private var sop: SOP = SOPImpl()
 
@@ -61,7 +62,8 @@ private fun InputStream.readSecretKeys(requireContent: Boolean): PGPSecretKeyRin
     val keys =
         try {
             PGPainless.readKeyRing().secretKeyRingCollection(this)
-        } catch (e: IOException) {
+        }
+        catch (e: IOException) {
             if (e.message == null) {
                 throw e
             }
@@ -83,7 +85,8 @@ private fun InputStream.readPublicKeys(requireContent: Boolean): PGPPublicKeyRin
     val certs =
         try {
             PGPainless.readKeyRing().keyRingCollection(this, false)
-        } catch (e: IOException) {
+        }
+        catch (e: IOException) {
             if (e.message == null) {
                 throw e
             }
@@ -93,7 +96,8 @@ private fun InputStream.readPublicKeys(requireContent: Boolean): PGPPublicKeyRin
                 throw SOPGPException.BadData(e)
             }
             throw e
-        } catch (e: PGPRuntimeOperationException) {
+        }
+        catch (e: PGPRuntimeOperationException) {
             throw SOPGPException.BadData(e)
         }
 
@@ -178,7 +182,8 @@ private fun PGPKey.toKeySpecBuilders(
         if (isSubKeyOption) {
             if (sign) {
                 listOf(KeySpec.getBuilder(it[0], KeyFlag.SIGN_DATA))
-            } else {
+            }
+            else {
                 listOf(
                     KeySpec.getBuilder(
                         it[1],
@@ -187,7 +192,8 @@ private fun PGPKey.toKeySpecBuilders(
                     ),
                 )
             }
-        } else {
+        }
+        else {
             listOf(
                 KeySpec.getBuilder(
                     it[0],
@@ -278,7 +284,8 @@ public actual suspend fun pgpKeyPair(
                 builder.setExpirationDate(
                     if (expireDate > 0) {
                         Date(expireDate * 1000L)
-                    } else {
+                    }
+                    else {
                         null
                     },
                 )
@@ -286,15 +293,19 @@ public actual suspend fun pgpKeyPair(
             .let { k ->
                 if (armored) {
                     k.toArmoredByteArray()
-                } else {
+                }
+                else {
                     ByteArrayOutputStream().apply { k.encode(this) }.toByteArray()
                 }
             }
-    } catch (e: InvalidAlgorithmParameterException) {
+    }
+    catch (e: InvalidAlgorithmParameterException) {
         throw SOPGPException.UnsupportedAsymmetricAlgo("Unsupported asymmetric algorithm.", e)
-    } catch (e: NoSuchAlgorithmException) {
+    }
+    catch (e: NoSuchAlgorithmException) {
         throw SOPGPException.UnsupportedAsymmetricAlgo("Unsupported asymmetric algorithm.", e)
-    } catch (e: PGPException) {
+    }
+    catch (e: PGPException) {
         throw RuntimeException(e)
     }
 }
@@ -310,7 +321,8 @@ public actual suspend fun ByteArray.pgpChangeKeyPassword(
             .let {
                 if (armored) {
                     it
-                } else {
+                }
+                else {
                     it.noArmor()
                 }
             }.let {
@@ -318,7 +330,8 @@ public actual suspend fun ByteArray.pgpChangeKeyPassword(
             }.let {
                 if (password == null) {
                     it
-                } else {
+                }
+                else {
                     it.newKeyPassphrase(password)
                 }
             }.keys(ByteArrayInputStream(this@pgpChangeKeyPassword))
@@ -332,7 +345,8 @@ public actual suspend fun ByteArray.pgpPublicKey(armored: Boolean): ByteArray =
             .let {
                 if (armored) {
                     it
-                } else {
+                }
+                else {
                     it.noArmor()
                 }
             }.key(ByteArrayInputStream(this@pgpPublicKey))
@@ -342,8 +356,9 @@ public actual suspend fun ByteArray.pgpPublicKey(armored: Boolean): ByteArray =
 public actual suspend fun ByteArray.pgpPublicKeys(armored: Boolean): List<ByteArray> =
     ByteArrayInputStream(this).readPublicKeys(false).let {
         if (armored) {
-            it.map { it.toArmoredByteArray() }
-        } else {
+            it.map(PGPKeyRing::toArmoredByteArray)
+        }
+        else {
             it.map { ByteArrayOutputStream().apply { it.encode(this) }.toByteArray() }
         }
     }
@@ -351,8 +366,9 @@ public actual suspend fun ByteArray.pgpPublicKeys(armored: Boolean): List<ByteAr
 public actual suspend fun ByteArray.pgpPrivateKeys(armored: Boolean): List<ByteArray> =
     ByteArrayInputStream(this).readSecretKeys(false).let {
         if (armored) {
-            it.map { it.toArmoredByteArray() }
-        } else {
+            it.map(PGPSecretKeyRing::toArmoredByteArray)
+        }
+        else {
             it.map { ByteArrayOutputStream().apply { it.encode(this) }.toByteArray() }
         }
     }
@@ -395,7 +411,8 @@ public actual suspend fun ByteArray.pgpRevokeKey(
             .let {
                 if (armored) {
                     it
-                } else {
+                }
+                else {
                     it.noArmor()
                 }
             }.let {
@@ -420,7 +437,8 @@ public actual suspend fun ByteArray.pgpEncrypt(
             .let {
                 if (armored) {
                     it
-                } else {
+                }
+                else {
                     it.noArmor()
                 }
             }.let {
@@ -471,9 +489,9 @@ public actual suspend fun ByteArray.pgpDecrypt(
 
     val vkrc =
         (
-                verificationKeys?.map { ByteArrayInputStream(it).readPublicKeys(true) }
-                    .orEmpty()
-                ).onEach { consumerOptions.addVerificationCerts(it) }
+            verificationKeys?.map { ByteArrayInputStream(it).readPublicKeys(true) }
+                .orEmpty()
+            ).onEach { consumerOptions.addVerificationCerts(it) }
 
     passwords?.forEach { password ->
         consumerOptions.addDecryptionPassphrase(Passphrase.fromPassword(password))
@@ -497,20 +515,26 @@ public actual suspend fun ByteArray.pgpDecrypt(
                 .decryptAndOrVerify()
                 .onInputStream(ByteArrayInputStream(this))
                 .withOptions(consumerOptions)
-        } catch (e: MissingDecryptionMethodException) {
+        }
+        catch (e: MissingDecryptionMethodException) {
             throw SOPGPException.CannotDecrypt(
                 "No usable decryption key or password provided.",
                 e,
             )
-        } catch (e: WrongPassphraseException) {
+        }
+        catch (e: WrongPassphraseException) {
             throw SOPGPException.KeyIsProtected()
-        } catch (e: MalformedOpenPgpMessageException) {
+        }
+        catch (e: MalformedOpenPgpMessageException) {
             throw SOPGPException.BadData(e)
-        } catch (e: PGPException) {
+        }
+        catch (e: PGPException) {
             throw SOPGPException.BadData(e)
-        } catch (e: IOException) {
+        }
+        catch (e: IOException) {
             throw SOPGPException.BadData(e)
-        } finally {
+        }
+        finally {
             // Forget passphrases after decryption
             protector.clear()
         }
@@ -550,7 +574,8 @@ public actual suspend fun ByteArray.pgpSign(
             signingKeysPasswords,
             armored,
         )
-    } else {
+    }
+    else {
         ByteArrayOutputStream().apply {
             sop
                 .inlineSign()
@@ -558,7 +583,8 @@ public actual suspend fun ByteArray.pgpSign(
                 .let {
                     if (armored) {
                         it
-                    } else {
+                    }
+                    else {
                         it.noArmor()
                     }
                 }.let {
@@ -580,7 +606,8 @@ private fun ByteArray.pgpDetachedSign(
             .let {
                 if (armored) {
                     it
-                } else {
+                }
+                else {
                     it.noArmor()
                 }
             }.let {
@@ -616,7 +643,8 @@ public actual suspend fun ByteArray.pgpVerify(
             val verifications =
                 if (result.isUsingCleartextSignatureFramework || !signatures.isNullOrEmpty()) {
                     result.verifiedDetachedSignatures
-                } else {
+                }
+                else {
                     result.verifiedInlineSignatures
                 }
 
@@ -628,10 +656,13 @@ public actual suspend fun ByteArray.pgpVerify(
 
             verifications.map { it.toPGPVerification(vkrc) }
         }
-    } catch (e: MissingDecryptionMethodException) {
+    }
+    catch (e: MissingDecryptionMethodException) {
         throw SOPGPException.BadData("Cannot verify encrypted message.", e)
-    } catch (e: MalformedOpenPgpMessageException) {
+    }
+    catch (e: MalformedOpenPgpMessageException) {
         throw SOPGPException.BadData(e)
-    } catch (e: PGPException) {
+    }
+    catch (e: PGPException) {
         throw SOPGPException.BadData(e)
     }

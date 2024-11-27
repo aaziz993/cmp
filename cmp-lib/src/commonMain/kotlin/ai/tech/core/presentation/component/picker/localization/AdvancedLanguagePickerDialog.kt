@@ -25,7 +25,7 @@ public fun AdvancedLanguagePickerDialog(
     searchSingleLine: Boolean = true,
     items: List<Language>,
     currentItem: Language = items.first(),
-    itemLocalization: (Language) -> String = { it.toString() },
+    itemLocalization: (Language) -> String = Language::toString,
     onItemClick: (Language) -> Unit,
     onDismissRequest: () -> Unit,
 ): Unit =

@@ -5,8 +5,8 @@ import kotlinx.serialization.Transient
 
 @Serializable
 public data class LimitOffset(
-    public val offset: Long = 0,
-    public val limit: Long = 10,
+    public val offset: Long? = null,
+    public val limit: Long? = null,
 ) {
 
     public fun getPage(firstItemOffset: Int = 0): Long = (offset - firstItemOffset) / limit
