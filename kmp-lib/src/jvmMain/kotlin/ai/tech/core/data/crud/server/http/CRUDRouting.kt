@@ -27,9 +27,9 @@ import kotlinx.serialization.serializer
 
 @OptIn(InternalSerializationApi::class)
 @Suppress("FunctionName", "UNCHECKED_CAST")
-public inline fun <reified T : Any, ID : Any> Routing.CrudRouting(
+public inline fun <reified T : Any> Routing.CrudRouting(
     path: String,
-    repository: CRUDRepository<T, ID>,
+    repository: CRUDRepository<T>,
     readAuth: AuthResource? = null,
     writeAuth: AuthResource? = readAuth,
 ) {

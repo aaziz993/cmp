@@ -8,7 +8,8 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 public data class CRUDLazyColumnConfig(
-    override val timeZone: TimeZone = TimeZone.UTC,
+    override val transactionIsolation: Int? = null,
+    override val timeZone: TimeZone = TimeZone.currentSystemDefault(),
     override val readAuth: AuthResource? = null,
     override val writeAuth: AuthResource? = readAuth,
     val isReadOnly: Boolean = false,

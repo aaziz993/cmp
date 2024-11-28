@@ -1,7 +1,6 @@
 package ai.tech.core.data.database.kotysa.model
 
 import ai.tech.core.data.expression.BooleanVariable
-import ai.tech.core.data.expression.Equals
 import ai.tech.core.data.expression.f
 import ai.tech.core.misc.type.single.now
 import kotlinx.datetime.LocalDate
@@ -22,7 +21,7 @@ import org.ufoss.kotysa.UuidColumn
 public data class KotysaColumn<T : Any>(
     val name: String,
     val column: Column<T, *>,
-    val isIdentity: Boolean = false,
+    val isPrimaryKey: Boolean = false,
     private val valueGetter: (T) -> Any?,
     private val valueSetter: (CoroutinesSqlClientDeleteOrUpdate.Update<T>, value: Any?) -> CoroutinesSqlClientDeleteOrUpdate.Update<T>
 ) {

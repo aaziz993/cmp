@@ -234,13 +234,9 @@ public class KotysaTable<T : Any>(
                 )
             }
 
-    public val identityColumn: KotysaColumn<T> = columns.find { it.isIdentity }!!
+    public val primaryKeyColumn: KotysaColumn<T> = columns.find { it.isPrimaryKey }!!
 
-    public val createdAtColumn: KotysaColumn<T>? =
-        createdAtProperty?.let { property -> get(property)!! }
 
-    public val updatedAtColumn: KotysaColumn<T>? =
-        updatedAtProperty?.let { property -> get(property)!! }
 
     public operator fun get(columnName: String): KotysaColumn<T>? = columns.find { it.name == columnName }
 

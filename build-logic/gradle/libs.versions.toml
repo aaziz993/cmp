@@ -313,6 +313,7 @@ colormath = { module = "com.github.ajalt.colormath:colormath", version.ref = "co
 # arrow
 arrow-core = { module = "io.arrow-kt:arrow-core", version.ref = "arrow" }
 arrow-fx-coroutines = { module = "io.arrow-kt:arrow-fx-coroutines", version.ref = "arrow" }
+arrow-fx-resilience  = { module = "io.arrow-kt:arrow-fx-resilience", version.ref = "arrow" }
 arrow-optics = { module = "io.arrow-kt:arrow-optics", version.ref = "arrow" }
 arrow-optics-ksp-plugin = { module = "io.arrow-kt:arrow-optics-ksp-plugin", version.ref = "arrow" }
 # cache
@@ -721,6 +722,7 @@ cryptography = [
 arrow = [
     "arrow-core",
     "arrow-fx-coroutines",
+    "arrow-fx-resilience",
     "arrow-optics"
 ]
 # jdbc drivers

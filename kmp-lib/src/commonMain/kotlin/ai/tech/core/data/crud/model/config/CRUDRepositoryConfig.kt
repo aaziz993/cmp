@@ -5,6 +5,7 @@ import kotlinx.datetime.TimeZone
 
 public interface CRUDRepositoryConfig {
 
+    public val transactionIsolation: Int?
     public val timeZone: TimeZone
     public val readAuth: AuthResource?
     public val writeAuth: AuthResource?

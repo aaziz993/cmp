@@ -29,12 +29,12 @@ import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonArray
 import kotlinx.serialization.serializer
 
-public open class CRUDClient<T : Any, ID : Any>(
+public open class CRUDClient<T : Any>(
     public val serializer: KSerializer<T>,
     httpClient: HttpClient,
     public val address: String,
     public val authService: AuthService? = null,
-) : AbstractApiHttpClient(httpClient, address), CRUDRepository<T, ID> {
+) : AbstractApiHttpClient(httpClient, address), CRUDRepository<T> {
 
     private val api = ktorfit.createCRUDApi()
 
@@ -42,14 +42,14 @@ public open class CRUDClient<T : Any, ID : Any>(
         append(HttpHeaders.ContentType, ContentType.Application.Json)
     }
 
-    override suspend fun <R> transactional(block: suspend CRUDRepository<T, ID>.() -> R): R {
+    override suspend fun <R> transactional(block: suspend CRUDRepository<T>.() -> R): R {
         throw UnsupportedOperationException("Not supported by remote client yet")
     }
 
     override suspend fun insert(entities: List<T>): Unit = api.insert(entities)
 
     @Suppress("UNCHECKED_CAST")
-    override suspend fun insertAndReturn(entities: List<T>): List<ID> = api.insertAndReturn(entities).execute(HttpResponse::body)
+    override suspend fun insertAndReturn(entities: List<T>): List<T> = api.insertAndReturn(entities).execute(HttpResponse::body)
 
     override suspend fun update(entities: List<T>): List<Boolean> = api.update(entities)
 
@@ -63,7 +63,7 @@ public open class CRUDClient<T : Any, ID : Any>(
             ),
         )
 
-    override suspend fun upsert(entities: List<T>): List<ID> = api.upsert(entities).execute(HttpResponse::body)
+    override suspend fun upsert(entities: List<T>): List<T> = api.upsert(entities).execute(HttpResponse::body)
 
     override fun find(sort: List<Order>?, predicate: BooleanVariable?, limitOffset: LimitOffset?): Flow<T> =
         flow {

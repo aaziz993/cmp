@@ -31,17 +31,15 @@ import ai.tech.core.data.expression.Projection
 import ai.tech.core.data.expression.Sum
 import ai.tech.core.data.expression.Value
 import ai.tech.core.data.expression.Variable
-import ai.tech.core.misc.location.model.LocationExposedTable
 import ai.tech.core.misc.type.serializablePropertyValues
-import ai.tech.core.misc.type.serializer.new
+import ai.tech.core.misc.type.serializer.create
 import ai.tech.core.misc.type.single.now
 import kotlin.coroutines.CoroutineContext
-import kotlin.coroutines.coroutineContext
 import kotlin.reflect.KClass
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.asFlow
 import kotlinx.coroutines.flow.flow
-import kotlinx.datetime.LocalDateTime
 import kotlinx.datetime.LocalTime
 import kotlinx.datetime.TimeZone
 import kotlinx.serialization.InternalSerializationApi
@@ -55,35 +53,27 @@ import org.jetbrains.exposed.sql.Op
 import org.jetbrains.exposed.sql.Query
 import org.jetbrains.exposed.sql.ResultRow
 import org.jetbrains.exposed.sql.SortOrder
-import org.jetbrains.exposed.sql.SqlExpressionBuilder
 import org.jetbrains.exposed.sql.Table
 import org.jetbrains.exposed.sql.alias
-import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.avg
 import org.jetbrains.exposed.sql.batchInsert
 import org.jetbrains.exposed.sql.batchUpsert
 import org.jetbrains.exposed.sql.count
 import org.jetbrains.exposed.sql.deleteAll
 import org.jetbrains.exposed.sql.deleteWhere
-import org.jetbrains.exposed.sql.insert
-import org.jetbrains.exposed.sql.insertIgnore
 import org.jetbrains.exposed.sql.kotlin.datetime.KotlinLocalDateColumnType
 import org.jetbrains.exposed.sql.kotlin.datetime.KotlinLocalDateTimeColumnType
 import org.jetbrains.exposed.sql.kotlin.datetime.KotlinLocalTimeColumnType
 import org.jetbrains.exposed.sql.max
 import org.jetbrains.exposed.sql.min
-import org.jetbrains.exposed.sql.or
-import org.jetbrains.exposed.sql.select
 import org.jetbrains.exposed.sql.selectAll
 import org.jetbrains.exposed.sql.statements.UpdateBuilder
 import org.jetbrains.exposed.sql.sum
 import org.jetbrains.exposed.sql.transactions.experimental.newSuspendedTransaction
 import org.jetbrains.exposed.sql.update
-import org.jetbrains.exposed.sql.upsert
-import org.jetbrains.exposed.sql.upsertReturning
 import org.slf4j.LoggerFactory
 
-public abstract class AbstractExposedCRUDRepository<T : Any, ID : Any>(
+public abstract class AbstractExposedCRUDRepository<T : Any>(
     private val database: Database,
     public val transactionIsolation: Int? = null,
     private val table: Table,
@@ -91,9 +81,9 @@ public abstract class AbstractExposedCRUDRepository<T : Any, ID : Any>(
     private val createEntity: (ResultRow) -> T,
     createdAtProperty: String? = "createdAt",
     updatedAtProperty: String? = "updatedAt",
-    timeZone: TimeZone = TimeZone.UTC,
+    timeZone: TimeZone = TimeZone.currentSystemDefault(),
     private val coroutineContext: CoroutineContext = Dispatchers.IO,
-) : AbstractCRUDRepository<T, ID>(
+) : AbstractCRUDRepository<T>(
     createdAtProperty,
     updatedAtProperty,
     timeZone,
@@ -111,45 +101,47 @@ public abstract class AbstractExposedCRUDRepository<T : Any, ID : Any>(
         transactionIsolation,
         table,
         { it.serializablePropertyValues },
-        { resultRow -> Json.Default.new(kClass.serializer(), table.columns.associate { it.name to resultRow[it] }) },
+        { resultRow -> Json.Default.create(kClass.serializer(), table.columns.associate { it.name to resultRow[it] }) },
         createdAtProperty,
         updatedAtProperty,
         timeZone,
     )
 
+    init {
+        require(table.primaryKey?.columns?.size == 1) {
+            "Only table with one identity column primary key is permitted"
+        }
+    }
+
     private val logger = LoggerFactory.getLogger(this::class.java)
 
-    private val Table.createdAtColumn: Column<*>?
-        get() = createdAtProperty?.let { get(it) }
-
-    private val Table.updatedAtColumn: Column<*>?
-        get() = createdAtProperty?.let { get(it) }
-
-    private val onUpsertExclude = listOfNotNull(table.createdAtColumn)
-
-    override val createdAtNow: ((TimeZone) -> Any)? = table.createdAtColumn?.now
-
-    override val updatedAtNow: ((TimeZone) -> Any)? = table.updatedAtColumn?.now
-
-    private val List<T>.insertable: List<Map<String, Any?>>
-        get() = map(entityCreatedAtAware)
+    private val createdAtColumn = createdAtProperty?.let { table[it]!! }
 
     override val T.propertyValues: Map<String, Any?>
         get() = getEntityPropertyValues(this)
 
-    override suspend fun <R> transactional(block: suspend CRUDRepository<T, ID>.() -> R): R =
+    override val createdAtNow: ((TimeZone) -> Any)? = createdAtProperty?.let { table[it]!! }?.now
+
+    override val updatedAtNow: ((TimeZone) -> Any)? = createdAtColumn?.now
+
+    private val onUpsertExclude = listOfNotNull(createdAtColumn)
+
+    protected val T.withAt: Map<String, Any?>
+        get() = propertyValues.withCreatedAt().withUpdatedAt()
+
+    override suspend fun <R> transactional(block: suspend CRUDRepository<T>.() -> R): R =
         newSuspendedTransaction(coroutineContext, database, transactionIsolation) { block() }
 
     override suspend fun insert(entities: List<T>): Unit = transactional {
-        table.batchInsert(entities.insertable) { entity -> set(entity) }
+        table.batchInsert(entities.withCreatedAt) { entity -> set(entity) }
     }
 
-    override suspend fun insertAndReturn(entities: List<T>): List<ID> = transactional {
-        table.batchInsert(entities.insertable) { entity -> set(entity) }.map { it[table.primaryKey!!.columns[0]] as ID }
+    override suspend fun insertAndReturn(entities: List<T>): List<T> = transactional {
+        table.batchInsert(entities.withCreatedAt) { entity -> set(entity) }.map(createEntity)
     }
 
     override suspend fun update(entities: List<T>): List<Boolean> = transactional {
-        entities.map { entity -> table.update { it.set(entityUpdatedAtAware(entity)) } > 0 }
+        entities.map { entity -> table.update { it.set(entity.withUpdatedAt) } > 0 }
     }
 
     override suspend fun update(entities: List<Map<String, Any?>>, predicate: BooleanVariable?): List<Long> = transactional {
@@ -166,13 +158,13 @@ public abstract class AbstractExposedCRUDRepository<T : Any, ID : Any>(
     }
 
     @Suppress("UNCHECKED_CAST")
-    override suspend fun upsert(entities: List<T>): List<ID> = transactional {
+    override suspend fun upsert(entities: List<T>): List<T> = transactional {
         table.batchUpsert(
             entities,
             onUpdateExclude = onUpsertExclude,
         ) { entity ->
-            set(entityCreatedAtAware(entity))
-        }.map { it[table.primaryKey!!.columns[0]] as ID }
+            set(entity.withAt)
+        }.map(createEntity)
     }
 
     override fun find(sort: List<Order>?, predicate: BooleanVariable?, limitOffset: LimitOffset?): Flow<T> = flow {
@@ -183,20 +175,17 @@ public abstract class AbstractExposedCRUDRepository<T : Any, ID : Any>(
         }
     }
 
-    override fun find(projections: List<Variable>, sort: List<Order>?, predicate: BooleanVariable?, limitOffset: LimitOffset?): Flow<List<Any?>> =
-        flow {
-            transactional {
-                val columns = projections.filterIsInstance<Projection>().map { projection ->
-                    table[projection.value]!!.let { column ->
-                        projection.alias?.let { column.alias(it) } ?: column
-                    }
-                }
-
-                table.select(columns).findHelper(sort, predicate, limitOffset).forEach { resultSet ->
-                    emit(columns.map { resultSet[it] })
-                }
+    override fun find(projections: List<Variable>, sort: List<Order>?, predicate: BooleanVariable?, limitOffset: LimitOffset?): Flow<List<Any?>> {
+        val columns = projections.filterIsInstance<Projection>().map { projection ->
+            table[projection.value]!!.let { column ->
+                projection.alias?.let { column.alias(it) } ?: column
             }
         }
+
+        return table.select(columns).findHelper(sort, predicate, limitOffset).map { resultSet ->
+            columns.map { resultSet[it] }
+        }.asFlow()
+    }
 
     override suspend fun delete(predicate: BooleanVariable?): Long = transactional {
         if (predicate == null) {
@@ -352,22 +341,3 @@ public abstract class AbstractExposedCRUDRepository<T : Any, ID : Any>(
 
     private fun Any.exposedExp(name: String, values: List<Value<*>>): Any = exp(name, value) { table[it]!! }
 }
-
-private operator fun Table.get(name: String): Column<*>? = columns.find { it.name.toCamelCase() == name }
-
-public val Column<*>.now: ((TimeZone) -> Any)?
-    get() = when (columnType) {
-        is KotlinLocalTimeColumnType -> {
-            { LocalTime.now(it) }
-        }
-
-        is KotlinLocalDateColumnType -> {
-            { LocalTime.now(it) }
-        }
-
-        is KotlinLocalDateTimeColumnType -> {
-            { LocalTime.now(it) }
-        }
-
-        else -> null
-    }

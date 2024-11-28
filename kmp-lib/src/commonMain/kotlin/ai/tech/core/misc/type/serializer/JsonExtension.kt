@@ -140,9 +140,9 @@ public inline fun <reified T : Any> Json.copy(value: T, noinline block: (Map<Str
 
 @OptIn(InternalSerializationApi::class)
 @Suppress("UNCHECKED_CAST")
-public fun <T : Any> Json.new(serializer: KSerializer<T>, value: Map<String, Any?> = emptyMap()): T =
+public fun <T : Any> Json.create(serializer: KSerializer<T>, value: Map<String, Any?> = emptyMap()): T =
     decodeFromAny(serializer, value)
 
-public inline fun <reified T : Any> Json.new(value: Map<String, Any?> = emptyMap()): T = new(serializersModule.serializer(), value)
+public inline fun <reified T : Any> Json.create(value: Map<String, Any?> = emptyMap()): T = create(serializersModule.serializer(), value)
 
 

@@ -152,6 +152,10 @@ public fun <T : Map<*, *>> Iterable<T>.filterNotEmpty(): Iterable<T> = filterNot
 public val Iterable<Boolean>.all: Boolean
     get() = all { it }
 
+// /////////////////////////////////////////////////////ARRAY///////////////////////////////////////////////////////////
+@Suppress("UNCHECKED_CAST")
+public fun <T> List<T>.toTypedArray(): Array<T> = toTypedArray<Any?>() as Array<T>
+
 // ////////////////////////////////////////////////////NUMBER///////////////////////////////////////////////////////////
 public inline fun List<UInt>.toUInt(base: UInt): UInt =
     foldIndexed(0U) { i, acc, v ->
