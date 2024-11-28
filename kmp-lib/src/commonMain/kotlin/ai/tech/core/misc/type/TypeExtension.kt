@@ -9,6 +9,7 @@ import ai.tech.core.misc.type.accessor.Accessor
 import ai.tech.core.misc.type.accessor.ListAccessor
 import ai.tech.core.misc.type.accessor.MapLikeAccessor
 import ai.tech.core.misc.type.multiple.depthIterator
+import ai.tech.core.misc.type.multiple.model.AsyncIterator
 import ai.tech.core.misc.type.multiple.takeIfNotEmpty
 import ai.tech.core.misc.type.serializer.encodeToAny
 import ai.tech.core.misc.type.single.parseOrNull
@@ -499,40 +500,3 @@ public fun <T : Any> Any.mapTo(
 public fun List<Map<String, Any?>>.deepMerge(
     override: Boolean = false
 ): Map<String, Any?> = emptyMap()
-
-@Suppress("UNCHECKED_CAST")
-public fun <T : Any> T.depthIterator(
-    transform: (transforms: List<T>, value: Any?) -> Iterator<Any?>?,
-    removeLast: (transforms: List<T>, transform: Any?) -> Unit
-): Iterator<Any?>? {
-    val transforms = mutableListOf(this)
-
-    return transform(emptyList(), this)?.depthIterator(
-        { _, value -> transform(transforms, value)?.also { transforms.add(value as T) } },
-    ) {
-        val last = transforms.removeLast()
-
-        removeLast(transforms, last)
-    }
-}
-
-@Suppress("UNCHECKED_CAST")
-public inline fun <reified T : Any> T.depthTraverse(
-    crossinline getChildren: T.(List<T>) -> Iterator<Any?>?,
-    crossinline handleLeaf: T.(List<T>) -> Unit,
-    crossinline handleInline: T.(List<T>) -> Unit
-) {
-    depthIterator(
-        { transforms, value ->
-            if (value is T) {
-                return@depthIterator value.getChildren(transforms).also {
-                    if (it == null) {
-                        handleLeaf(transforms)
-                    }
-                }?.iterator()
-            }
-
-            null
-        },
-    ) { transforms, inlineExpression -> (inlineExpression as T).handleInline(transforms) }?.forEach {}
-}

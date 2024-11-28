@@ -38,6 +38,7 @@ public suspend fun <T> AsyncIterator<T>.next(count: Int): List<T> =
 public fun emptyAsyncIterator(): AsyncIterator<Nothing> = EmptyAsyncIterator
 
 public object EmptyAsyncIterator : AsyncIterator<Nothing> {
+
     public override suspend fun hasNext(): Boolean = false
 
     public override suspend fun next(): Nothing = throw IllegalStateException("Iterator is empty")
@@ -50,6 +51,7 @@ public fun <T> AsyncIterator<T>.withIndex(): AsyncIterator<IndexedValue<T>> = In
 private class IndexingAsyncIterator<out T>(
     private val iterator: AsyncIterator<T>,
 ) : AsyncIterator<IndexedValue<T>> {
+
     private var index = 0
 
     override suspend fun hasNext(): Boolean = iterator.hasNext()
@@ -66,6 +68,7 @@ public fun <T> concat(vararg iterators: AsyncIterator<T>): AsyncIterator<T> = As
 private class AsyncIteratorsConcat<T>(
     private vararg val iterators: AsyncIterator<T>,
 ) : AbstractAsyncIterator<T>() {
+
     private var index = 0
 
     override suspend fun computeNext() {
@@ -84,6 +87,7 @@ public fun <T> merge(iterators: List<AsyncIterator<T>>): AsyncIterator<T> = Asyn
 private class AsyncIteratorsMerge<T>(
     private val iterators: List<AsyncIterator<T>>,
 ) : AsyncIterator<T> {
+
     private var index = 0
 
     override suspend fun hasNext(): Boolean = iterators[0].hasNext()
@@ -100,55 +104,67 @@ public suspend fun <T> AsyncIterator<T>.drop(n: Int): AsyncIterator<T> {
     for (i in 0 until n) {
         if (hasNext()) {
             next()
-        } else {
+        }
+        else {
             throw IllegalStateException("Not enough elements to drop")
         }
     }
     return this
 }
 
-public fun <T> AsyncIterator<T>.depthIterator(
-    transform: suspend AsyncIteratorDepthIterator<T>.(Int, T) -> AsyncIterator<T>?,
-    removeLast: suspend () -> Unit = {},
-): AsyncIterator<T> = AsyncIteratorDepthIterator(this, transform, removeLast)
+public fun AsyncIterator<Any?>.depthIterator(
+    transform: suspend AsyncIteratorDepthIterator.(Int, Any) -> AsyncIterator<Any?>?,
+    removeLast: suspend (Int) -> Unit = {},
+): AsyncIterator<Any?> = AsyncIteratorDepthIterator(this, transform, removeLast)
 
-public class AsyncIteratorDepthIterator<T>(
-    iterator: AsyncIterator<T>,
-    private val transform: suspend AsyncIteratorDepthIterator<T>.(Int, T) -> AsyncIterator<T>?,
-    private val removeLast: suspend () -> Unit,
-) : AbstractAsyncIterator<T>() {
+@Suppress("UNCHECKED_CAST")
+public fun <T : Any> AsyncIterator<Any?>.depthIterator(
+    initialTransform: Any,
+    transform: suspend (transforms: List<Any>, value: Any) -> AsyncIterator<Any?>?,
+    removeLast: suspend (transforms: List<Any>, transform: Any) -> Unit
+): AsyncIterator<Any?> {
+    val transforms = mutableListOf(initialTransform)
+
+    return depthIterator(
+        { _, value -> transform(transforms, value)?.also { transforms.add(value) } },
+    ) { removeLast(transforms, transforms.removeLast()) }
+}
+
+public class AsyncIteratorDepthIterator(
+    iterator: AsyncIterator<Any?>,
+    private val transform: suspend AsyncIteratorDepthIterator.(Int, Any) -> AsyncIterator<Any?>?,
+    private val removeLast: suspend (Int) -> Unit,
+) : AbstractAsyncIterator<Any?>() {
+
     private val iterators = mutableListOf(iterator)
-    private var isStop: Boolean = false
-
-    public fun stop() {
-        isStop = true
-    }
 
     override suspend fun computeNext() {
-        do {
-            val last = iterators.last()
-            if (last.hasNext()) {
-                val next = last.next()
+        if (iterators.isEmpty()) {
+            done()
+            return
+        }
 
-                val transformed = transform(iterators.size - 1, next)
+        val last = iterators.last()
 
-                if (isStop) {
-                    break
-                }
+        if (last.hasNext()) {
+            val next = last.next()
 
-                if (transformed == null) {
-                    setNext(next)
-                    return
-                } else {
+            setNext(next)
+
+            if (next != null) {
+                val transformed = transform(iterators.size, next)
+
+                if (transformed != null) {
                     iterators.add(transformed)
                 }
-            } else {
-                iterators.removeLast()
-                removeLast()
             }
-        } while (iterators.size > 0)
 
-        done()
+            return
+        }
+
+        iterators.removeLast()
+
+        removeLast(iterators.size)
     }
 }
 
@@ -162,6 +178,7 @@ public class AsyncIteratorBreadthIterator<T>(
     private val transform: suspend AsyncIteratorBreadthIterator<T>.(Int, T) -> AsyncIterator<T>?,
     private val removeFirst: suspend () -> Unit = {},
 ) : AbstractAsyncIterator<T>() {
+
     private val iterators = mutableListOf(iterator)
     private var isStop: Boolean = false
 
@@ -184,10 +201,12 @@ public class AsyncIteratorBreadthIterator<T>(
                 if (transformed == null) {
                     setNext(next)
                     return
-                } else {
+                }
+                else {
                     iterators.add(transformed)
                 }
-            } else {
+            }
+            else {
                 iterators.removeFirst()
                 removeFirst()
             }
@@ -204,6 +223,7 @@ private class AsyncIteratorFilter<T>(
     private val iterator: AsyncIterator<T>,
     private val predicate: suspend (T) -> Boolean,
 ) : AbstractAsyncIterator<T>() {
+
     override suspend fun computeNext() {
         while (iterator.hasNext()) {
             val item = iterator.next()
@@ -222,6 +242,7 @@ private class AsyncIteratorMap<T, R>(
     private val iterator: AsyncIterator<T>,
     private val transform: suspend (T) -> R,
 ) : AsyncIterator<R> {
+
     override suspend fun hasNext(): Boolean = iterator.hasNext()
 
     override suspend fun next(): R = transform(iterator.next())
@@ -234,6 +255,7 @@ private class AsyncIteratorMapIndexed<T, R>(
     private val iterator: AsyncIterator<T>,
     private val transform: suspend (index: Int, T) -> R,
 ) : AsyncIterator<R> {
+
     private var index = 0
 
     override suspend fun hasNext(): Boolean = iterator.hasNext()
@@ -248,12 +270,14 @@ private class AsyncIteratorFlatMap<T, R>(
     private val iterator: AsyncIterator<T>,
     private val transform: suspend (T) -> AsyncIterator<R>,
 ) : AbstractAsyncIterator<R>() {
+
     private var item: AsyncIterator<R> = EmptyAsyncIterator
 
     override suspend fun computeNext() {
         if (item.hasNext()) {
             setNext(item.next())
-        } else {
+        }
+        else {
             if (iterator.hasNext()) {
                 item = transform(iterator.next())
                 if (item.hasNext()) {
@@ -270,7 +294,8 @@ public suspend fun <T> AsyncIterator<T>.startsWith(vararg elements: T): Boolean 
     elements.all {
         if (hasNext()) {
             it == next()
-        } else {
+        }
+        else {
             false
         }
     }
@@ -283,11 +308,13 @@ private class AsyncIteratorIterator<T>(
     private val iterator: AsyncIterator<T>,
     private val coroutineScope: CoroutineScope,
 ) : AbstractIterator<T>() {
+
     override fun computeNext() {
         coroutineScope.launch {
             if (iterator.hasNext()) {
                 setNext(next())
-            } else {
+            }
+            else {
                 done()
             }
         }
@@ -300,6 +327,7 @@ public fun <T> ChannelIterator<T>.asyncIterator(): AsyncIterator<T> = ChannelIte
 private class ChannelIteratorAsyncIterator<T>(
     private val channelIterator: ChannelIterator<T>,
 ) : AsyncIterator<T> {
+
     override suspend fun hasNext(): Boolean = channelIterator.hasNext()
 
     override suspend fun next(): T = channelIterator.next()
@@ -310,6 +338,7 @@ public fun <T> AsyncIterator<T>.channelIterator(): ChannelIterator<T> = AsyncIte
 private class AsyncIteratorChannelIterator<T>(
     private val iterator: AsyncIterator<T>,
 ) : ChannelIterator<T> {
+
     private var next: T? = null
     private var nextAssigned: Boolean = false
 

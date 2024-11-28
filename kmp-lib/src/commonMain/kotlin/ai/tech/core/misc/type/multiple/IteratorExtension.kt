@@ -29,6 +29,7 @@ public fun <T> Iterator<T>.next(count: Int): List<T> =
 public fun emptyIterator(): Iterator<Nothing> = EmptyIterator
 
 public object EmptyIterator : Iterator<Nothing> {
+
     override fun hasNext(): Boolean = false
 
     override fun next(): Nothing = throw IllegalStateException("Iterator is empty")
@@ -39,6 +40,7 @@ public fun <T> concat(vararg iterators: Iterator<T>): Iterator<T> = IteratorsCon
 private class IteratorsConcat<T>(
     private vararg val iterators: Iterator<T>,
 ) : AbstractIterator<T>() {
+
     private var index = 0
 
     override fun computeNext() {
@@ -57,6 +59,7 @@ public fun <T> merge(iterators: List<Iterator<T>>): Iterator<T> = IteratorsMerge
 private class IteratorsMerge<T>(
     private val iterators: List<Iterator<T>>,
 ) : Iterator<T> {
+
     private var index = 0
 
     override fun hasNext(): Boolean = iterators[0].hasNext()
@@ -73,55 +76,67 @@ public fun <T> Iterator<T>.drop(n: Int): Iterator<T> {
     for (i in 0 until n) {
         if (hasNext()) {
             next()
-        } else {
+        }
+        else {
             throw IllegalStateException("Not enough elements to drop")
         }
     }
     return this
 }
 
-public fun <T> Iterator<T>.depthIterator(
-    transform: IteratorDepthIterator<T>.(Int, T) -> Iterator<T>?,
-    removeLast: () -> Unit = {},
-): Iterator<T> = IteratorDepthIterator(this, transform, removeLast)
+public fun Iterator<Any?>.depthIterator(
+    transform: IteratorDepthIterator.(Int, Any) -> Iterator<Any?>?,
+    removeLast: (Int) -> Unit = {},
+): Iterator<Any?> = IteratorDepthIterator(this, transform, removeLast)
 
-public class IteratorDepthIterator<T>(
-    iterator: Iterator<T>,
-    private val transform: IteratorDepthIterator<T>.(Int, T) -> Iterator<T>?,
-    private val removeLast: () -> Unit,
-) : AbstractIterator<T>() {
+@Suppress("UNCHECKED_CAST")
+public fun Iterator<Any?>.depthIterator(
+    initialTransform: Any,
+    transform: (transforms: List<Any>, value: Any) -> Iterator<Any?>?,
+    removeLast: (transforms: List<Any>, transform: Any) -> Unit
+): Iterator<Any?> {
+    val transforms = mutableListOf(initialTransform)
+
+    return depthIterator(
+        { _, value -> transform(transforms, value)?.also { transforms.add(value) } },
+    ) { removeLast(transforms, transforms.removeLast()) }
+}
+
+public class IteratorDepthIterator(
+    iterator: Iterator<Any?>,
+    private val transform: IteratorDepthIterator.(Int, Any) -> Iterator<Any?>?,
+    private val removeLast: (Int) -> Unit,
+) : AbstractIterator<Any?>() {
+
     private val iterators = mutableListOf(iterator)
-    private var isStop: Boolean = false
-
-    public fun stop() {
-        isStop = true
-    }
 
     override fun computeNext() {
-        do {
-            val last = iterators.last()
-            if (last.hasNext()) {
-                val next = last.next()
+        if (iterators.isEmpty()) {
+            done()
+            return
+        }
 
-                val transformed = transform(iterators.size - 1, next)
+        val last = iterators.last()
 
-                if (isStop) {
-                    break
-                }
+        if (last.hasNext()) {
+            val next = last.next()
 
-                if (transformed == null) {
-                    setNext(next)
-                    return
-                } else {
+            setNext(next)
+
+            if (next != null) {
+                val transformed = transform(iterators.size, next)
+
+                if (transformed != null) {
                     iterators.add(transformed)
                 }
-            } else {
-                iterators.removeLast()
-                removeLast()
             }
-        } while (iterators.size > 0)
 
-        done()
+            return
+        }
+
+        iterators.removeLast()
+
+        removeLast(iterators.size)
     }
 }
 
@@ -135,6 +150,7 @@ public class IteratorBreadthIterator<T>(
     private val transform: IteratorBreadthIterator<T>.(Int, T) -> Iterator<T>?,
     private val removeFirst: () -> Unit,
 ) : AbstractIterator<T>() {
+
     private val iterators = mutableListOf(iterator)
     private var isStop: Boolean = false
 
@@ -157,10 +173,12 @@ public class IteratorBreadthIterator<T>(
                 if (transformed == null) {
                     setNext(next)
                     return
-                } else {
+                }
+                else {
                     iterators.add(transformed)
                 }
-            } else {
+            }
+            else {
                 iterators.removeFirst()
                 removeFirst()
             }
@@ -176,6 +194,7 @@ private class IteratorFilter<T>(
     private val iterator: Iterator<T>,
     private val predicate: (T) -> Boolean,
 ) : AbstractIterator<T>() {
+
     override fun computeNext() {
         while (iterator.hasNext()) {
             val item = iterator.next()
@@ -194,6 +213,7 @@ private class IteratorMap<T, R>(
     private val iterator: Iterator<T>,
     private val transform: (T) -> R,
 ) : Iterator<R> {
+
     override fun hasNext(): Boolean = iterator.hasNext()
 
     override fun next(): R = transform(iterator.next())
@@ -206,6 +226,7 @@ private class IteratorMapIndexed<T, R>(
     private val iterator: Iterator<T>,
     private val transform: (index: Int, T) -> R,
 ) : Iterator<R> {
+
     private var index = 0
 
     override fun hasNext(): Boolean = iterator.hasNext()
@@ -219,21 +240,22 @@ private class IteratorFlatMap<T, R>(
     private val iterator: Iterator<T>,
     private val transform: (T) -> Iterator<R>,
 ) : AbstractIterator<R>() {
+
     private var item: Iterator<R> = EmptyIterator
 
     override fun computeNext() {
         if (item.hasNext()) {
             setNext(item.next())
-        } else {
+        }
+        else {
             if (iterator.hasNext()) {
                 item = transform(iterator.next())
-                if(item.hasNext()) {
+                if (item.hasNext()) {
                     setNext(item.next())
                     return
                 }
             }
             done()
-
         }
     }
 }
@@ -242,7 +264,8 @@ public fun <T> Iterator<T>.startsWith(vararg elements: T): Boolean =
     elements.all {
         if (hasNext()) {
             it == next()
-        } else {
+        }
+        else {
             false
         }
     }
@@ -253,6 +276,7 @@ public fun <T> Iterator<T>.asyncIterator(): AsyncIterator<T> = IteratorAsyncIter
 private class IteratorAsyncIterator<T>(
     private val iterator: Iterator<T>,
 ) : AsyncIterator<T> {
+
     override suspend fun hasNext(): Boolean = iterator.hasNext()
 
     override suspend fun next(): T = iterator.next()
@@ -264,6 +288,7 @@ public fun Iterator<Byte>.asSource(): Source = IteratorSource(this)
 private class IteratorSource(
     private val iterator: Iterator<Byte>,
 ) : Source {
+
     override fun read(
         sink: Buffer,
         byteCount: Long,

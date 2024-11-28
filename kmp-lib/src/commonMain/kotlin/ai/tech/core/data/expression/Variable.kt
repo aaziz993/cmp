@@ -1,5 +1,6 @@
 package ai.tech.core.data.expression
 
+import ai.tech.core.misc.type.depthIterator
 import com.benasher44.uuid.Uuid
 import com.ionspin.kotlin.bignum.decimal.BigDecimal
 import com.ionspin.kotlin.bignum.integer.BigInteger
@@ -7,6 +8,7 @@ import ai.tech.core.misc.type.serializer.bignum.BigDecimalSerial
 import ai.tech.core.misc.type.serializer.bignum.BigIntegerSerial
 import ai.tech.core.misc.type.serializer.UuidSerial
 import ai.tech.core.misc.type.depthTraverse
+import ai.tech.core.misc.type.multiple.depthIterator
 import ai.tech.core.misc.type.multiple.removeLast
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.LocalDateTime
@@ -267,40 +269,56 @@ public interface Expression {
     public val isArgumentsAllValue: Boolean
         get() = arguments.all { it is Value<*> }
 
+    @Suppress("UNCHECKED_CAST")
     public fun evaluate(
         inlineExpression: Expression.(List<Expression>) -> Unit,
         leafExpression: Expression.(List<Expression>) -> Unit
-    ): Unit =
-        depthTraverse(
-            {
-                if (isArgumentsAllValue) {
-                    null
-                }
-                else {
-                    arguments.iterator()
-                }
-            },
-            inlineExpression,
-            leafExpression,
-        )
+    ) {
+        if (isArgumentsAllValue) {
+            return leafExpression(emptyList())
+        }
 
+        arguments.iterator().depthIterator(
+            this,
+            { expressions, value ->
+                if (value is Expression) {
+                    if (!value.isArgumentsAllValue) {
+                        return@depthIterator value.arguments.iterator()
+                    }
+                    value.leafExpression(expressions as List<Expression>)
+                }
+                null
+            },
+        ) { expressions, expression ->
+            (expression as Expression).inlineExpression(expressions as List<Expression>)
+        }.forEach {}
+    }
+
+    @Suppress("UNCHECKED_CAST")
     public fun evaluate(
         inlineExpression: Expression.(List<Expression>, args: List<Any?>) -> Any?,
         leafExpression: Expression.(List<Expression>) -> Any?
     ): Any? {
+        if (isArgumentsAllValue) {
+            return leafExpression(emptyList())
+        }
+
         val evaluations = mutableListOf<Any?>()
 
-        depthTraverse(
-            {
-                if (isArgumentsAllValue) {
-                    null
+        arguments.iterator().depthIterator(
+            this,
+            { expressions, value ->
+                if (value is Expression) {
+                    if (!value.isArgumentsAllValue) {
+                        return@depthIterator value.arguments.iterator()
+                    }
+                    value.leafExpression(expressions as List<Expression>)
                 }
-                else {
-                    arguments.iterator()
-                }
+                null
             },
-            { evaluations.add(leafExpression(it)) },
-        ) { evaluations.add(inlineExpression(it, evaluations.removeLast(arguments.size))) }
+        ) { expressions, expression ->
+            evaluations.add((expression as Expression).inlineExpression(expressions as List<Expression>, evaluations.removeLast(expression.arguments.size)))
+        }.forEach {}
 
         return evaluations[0]
     }
