@@ -29,7 +29,7 @@ internal interface CRUDApi {
 
     @Headers("Content-Type: application/json")
     @PUT("upsert")
-    suspend fun upsert(@Body entities: List<*>)
+    suspend fun upsert(@Body entities: List<*>): HttpStatement
 
     @Headers("Content-Type: application/json")
     @POST("delete")

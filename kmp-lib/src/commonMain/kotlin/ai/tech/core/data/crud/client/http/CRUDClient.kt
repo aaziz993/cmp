@@ -13,6 +13,7 @@ import ai.tech.core.misc.network.http.client.AbstractApiHttpClient
 import ai.tech.core.misc.type.serializer.decodeAnyFromString
 import ai.tech.core.misc.type.serializer.json
 import io.ktor.client.*
+import io.ktor.client.call.body
 import io.ktor.client.request.forms.*
 import io.ktor.client.statement.*
 import io.ktor.http.*
@@ -48,9 +49,7 @@ public open class CRUDClient<T : Any, ID : Any>(
     override suspend fun insert(entities: List<T>): Unit = api.insert(entities)
 
     @Suppress("UNCHECKED_CAST")
-    override suspend fun insertAndReturn(entities: List<T>): List<ID> = api.insertAndReturn(entities).execute {
-        Json.Default.decodeFromString(ListSerializer(PolymorphicSerializer(Any::class)), it.bodyAsText()) as List<ID>
-    }
+    override suspend fun insertAndReturn(entities: List<T>): List<ID> = api.insertAndReturn(entities).execute(HttpResponse::body)
 
     override suspend fun update(entities: List<T>): List<Boolean> = api.update(entities)
 
@@ -64,7 +63,7 @@ public open class CRUDClient<T : Any, ID : Any>(
             ),
         )
 
-    override suspend fun upsert(entities: List<T>): Unit = api.upsert(entities)
+    override suspend fun upsert(entities: List<T>): List<ID> = api.upsert(entities).execute(HttpResponse::body)
 
     override fun find(sort: List<Order>?, predicate: BooleanVariable?, limitOffset: LimitOffset?): Flow<T> =
         flow {

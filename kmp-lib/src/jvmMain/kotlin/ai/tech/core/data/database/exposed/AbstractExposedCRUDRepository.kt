@@ -61,6 +61,7 @@ import org.jetbrains.exposed.sql.alias
 import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.avg
 import org.jetbrains.exposed.sql.batchInsert
+import org.jetbrains.exposed.sql.batchUpsert
 import org.jetbrains.exposed.sql.count
 import org.jetbrains.exposed.sql.deleteAll
 import org.jetbrains.exposed.sql.deleteWhere
@@ -118,12 +119,20 @@ public abstract class AbstractExposedCRUDRepository<T : Any, ID : Any>(
 
     private val logger = LoggerFactory.getLogger(this::class.java)
 
-    override val createdAtNow: ((TimeZone) -> Any)? = createdAtProperty?.let { table[it]?.now }
+    private val Table.createdAtColumn: Column<*>?
+        get() = createdAtProperty?.let { get(it) }
 
-    override val updatedAtNow: ((TimeZone) -> Any)? = updatedAtProperty?.let { table[it]?.now }
+    private val Table.updatedAtColumn: Column<*>?
+        get() = createdAtProperty?.let { get(it) }
+
+    private val onUpsertExclude = listOfNotNull(table.createdAtColumn)
+
+    override val createdAtNow: ((TimeZone) -> Any)? = table.createdAtColumn?.now
+
+    override val updatedAtNow: ((TimeZone) -> Any)? = table.updatedAtColumn?.now
 
     private val List<T>.insertable: List<Map<String, Any?>>
-        get() = map { entityCreatedAtAware(it) }
+        get() = map(entityCreatedAtAware)
 
     override val T.propertyValues: Map<String, Any?>
         get() = getEntityPropertyValues(this)
@@ -156,13 +165,14 @@ public abstract class AbstractExposedCRUDRepository<T : Any, ID : Any>(
         }.map(Int::toLong)
     }
 
+    @Suppress("UNCHECKED_CAST")
     override suspend fun upsert(entities: List<T>): List<ID> = transactional {
-        entities.forEach { entity ->
-            table.upsertReturning(returning = listOf(table.primaryKey.columns[0])) {
-                it.set(entityCreatedAtAware(entity))
-            }
-        }
-        0
+        table.batchUpsert(
+            entities,
+            onUpdateExclude = onUpsertExclude,
+        ) { entity ->
+            set(entityCreatedAtAware(entity))
+        }.map { it[table.primaryKey!!.columns[0]] as ID }
     }
 
     override fun find(sort: List<Order>?, predicate: BooleanVariable?, limitOffset: LimitOffset?): Flow<T> = flow {

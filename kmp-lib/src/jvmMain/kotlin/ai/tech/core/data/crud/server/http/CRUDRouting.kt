@@ -44,7 +44,7 @@ public inline fun <reified T : Any, ID : Any> Routing.CrudRouting(
 
         authOpt(writeAuth) {
             put("insertAndReturn") {
-                call.respondText(Json.Default.encodeToString(ListSerializer(PolymorphicSerializer(Any::class)), repository.insertAndReturn(call.receive<List<T>>())), status = HttpStatusCode.OK)
+                call.respond(HttpStatusCode.OK, repository.insertAndReturn(call.receive<List<T>>()))
             }
         }
 
@@ -72,8 +72,7 @@ public inline fun <reified T : Any, ID : Any> Routing.CrudRouting(
 
         authOpt(writeAuth) {
             put("upsert") {
-                repository.upsert(call.receive<List<T>>())
-                call.respondText("Upserted", status = HttpStatusCode.OK)
+                call.respond(HttpStatusCode.OK, repository.upsert(call.receive<List<T>>()))
             }
         }
 
