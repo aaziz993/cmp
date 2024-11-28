@@ -497,6 +497,6 @@ public fun <T : Any> Any.mapTo(
 ) {
 }
 
-public fun List<Map<String, Any?>>.deepMerge(
+public fun Any.deepMerge(
     override: Boolean = false
 ): Map<String, Any?> = emptyMap()

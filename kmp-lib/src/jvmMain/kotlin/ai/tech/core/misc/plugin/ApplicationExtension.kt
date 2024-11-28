@@ -10,12 +10,10 @@ import ai.tech.core.misc.model.config.server.ServerConfig
 import ai.tech.core.misc.model.config.server.ServerHostConfig
 import ai.tech.core.misc.plugin.applicationmonitoring.configureApplicationMonitoring
 import ai.tech.core.misc.plugin.auth.configureAuth
-import ai.tech.core.misc.plugin.auth.database.kotysa.principal.PrincipalExposedCRUDRepository
-import ai.tech.core.misc.plugin.auth.database.kotysa.principal.PrincipalKotysaCRUDRepository
-import ai.tech.core.misc.plugin.auth.database.kotysa.principal.model.PrincipalEntity
-import ai.tech.core.misc.plugin.auth.database.kotysa.role.RoleExposedCRUDRepository
-import ai.tech.core.misc.plugin.auth.database.kotysa.role.RoleKotysaCRUDRepository
-import ai.tech.core.misc.plugin.auth.database.kotysa.role.model.RoleEntity
+import ai.tech.core.misc.auth.identity.principal.repository.PrincipalExposedCRUDRepository
+import ai.tech.core.misc.auth.identity.principal.repository.PrincipalKotysaCRUDRepository
+import ai.tech.core.misc.auth.identity.role.repository.RoleExposedCRUDRepository
+import ai.tech.core.misc.auth.identity.role.repository.RoleKotysaCRUDRepository
 import ai.tech.core.misc.plugin.authheadresponse.configureAutoHeadResponse
 import ai.tech.core.misc.plugin.cachingheaders.configureCachingHeaders
 import ai.tech.core.misc.plugin.callid.configureCallId
@@ -85,9 +83,7 @@ import java.io.File
 import korlibs.time.DateTime
 import org.jetbrains.exposed.sql.Database
 import org.koin.core.KoinApplication
-import org.koin.core.module.Module
 import org.koin.core.qualifier.named
-import org.koin.dsl.module
 import org.koin.ktor.ext.get
 import org.lighthousegames.logging.logging
 import org.ufoss.kotysa.R2dbcSqlClient

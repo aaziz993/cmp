@@ -47,6 +47,7 @@ import kotlinx.datetime.TimeZone
 import kotlinx.serialization.InternalSerializationApi
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.serializer
+import net.pearx.kasechange.toCamelCase
 import org.jetbrains.exposed.sql.Column
 import org.jetbrains.exposed.sql.Database
 import org.jetbrains.exposed.sql.ISqlExpressionBuilder
@@ -78,6 +79,7 @@ import org.jetbrains.exposed.sql.sum
 import org.jetbrains.exposed.sql.transactions.experimental.newSuspendedTransaction
 import org.jetbrains.exposed.sql.update
 import org.jetbrains.exposed.sql.upsert
+import org.jetbrains.exposed.sql.upsertReturning
 import org.slf4j.LoggerFactory
 
 public abstract class AbstractExposedCRUDRepository<T : Any, ID : Any>(
@@ -137,7 +139,6 @@ public abstract class AbstractExposedCRUDRepository<T : Any, ID : Any>(
         table.batchInsert(entities.insertable) { entity -> set(entity) }.map { it[table.primaryKey!!.columns[0]] as ID }
     }
 
-
     override suspend fun update(entities: List<T>): List<Boolean> = transactional {
         entities.map { entity -> table.update { it.set(entityUpdatedAtAware(entity)) } > 0 }
     }
@@ -155,8 +156,13 @@ public abstract class AbstractExposedCRUDRepository<T : Any, ID : Any>(
         }.map(Int::toLong)
     }
 
-    override suspend fun upsert(entities: List<T>): Unit = transactional {
-        entities.forEach { entity -> table.upsert { it.set(entityCreatedAtAware(entity)) } }
+    override suspend fun upsert(entities: List<T>): List<ID> = transactional {
+        entities.forEach { entity ->
+            table.upsertReturning(returning = listOf(table.primaryKey.columns[0])) {
+                it.set(entityCreatedAtAware(entity))
+            }
+        }
+        0
     }
 
     override fun find(sort: List<Order>?, predicate: BooleanVariable?, limitOffset: LimitOffset?): Flow<T> = flow {
@@ -337,7 +343,7 @@ public abstract class AbstractExposedCRUDRepository<T : Any, ID : Any>(
     private fun Any.exposedExp(name: String, values: List<Value<*>>): Any = exp(name, value) { table[it]!! }
 }
 
-private operator fun Table.get(name: String): Column<*>? = columns.find { it.name == name }
+private operator fun Table.get(name: String): Column<*>? = columns.find { it.name.toCamelCase() == name }
 
 public val Column<*>.now: ((TimeZone) -> Any)?
     get() = when (columnType) {

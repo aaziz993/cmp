@@ -37,7 +37,7 @@ public data class UserRecord(
             lastName = null,
             phone = phoneNumber,
             email = email,
-            image = photoUrl,
+            imageUrl = photoUrl,
             roles = null,
             attributes = null,
         )

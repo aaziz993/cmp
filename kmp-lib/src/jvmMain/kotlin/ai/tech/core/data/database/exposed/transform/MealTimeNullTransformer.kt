@@ -26,5 +26,5 @@ public object MealTimeNullTransformer : ColumnTransformer<LocalTime?, Meal?> {
     }
 }
 
-public fun Table.nullableMeal(column: Column<LocalTime?>): Column<Meal?> =
+public fun Table.mealTime(column: Column<LocalTime?>): Column<Meal?> =
     column.transform(MealTimeNullTransformer)

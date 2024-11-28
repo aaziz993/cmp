@@ -12,7 +12,7 @@ public object LocationKotysaTable : GenericTable<LocationEntity>("location") {
     // Primary key
     public val id: LongDbIdentityColumnNotNull<LocationEntity> = bigInt(LocationEntity::id)
         .identity()
-        .primaryKey("PK_location")
+        .primaryKey()
 
     // Other fields
     public val longitude: DoubleDbDoublePrecisionColumnNotNull<LocationEntity> =

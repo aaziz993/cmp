@@ -131,7 +131,17 @@ public abstract class AbstractKotysaCRUDRepository<T : Any, ID : Any>(
         }
     }!!
 
-    final override suspend fun upsert(entities: List<T>): Nothing = throw UnsupportedOperationException()
+    @Suppress("UNCHECKED_CAST")
+    final override suspend fun upsert(entities: List<T>): List<ID> = client.transactional {
+        val (existEntities, newEntities) = entities.partition {
+            val id = kotysaTable.identityColumn[it]
+
+            id != null
+        }
+        client.insert(newEntities.insertable)
+        existEntities.forEach { entity-> update(entity.updatable).execute()}
+        existEntities.map { kotysaTable.identityColumn[it] } as List<ID>
+    }!!
 
     final override fun find(
         sort: List<Order>?,

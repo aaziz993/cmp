@@ -5,5 +5,4 @@ import kotlinx.serialization.Serializable
 @Serializable
 public data class DeleteRequest(
     val idToken: String? = null,
-    val localId: String? = null,
 )

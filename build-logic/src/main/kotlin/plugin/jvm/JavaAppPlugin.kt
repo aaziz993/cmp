@@ -49,6 +49,7 @@ public class JavaAppPlugin : Plugin<Project> {
 
                 dependencies.apply {
                     implementation(lib("logback.classic"))
+                    implementation(lib("commons.lang3"))
                     implementation(lib("reflections"))
                     implementation(lib("kotlinx.datetime"))
                     implementation(lib("bignum"))

@@ -7,8 +7,8 @@ import ai.tech.core.misc.plugin.auth.AuthProvider
 import ai.tech.core.misc.plugin.auth.ChallengeAuthProvider
 import ai.tech.core.misc.plugin.auth.DigesterAuthProvider
 import ai.tech.core.misc.plugin.auth.ValidateAuthProvider
-import ai.tech.core.misc.plugin.auth.database.kotysa.principal.model.PrincipalEntity
-import ai.tech.core.misc.plugin.auth.database.kotysa.role.model.RoleEntity
+import ai.tech.core.misc.auth.identity.principal.model.PrincipalEntity
+import ai.tech.core.misc.auth.identity.role.model.RoleEntity
 import ai.tech.core.misc.plugin.auth.form.model.config.FormAuthConfig
 import io.ktor.server.application.*
 import io.ktor.server.auth.*

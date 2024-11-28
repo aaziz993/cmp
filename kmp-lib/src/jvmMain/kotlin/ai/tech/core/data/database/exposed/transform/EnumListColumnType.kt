@@ -1,6 +1,5 @@
 package ai.tech.core.data.database.exposed.transform
 
-import ai.tech.core.data.database.exposed.column.set
 import kotlin.reflect.KClass
 import org.jetbrains.exposed.sql.Column
 import org.jetbrains.exposed.sql.ColumnTransformer
@@ -28,4 +27,4 @@ public class EnumListColumnType<T : Enum<T>>(
         ?: emptyList()
 }
 
-public inline fun <reified T : Enum<T>> Table.enum(column: Column<String>) = column.transform(EnumListColumnType(T::class))
+public inline fun <reified T : Enum<T>> Table.enumList(column: Column<String>) = column.transform(EnumListColumnType(T::class))

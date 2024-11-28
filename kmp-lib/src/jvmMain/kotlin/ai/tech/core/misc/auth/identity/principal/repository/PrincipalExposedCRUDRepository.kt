@@ -1,18 +1,18 @@
-package ai.tech.core.misc.plugin.auth.database.kotysa.role;
+package ai.tech.core.misc.auth.identity.principal.repository
 
 import ai.tech.core.data.database.exposed.AbstractExposedCRUDRepository
-import ai.tech.core.misc.plugin.auth.database.kotysa.role.model.RoleEntity
+import ai.tech.core.misc.auth.identity.principal.model.PrincipalEntity
 import kotlinx.datetime.TimeZone
 import org.jetbrains.exposed.sql.Database
 import org.jetbrains.exposed.sql.Table
 
-public class RoleExposedCRUDRepository(
+public class PrincipalExposedCRUDRepository(
     database: Database,
     transactionIsolation: Int? = null,
     table: Table,
     timeZone: TimeZone = TimeZone.UTC
-) : AbstractExposedCRUDRepository<RoleEntity>(
-    RoleEntity::class,
+) : AbstractExposedCRUDRepository<PrincipalEntity, Long>(
+    PrincipalEntity::class,
     database,
     transactionIsolation,
     table,

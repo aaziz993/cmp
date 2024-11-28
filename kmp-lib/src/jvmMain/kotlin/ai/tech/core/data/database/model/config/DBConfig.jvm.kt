@@ -22,6 +22,7 @@ import org.jetbrains.exposed.sql.Schema
 import org.jetbrains.exposed.sql.SchemaUtils
 import org.jetbrains.exposed.sql.StdOutSqlLogger
 import org.jetbrains.exposed.sql.addLogger
+import org.jetbrains.exposed.sql.exists
 import org.jetbrains.exposed.sql.transactions.transaction
 import org.ufoss.kotysa.R2dbcSqlClient
 import org.ufoss.kotysa.Table
@@ -73,14 +74,15 @@ public val DBConfig.exposedDatabase: Database
             this@exposedDatabase.defaultSchema?.let {
                 val schema = Schema(it.name)
 
-                SchemaUtils.createSchema(schema)
-
-                if (it.create != Creation.SKIP) {
+                if (schema.exists()) {
                     if (it.create != Creation.IF_NOT_EXISTS) {
                         SchemaUtils.dropSchema(schema)
-                    }
 
-                    SchemaUtils.createSchema(schema, inBatch = it.createInBatch)
+                        SchemaUtils.createSchema(schema, inBatch = it.createInBatch)
+                    }
+                }
+                else {
+                    SchemaUtils.createSchema(schema)
                 }
 
                 SchemaUtils.setSchema(schema)
@@ -90,13 +92,15 @@ public val DBConfig.exposedDatabase: Database
 
             this@exposedDatabase.table.filterNot { it.create == Creation.SKIP }.forEach {
 
-                val tables = getExposedTables(it).toTypedArray()
+                val (existTables, newTables) = getExposedTables(it).partition { it.exists() }
+                    .let { it.first.toTypedArray() to it.second.toTypedArray() }
 
                 if (it.create == Creation.OVERRIDE) {
-                    SchemaUtils.drop(*tables, inBatch = it.createInBatch)
+                    SchemaUtils.drop(*existTables, inBatch = it.createInBatch)
+                    SchemaUtils.create(*existTables, inBatch = it.createInBatch)
                 }
 
-                SchemaUtils.create(*tables, inBatch = it.createInBatch)
+                SchemaUtils.create(*newTables, inBatch = it.createInBatch)
             }
         }
     }

@@ -11,8 +11,8 @@ import ai.tech.core.misc.plugin.auth.rbac.rbac
 import ai.tech.core.misc.model.config.EnabledConfig
 import ai.tech.core.misc.plugin.auth.basic.BasicAuthService
 import ai.tech.core.misc.plugin.auth.basic.model.config.BaseBasicAuthConfig
-import ai.tech.core.misc.plugin.auth.database.kotysa.principal.model.PrincipalEntity
-import ai.tech.core.misc.plugin.auth.database.kotysa.role.model.RoleEntity
+import ai.tech.core.misc.auth.identity.principal.model.PrincipalEntity
+import ai.tech.core.misc.auth.identity.role.model.RoleEntity
 import ai.tech.core.misc.plugin.auth.digest.DigestAuthService
 import ai.tech.core.misc.plugin.auth.digest.model.config.BaseDigestAuthConfig
 import ai.tech.core.misc.plugin.auth.form.FormAuthService

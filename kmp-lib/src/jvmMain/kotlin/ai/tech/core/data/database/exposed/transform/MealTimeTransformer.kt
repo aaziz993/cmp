@@ -21,5 +21,5 @@ public object MealTimeTransformer : ColumnTransformer<LocalTime, Meal> {
     }
 }
 
-public fun Table.meal(column: Column<LocalTime>): Column<Meal> = column.transform(MealTimeTransformer)
+public fun Table.mealTime(column: Column<LocalTime>): Column<Meal> = column.transform(MealTimeTransformer)
 

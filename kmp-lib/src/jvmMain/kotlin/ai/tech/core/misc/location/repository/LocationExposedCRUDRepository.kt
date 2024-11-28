@@ -1,18 +1,19 @@
-package ai.tech.core.misc.plugin.auth.database.kotysa.principal
+package ai.tech.core.misc.location.repository;
 
 import ai.tech.core.data.database.exposed.AbstractExposedCRUDRepository
-import ai.tech.core.misc.plugin.auth.database.kotysa.principal.model.PrincipalEntity
+import ai.tech.core.misc.location.model.LocationEntity
 import kotlinx.datetime.TimeZone
 import org.jetbrains.exposed.sql.Database
-import org.jetbrains.exposed.sql.Table
 
-public class PrincipalExposedCRUDRepository(
+import org.jetbrains.exposed.sql.Table;
+
+public class LocationExposedCRUDRepository(
     database: Database,
     transactionIsolation: Int? = null,
     table: Table,
     timeZone: TimeZone = TimeZone.UTC
-) : AbstractExposedCRUDRepository<PrincipalEntity>(
-    PrincipalEntity::class,
+) : AbstractExposedCRUDRepository<LocationEntity, Long>(
+    LocationEntity::class,
     database,
     transactionIsolation,
     table,

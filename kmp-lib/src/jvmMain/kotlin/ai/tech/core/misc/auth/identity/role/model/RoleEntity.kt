@@ -1,13 +1,13 @@
-package ai.tech.core.misc.plugin.auth.database.kotysa.principal.model
+package ai.tech.core.misc.auth.identity.role.model
 
 import kotlinx.datetime.LocalDateTime
 import kotlinx.serialization.Serializable
 
 @Serializable
-public data class PrincipalEntity(
+public data class RoleEntity(
     val id: Long? = null,
-    val username: String,
-    val password: String,
+    val name: String,
+    val principalId: Long,
     val createdBy: String? = null,
     val createdAt: LocalDateTime? = null,
     val updatedBy: String? = null,

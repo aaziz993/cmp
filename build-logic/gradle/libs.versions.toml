@@ -39,6 +39,8 @@ vanniktech-maven-publish = "0.30.0"
 google-java-format = "1.25.0"
 # logging
 logback-classic = "1.5.11"
+# apache commons
+commons-lang3 = "3.17.0"
 # access class members
 reflections = "0.10.2"
 # pdf generator
@@ -226,6 +228,8 @@ kotlin-gradle-plugin = { group = "org.jetbrains.kotlin", name = "kotlin-gradle-p
 # Java
 # logging
 logback-classic = { module = "ch.qos.logback:logback-classic", version.ref = "logback-classic" }
+# apache commons
+commons-lang3 = { module = "org.apache.commons:commons-lang3", version.ref = "commons-lang3" }
 # reflections
 reflections = { module = "org.reflections:reflections", version.ref = "reflections" }
 # parse xml
