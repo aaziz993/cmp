@@ -8,7 +8,7 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 public data class Retry(
-    val maxAttempts: Int = 3,
     val interval: Duration = 1.seconds,
-    val multiplier: Double = 1.5,
+    val multiplier: Double = 5.0,
+    val maxAttempts: Long = 3,
 )

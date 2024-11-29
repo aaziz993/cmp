@@ -39,8 +39,8 @@ public fun Application.configureAuth(
     serverURL: String,
     httpClient: HttpClient,
     config: AuthProvidersConfig?,
-    getPrincipalRepository: (databaseName: String?, tableName: String) -> CRUDRepository<PrincipalEntity, Long>? = { _, _ -> null },
-    getRoleRepository: (databaseName: String?, tableName: String) -> CRUDRepository<RoleEntity, Long>? = { _, _ -> null },
+    getPrincipalRepository: (databaseName: String?, tableName: String) -> CRUDRepository<PrincipalEntity>? = { _, _ -> null },
+    getRoleRepository: (databaseName: String?, tableName: String) -> CRUDRepository<RoleEntity>? = { _, _ -> null },
     block: (AuthenticationConfig.() -> Unit)? = null
 ) = authentication {
     config?.takeIf(EnabledConfig::enabled)?.let {

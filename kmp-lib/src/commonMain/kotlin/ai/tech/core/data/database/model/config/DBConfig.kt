@@ -1,5 +1,6 @@
 package ai.tech.core.data.database.model.config
 
+import ai.tech.core.data.crud.model.TransactionIsolation
 import ai.tech.core.misc.model.config.EnabledConfig
 import kotlinx.serialization.Serializable
 import kotlin.time.Duration
@@ -27,8 +28,8 @@ public data class DBConfig(
     val initializationFailTimeout: Duration? = null,
     val keepaliveTime: Duration? = null,
     val isAutoCommit: Boolean? = null,
-    val isReadOnly: Boolean = false,
-    val transactionIsolation: String = "TRANSACTION_SERIALIZABLE",
+    val isReadOnly: Boolean? = null,
+    val transactionIsolation: TransactionIsolation? = null,
     val useNestedTransactions: Boolean = false,
     // exposed
     val defaultFetchSize: Int? = null,

@@ -49,7 +49,7 @@ public class JavaAppPlugin : Plugin<Project> {
 
                 dependencies.apply {
                     implementation(lib("logback.classic"))
-                    implementation(lib("commons.lang3"))
+                    implementation(bundle("apache.commons"))
                     implementation(lib("reflections"))
                     implementation(lib("kotlinx.datetime"))
                     implementation(lib("bignum"))
@@ -60,7 +60,6 @@ public class JavaAppPlugin : Plugin<Project> {
                     implementation(lib("jnativehook"))
                     implementation(bundle("jna"))
                     implementation(bundle("webcam.capture"))
-                    implementation(lib("commons.net"))
                     implementation(lib("sshj"))
                     implementation(lib("jsch"))
                     implementation(bundle("kotlinx.serialization"))

@@ -4,6 +4,6 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 public data class ExecuteActionsEmail(
-    val actions: List<String>,
+    val actions: List<EmailAction>,
     val redirectUri: String? = null
 )

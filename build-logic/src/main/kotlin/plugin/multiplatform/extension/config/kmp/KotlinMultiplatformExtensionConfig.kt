@@ -134,12 +134,12 @@ internal fun Project.configureKotlinMultiplatformExtension(extension: KotlinMult
 
             // Intermediate dependencies for jvm and android
             getByName("jvmAndAndroidMain").dependencies {
+                implementation(bundle("apache.commons"))
                 implementation(lib("itext.core"))
                 implementation(lib("cryptography.provider.jdk"))
                 implementation(bundle("pgpainless"))
                 implementation(lib("jackson.dataformat.xml"))
                 implementation(lib("sqldelight.sqlite.driver"))
-                implementation(lib("commons.net"))
                 implementation(lib("jsch"))
                 implementation(lib("sshj"))
                 implementation(lib("ktor.client.okhttp"))

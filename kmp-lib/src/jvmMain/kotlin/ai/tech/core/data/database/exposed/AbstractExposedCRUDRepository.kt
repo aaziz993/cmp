@@ -4,7 +4,8 @@ import ai.tech.core.data.crud.AbstractCRUDRepository
 import ai.tech.core.data.crud.CRUDRepository
 import ai.tech.core.data.crud.model.LimitOffset
 import ai.tech.core.data.crud.model.Order
-import ai.tech.core.data.database.exp
+import ai.tech.core.data.crud.model.TransactionIsolation
+import ai.tech.core.data.crud.model.javaSqlTransactionIsolation
 import ai.tech.core.data.expression.AggregateExpression
 import ai.tech.core.data.expression.And
 import ai.tech.core.data.expression.Avg
@@ -23,7 +24,6 @@ import ai.tech.core.data.expression.LessEqualThan
 import ai.tech.core.data.expression.LessThan
 import ai.tech.core.data.expression.Max
 import ai.tech.core.data.expression.Min
-import ai.tech.core.data.expression.Not
 import ai.tech.core.data.expression.NotEquals
 import ai.tech.core.data.expression.NotIn
 import ai.tech.core.data.expression.Or
@@ -31,21 +31,21 @@ import ai.tech.core.data.expression.Projection
 import ai.tech.core.data.expression.Sum
 import ai.tech.core.data.expression.Value
 import ai.tech.core.data.expression.Variable
+import ai.tech.core.misc.type.call
+import ai.tech.core.misc.type.declaredMemberProperty
 import ai.tech.core.misc.type.serializablePropertyValues
 import ai.tech.core.misc.type.serializer.create
-import ai.tech.core.misc.type.single.now
 import kotlin.coroutines.CoroutineContext
 import kotlin.reflect.KClass
+import kotlin.reflect.full.createType
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.asFlow
 import kotlinx.coroutines.flow.flow
-import kotlinx.datetime.LocalTime
 import kotlinx.datetime.TimeZone
 import kotlinx.serialization.InternalSerializationApi
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.serializer
-import net.pearx.kasechange.toCamelCase
 import org.jetbrains.exposed.sql.Column
 import org.jetbrains.exposed.sql.Database
 import org.jetbrains.exposed.sql.ISqlExpressionBuilder
@@ -61,9 +61,6 @@ import org.jetbrains.exposed.sql.batchUpsert
 import org.jetbrains.exposed.sql.count
 import org.jetbrains.exposed.sql.deleteAll
 import org.jetbrains.exposed.sql.deleteWhere
-import org.jetbrains.exposed.sql.kotlin.datetime.KotlinLocalDateColumnType
-import org.jetbrains.exposed.sql.kotlin.datetime.KotlinLocalDateTimeColumnType
-import org.jetbrains.exposed.sql.kotlin.datetime.KotlinLocalTimeColumnType
 import org.jetbrains.exposed.sql.max
 import org.jetbrains.exposed.sql.min
 import org.jetbrains.exposed.sql.selectAll
@@ -75,12 +72,20 @@ import org.slf4j.LoggerFactory
 
 public abstract class AbstractExposedCRUDRepository<T : Any>(
     private val database: Database,
-    public val transactionIsolation: Int? = null,
+    public val transactionIsolation: TransactionIsolation? = null,
     private val table: Table,
     private val getEntityPropertyValues: (T) -> Map<String, Any?>,
     private val createEntity: (ResultRow) -> T,
     createdAtProperty: String? = "createdAt",
     updatedAtProperty: String? = "updatedAt",
+    public val statementCount: Int? = null,
+    public val duration: Long? = null,
+    public val warnLongQueriesDuration: Long? = null,
+    public val debug: Boolean? = null,
+    public val maxAttempts: Int? = null,
+    public val minRetryDelay: Long? = null,
+    public val maxRetryDelay: Long? = null,
+    public val queryTimeout: Int? = null,
     timeZone: TimeZone = TimeZone.currentSystemDefault(),
     private val coroutineContext: CoroutineContext = Dispatchers.IO,
 ) : AbstractCRUDRepository<T>(
@@ -92,10 +97,18 @@ public abstract class AbstractExposedCRUDRepository<T : Any>(
     @OptIn(InternalSerializationApi::class)
     public constructor(kClass: KClass<T>,
                        database: Database,
-                       transactionIsolation: Int? = null,
+                       transactionIsolation: TransactionIsolation? = null,
                        table: Table,
                        createdAtProperty: String? = "createdAt",
                        updatedAtProperty: String? = "updatedAt",
+                       statementCount: Int? = null,
+                       duration: Long? = null,
+                       warnLongQueriesDuration: Long? = null,
+                       debug: Boolean? = null,
+                       maxAttempts: Int? = null,
+                       minRetryDelay: Long? = null,
+                       maxRetryDelay: Long? = null,
+                       queryTimeout: Int? = null,
                        timeZone: TimeZone = TimeZone.UTC) : this(
         database,
         transactionIsolation,
@@ -104,14 +117,16 @@ public abstract class AbstractExposedCRUDRepository<T : Any>(
         { resultRow -> Json.Default.create(kClass.serializer(), table.columns.associate { it.name to resultRow[it] }) },
         createdAtProperty,
         updatedAtProperty,
+        statementCount,
+        duration,
+        warnLongQueriesDuration,
+        debug,
+        maxAttempts,
+        minRetryDelay,
+        maxRetryDelay,
+        queryTimeout,
         timeZone,
     )
-
-    init {
-        require(table.primaryKey?.columns?.size == 1) {
-            "Only table with one identity column primary key is permitted"
-        }
-    }
 
     private val logger = LoggerFactory.getLogger(this::class.java)
 
@@ -129,8 +144,21 @@ public abstract class AbstractExposedCRUDRepository<T : Any>(
     protected val T.withAt: Map<String, Any?>
         get() = propertyValues.withCreatedAt().withUpdatedAt()
 
+    // CRUD operations in Exposed must be called from within a transaction.
+    // By default, a nested transaction block shares the transaction resources of its parent transaction block, so any effect on the child affects the parent
+    // Since Exposed 0.16.1 it is possible to use nested transactions as separate transactions by setting useNestedTransactions = true on the desired Database instance.
     override suspend fun <R> transactional(block: suspend CRUDRepository<T>.() -> R): R =
-        newSuspendedTransaction(coroutineContext, database, transactionIsolation) { block() }
+        newSuspendedTransaction(coroutineContext, database, transactionIsolation?.javaSqlTransactionIsolation) {
+            this@AbstractExposedCRUDRepository.statementCount?.let { statementCount = it }
+            this@AbstractExposedCRUDRepository.duration?.let { duration = it }
+            this@AbstractExposedCRUDRepository.warnLongQueriesDuration?.let { warnLongQueriesDuration = it }
+            this@AbstractExposedCRUDRepository.debug?.let { debug = it }
+            this@AbstractExposedCRUDRepository.maxAttempts?.let { maxAttempts = it }
+            this@AbstractExposedCRUDRepository.minRetryDelay?.let { minRetryDelay = it }
+            this@AbstractExposedCRUDRepository.maxRetryDelay?.let { maxRetryDelay = it }
+            this@AbstractExposedCRUDRepository.queryTimeout?.let { queryTimeout = it }
+            block()
+        }
 
     override suspend fun insert(entities: List<T>): Unit = transactional {
         table.batchInsert(entities.withCreatedAt) { entity -> set(entity) }
@@ -265,12 +293,15 @@ public abstract class AbstractExposedCRUDRepository<T : Any>(
     }
 
     @Suppress("UNCHECKED_CAST")
-    private fun compareExp(expression: Expression, logValue: StringBuilder): Any {
-        val field = expression.arguments[0] as Field
+    private fun Any.exp(expression: Expression, args: List<Any?>, logValue: StringBuilder): Any {
 
-        var exposedExpArgs = listOf(expression.arguments[1] as Value<*>)
+        val funArgs = args
 
-        val exposedExpName = when (expression) {
+        val funName = when (expression) {
+            is And -> {}
+
+            is Or -> {}
+
             is Equals -> {
                 if (expression.arguments.size > 2) {
                     throw IllegalArgumentException("Unsupported \"${this::class.simpleName}\" with match all or ignore case options")
@@ -309,19 +340,27 @@ public abstract class AbstractExposedCRUDRepository<T : Any>(
             else -> throw IllegalArgumentException("Unsupported expression type \"${this::class.simpleName}\"")
         }
 
-        logValue.append("${field.value}.$exposedExpName(${exposedExpArgs.joinToString()})")
+        logValue.append("${field.value}.$functionName(${exposedExpArgs.joinToString { it.value.toString() }})")
 
-        return table[field.value]!!.exposedExp(exposedExpName, exposedExpArgs)
-    }
+        funArgs.map { arg ->
+            when (arg) {
+                is Field -> table[arg.value]!!.let { it to it::class.createType() }
 
-    private fun Any.logicExp(expression: Expression, args: List<Any?>, logValue: StringBuilder): Any = when (expression) {
-        is And -> "and"
-        is Or -> "or"
-        is Not -> "not"
-        else -> throw IllegalArgumentException("Unsupported expression type \"${this::class.simpleName}\"")
-    }.let {
-        logValue.append(".$it(${field.value})")
-        kotysaExp(it, field)
+                is Value<*> -> arg.value to arg::class.declaredMemberProperty("value")!!.returnType
+
+                else -> arg to arg?.let { it::class.createType() }
+            }
+        }
+
+        return call(
+            functionName,
+            exposedExpArgs.map {
+
+            },
+            exposedExpArgs.map { arg ->
+
+            },
+        )!!
     }
 
     @Suppress("UNCHECKED_CAST")
@@ -329,15 +368,11 @@ public abstract class AbstractExposedCRUDRepository<T : Any>(
         val logValue = StringBuilder()
 
         val value = (predicate as Expression).evaluate(
-            { _, args ->
-                logicExp(this, ,logValue)
-            },
-        ) { compareExp(this, logValue) }
+            { _, args -> exp(this, args, logValue) },
+        ) { exp(this, arguments, logValue) }
 
         logger.debug("where {}", logValue)
 
         return value as Op<Boolean>
     }
-
-    private fun Any.exposedExp(name: String, values: List<Value<*>>): Any = exp(name, value) { table[it]!! }
 }

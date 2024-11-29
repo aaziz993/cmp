@@ -1,5 +1,6 @@
 package ai.tech.core.data.database
 
+import ai.tech.core.data.database.model.config.Creation
 import ai.tech.core.data.database.model.config.TableConfig
 import ai.tech.core.data.expression.Field
 import ai.tech.core.data.expression.Value
@@ -16,27 +17,31 @@ import org.reflections.scanners.Scanners.SubTypes
 @Suppress("UNCHECKED_CAST")
 public fun <T : Any> getTables(
     kClass: KClass<T>,
-    config: TableConfig,
-    getReferencedTables: List<T>.(T) -> List<T>
+    packages: Set<String>,
+    names: Set<String> = emptySet(),
+    inclusive: Boolean = false,
+    create: Creation = Creation.IF_NOT_EXISTS,
+    createInBatch: Boolean = false,
+    getReferencedTables: T.(List<T>) -> List<T>
 ): List<T> =
-    config.packages.flatMap {
+    packages.flatMap {
         Reflections(it).get(SubTypes.of(kClass.java).asClass<T>()).map {
             it
         }.let {
-            if (config.inclusive) {
-                it.filter { it.simpleName in config.names }
+            if (inclusive) {
+                it.filter { it.simpleName in names }
             }
             else {
-                it.filter { it.simpleName !in config.names }
+                it.filter { it.simpleName !in names }
             }
         }.map {
             it.kotlin.objectInstance as T
         }
     }.sortedByForeignKeys(getReferencedTables)
 
-private fun <T : Any> List<T>.sortedByForeignKeys(getReferencedTables: List<T>.(T) -> List<T>): List<T> {
+private fun <T : Any> List<T>.sortedByForeignKeys(getReferencedTables: T.(List<T>) -> List<T>): List<T> {
 
-    val (tables, dependantTables) = map { it to getReferencedTables(it).toMutableList() }
+    val (tables, dependantTables) = map { it to it.getReferencedTables(this).toMutableList() }
         .partition { (_, referencedTables) -> referencedTables.isEmpty() }
         .let { it.first.map(Pair<T, *>::first).toMutableList() to it.second }
 
@@ -53,26 +58,4 @@ private fun <T : Any> List<T>.sortedByForeignKeys(getReferencedTables: List<T>.(
     }
 
     return tables
-}
-
-internal fun Any.exp(name: String, value: Value<*>, getColumn: (name: String) -> Any): Any {
-    val vkClass: KClass<*>
-    val v: Any?
-
-    when (value) {
-        is Field -> getColumn(value.value).let {
-            vkClass = it::class
-            v = it
-        }
-
-        else -> {
-            vkClass = value::class.declaredMemberProperties.find { it.name == "value" }!!.returnType.kClass
-            v = value.value
-        }
-    }
-
-    return this::class.memberFunctions.filter { it.name == name && it.parameters.size == 2 }.let {
-        it.find { function-> (function.parameters[1].type.classifier !is KTypeParameter) && vkClass.isSubclassOf(function.parameters[1].type.kClass) }
-            ?: it.find { it.parameters[1].type.classifier is KTypeParameter }
-    }!!.call(this, v)!!
 }

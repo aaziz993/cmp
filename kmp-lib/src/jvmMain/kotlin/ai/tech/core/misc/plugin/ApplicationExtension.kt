@@ -1,19 +1,22 @@
+@file:Suppress("INVISIBLE_MEMBER", "INVISIBLE_REFERENCE")
+
 package ai.tech.core.misc.plugin
 
 import ai.tech.core.data.crud.CRUDRepository
-import ai.tech.core.data.database.exposed.getExposedTable
-import ai.tech.core.data.database.kotysa.getKotysaTable
+import ai.tech.core.data.database.exposed.getExposedTables
+import ai.tech.core.data.database.kotysa.getKotysaTables
 import ai.tech.core.data.database.model.config.DBConfig
+import ai.tech.core.data.database.model.config.TableConfig
+import ai.tech.core.misc.auth.identity.principal.repository.PrincipalExposedCRUDRepository
+import ai.tech.core.misc.auth.identity.principal.repository.PrincipalKotysaCRUDRepository
+import ai.tech.core.misc.auth.identity.role.repository.RoleExposedCRUDRepository
+import ai.tech.core.misc.auth.identity.role.repository.RoleKotysaCRUDRepository
 import ai.tech.core.misc.firebase.FirebaseAdmin
 import ai.tech.core.misc.model.config.EnabledConfig
 import ai.tech.core.misc.model.config.server.ServerConfig
 import ai.tech.core.misc.model.config.server.ServerHostConfig
 import ai.tech.core.misc.plugin.applicationmonitoring.configureApplicationMonitoring
 import ai.tech.core.misc.plugin.auth.configureAuth
-import ai.tech.core.misc.auth.identity.principal.repository.PrincipalExposedCRUDRepository
-import ai.tech.core.misc.auth.identity.principal.repository.PrincipalKotysaCRUDRepository
-import ai.tech.core.misc.auth.identity.role.repository.RoleExposedCRUDRepository
-import ai.tech.core.misc.auth.identity.role.repository.RoleKotysaCRUDRepository
 import ai.tech.core.misc.plugin.authheadresponse.configureAutoHeadResponse
 import ai.tech.core.misc.plugin.cachingheaders.configureCachingHeaders
 import ai.tech.core.misc.plugin.callid.configureCallId
@@ -86,6 +89,7 @@ import org.koin.core.KoinApplication
 import org.koin.core.qualifier.named
 import org.koin.ktor.ext.get
 import org.lighthousegames.logging.logging
+import org.ufoss.kotysa.AbstractTable
 import org.ufoss.kotysa.R2dbcSqlClient
 import org.ufoss.kotysa.Table
 
@@ -306,21 +310,21 @@ private fun <T : Any> Application.getRepository(
     databaseName: String?,
     tableName: String,
     config: DBConfig,
-    getExposedRepository: (database: Database, org.jetbrains.exposed.sql.Table) -> CRUDRepository<T>,
-    getKotysaRepository: (r2dbcSqlClient: R2dbcSqlClient, Table<T>) -> CRUDRepository<T>,
+    getExposedRepository: (database: Database) -> CRUDRepository<T>,
+    getKotysaRepository: (r2dbcSqlClient: R2dbcSqlClient) -> CRUDRepository<T>,
 ): CRUDRepository<T>? {
     if (config.protocol == "jdbc") {
         val table = getExposedTable(tableName, config.table)
 
         if (table != null) {
-            return getExposedRepository(get(databaseName?.let { named(it) }), table)
+            return getExposedRepository(get(databaseName?.let { named(it) }))
         }
     }
 
     val table = getKotysaTable(tableName, config.driver, config.table) as Table<T>?
 
     if (table != null) {
-        return getKotysaRepository(get(databaseName?.let { named(it) }), table)
+        return getKotysaRepository(get(databaseName?.let { named(it) }))
     }
 
     return null
@@ -330,14 +334,24 @@ private fun Application.getPrincipalRepository(
     databaseName: String?,
     tableName: String,
     config: DBConfig) = getRepository(
-    databaseName, tableName, config,
-    { database, table -> PrincipalExposedCRUDRepository(database, table = table) },
-) { r2dbcSqlClient, table -> PrincipalKotysaCRUDRepository(r2dbcSqlClient, table) }
+    databaseName,
+    tableName,
+    config,
+    ::PrincipalExposedCRUDRepository,
+    ::PrincipalKotysaCRUDRepository,
+)
 
 private fun Application.getRoleRepository(
     databaseName: String?,
     tableName: String,
     config: DBConfig) = getRepository(
     databaseName, tableName, config,
-    { database, table -> RoleExposedCRUDRepository(database, table = table) },
-) { r2dbcSqlClient, table -> RoleKotysaCRUDRepository(r2dbcSqlClient, table) }
+    ::RoleExposedCRUDRepository,
+    ::RoleKotysaCRUDRepository,
+)
+
+private fun getExposedTable(tableName: String, configs: List<TableConfig>): org.jetbrains.exposed.sql.Table? =
+    configs.flatMap { getExposedTables(it.packages, it.names, it.inclusive) }.find { it.tableName == tableName }
+
+private fun getKotysaTable(tableName: String, driver: String, configs: List<TableConfig>): AbstractTable<*>? =
+    configs.flatMap { getKotysaTables(driver, it.packages, it.names, it.inclusive) }.find { it.tableName == tableName }

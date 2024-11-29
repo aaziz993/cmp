@@ -32,8 +32,9 @@ internal val Column<*>.now: ((TimeZone) -> Any)?
         else -> null
     }
 
-public fun getExposedTables(config: TableConfig): List<Table> =
-    getTables(Table::class, config) { it.foreignKeys.map(ForeignKeyConstraint::targetTable) }
-
-public fun getExposedTable(tableName: String, configs: List<TableConfig>): Table? =
-    configs.flatMap { getExposedTables(it) }.find { it.tableName == tableName }
+internal fun getExposedTables(
+    packages: Set<String>,
+    names: Set<String> = emptySet(),
+    inclusive: Boolean = false,
+): List<Table> =
+    getTables(Table::class, packages, names, inclusive) { foreignKeys.map(ForeignKeyConstraint::targetTable) }

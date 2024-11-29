@@ -41,6 +41,8 @@ google-java-format = "1.25.0"
 logback-classic = "1.5.11"
 # apache commons
 commons-lang3 = "3.17.0"
+commons-beanutils = "1.9.4"
+commons-net = "3.11.0"
 # access class members
 reflections = "0.10.2"
 # pdf generator
@@ -57,7 +59,6 @@ jna = "5.14.0"
 # webcam
 sarxos-webcam = "0.3.12"
 # ftp
-commons-net = "3.11.0"
 sshj = "0.38.0"
 jsch = "0.1.55"
 # Kotlin
@@ -230,6 +231,9 @@ kotlin-gradle-plugin = { group = "org.jetbrains.kotlin", name = "kotlin-gradle-p
 logback-classic = { module = "ch.qos.logback:logback-classic", version.ref = "logback-classic" }
 # apache commons
 commons-lang3 = { module = "org.apache.commons:commons-lang3", version.ref = "commons-lang3" }
+commons-beanutils = { module = "commons-beanutils:commons-beanutils", version.ref = "commons-beanutils" }
+# commons network
+commons-net = { module = "commons-net:commons-net", version.ref = "commons-net" }
 # reflections
 reflections = { module = "org.reflections:reflections", version.ref = "reflections" }
 # parse xml
@@ -256,8 +260,6 @@ webcam-capture-driver-opencv = { module = "com.github.sarxos:webcam-capture-driv
 webcam-capture-driver-openimaj = { module = "com.github.sarxos:webcam-capture-driver-openimaj", version.ref = "sarxos-webcam" }
 webcam-capture-driver-v4l4j = { module = "com.github.sarxos:webcam-capture-driver-v4l4j", version.ref = "sarxos-webcam" }
 webcam-capture-driver-vlcj = { module = "com.github.sarxos:webcam-capture-driver-vlcj", version.ref = "sarxos-webcam" }
-# commons network
-commons-net = { module = "commons-net:commons-net", version.ref = "commons-net" }
 # ssh
 sshj = { module = "com.hierynomus:sshj", version.ref = "sshj" }
 # ftp
@@ -313,7 +315,7 @@ colormath = { module = "com.github.ajalt.colormath:colormath", version.ref = "co
 # arrow
 arrow-core = { module = "io.arrow-kt:arrow-core", version.ref = "arrow" }
 arrow-fx-coroutines = { module = "io.arrow-kt:arrow-fx-coroutines", version.ref = "arrow" }
-arrow-fx-resilience  = { module = "io.arrow-kt:arrow-fx-resilience", version.ref = "arrow" }
+arrow-resilience = { module = "io.arrow-kt:arrow-resilience", version.ref = "arrow" }
 arrow-optics = { module = "io.arrow-kt:arrow-optics", version.ref = "arrow" }
 arrow-optics-ksp-plugin = { module = "io.arrow-kt:arrow-optics-ksp-plugin", version.ref = "arrow" }
 # cache
@@ -660,6 +662,12 @@ suspendapp-ktor = { module = "io.arrow-kt:suspendapp-ktor", version.ref = "suspe
 
 [bundles]
 # Java
+# apache commons
+apache-commons = [
+    "commons-lang3",
+    "commons-beanutils",
+    "commons-net"
+]
 # cryptography
 pgpainless = [
     "pgpainless-core",
@@ -722,7 +730,7 @@ cryptography = [
 arrow = [
     "arrow-core",
     "arrow-fx-coroutines",
-    "arrow-fx-resilience",
+    "arrow-resilience",
     "arrow-optics"
 ]
 # jdbc drivers

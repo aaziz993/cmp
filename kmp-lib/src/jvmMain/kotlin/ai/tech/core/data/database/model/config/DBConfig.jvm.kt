@@ -1,5 +1,6 @@
 package ai.tech.core.data.database.model.config
 
+import ai.tech.core.data.crud.model.hikariTransactionIsolation
 import ai.tech.core.data.database.exposed.getExposedTables
 import ai.tech.core.data.database.kotysa.getKotysaH2Tables
 import ai.tech.core.data.database.kotysa.getKotysaMariadbTables
@@ -46,8 +47,8 @@ public val DBConfig.hikariDataSource: DataSource
                 this@hikariDataSource.keepaliveTime?.let { keepaliveTime = it.inWholeMilliseconds }
                 this@hikariDataSource.isAutoCommit?.let { isAutoCommit = it }
                 // As of exposed version 0.46.0, if these options are set here, they do not need to be duplicated in DatabaseConfig
-                isReadOnly = this@hikariDataSource.isReadOnly
-                transactionIsolation = this@hikariDataSource.transactionIsolation
+                this@hikariDataSource.isReadOnly?.let { isReadOnly = it }
+                this@hikariDataSource.transactionIsolation?.let { transactionIsolation = it.hikariTransactionIsolation }
             },
         )
 
@@ -75,14 +76,16 @@ public val DBConfig.exposedDatabase: Database
                 val schema = Schema(it.name)
 
                 if (schema.exists()) {
-                    if (it.create != Creation.IF_NOT_EXISTS) {
+                    if (it.create == Creation.OVERRIDE) {
                         SchemaUtils.dropSchema(schema)
 
                         SchemaUtils.createSchema(schema, inBatch = it.createInBatch)
                     }
                 }
                 else {
-                    SchemaUtils.createSchema(schema)
+                    if (it.create == Creation.IF_NOT_EXISTS) {
+                        SchemaUtils.createSchema(schema)
+                    }
                 }
 
                 SchemaUtils.setSchema(schema)
@@ -92,7 +95,7 @@ public val DBConfig.exposedDatabase: Database
 
             this@exposedDatabase.table.filterNot { it.create == Creation.SKIP }.forEach {
 
-                val (existTables, newTables) = getExposedTables(it).partition { it.exists() }
+                val (existTables, newTables) = getExposedTables(it.packages, it.names, it.inclusive).partition { it.exists() }
                     .let { it.first.toTypedArray() to it.second.toTypedArray() }
 
                 if (it.create == Creation.OVERRIDE) {
@@ -100,7 +103,9 @@ public val DBConfig.exposedDatabase: Database
                     SchemaUtils.create(*existTables, inBatch = it.createInBatch)
                 }
 
-                SchemaUtils.create(*newTables, inBatch = it.createInBatch)
+                if (it.create == Creation.IF_NOT_EXISTS) {
+                    SchemaUtils.create(*newTables, inBatch = it.createInBatch)
+                }
             }
         }
     }
@@ -150,48 +155,47 @@ public suspend fun DBConfig.getKotysaR2dbcClient(): R2dbcSqlClient {
 
     when (driver) {
         "h2" -> {
-            createTables = table.map { getKotysaH2Tables(it) to it.create }
+            createTables = table.map { getKotysaH2Tables(it.packages, it.names, it.inclusive) to it.create }
             client = r2dbcConnectionFactory.coSqlClient(tables().h2(* createTables.flatMap { (tables, _) -> tables }.toTypedArray()))
         }
 
         "postgresql" -> {
-            createTables = table.map { getKotysaPostgresqlTables(it) to it.create }
+            createTables = table.map { getKotysaPostgresqlTables(it.packages, it.names, it.inclusive) to it.create }
             client = r2dbcConnectionFactory.coSqlClient(tables().postgresql(*createTables.flatMap { (tables, _) -> tables }.toTypedArray()))
         }
 
         "mysql" -> {
-            createTables = table.map { getKotysaMysqlTables(it) to it.create }
+            createTables = table.map { getKotysaMysqlTables(it.packages, it.names, it.inclusive) to it.create }
             client = r2dbcConnectionFactory.coSqlClient(tables().mysql(*createTables.flatMap { (tables, _) -> tables }.toTypedArray()))
         }
 
         "mssql" -> {
-            createTables = table.map { getKotysaMssqlTables(it) to it.create }
+            createTables = table.map { getKotysaMssqlTables(it.packages, it.names, it.inclusive) to it.create }
             client = r2dbcConnectionFactory.coSqlClient(tables().mssql(*createTables.flatMap { (tables, _) -> tables }.toTypedArray()))
         }
 
         "mariadb" -> {
-            createTables = table.map { getKotysaMariadbTables(it) to it.create }
+            createTables = table.map { getKotysaMariadbTables(it.packages, it.names, it.inclusive) to it.create }
             client = r2dbcConnectionFactory.coSqlClient(tables().mariadb(*createTables.flatMap { (tables, _) -> tables }.toTypedArray()))
         }
 
         "oracle" -> {
-            createTables = table.map { getKotysaOracleTables(it) to it.create }
+            createTables = table.map { getKotysaOracleTables(it.packages, it.names, it.inclusive) to it.create }
             client = r2dbcConnectionFactory.coSqlClient(tables().oracle(*createTables.flatMap { (tables, _) -> tables }.toTypedArray()))
         }
 
         else -> throw UnsupportedOperationException("Unknown database type \"$driver\"")
     }
 
-    createTables.forEach { (tables, create) ->
-        when (create) {
-            Creation.IF_NOT_EXISTS -> tables.forEach { client createTableIfNotExists it }
-
-            Creation.OVERRIDE -> tables.forEach() {
-                client deleteAllFrom it
-                client createTable it
+    createTables.filterNot { (_, create) -> create == Creation.SKIP }.forEach { (tables, create) ->
+        if (create == Creation.IF_NOT_EXISTS) {
+            tables.forEach { table -> client createTableIfNotExists table }
+        }
+        else {
+            tables.forEach { table ->
+                client deleteAllFrom table
+                client createTable table
             }
-
-            else -> Unit
         }
     }
 

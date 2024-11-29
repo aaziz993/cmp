@@ -6,7 +6,7 @@ import ai.tech.core.data.crud.AbstractTypeCRUDRepository
 import ai.tech.core.data.crud.CRUDRepository
 import ai.tech.core.data.crud.model.LimitOffset
 import ai.tech.core.data.crud.model.Order
-import ai.tech.core.data.database.exp
+import ai.tech.core.data.database.kotysa.valueKType
 import ai.tech.core.data.expression.AggregateExpression
 import ai.tech.core.data.expression.And
 import ai.tech.core.data.expression.Avg
@@ -32,11 +32,12 @@ import ai.tech.core.data.expression.Sum
 import ai.tech.core.data.expression.Value
 import ai.tech.core.data.expression.Variable
 import ai.tech.core.data.expression.f
+import ai.tech.core.misc.type.callDeclaredMemberFunction
 import ai.tech.core.misc.type.multiple.toTypedArray
 import ai.tech.core.misc.type.serializer.create
 import kotlin.reflect.KClass
+import kotlin.reflect.full.createType
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.toList
 import kotlinx.datetime.TimeZone
 import kotlinx.serialization.InternalSerializationApi
@@ -46,6 +47,9 @@ import org.slf4j.LoggerFactory
 import org.ufoss.kotysa.AbstractTable
 import org.ufoss.kotysa.CoroutinesSqlClientDeleteOrUpdate
 import org.ufoss.kotysa.CoroutinesSqlClientSelect
+import org.ufoss.kotysa.KotlinxLocalDateColumn
+import org.ufoss.kotysa.KotlinxLocalDateTimeColumn
+import org.ufoss.kotysa.KotlinxLocalTimeColumn
 import org.ufoss.kotysa.MinMaxColumn
 import org.ufoss.kotysa.NumericColumn
 import org.ufoss.kotysa.R2dbcSqlClient
@@ -82,12 +86,6 @@ public abstract class AbstractKotysaCRUDRepository<T : Any>(
         timeZone,
     )
 
-    init {
-        require(table.kotysaPk.columns.size == 1) {
-            "Only table with one identity column primary key is permitted"
-        }
-    }
-
     private val logger = LoggerFactory.getLogger(this::class.java)
 
     private val columns = table.kotysaColumns.filterIsInstance<AbstractDbColumn<T, *>>()
@@ -98,8 +96,6 @@ public abstract class AbstractKotysaCRUDRepository<T : Any>(
     override val createdAtNow: ((TimeZone) -> Any)? = createdAtProperty?.let { property -> table[property]!! }?.now
 
     override val updatedAtNow: ((TimeZone) -> Any)? = updatedAtProperty?.let { property -> table[property]!! }?.now
-
-    private val columnUpdaters = table.kotysaColumns.filterIsInstance<AbstractDbColumn<T, Any>>().associate { it to it.updater }
 
     final override suspend fun <R> transactional(block: suspend CRUDRepository<T>.() -> R): R =
         client.transactional { block() }!!
@@ -145,8 +141,8 @@ public abstract class AbstractKotysaCRUDRepository<T : Any>(
         } + client.insertAndReturn(*news.map { it.value }.withCreatedAtEntities.toTypedArray())
             .toList()
             .mapIndexed { index, entity ->
-               IndexedValue(news[index].index ,entity)
-            }).sortedBy { it.index }.map { it.value }
+                IndexedValue(news[index].index, entity)
+            }).sortedBy(IndexedValue<T>::index).map(IndexedValue<T>::value)
     }!!
 
     final override fun find(
@@ -235,13 +231,19 @@ public abstract class AbstractKotysaCRUDRepository<T : Any>(
     } as T
 
     private fun update(entity: T): CoroutinesSqlClientDeleteOrUpdate.Return = client.update(table).apply {
-        columns.forEach { column -> columnUpdaters[column]!!(this, column.entityGetter(entity)) }
+        columns.forEach { column -> set(column, column.entityGetter(entity)) }
     }.predicate(table.kotysaPk.columns.single().let { it.name.f eq it.entityGetter(entity) })
 
     private fun update(map: Map<String, Any?>): CoroutinesSqlClientDeleteOrUpdate.Update<T> =
         client.update(table).apply {
-            map.entries.forEach { (columnName, value) -> columnUpdaters[table[columnName]!!]!!(this, value) }
+            map.entries.forEach { (columnName, value) -> set(table[columnName]!!, value) }
         }
+
+    private fun CoroutinesSqlClientDeleteOrUpdate.Update<T>.set(column: AbstractDbColumn<T, *>, value: Any?) {
+        val columnType = column::class.createType()
+        callDeclaredMemberFunction("set", listOf(column to column::class.createType()))!!
+            .callDeclaredMemberFunction("eq", listOf(value to column::class.valueKType!!))
+    }
 
     private fun findHelper(sort: List<Order>?, predicate: BooleanVariable?, limitOffset: LimitOffset? = null): Flow<T> =
         client.selectFrom(table).wheres().execute(sort, predicate, limitOffset)
@@ -326,7 +328,7 @@ public abstract class AbstractKotysaCRUDRepository<T : Any>(
     }
 
     private fun Any.compareExp(expression: Expression, logValue: StringBuilder): Any {
-        val isTemporal = table[(expression.arguments[0] as Field).value]!!.isTemporal
+        val isTemporal = table[(expression.arguments[0] as Field).value]!!.this is KotlinxLocalTimeColumn<*> || this is KotlinxLocalDateColumn<*> || this is KotlinxLocalDateTimeColumn<*>
 
         return if (expression is Between) {
             if (isTemporal) {

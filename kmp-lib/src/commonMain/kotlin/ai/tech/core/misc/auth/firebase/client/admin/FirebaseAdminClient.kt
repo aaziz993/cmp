@@ -80,46 +80,6 @@ public class FirebaseAdminClient(
     public suspend fun lookup(idToken: String): LookupResponse =
         api.lookup(LookupRequest(idToken))
 
-    public suspend fun lookupById(localId: List<String>): LookupResponse =
-        api.lookup(LookupRequest(localId = localId))
-
-    public suspend fun lookupByEmail(email: List<String>): LookupResponse =
-        api.lookup(LookupRequest(email = email))
-
-    public suspend fun lookupByPhoneNumber(phoneNumber: List<String>): LookupResponse =
-        api.lookup(LookupRequest(phoneNumber = phoneNumber))
-
-    public suspend fun lookupByFederatedUserId(federatedUserId: List<FederatedUserId>): LookupResponse =
-        api.lookup(LookupRequest(federatedUserId = federatedUserId))
-
-    public fun batchGet(maxResults: Int = 100): AsyncIterator<List<UserRecord>> =
-        FirebaseUsersAsyncIterator { api.batchGet(maxResults, it) }
-
-    public suspend fun create(
-        localId: String,
-        email: String,
-        emailVerified: Boolean = true,
-        phoneNumber: String? = null,
-        // Password string that is at least 6 characters long.
-        password: String,
-        displayName: String? = null,
-        photoUrl: String? = null,
-        disabled: Boolean = false,
-    ): UserRecord =
-        api.create(
-            CreateRequest(
-                localId,
-                email,
-                emailVerified,
-                phoneNumber,
-                // Password string that is at least 6 characters long.
-                password,
-                displayName,
-                photoUrl,
-                disabled,
-            ),
-        )
-
     public suspend fun update(
         localId: String? = null,
         oobCode: String? = null,
