@@ -1,6 +1,6 @@
 package ai.tech.core.misc.auth.identity.role.model
 
-import ai.tech.core.data.crud.model.Entity
+import ai.tech.core.data.crud.model.entity.EntityWithMetadata
 import kotlinx.datetime.LocalDateTime
 import kotlinx.serialization.Serializable
 
@@ -9,8 +9,8 @@ public data class RoleEntity(
     override val id: Long? = null,
     val name: String,
     val principalId: Long,
-    val createdBy: String? = null,
-    val createdAt: LocalDateTime? = null,
-    val updatedBy: String? = null,
-    val updatedAt: LocalDateTime? = null,
-) : Entity<Long>
+    override val createdBy: String? = null,
+    override val createdAt: LocalDateTime? = null,
+    override val updatedBy: String? = null,
+    override val updatedAt: LocalDateTime? = null,
+) : EntityWithMetadata<Long, LocalDateTime, LocalDateTime>

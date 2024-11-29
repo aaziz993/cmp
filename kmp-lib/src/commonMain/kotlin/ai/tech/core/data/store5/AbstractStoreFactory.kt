@@ -2,7 +2,7 @@ package ai.tech.core.data.store5
 
 import ai.tech.core.data.crud.CRUDRepository
 import ai.tech.core.data.expression.f
-import ai.tech.core.data.store5.model.BookKeeperEntity
+import ai.tech.core.data.store5.model.FailedSyncEntity
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.map
@@ -20,7 +20,7 @@ import org.mobilenativefoundation.store.store5.UpdaterResult
 public abstract class AbstractStoreFactory<Network : Any, Local : Any, Domain : Any>(
     private val networkRepository: CRUDRepository<Network>,
     private val localRepository: CRUDRepository<Local>,
-    private val bookKeeperRepository: CRUDRepository<BookKeeperEntity>,
+    private val bookKeeperRepository: CRUDRepository<FailedSyncEntity>,
     private val coroutineScope: CoroutineScope,
 ) {
 
@@ -106,7 +106,7 @@ public abstract class AbstractStoreFactory<Network : Any, Local : Any, Domain : 
             },
             setLastFailedSync = { operation, timestamp ->
                 try {
-                    bookKeeperRepository.insert(BookKeeperEntity(operationId = operation.id, timestamp = timestamp))
+                    bookKeeperRepository.insert(FailedSyncEntity(operationId = operation.id, timestamp = timestamp))
                     true
                 }
                 catch (e: Exception) {

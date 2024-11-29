@@ -3,8 +3,8 @@
 package ai.tech.core.data.crud.client.http
 
 import ai.tech.core.data.crud.CRUDRepository
-import ai.tech.core.data.crud.model.LimitOffset
-import ai.tech.core.data.crud.model.Order
+import ai.tech.core.data.crud.model.query.LimitOffset
+import ai.tech.core.data.crud.model.query.Order
 import ai.tech.core.data.expression.AggregateExpression
 import ai.tech.core.data.expression.BooleanVariable
 import ai.tech.core.data.expression.Variable
@@ -23,7 +23,6 @@ import kotlinx.coroutines.flow.flow
 import kotlinx.serialization.InternalSerializationApi
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.PolymorphicSerializer
-import kotlinx.serialization.builtins.ListSerializer
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonArray

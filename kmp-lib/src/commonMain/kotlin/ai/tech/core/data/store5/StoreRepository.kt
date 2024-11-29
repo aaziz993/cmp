@@ -1,12 +1,11 @@
 package ai.tech.core.data.store5
 
 import ai.tech.core.data.crud.CRUDRepository
-import ai.tech.core.data.crud.model.LimitOffset
-import ai.tech.core.data.crud.model.Order
+import ai.tech.core.data.crud.model.query.LimitOffset
+import ai.tech.core.data.crud.model.query.Order
 import ai.tech.core.data.expression.AggregateExpression
 import ai.tech.core.data.expression.BooleanVariable
 import ai.tech.core.data.expression.Variable
-import ai.tech.core.misc.type.single.toBigInteger
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.asFlow
 import kotlinx.coroutines.flow.map

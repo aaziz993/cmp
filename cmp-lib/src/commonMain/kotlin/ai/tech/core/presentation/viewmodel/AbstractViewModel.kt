@@ -6,7 +6,7 @@ import ai.tech.core.data.crud.CRUDRepository
 import ai.tech.core.data.crud.client.model.EntityProperty
 import ai.tech.core.data.crud.client.mutablePager
 import ai.tech.core.data.crud.client.pager
-import ai.tech.core.data.crud.model.Order
+import ai.tech.core.data.crud.model.query.Order
 import ai.tech.core.data.expression.BooleanVariable
 import ai.tech.core.data.expression.Variable
 import ai.tech.core.misc.type.multiple.map

@@ -1,7 +1,6 @@
-package ai.tech.core.data.crud.model
+package ai.tech.core.data.crud.model.query
 
 import kotlinx.serialization.Serializable
-import kotlinx.serialization.Transient
 
 @Serializable
 public data class LimitOffset(

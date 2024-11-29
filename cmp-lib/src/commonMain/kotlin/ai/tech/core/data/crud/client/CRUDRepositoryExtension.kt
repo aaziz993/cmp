@@ -2,7 +2,7 @@ package ai.tech.core.data.crud.client
 
 import ai.tech.core.data.crud.CRUDRepository
 import ai.tech.core.data.crud.client.model.EntityProperty
-import ai.tech.core.data.crud.model.Order
+import ai.tech.core.data.crud.model.query.Order
 import ai.tech.core.data.expression.BooleanVariable
 import ai.tech.core.data.expression.Variable
 import app.cash.paging.ExperimentalPagingApi

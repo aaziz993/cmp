@@ -1,11 +1,9 @@
 package ai.tech.core.presentation.component.lazycolumn.crud.model
 
-import ai.tech.core.data.crud.model.Order
+import ai.tech.core.data.crud.model.query.Order
 import ai.tech.core.presentation.component.textfield.search.model.SearchFieldStateData
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.seconds
-import kotlin.time.DurationUnit
-import kotlin.time.toDuration
 import kotlinx.serialization.Serializable
 
 @Serializable

@@ -1,6 +1,6 @@
 package ai.tech.core.data.database.model.config
 
-import ai.tech.core.data.crud.model.hikariTransactionIsolation
+import ai.tech.core.data.transaction.model.hikariTransactionIsolation
 import ai.tech.core.data.database.exposed.getExposedTables
 import ai.tech.core.data.database.kotysa.getKotysaH2Tables
 import ai.tech.core.data.database.kotysa.getKotysaMariadbTables

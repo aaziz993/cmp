@@ -1,8 +1,8 @@
 package ai.tech.core.data.crud.server.http
 
 import ai.tech.core.data.crud.CRUDRepository
-import ai.tech.core.data.crud.model.LimitOffset
-import ai.tech.core.data.crud.model.Order
+import ai.tech.core.data.crud.model.query.LimitOffset
+import ai.tech.core.data.crud.model.query.Order
 import ai.tech.core.data.expression.AggregateExpression
 import ai.tech.core.data.expression.BooleanVariable
 import ai.tech.core.data.expression.Variable
@@ -19,7 +19,6 @@ import io.ktor.server.routing.*
 import io.ktor.utils.io.*
 import kotlinx.serialization.InternalSerializationApi
 import kotlinx.serialization.PolymorphicSerializer
-import kotlinx.serialization.builtins.ListSerializer
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonArray

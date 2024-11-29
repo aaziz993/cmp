@@ -16,6 +16,6 @@ public abstract class AbstractTypeCRUDRepository<T : Any>(
     protected val List<T>.withCreatedAtEntities: List<T>
         get() = withCreatedAt.map(createEntity)
 
-    protected val T.updatableEntity: T
+    protected val T.withUpdatedAtEntity: T
         get() = withUpdatedAt.createEntity()
 }

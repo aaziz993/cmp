@@ -1,6 +1,5 @@
 package ai.tech.core.data.paging
 
-import ai.tech.core.misc.type.takeIfNot
 import app.cash.paging.PagingSource
 import app.cash.paging.PagingSourceLoadParams
 import app.cash.paging.PagingSourceLoadResult
@@ -8,13 +7,13 @@ import app.cash.paging.PagingSourceLoadResultError
 import app.cash.paging.PagingSourceLoadResultPage
 import app.cash.paging.PagingState
 
-public abstract class AbstractDataPagingSource<Key : Any, Value : Any>(
+public abstract class AbstractPagingSource<Key : Any, Value : Any>(
     public val disablePrepend: Boolean,
 ) : PagingSource<Key, Value>() {
 
     protected abstract suspend fun fetchData(loadKey: Key?, pageSize: Int): List<Value>
 
-    protected abstract fun getPrevKey(loadKey: Key): Key?
+    protected abstract fun getPrevKey(loadKey: Key): Key
 
     protected abstract fun getNextKey(loadKey: Key?): Key?
 
@@ -48,8 +47,12 @@ public abstract class AbstractDataPagingSource<Key : Any, Value : Any>(
         } as PagingSourceLoadResult<Key, Value>
     }
 
-    final override fun getRefreshKey(state: PagingState<Key, Value>): Key? = state.anchorPosition?.let { anchorPosition ->
-        state.closestPageToPosition(anchorPosition)?.prevKey?.let(::getPrevKey)
-            ?: getNextKey(state.closestPageToPosition(anchorPosition)?.nextKey)
+    // The refresh key is used for the initial load of the next PagingSource, after invalidation
+    override fun getRefreshKey(state: PagingState<Key, Value>): Key? = state.anchorPosition?.let { anchorPosition ->
+        // We need to get the previous key (or next key if previous is null) of the page
+        // that was closest to the most recently accessed index.
+        // Anchor position is the most recently accessed index
+        state.closestPageToPosition(anchorPosition)?.prevKey?.let(::getNextKey)
+            ?: state.closestPageToPosition(anchorPosition)?.nextKey?.let(::getPrevKey)
     }
 }

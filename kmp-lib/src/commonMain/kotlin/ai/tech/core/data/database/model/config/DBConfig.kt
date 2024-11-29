@@ -1,6 +1,6 @@
 package ai.tech.core.data.database.model.config
 
-import ai.tech.core.data.crud.model.TransactionIsolation
+import ai.tech.core.data.transaction.model.TransactionIsolation
 import ai.tech.core.misc.model.config.EnabledConfig
 import kotlinx.serialization.Serializable
 import kotlin.time.Duration

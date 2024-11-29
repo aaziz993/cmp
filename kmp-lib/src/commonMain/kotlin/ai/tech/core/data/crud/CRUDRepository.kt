@@ -1,15 +1,16 @@
 package ai.tech.core.data.crud
 
-import ai.tech.core.data.crud.model.LimitOffset
-import ai.tech.core.data.crud.model.Order
+import ai.tech.core.data.crud.model.query.LimitOffset
+import ai.tech.core.data.crud.model.query.Order
 import ai.tech.core.data.expression.AggregateExpression
 import ai.tech.core.data.expression.BooleanVariable
 import ai.tech.core.data.expression.Variable
+import ai.tech.core.data.transaction.Transaction
 import kotlinx.coroutines.flow.Flow
 
 public interface CRUDRepository<T : Any> {
 
-    public suspend fun <R> transactional(block: suspend CRUDRepository<T>.() -> R): R
+    public suspend fun <R> transactional(block: suspend CRUDRepository<T>.(Transaction) -> R): R
 
     public suspend fun insertAndReturn(entities: List<T>): List<T>
 

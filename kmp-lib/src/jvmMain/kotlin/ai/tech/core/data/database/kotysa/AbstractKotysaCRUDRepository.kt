@@ -4,9 +4,8 @@ package ai.tech.core.data.database.kotysa
 
 import ai.tech.core.data.crud.AbstractTypeCRUDRepository
 import ai.tech.core.data.crud.CRUDRepository
-import ai.tech.core.data.crud.model.LimitOffset
-import ai.tech.core.data.crud.model.Order
-import ai.tech.core.data.database.kotysa.valueKType
+import ai.tech.core.data.crud.model.query.LimitOffset
+import ai.tech.core.data.crud.model.query.Order
 import ai.tech.core.data.expression.AggregateExpression
 import ai.tech.core.data.expression.And
 import ai.tech.core.data.expression.Avg
@@ -32,13 +31,19 @@ import ai.tech.core.data.expression.Sum
 import ai.tech.core.data.expression.Value
 import ai.tech.core.data.expression.Variable
 import ai.tech.core.data.expression.f
+import ai.tech.core.data.transaction.Transaction
+import ai.tech.core.data.transaction.model.TransactionIsolation
+import ai.tech.core.data.transaction.model.r2dbcTransactionIsolation
 import ai.tech.core.misc.type.callDeclaredMemberFunction
 import ai.tech.core.misc.type.multiple.toTypedArray
 import ai.tech.core.misc.type.serializer.create
 import kotlin.reflect.KClass
 import kotlin.reflect.full.createType
+import kotlin.time.Duration
+import kotlin.time.toJavaDuration
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.toList
+import kotlinx.coroutines.reactive.awaitSingle
 import kotlinx.datetime.TimeZone
 import kotlinx.serialization.InternalSerializationApi
 import kotlinx.serialization.json.Json
@@ -56,6 +61,7 @@ import org.ufoss.kotysa.R2dbcSqlClient
 import org.ufoss.kotysa.SqlClientQuery
 import org.ufoss.kotysa.WholeNumberColumn
 import org.ufoss.kotysa.columns.AbstractDbColumn
+import org.ufoss.kotysa.r2dbc.transaction.R2dbcTransactionImpl
 
 @OptIn(InternalSerializationApi::class)
 public abstract class AbstractKotysaCRUDRepository<T : Any>(
@@ -65,6 +71,10 @@ public abstract class AbstractKotysaCRUDRepository<T : Any>(
     createdAtProperty: String? = "createdAt",
     updatedAtProperty: String? = "updatedAt",
     timeZone: TimeZone = TimeZone.currentSystemDefault(),
+    public val transactionIsolation: TransactionIsolation? = null,
+    private val autoCommit: Boolean? = null,
+    private val statementTimeout: Duration? = null,
+    private val lockWaitTimeout: Duration? = null,
 ) : AbstractTypeCRUDRepository<T>(
     createEntity,
     createdAtProperty,
@@ -97,8 +107,21 @@ public abstract class AbstractKotysaCRUDRepository<T : Any>(
 
     override val updatedAtNow: ((TimeZone) -> Any)? = updatedAtProperty?.let { property -> table[property]!! }?.now
 
-    final override suspend fun <R> transactional(block: suspend CRUDRepository<T>.() -> R): R =
-        client.transactional { block() }!!
+    final override suspend fun <R> transactional(block: suspend CRUDRepository<T>.(Transaction) -> R): R =
+        client.transactional {
+            block(
+                KotysaTransaction(
+                    (it as R2dbcTransactionImpl).also {
+                        it.connection.apply {
+                            transactionIsolation?.let { setTransactionIsolationLevel(it.r2dbcTransactionIsolation).awaitSingle() }
+                            autoCommit?.let { setAutoCommit(it).awaitSingle() }
+                            statementTimeout?.let { setStatementTimeout(it.toJavaDuration()).awaitSingle() }
+                            lockWaitTimeout?.let { setLockWaitTimeout(it.toJavaDuration()).awaitSingle() }
+                        }
+                    },
+                ),
+            )
+        }!!
 
     @Suppress("UNCHECKED_CAST")
     final override suspend fun insert(entities: List<T>): Unit = client.transactional {
@@ -111,7 +134,7 @@ public abstract class AbstractKotysaCRUDRepository<T : Any>(
     }!!
 
     override suspend fun update(entities: List<T>): List<Boolean> = client.transactional {
-        entities.map { entity -> update(entity.withUpdatedAt).execute() > 0L }
+        entities.map { entity -> update(entity.withUpdatedAtEntity).execute() > 0L }
     }!!
 
     final override suspend fun update(
@@ -240,7 +263,6 @@ public abstract class AbstractKotysaCRUDRepository<T : Any>(
         }
 
     private fun CoroutinesSqlClientDeleteOrUpdate.Update<T>.set(column: AbstractDbColumn<T, *>, value: Any?) {
-        val columnType = column::class.createType()
         callDeclaredMemberFunction("set", listOf(column to column::class.createType()))!!
             .callDeclaredMemberFunction("eq", listOf(value to column::class.valueKType!!))
     }
@@ -299,7 +321,7 @@ public abstract class AbstractKotysaCRUDRepository<T : Any>(
 
         val logValue = StringBuilder()
 
-        (predicate as Expression).evaluate(
+        (predicate as Expression).map(
             {
                 value = value!!.logicExp(this, (expression!!.arguments[0] as Field), logValue)
                     .compareExp(expression!!, logValue)

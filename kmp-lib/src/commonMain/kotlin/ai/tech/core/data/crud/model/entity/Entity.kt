@@ -1,4 +1,4 @@
-package ai.tech.core.data.crud.model
+package ai.tech.core.data.crud.model.entity
 
 public interface Entity<ID : Comparable<ID>> {
 

@@ -4,7 +4,7 @@ import ai.tech.core.data.crud.CRUDRepository
 import ai.tech.core.data.crud.client.AbstractCRUDMutablePager
 import ai.tech.core.data.crud.client.model.EntityProperty
 import ai.tech.core.data.crud.client.model.predicate
-import ai.tech.core.data.crud.model.Order
+import ai.tech.core.data.crud.model.query.Order
 import ai.tech.core.data.expression.BooleanVariable
 import ai.tech.core.presentation.viewmodel.AbstractViewModel
 import androidx.lifecycle.SavedStateHandle

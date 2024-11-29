@@ -1,15 +1,12 @@
 package ai.tech.core.data.expression
 
-import ai.tech.core.misc.type.depthIterator
 import com.benasher44.uuid.Uuid
 import com.ionspin.kotlin.bignum.decimal.BigDecimal
 import com.ionspin.kotlin.bignum.integer.BigInteger
 import ai.tech.core.misc.type.serializer.bignum.BigDecimalSerial
 import ai.tech.core.misc.type.serializer.bignum.BigIntegerSerial
 import ai.tech.core.misc.type.serializer.UuidSerial
-import ai.tech.core.misc.type.depthTraverse
 import ai.tech.core.misc.type.multiple.depthIterator
-import ai.tech.core.misc.type.multiple.removeLast
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.LocalDateTime
 import kotlinx.datetime.LocalTime
@@ -270,7 +267,7 @@ public interface Expression {
         get() = arguments.all { it is Value<*> }
 
     @Suppress("UNCHECKED_CAST")
-    public fun evaluate(
+    public fun depthMap(
         inlineExpression: Expression.(List<Expression>) -> Unit,
         leafExpression: Expression.(List<Expression>) -> Unit
     ) {
@@ -294,34 +291,15 @@ public interface Expression {
         }.forEach {}
     }
 
-    @Suppress("UNCHECKED_CAST")
-    public fun evaluate(
-        inlineExpression: Expression.(List<Expression>, args: List<Any?>) -> Any?,
-        leafExpression: Expression.(List<Expression>) -> Any?
-    ): Any? {
-        if (isArgumentsAllValue) {
-            return leafExpression(emptyList())
-        }
-
-        val evaluations = mutableListOf<Any?>()
-
-        arguments.iterator().depthIterator(
-            this,
-            { expressions, value ->
-                if (value is Expression) {
-                    if (!value.isArgumentsAllValue) {
-                        return@depthIterator value.arguments.iterator()
-                    }
-                    value.leafExpression(expressions as List<Expression>)
-                }
-                null
-            },
-        ) { expressions, expression ->
-            evaluations.add((expression as Expression).inlineExpression(expressions as List<Expression>, evaluations.removeLast(expression.arguments.size)))
-        }.forEach {}
-
-        return evaluations[0]
-    }
+    public fun breadthMap(transform: (Expression, args: List<Any?>) -> Any?): Any? =
+        DeepRecursiveFunction<Any, Any?> { value ->
+            if (value is Expression) {
+                transform(value, value.arguments.map { callRecursive(value) })
+            }
+            else {
+                value
+            }
+        }(this)
 }
 
 @Suppress("UNCHECKED_CAST")

@@ -1,7 +1,7 @@
 package ai.tech.core.data.store5
 
-import ai.tech.core.data.crud.model.LimitOffset
-import ai.tech.core.data.crud.model.Order
+import ai.tech.core.data.crud.model.query.LimitOffset
+import ai.tech.core.data.crud.model.query.Order
 import ai.tech.core.data.expression.BooleanVariable
 import ai.tech.core.data.store5.model.DataSource
 import kotlinx.serialization.Serializable

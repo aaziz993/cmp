@@ -12,10 +12,9 @@ import app.cash.paging.RemoteMediatorMediatorResultSuccess
 import kotlinx.datetime.Clock
 
 @OptIn(ExperimentalPagingApi::class)
-public abstract class AbstractDataRemoteMediator<Key : Value, Value : Any>(
-    public val disablePrepend: Boolean = true,
+public abstract class AbstractRemoteMediator<Key : Any, Value : Any>(
     public val cacheTimeout: Int? = null,
-) : RemoteMediator<Int, Value>() {
+) : RemoteMediator<Key, Value>() {
 
     override suspend fun initialize(): RemoteMediatorInitializeAction = if (cacheTimeout == null ||
         Clock.System.now().toEpochMilliseconds() - (getCacheCreationTime() ?: 0) < cacheTimeout) {
@@ -26,9 +25,9 @@ public abstract class AbstractDataRemoteMediator<Key : Value, Value : Any>(
     }
 
     @Suppress("UNCHECKED_CAST")
-    override suspend fun load(
+    final override suspend fun load(
         loadType: LoadType,
-        state: PagingState<Int, Value>
+        state: PagingState<Key, Value>
     ): RemoteMediatorMediatorResult {
         return try {
             // The network load method takes an optional String
@@ -47,14 +46,9 @@ public abstract class AbstractDataRemoteMediator<Key : Value, Value : Any>(
                 // will always load the first page in the list. Immediately
                 // return, reporting end of pagination.
                 LoadType.PREPEND -> {
-                    if (disablePrepend) {
-                        return RemoteMediatorMediatorResultSuccess(true) as RemoteMediatorMediatorResult
-                    }
-
                     val remoteKeys = getRemoteKeyForFirstItem(state)
                     // If remoteKeys is null, that means the refresh result is not in the database yet.
-                    val prevKey = remoteKeys?.prevKey
-                    prevKey
+                    remoteKeys?.prevKey
                         ?: return RemoteMediatorMediatorResultSuccess(remoteKeys != null) as RemoteMediatorMediatorResult
                 }
 
@@ -66,25 +60,24 @@ public abstract class AbstractDataRemoteMediator<Key : Value, Value : Any>(
                     // will call this method again if RemoteKeys becomes non-null.
                     // If remoteKeys is NOT NULL but its nextKey is null, that means we've reached
                     // the end of pagination for append.
-                    val nextKey = remoteKeys?.nextKey
-                    nextKey
+                    remoteKeys?.nextKey
                         ?: return RemoteMediatorMediatorResultSuccess(remoteKeys != null) as RemoteMediatorMediatorResult
                 }
 
                 else -> throw IllegalStateException()
             }
 
-            val data = fetchData(loadKey, state.config.pageSize)
+            val pageSize = state.config.pageSize
+
+            val data = fetchRemoteData(loadKey, pageSize)
 
             // add custom logic, if you have some API metadata, you can use it as well
-            val endOfPaginationReached = data.size < state.config.pageSize
-
-            if (loadType == LoadType.REFRESH) {
+            val endOfPaginationReached = if (loadType == LoadType.REFRESH) {
                 //New query so we can delete everything.
-                refreshCache(data, loadKey, endOfPaginationReached)
+                refreshCache(data, loadKey, pageSize)
             }
             else {
-                cache(data, loadKey, endOfPaginationReached)
+                cache(data, loadKey, pageSize)
             }
 
             RemoteMediatorMediatorResultSuccess(endOfPaginationReached)
@@ -94,11 +87,11 @@ public abstract class AbstractDataRemoteMediator<Key : Value, Value : Any>(
         } as RemoteMediatorMediatorResult
     }
 
-    public abstract suspend fun fetchData(loadKey: Key?, pageSize: Int): List<Value>
+    public abstract suspend fun fetchRemoteData(loadKey: Key?, pageSize: Int): List<Value>
 
-    public abstract suspend fun refreshCache(items: List<Value>, loadKey: Key?, endOfPaginationReached: Boolean)
+    public abstract suspend fun refreshCache(items: List<Value>, loadKey: Key?, pageSize: Int): Boolean
 
-    public abstract suspend fun cache(items: List<Value>, loadKey: Key?, endOfPaginationReached: Boolean)
+    public abstract suspend fun cache(items: List<Value>, loadKey: Key?, pageSize: Int): Boolean
 
     public abstract suspend fun getRemoteKeys(item: Value): RemoteKeys<Key>?
 
@@ -110,29 +103,24 @@ public abstract class AbstractDataRemoteMediator<Key : Value, Value : Any>(
      * If this is the first load, then the anchorPosition is null.
      * When PagingDataAdapter.refresh() is called, the anchorPosition is the first visible position in the displayed list, so we will need to load the page that contains that specific item.
      */
-    private suspend fun getRemoteKeyClosestToCurrentPosition(state: PagingState<Int, Value>): RemoteKeys<Key>? {
-        // The paging library is trying to load data after the anchor position
+    private suspend fun getRemoteKeyClosestToCurrentPosition(state: PagingState<Key, Value>): RemoteKeys<Key>? =
+    // The paging library is trying to load data after the anchor position
         // Get the item closest to the anchor position
-        return state.anchorPosition?.let { position ->
-            state.closestItemToPosition(position)?.let { getRemoteKeys(it) }
-        }
-    }
+        state.anchorPosition?.let(state::closestItemToPosition)?.let { getRemoteKeys(it) }
 
     /** LoadType.Prepend
      * When we need to load data at the beginning of the currently loaded data set, the load parameter is LoadType.PREPEND
      */
-    private suspend fun getRemoteKeyForFirstItem(state: PagingState<Int, Value>): RemoteKeys<Key>? {
-        // Get the first page that was retrieved, that contained items.
+    private suspend fun getRemoteKeyForFirstItem(state: PagingState<Key, Value>): RemoteKeys<Key>? =
+    // Get the first page that was retrieved, that contained items.
         // From that first page, get the first item
-        return state.pages.firstOrNull { it.data.isNotEmpty() }?.data?.firstOrNull()?.let { getRemoteKeys(it) }
-    }
+        state.pages.firstOrNull { it.data.isNotEmpty() }?.data?.firstOrNull()?.let { getRemoteKeys(it) }
 
     /** LoadType.Append
      * When we need to load data at the end of the currently loaded data set, the load parameter is LoadType.APPEND
      */
-    private suspend fun getRemoteKeyForLastItem(state: PagingState<Int, Value>): RemoteKeys<Key>? {
-        // Get the last page that was retrieved, that contained items.
+    private suspend fun getRemoteKeyForLastItem(state: PagingState<Key, Value>): RemoteKeys<Key>? =
+    // Get the last page that was retrieved, that contained items.
         // From that last page, get the last item
-        return state.pages.lastOrNull { it.data.isNotEmpty() }?.data?.lastOrNull()?.let { getRemoteKeys(it) }
-    }
+        state.pages.lastOrNull { it.data.isNotEmpty() }?.data?.lastOrNull()?.let { getRemoteKeys(it) }
 }

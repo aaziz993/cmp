@@ -1,6 +1,6 @@
 package ai.tech.core.data.crud.client
 
-import ai.tech.core.data.crud.model.Order
+import ai.tech.core.data.crud.model.query.Order
 import ai.tech.core.data.expression.BooleanVariable
 import ai.tech.core.data.paging.AbstractRefreshablePager
 import app.cash.paging.ExperimentalPagingApi

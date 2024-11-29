@@ -1,4 +1,4 @@
-package ai.tech.core.data.crud.model
+package ai.tech.core.data.transaction.model
 
 public enum class TransactionIsolation {
     NONE,

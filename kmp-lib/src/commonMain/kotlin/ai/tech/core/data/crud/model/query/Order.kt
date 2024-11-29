@@ -1,4 +1,4 @@
-package ai.tech.core.data.crud.model
+package ai.tech.core.data.crud.model.query
 
 import kotlinx.serialization.Serializable
 

@@ -2,10 +2,10 @@ package ai.tech.core.data.database.exposed
 
 import ai.tech.core.data.crud.AbstractCRUDRepository
 import ai.tech.core.data.crud.CRUDRepository
-import ai.tech.core.data.crud.model.LimitOffset
-import ai.tech.core.data.crud.model.Order
-import ai.tech.core.data.crud.model.TransactionIsolation
-import ai.tech.core.data.crud.model.javaSqlTransactionIsolation
+import ai.tech.core.data.crud.model.query.LimitOffset
+import ai.tech.core.data.crud.model.query.Order
+import ai.tech.core.data.transaction.model.TransactionIsolation
+import ai.tech.core.data.transaction.model.javaSqlTransactionIsolation
 import ai.tech.core.data.expression.AggregateExpression
 import ai.tech.core.data.expression.And
 import ai.tech.core.data.expression.Avg
@@ -31,11 +31,10 @@ import ai.tech.core.data.expression.Projection
 import ai.tech.core.data.expression.Sum
 import ai.tech.core.data.expression.Value
 import ai.tech.core.data.expression.Variable
-import ai.tech.core.misc.type.call
+import ai.tech.core.data.transaction.Transaction
 import ai.tech.core.misc.type.declaredMemberProperty
 import ai.tech.core.misc.type.serializablePropertyValues
 import ai.tech.core.misc.type.serializer.create
-import kotlin.coroutines.CoroutineContext
 import kotlin.reflect.KClass
 import kotlin.reflect.full.createType
 import kotlinx.coroutines.Dispatchers
@@ -72,12 +71,13 @@ import org.slf4j.LoggerFactory
 
 public abstract class AbstractExposedCRUDRepository<T : Any>(
     private val database: Database,
-    public val transactionIsolation: TransactionIsolation? = null,
     private val table: Table,
     private val getEntityPropertyValues: (T) -> Map<String, Any?>,
     private val createEntity: (ResultRow) -> T,
     createdAtProperty: String? = "createdAt",
     updatedAtProperty: String? = "updatedAt",
+    timeZone: TimeZone = TimeZone.currentSystemDefault(),
+    public val transactionIsolation: TransactionIsolation? = null,
     public val statementCount: Int? = null,
     public val duration: Long? = null,
     public val warnLongQueriesDuration: Long? = null,
@@ -86,8 +86,6 @@ public abstract class AbstractExposedCRUDRepository<T : Any>(
     public val minRetryDelay: Long? = null,
     public val maxRetryDelay: Long? = null,
     public val queryTimeout: Int? = null,
-    timeZone: TimeZone = TimeZone.currentSystemDefault(),
-    private val coroutineContext: CoroutineContext = Dispatchers.IO,
 ) : AbstractCRUDRepository<T>(
     createdAtProperty,
     updatedAtProperty,
@@ -111,12 +109,13 @@ public abstract class AbstractExposedCRUDRepository<T : Any>(
                        queryTimeout: Int? = null,
                        timeZone: TimeZone = TimeZone.UTC) : this(
         database,
-        transactionIsolation,
         table,
         { it.serializablePropertyValues },
         { resultRow -> Json.Default.create(kClass.serializer(), table.columns.associate { it.name to resultRow[it] }) },
         createdAtProperty,
         updatedAtProperty,
+        timeZone,
+        transactionIsolation,
         statementCount,
         duration,
         warnLongQueriesDuration,
@@ -125,7 +124,6 @@ public abstract class AbstractExposedCRUDRepository<T : Any>(
         minRetryDelay,
         maxRetryDelay,
         queryTimeout,
-        timeZone,
     )
 
     private val logger = LoggerFactory.getLogger(this::class.java)
@@ -147,8 +145,8 @@ public abstract class AbstractExposedCRUDRepository<T : Any>(
     // CRUD operations in Exposed must be called from within a transaction.
     // By default, a nested transaction block shares the transaction resources of its parent transaction block, so any effect on the child affects the parent
     // Since Exposed 0.16.1 it is possible to use nested transactions as separate transactions by setting useNestedTransactions = true on the desired Database instance.
-    override suspend fun <R> transactional(block: suspend CRUDRepository<T>.() -> R): R =
-        newSuspendedTransaction(coroutineContext, database, transactionIsolation?.javaSqlTransactionIsolation) {
+    override suspend fun <R> transactional(block: suspend CRUDRepository<T>.(Transaction) -> R): R =
+        newSuspendedTransaction(Dispatchers.IO, database, transactionIsolation?.javaSqlTransactionIsolation) {
             this@AbstractExposedCRUDRepository.statementCount?.let { statementCount = it }
             this@AbstractExposedCRUDRepository.duration?.let { duration = it }
             this@AbstractExposedCRUDRepository.warnLongQueriesDuration?.let { warnLongQueriesDuration = it }
@@ -157,7 +155,7 @@ public abstract class AbstractExposedCRUDRepository<T : Any>(
             this@AbstractExposedCRUDRepository.minRetryDelay?.let { minRetryDelay = it }
             this@AbstractExposedCRUDRepository.maxRetryDelay?.let { maxRetryDelay = it }
             this@AbstractExposedCRUDRepository.queryTimeout?.let { queryTimeout = it }
-            block()
+            block(ExposedTransaction(this))
         }
 
     override suspend fun insert(entities: List<T>): Unit = transactional {
@@ -364,15 +362,8 @@ public abstract class AbstractExposedCRUDRepository<T : Any>(
     }
 
     @Suppress("UNCHECKED_CAST")
-    private fun ISqlExpressionBuilder.predicate(predicate: BooleanVariable): Op<Boolean> {
-        val logValue = StringBuilder()
+    private fun ISqlExpressionBuilder.predicate(predicate: BooleanVariable): Op<Boolean> =
+        (predicate as Expression).breadthMap { expression, args ->
 
-        val value = (predicate as Expression).evaluate(
-            { _, args -> exp(this, args, logValue) },
-        ) { exp(this, arguments, logValue) }
-
-        logger.debug("where {}", logValue)
-
-        return value as Op<Boolean>
-    }
+        } as Op<Boolean>
 }

@@ -8,7 +8,7 @@ import ai.tech.core.data.crud.client.model.mutations
 import ai.tech.core.data.crud.client.model.news
 import ai.tech.core.data.crud.client.model.selected
 import ai.tech.core.data.crud.client.model.selectedExists
-import ai.tech.core.data.crud.model.Order
+import ai.tech.core.data.crud.model.query.Order
 import ai.tech.core.data.expression.BooleanVariable
 import ai.tech.core.data.expression.f
 import ai.tech.core.misc.type.letIf
