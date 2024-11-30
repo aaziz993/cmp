@@ -5,10 +5,11 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 public data class TableConfig(
-    val packages: Set<String>,
-    val names: Set<String> = emptySet(),
-    val inclusive: Boolean = false,
+    val tables: Set<String> = emptySet(),
+    val scanPackage: String,
+    val excludePatterns: List<String> = emptyList(),
     val create: Creation = Creation.IF_NOT_EXISTS,
+    // Only Exposed
     val createInBatch: Boolean = false,
     override val enabled: Boolean = true
 ) : EnabledConfig

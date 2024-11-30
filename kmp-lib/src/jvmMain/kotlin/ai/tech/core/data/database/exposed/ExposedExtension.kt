@@ -3,6 +3,7 @@ package ai.tech.core.data.database.exposed
 import ai.tech.core.data.database.getTables
 import ai.tech.core.data.database.model.config.TableConfig
 import ai.tech.core.misc.type.single.now
+import kotlin.String
 import kotlinx.datetime.LocalTime
 import kotlinx.datetime.TimeZone
 import net.pearx.kasechange.toCamelCase
@@ -33,8 +34,13 @@ internal val Column<*>.now: ((TimeZone) -> Any)?
     }
 
 internal fun getExposedTables(
-    packages: Set<String>,
-    names: Set<String> = emptySet(),
-    inclusive: Boolean = false,
+    tables: Set<String> = emptySet(),
+    scanPackage: String,
+    excludePatterns: List<String> = emptyList(),
 ): List<Table> =
-    getTables(Table::class, packages, names, inclusive) { foreignKeys.map(ForeignKeyConstraint::targetTable) }
+    getTables(
+        Table::class,
+        tables,
+        scanPackage,
+        excludePatterns,
+    ) { foreignKeys.map(ForeignKeyConstraint::targetTable) }

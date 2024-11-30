@@ -351,7 +351,20 @@ private fun Application.getRoleRepository(
 )
 
 private fun getExposedTable(tableName: String, configs: List<TableConfig>): org.jetbrains.exposed.sql.Table? =
-    configs.flatMap { getExposedTables(it.packages, it.names, it.inclusive) }.find { it.tableName == tableName }
+    configs.filter(EnabledConfig::enabled).flatMap { config ->
+        getExposedTables(
+            config.tables,
+            config.scanPackage,
+            config.excludePatterns,
+        )
+    }.find { it.tableName == tableName }
 
 private fun getKotysaTable(tableName: String, driver: String, configs: List<TableConfig>): AbstractTable<*>? =
-    configs.flatMap { getKotysaTables(driver, it.packages, it.names, it.inclusive) }.find { it.tableName == tableName }
+    configs.filter(EnabledConfig::enabled).flatMap { config ->
+        getKotysaTables(
+            driver,
+            config.tables,
+            config.scanPackage,
+            config.excludePatterns,
+        )
+    }.find { it.tableName == tableName }

@@ -6,7 +6,7 @@ import ai.tech.core.data.database.getTables
 import ai.tech.core.misc.type.single.now
 import java.math.BigDecimal
 import java.time.OffsetDateTime
-import java.util.UUID
+import java.util.*
 import kotlin.reflect.KClass
 import kotlin.reflect.KType
 import kotlin.reflect.typeOf
@@ -14,16 +14,12 @@ import kotlinx.datetime.LocalDate
 import kotlinx.datetime.LocalDateTime
 import kotlinx.datetime.LocalTime
 import kotlinx.datetime.TimeZone
-import net.sourceforge.jeuclid.elements.presentation.table.AbstractTableRow
-import org.jetbrains.kotlinx.dataframe.io.db.DbType
 import org.ufoss.kotysa.AbstractTable
 import org.ufoss.kotysa.BigDecimalColumnNotNull
 import org.ufoss.kotysa.BigDecimalColumnNullable
 import org.ufoss.kotysa.BooleanColumnNotNull
 import org.ufoss.kotysa.ByteArrayColumnNotNull
 import org.ufoss.kotysa.ByteArrayColumnNullable
-import org.ufoss.kotysa.Column
-import org.ufoss.kotysa.DbColumn
 import org.ufoss.kotysa.DoubleColumnNotNull
 import org.ufoss.kotysa.DoubleColumnNullable
 import org.ufoss.kotysa.FloatColumnNotNull
@@ -53,7 +49,6 @@ import org.ufoss.kotysa.OffsetDateTimeColumnNotNull
 import org.ufoss.kotysa.OffsetDateTimeColumnNullable
 import org.ufoss.kotysa.StringColumnNotNull
 import org.ufoss.kotysa.StringColumnNullable
-import org.ufoss.kotysa.Table
 import org.ufoss.kotysa.UuidColumnNotNull
 import org.ufoss.kotysa.UuidColumnNullable
 import org.ufoss.kotysa.columns.AbstractDbColumn
@@ -128,145 +123,145 @@ internal val KType.valueKType
 
 private fun <T : AbstractTable<*>> getKotysaTables(
     kClass: KClass<T>,
-    packages: Set<String>,
-    names: Set<String> = emptySet(),
-    inclusive: Boolean = false,
+    tables: Set<String> = emptySet(),
+    scanPackage: String,
+    excludePatterns: List<String> = emptyList(),
 ): List<T> = getTables(
     kClass,
-    packages,
-    names,
-    inclusive,
+    tables,
+    scanPackage,
+    excludePatterns,
 ) { tables -> kotysaForeignKeys.map { foreignKey -> foreignKey.referencedTable(tables) } }
 
 internal fun getKotysaH2Tables(
-    packages: Set<String>,
-    names: Set<String> = emptySet(),
-    inclusive: Boolean = false,
+    tables: Set<String> = emptySet(),
+    scanPackage: String,
+    excludePatterns: List<String> = emptyList(),
 ): List<IH2Table<*>> =
     getKotysaTables(
         H2Table::class,
-        packages,
-        names,
-        inclusive,
+        tables,
+        scanPackage,
+        excludePatterns,
     ) + getKotysaTables(
         GenericTable::class,
-        packages,
-        names,
-        inclusive,
+        tables,
+        scanPackage,
+        excludePatterns,
     )
 
 internal fun getKotysaMariadbTables(
-    packages: Set<String>,
-    names: Set<String> = emptySet(),
-    inclusive: Boolean = false,
+    tables: Set<String> = emptySet(),
+    scanPackage: String,
+    excludePatterns: List<String> = emptyList(),
 ): List<MariadbTable<*>> =
     getKotysaTables(
         MariadbTable::class,
-        packages,
-        names,
-        inclusive,
+        tables,
+        scanPackage,
+        excludePatterns,
     )
 
 internal fun getKotysaMysqlTables(
-    packages: Set<String>,
-    names: Set<String> = emptySet(),
-    inclusive: Boolean = false,
+    tables: Set<String> = emptySet(),
+    scanPackage: String,
+    excludePatterns: List<String> = emptyList(),
 ): List<MysqlTable<*>> =
     getKotysaTables(
         MysqlTable::class,
-        packages,
-        names,
-        inclusive,
+        tables,
+        scanPackage,
+        excludePatterns,
     )
 
 internal fun getKotysaMssqlTables(
-    packages: Set<String>,
-    names: Set<String> = emptySet(),
-    inclusive: Boolean = false,
+    tables: Set<String> = emptySet(),
+    scanPackage: String,
+    excludePatterns: List<String> = emptyList(),
 ): List<IMssqlTable<*>> =
     getKotysaTables(
         MssqlTable::class,
-        packages,
-        names,
-        inclusive,
+        tables,
+        scanPackage,
+        excludePatterns,
     ) + getKotysaTables(
         GenericTable::class,
-        packages,
-        names,
-        inclusive,
+        tables,
+        scanPackage,
+        excludePatterns,
     )
 
 internal fun getKotysaPostgresqlTables(
-    packages: Set<String>,
-    names: Set<String> = emptySet(),
-    inclusive: Boolean = false,
+    tables: Set<String> = emptySet(),
+    scanPackage: String,
+    excludePatterns: List<String> = emptyList(),
 ): List<IPostgresqlTable<*>> =
     getKotysaTables(
         PostgresqlTable::class,
-        packages,
-        names,
-        inclusive,
+        tables,
+        scanPackage,
+        excludePatterns,
     ) + getKotysaTables(
         GenericTable::class,
-        packages,
-        names,
-        inclusive,
+        tables,
+        scanPackage,
+        excludePatterns,
     )
 
 internal fun getKotysaOracleTables(
-    packages: Set<String>,
-    names: Set<String> = emptySet(),
-    inclusive: Boolean = false,
+    tables: Set<String> = emptySet(),
+    scanPackage: String,
+    excludePatterns: List<String> = emptyList(),
 ): List<OracleTable<*>> =
     getKotysaTables(
         OracleTable::class,
-        packages,
-        names,
-        inclusive,
+        tables,
+        scanPackage,
+        excludePatterns,
     )
 
 @Suppress("UNCHECKED_CAST")
 internal fun getKotysaTables(
     driver: String,
-    packages: Set<String>,
-    names: Set<String> = emptySet(),
-    inclusive: Boolean = false,
+    tables: Set<String> = emptySet(),
+    scanPackage: String,
+    excludePatterns: List<String> = emptyList(),
 ): List<AbstractTable<*>> =
     when (driver) {
         "h2" -> getKotysaH2Tables(
-            packages,
-            names,
-            inclusive,
+            tables,
+            scanPackage,
+            excludePatterns,
         ) as List<AbstractTable<*>>
 
         "postgresql" -> getKotysaPostgresqlTables(
-            packages,
-            names,
-            inclusive,
+            tables,
+            scanPackage,
+            excludePatterns,
         ) as List<AbstractTable<*>>
 
         "mysql" -> getKotysaMysqlTables(
-            packages,
-            names,
-            inclusive,
+            tables,
+            scanPackage,
+            excludePatterns,
         )
 
         "mssql" -> getKotysaMssqlTables(
-            packages,
-            names,
-            inclusive,
+            tables,
+            scanPackage,
+            excludePatterns,
         ) as List<AbstractTable<*>>
 
         "mariadb" -> getKotysaMariadbTables(
-            packages,
-            names,
-            inclusive,
+            tables,
+            scanPackage,
+            excludePatterns,
         )
 
         "oracle" -> getKotysaOracleTables(
-            packages,
-            names,
-            inclusive,
+            tables,
+            scanPackage,
+            excludePatterns,
         )
 
         else -> throw IllegalArgumentException("Unknown database driver \"$driver\"")

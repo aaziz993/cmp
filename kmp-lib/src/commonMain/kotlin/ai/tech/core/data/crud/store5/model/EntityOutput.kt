@@ -5,7 +5,7 @@ import kotlinx.coroutines.flow.Flow
 
 public sealed interface EntityOutput<out Domain : Any> {
     public sealed interface Typed<out Domain : Any> : EntityOutput<Domain> {
-        public data class Predicate(val value: BooleanVariable?) : EntityOutput<Nothing>
+        public data class Key(val value: BooleanVariable?) : EntityOutput<Nothing>
 
         public data class Collection<Domain : Any>(val values: List<Domain>) : Typed<Domain>
 

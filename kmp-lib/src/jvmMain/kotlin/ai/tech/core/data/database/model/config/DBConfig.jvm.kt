@@ -8,6 +8,7 @@ import ai.tech.core.data.database.kotysa.getKotysaMssqlTables
 import ai.tech.core.data.database.kotysa.getKotysaMysqlTables
 import ai.tech.core.data.database.kotysa.getKotysaOracleTables
 import ai.tech.core.data.database.kotysa.getKotysaPostgresqlTables
+import ai.tech.core.misc.model.config.EnabledConfig
 import com.zaxxer.hikari.HikariConfig
 import com.zaxxer.hikari.HikariDataSource
 import io.r2dbc.pool.PoolingConnectionFactoryProvider
@@ -93,18 +94,22 @@ public val DBConfig.exposedDatabase: Database
 
 
 
-            this@exposedDatabase.table.filterNot { it.create == Creation.SKIP }.forEach {
+            this@exposedDatabase.table.filter(EnabledConfig::enabled).filterNot { it.create == Creation.SKIP }.forEach { config ->
 
-                val (existTables, newTables) = getExposedTables(it.packages, it.names, it.inclusive).partition { it.exists() }
+                val (existTables, newTables) = getExposedTables(
+                    config.tables,
+                    config.scanPackage,
+                    config.excludePatterns,
+                ).partition { it.exists() }
                     .let { it.first.toTypedArray() to it.second.toTypedArray() }
 
-                if (it.create == Creation.OVERRIDE) {
-                    SchemaUtils.drop(*existTables, inBatch = it.createInBatch)
-                    SchemaUtils.create(*existTables, inBatch = it.createInBatch)
+                if (config.create == Creation.OVERRIDE) {
+                    SchemaUtils.drop(*existTables, inBatch = config.createInBatch)
+                    SchemaUtils.create(*existTables, inBatch = config.createInBatch)
                 }
 
-                if (it.create == Creation.IF_NOT_EXISTS) {
-                    SchemaUtils.create(*newTables, inBatch = it.createInBatch)
+                if (config.create == Creation.IF_NOT_EXISTS) {
+                    SchemaUtils.create(*newTables, inBatch = config.createInBatch)
                 }
             }
         }
@@ -153,34 +158,72 @@ public suspend fun DBConfig.getKotysaR2dbcClient(): R2dbcSqlClient {
 
     val client: R2dbcSqlClient
 
+    val tableConfig = table.filter(EnabledConfig::enabled)
+
     when (driver) {
         "h2" -> {
-            createTables = table.map { getKotysaH2Tables(it.packages, it.names, it.inclusive) to it.create }
+            createTables = tableConfig.map { config ->
+                getKotysaH2Tables(
+                    config.tables,
+                    config.scanPackage,
+                    config.excludePatterns,
+                ) to config.create
+            }
             client = r2dbcConnectionFactory.coSqlClient(tables().h2(* createTables.flatMap { (tables, _) -> tables }.toTypedArray()))
         }
 
         "postgresql" -> {
-            createTables = table.map { getKotysaPostgresqlTables(it.packages, it.names, it.inclusive) to it.create }
+            createTables = tableConfig.map { config ->
+                getKotysaPostgresqlTables(
+                    config.tables,
+                    config.scanPackage,
+                    config.excludePatterns,
+                ) to config.create
+            }
             client = r2dbcConnectionFactory.coSqlClient(tables().postgresql(*createTables.flatMap { (tables, _) -> tables }.toTypedArray()))
         }
 
         "mysql" -> {
-            createTables = table.map { getKotysaMysqlTables(it.packages, it.names, it.inclusive) to it.create }
+            createTables = tableConfig.map { config ->
+                getKotysaMysqlTables(
+                    config.tables,
+                    config.scanPackage,
+                    config.excludePatterns,
+                ) to config.create
+            }
             client = r2dbcConnectionFactory.coSqlClient(tables().mysql(*createTables.flatMap { (tables, _) -> tables }.toTypedArray()))
         }
 
         "mssql" -> {
-            createTables = table.map { getKotysaMssqlTables(it.packages, it.names, it.inclusive) to it.create }
+            createTables = tableConfig.map { config ->
+                getKotysaMssqlTables(
+                    config.tables,
+                    config.scanPackage,
+                    config.excludePatterns,
+                ) to config.create
+            }
             client = r2dbcConnectionFactory.coSqlClient(tables().mssql(*createTables.flatMap { (tables, _) -> tables }.toTypedArray()))
         }
 
         "mariadb" -> {
-            createTables = table.map { getKotysaMariadbTables(it.packages, it.names, it.inclusive) to it.create }
+            createTables = tableConfig.map { config ->
+                getKotysaMariadbTables(
+                    config.tables,
+                    config.scanPackage,
+                    config.excludePatterns,
+                ) to config.create
+            }
             client = r2dbcConnectionFactory.coSqlClient(tables().mariadb(*createTables.flatMap { (tables, _) -> tables }.toTypedArray()))
         }
 
         "oracle" -> {
-            createTables = table.map { getKotysaOracleTables(it.packages, it.names, it.inclusive) to it.create }
+            createTables = tableConfig.map { config ->
+                getKotysaOracleTables(
+                    config.tables,
+                    config.scanPackage,
+                    config.excludePatterns,
+                ) to config.create
+            }
             client = r2dbcConnectionFactory.coSqlClient(tables().oracle(*createTables.flatMap { (tables, _) -> tables }.toTypedArray()))
         }
 

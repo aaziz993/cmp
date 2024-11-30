@@ -10,7 +10,7 @@ import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.toList
 
 public class CRUDRemoteMediator<Value : Any, ID : Any>(
-    private val removeRepository: CRUDRepository<Value>,
+    private val remoteRepository: CRUDRepository<Value>,
     private val localRepository: CRUDRepository<Value>,
     private val keysRepository: CRUDRepository<RemoteKeysEntity<ID>>,
     private val getEntityId: (Value) -> ID,
@@ -19,7 +19,7 @@ public class CRUDRemoteMediator<Value : Any, ID : Any>(
 ) : AbstractRemoteMediator<Long, Value>(cacheTimeout) {
 
     override suspend fun fetchRemoteData(loadKey: Long?, pageSize: Int): List<Value> =
-        removeRepository.find(limitOffset = LimitOffset((loadKey ?: 0) * pageSize + firstItemOffset, pageSize.toLong()))
+        remoteRepository.find(limitOffset = LimitOffset((loadKey ?: 0) * pageSize + firstItemOffset, pageSize.toLong()))
             .toList()
 
     override suspend fun refreshCache(items: List<Value>, loadKey: Long?, pageSize: Int): Boolean = localRepository.transactional {
@@ -39,6 +39,7 @@ public class CRUDRemoteMediator<Value : Any, ID : Any>(
             val endOfPaginationReached = items.size < pageSize
 
             localRepository.insert(items)
+
             keysRepository.insert(items.createRemoteKeys(loadKey, endOfPaginationReached))
 
             endOfPaginationReached
