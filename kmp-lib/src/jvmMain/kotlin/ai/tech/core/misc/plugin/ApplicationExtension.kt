@@ -7,10 +7,10 @@ import ai.tech.core.data.database.exposed.getExposedTables
 import ai.tech.core.data.database.kotysa.getKotysaTables
 import ai.tech.core.data.database.model.config.DBConfig
 import ai.tech.core.data.database.model.config.TableConfig
-import ai.tech.core.misc.auth.identity.principal.repository.PrincipalExposedCRUDRepository
-import ai.tech.core.misc.auth.identity.principal.repository.PrincipalKotysaCRUDRepository
-import ai.tech.core.misc.auth.identity.role.repository.RoleExposedCRUDRepository
-import ai.tech.core.misc.auth.identity.role.repository.RoleKotysaCRUDRepository
+import ai.tech.core.misc.auth.model.identity.principal.repository.PrincipalExposedCRUDRepository
+import ai.tech.core.misc.auth.model.identity.principal.repository.PrincipalKotysaCRUDRepository
+import ai.tech.core.misc.auth.model.identity.role.repository.RoleExposedCRUDRepository
+import ai.tech.core.misc.auth.model.identity.role.repository.RoleKotysaCRUDRepository
 import ai.tech.core.misc.firebase.FirebaseAdmin
 import ai.tech.core.misc.model.config.EnabledConfig
 import ai.tech.core.misc.model.config.server.ServerConfig

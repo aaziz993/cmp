@@ -4,8 +4,6 @@ import ai.tech.core.data.crud.AbstractCRUDRepository
 import ai.tech.core.data.crud.CRUDRepository
 import ai.tech.core.data.crud.model.query.LimitOffset
 import ai.tech.core.data.crud.model.query.Order
-import ai.tech.core.data.transaction.model.TransactionIsolation
-import ai.tech.core.data.transaction.model.javaSqlTransactionIsolation
 import ai.tech.core.data.expression.AggregateExpression
 import ai.tech.core.data.expression.And
 import ai.tech.core.data.expression.Avg
@@ -32,11 +30,16 @@ import ai.tech.core.data.expression.Sum
 import ai.tech.core.data.expression.Value
 import ai.tech.core.data.expression.Variable
 import ai.tech.core.data.transaction.Transaction
-import ai.tech.core.misc.type.declaredMemberProperty
+import ai.tech.core.data.transaction.model.TransactionIsolation
+import ai.tech.core.data.transaction.model.javaSqlTransactionIsolation
+import ai.tech.core.misc.type.get
 import ai.tech.core.misc.type.serializablePropertyValues
 import ai.tech.core.misc.type.serializer.create
+import kotlin.coroutines.CoroutineContext
 import kotlin.reflect.KClass
+import kotlin.reflect.KType
 import kotlin.reflect.full.createType
+import kotlin.reflect.full.starProjectedType
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.asFlow
@@ -67,6 +70,7 @@ import org.jetbrains.exposed.sql.statements.UpdateBuilder
 import org.jetbrains.exposed.sql.sum
 import org.jetbrains.exposed.sql.transactions.experimental.newSuspendedTransaction
 import org.jetbrains.exposed.sql.update
+import org.jetbrains.kotlinx.dataframe.api.column
 import org.slf4j.LoggerFactory
 
 public abstract class AbstractExposedCRUDRepository<T : Any>(
@@ -77,6 +81,7 @@ public abstract class AbstractExposedCRUDRepository<T : Any>(
     createdAtProperty: String? = "createdAt",
     updatedAtProperty: String? = "updatedAt",
     timeZone: TimeZone = TimeZone.currentSystemDefault(),
+    private val coroutineContext: CoroutineContext? = null,
     public val transactionIsolation: TransactionIsolation? = null,
     public val statementCount: Int? = null,
     public val duration: Long? = null,
@@ -93,21 +98,24 @@ public abstract class AbstractExposedCRUDRepository<T : Any>(
 ) {
 
     @OptIn(InternalSerializationApi::class)
-    public constructor(kClass: KClass<T>,
-                       database: Database,
-                       transactionIsolation: TransactionIsolation? = null,
-                       table: Table,
-                       createdAtProperty: String? = "createdAt",
-                       updatedAtProperty: String? = "updatedAt",
-                       statementCount: Int? = null,
-                       duration: Long? = null,
-                       warnLongQueriesDuration: Long? = null,
-                       debug: Boolean? = null,
-                       maxAttempts: Int? = null,
-                       minRetryDelay: Long? = null,
-                       maxRetryDelay: Long? = null,
-                       queryTimeout: Int? = null,
-                       timeZone: TimeZone = TimeZone.UTC) : this(
+    public constructor(
+        kClass: KClass<T>,
+        database: Database,
+        table: Table,
+        createdAtProperty: String? = "createdAt",
+        updatedAtProperty: String? = "updatedAt",
+        timeZone: TimeZone = TimeZone.UTC,
+        coroutineContext: CoroutineContext? = null,
+        transactionIsolation: TransactionIsolation? = null,
+        statementCount: Int? = null,
+        duration: Long? = null,
+        warnLongQueriesDuration: Long? = null,
+        debug: Boolean? = null,
+        maxAttempts: Int? = null,
+        minRetryDelay: Long? = null,
+        maxRetryDelay: Long? = null,
+        queryTimeout: Int? = null,
+    ) : this(
         database,
         table,
         { it.serializablePropertyValues },
@@ -115,6 +123,7 @@ public abstract class AbstractExposedCRUDRepository<T : Any>(
         createdAtProperty,
         updatedAtProperty,
         timeZone,
+        coroutineContext,
         transactionIsolation,
         statementCount,
         duration,
@@ -146,7 +155,7 @@ public abstract class AbstractExposedCRUDRepository<T : Any>(
     // By default, a nested transaction block shares the transaction resources of its parent transaction block, so any effect on the child affects the parent
     // Since Exposed 0.16.1 it is possible to use nested transactions as separate transactions by setting useNestedTransactions = true on the desired Database instance.
     override suspend fun <R> transactional(block: suspend CRUDRepository<T>.(Transaction) -> R): R =
-        newSuspendedTransaction(Dispatchers.IO, database, transactionIsolation?.javaSqlTransactionIsolation) {
+        newSuspendedTransaction(coroutineContext, database, transactionIsolation?.javaSqlTransactionIsolation) {
             this@AbstractExposedCRUDRepository.statementCount?.let { statementCount = it }
             this@AbstractExposedCRUDRepository.duration?.let { duration = it }
             this@AbstractExposedCRUDRepository.warnLongQueriesDuration?.let { warnLongQueriesDuration = it }
@@ -291,9 +300,9 @@ public abstract class AbstractExposedCRUDRepository<T : Any>(
     }
 
     @Suppress("UNCHECKED_CAST")
-    private fun Any.exp(expression: Expression, args: List<Any?>, logValue: StringBuilder): Any {
+    private fun Any.eval(expression: Expression, args: List<Any?>): Any {
 
-        val funArgs = args
+        var funArgs = args
 
         val funName = when (expression) {
             is And -> {}
@@ -316,7 +325,7 @@ public abstract class AbstractExposedCRUDRepository<T : Any>(
                     throw IllegalArgumentException("Unsupported \"${this::class.simpleName}\" with match all option")
                 }
 
-                exposedExpArgs = expression.arguments.subList(1, 3) as List<Value<*>>
+                funArgs = args.dropLast(1)
 
                 "regexp"
             }
@@ -338,32 +347,23 @@ public abstract class AbstractExposedCRUDRepository<T : Any>(
             else -> throw IllegalArgumentException("Unsupported expression type \"${this::class.simpleName}\"")
         }
 
-        logValue.append("${field.value}.$functionName(${exposedExpArgs.joinToString { it.value.toString() }})")
+        val columnValueKType: KType? = null
 
-        funArgs.map { arg ->
+        args.map { arg ->
             when (arg) {
-                is Field -> table[arg.value]!!.let { it to it::class.createType() }
+                is Field -> {
+                    table[arg.value]!!.let { it to it::class.starProjectedType }
+                }
 
-                is Value<*> -> arg.value to arg::class.declaredMemberProperty("value")!!.returnType
-
-                else -> arg to arg?.let { it::class.createType() }
+                is Value<*> -> arg.value to arg::class["value"]!!.returnType
+                else -> arg to (arg?.let { it::class.starProjectedType } ?: columnValueKType)!!
             }
         }
-
-        return call(
-            functionName,
-            exposedExpArgs.map {
-
-            },
-            exposedExpArgs.map { arg ->
-
-            },
-        )!!
     }
 
     @Suppress("UNCHECKED_CAST")
     private fun ISqlExpressionBuilder.predicate(predicate: BooleanVariable): Op<Boolean> =
-        (predicate as Expression).breadthMap { expression, args ->
-
-        } as Op<Boolean>
+        (predicate as Expression).breadthMap(
+            { expression, args -> eval(expression, args) },
+        ) { expression -> eval(expression, expression.arguments) } as Op<Boolean>
 }

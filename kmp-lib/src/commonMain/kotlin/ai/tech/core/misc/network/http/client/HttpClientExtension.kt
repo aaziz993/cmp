@@ -7,7 +7,6 @@ import ai.tech.core.misc.type.multiple.filterValuesIsNotNull
 import ai.tech.core.misc.type.serializablePropertyValues
 import ai.tech.core.misc.type.serializer.encodeAnyToString
 import io.ktor.client.*
-import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
 import io.ktor.http.URLBuilder
 import io.ktor.http.URLProtocol
 import io.ktor.http.Url
@@ -16,9 +15,6 @@ import io.ktor.http.content.PartData
 import io.ktor.http.content.forEachPart
 import io.ktor.http.encodedPath
 import io.ktor.http.path
-import io.ktor.serialization.kotlinx.json.json
-import kotlinx.coroutines.delay
-import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
 
 private val httpPR: Regex = "^https?://.*".toRegex(RegexOption.IGNORE_CASE)
@@ -51,7 +47,7 @@ public val String.decodedHttpUrl: String
                 path(this@decodedHttpUrl)
             }.buildString()
 
-public val Any.serializableQueryParameters
+public val Any.serializableHttpQueryParameters
     get() = serializablePropertyValues.filterValuesIsNotNull().mapValues { Json.Default.encodeAnyToString(it.value) }
 
 public expect fun createHttpClient(
@@ -59,18 +55,16 @@ public expect fun createHttpClient(
     block: HttpClientConfig<*>.() -> Unit = {}
 ): HttpClient
 
-public fun HttpClientConfig<*>.discovery(
+public fun HttpClientConfig<*>.consulDiscovery(
     address: String,
     loadBalancer: LoadBalancer = LoadBalancer.ROUND_ROBIN,
     serviceName: String
 ) = install(ConsulDiscovery(address, loadBalancer, serviceName))
 
-public suspend fun MultiPartData.readParts(): List<PartData> {
-    val parts = mutableListOf<PartData>()
-
-    forEachPart(parts::add)
-
-    return parts
+public suspend fun MultiPartData.readParts(): List<PartData> = mutableListOf<PartData>().apply {
+    forEachPart(::add)
 }
 
-public suspend fun MultiPartData.readFormData(): Map<String?, String> = readParts().associate { it.name to (it as PartData.FormItem).value }
+public suspend fun MultiPartData.readFormData(): Map<String?, String> =
+    readParts().associate { (it as PartData.FormItem).let { it.name to it.value } }
+

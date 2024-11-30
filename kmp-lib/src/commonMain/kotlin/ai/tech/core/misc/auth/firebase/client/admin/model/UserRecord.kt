@@ -1,6 +1,6 @@
 package ai.tech.core.misc.auth.firebase.client.admin.model
 
-import ai.tech.core.misc.auth.model.User
+import ai.tech.core.misc.auth.model.identity.User
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.JsonObject
 

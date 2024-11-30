@@ -1,7 +1,7 @@
-package ai.tech.core.misc.auth.identity.principal.model
+package ai.tech.core.misc.auth.model.identity.principal
 
 import ai.tech.core.data.crud.model.entity.EntityWithMetadata
-import ai.tech.core.data.database.kotysa.model.NullableJsonValue
+import ai.tech.core.misc.model.NullableJsonValue
 import kotlinx.datetime.LocalDateTime
 import kotlinx.serialization.Serializable
 

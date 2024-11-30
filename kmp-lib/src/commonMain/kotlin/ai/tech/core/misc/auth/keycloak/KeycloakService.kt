@@ -8,7 +8,7 @@ import ai.tech.core.misc.auth.keycloak.client.admin.model.ResetPassword
 import ai.tech.core.misc.auth.keycloak.client.admin.model.UserInfo
 import ai.tech.core.misc.auth.keycloak.client.admin.model.UserRepresentation
 import ai.tech.core.misc.auth.keycloak.client.token.KeycloakTokenClient
-import ai.tech.core.misc.auth.model.User
+import ai.tech.core.misc.auth.model.identity.User
 import ai.tech.core.misc.auth.model.bearer.BearerToken
 import io.ktor.client.*
 import io.ktor.client.call.body

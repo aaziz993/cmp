@@ -1,7 +1,7 @@
-package ai.tech.core.misc.auth.identity.role.model
+package ai.tech.core.misc.auth.model.identity.role.model
 
-import ai.tech.core.misc.auth.identity.principal.model.PrincipalKotysaTable
-import ai.tech.core.misc.auth.identity.role.model.RoleKotysaTable.identity
+import ai.tech.core.misc.auth.model.identity.principal.model.PrincipalKotysaTable
+import ai.tech.core.misc.auth.model.identity.role.RoleEntity
 import org.ufoss.kotysa.GenericTable
 import org.ufoss.kotysa.columns.KotlinxLocalDateTimeDbTimestampColumnNullable
 import org.ufoss.kotysa.columns.LongDbBigIntColumnNotNull

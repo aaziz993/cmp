@@ -1,13 +1,13 @@
 package ai.tech.core.misc.plugin.auth.digest
 
 import ai.tech.core.data.crud.CRUDRepository
-import ai.tech.core.misc.auth.model.User
+import ai.tech.core.misc.auth.model.identity.User
 import ai.tech.core.misc.plugin.auth.AbstractStorageAuthProvider
 import ai.tech.core.misc.plugin.auth.AuthProvider
 import ai.tech.core.misc.plugin.auth.DigestAuthProvider
 import ai.tech.core.misc.plugin.auth.ValidateAuthProvider
-import ai.tech.core.misc.auth.identity.principal.model.PrincipalEntity
-import ai.tech.core.misc.auth.identity.role.model.RoleEntity
+import ai.tech.core.misc.auth.model.identity.principal.PrincipalEntity
+import ai.tech.core.misc.auth.model.identity.role.RoleEntity
 import ai.tech.core.misc.plugin.auth.digest.model.config.DigestAuthConfig
 import io.ktor.server.application.*
 import io.ktor.server.auth.*

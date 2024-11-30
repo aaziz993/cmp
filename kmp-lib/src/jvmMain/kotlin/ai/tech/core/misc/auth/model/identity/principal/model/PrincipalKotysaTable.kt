@@ -1,5 +1,6 @@
-package ai.tech.core.misc.auth.identity.principal.model
+package ai.tech.core.misc.auth.model.identity.principal.model
 
+import ai.tech.core.misc.auth.model.identity.principal.PrincipalEntity
 import org.ufoss.kotysa.GenericTable
 import org.ufoss.kotysa.columns.KotlinxLocalDateTimeDbTimestampColumnNullable
 import org.ufoss.kotysa.columns.LongDbIdentityColumnNotNull
@@ -22,7 +23,7 @@ public object PrincipalKotysaTable : GenericTable<PrincipalEntity>("principal") 
     public val phone: StringDbVarcharColumnNullable<PrincipalEntity> = varchar(PrincipalEntity::phone, size = 20)
     public val email: StringDbVarcharColumnNullable<PrincipalEntity> = varchar(PrincipalEntity::email, size = 20)
     public val image: StringDbVarcharColumnNullable<PrincipalEntity> = varchar(PrincipalEntity::image, size = 200)
-    public val attributes: StringDbVarcharColumnNotNull<PrincipalEntity> = varchar(PrincipalEntity::attributesAsText)
+    public val attributes: StringDbVarcharColumnNullable<PrincipalEntity> = varchar(PrincipalEntity::attributesAsText)
 
     // metadata
     public val createdBy: StringDbVarcharColumnNullable<PrincipalEntity> =

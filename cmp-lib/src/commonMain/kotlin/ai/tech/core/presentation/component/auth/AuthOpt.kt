@@ -1,7 +1,7 @@
 package ai.tech.core.presentation.component.auth
 
 import ai.tech.core.misc.auth.model.AuthResource
-import ai.tech.core.misc.auth.model.User
+import ai.tech.core.misc.auth.model.identity.User
 import androidx.compose.runtime.Composable
 
 @Composable

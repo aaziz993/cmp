@@ -16,7 +16,7 @@ public interface CRUDRepository<T : Any> {
 
     public suspend fun insertAndReturn(vararg entities: T): List<T> = insertAndReturn(entities.toList())
 
-    public suspend fun insert(entities: List<T>)
+    public suspend fun insert(entities: List<T>): Any?
 
     public suspend fun insert(vararg entities: T): Unit = insert(entities.toList())
 
@@ -24,14 +24,14 @@ public interface CRUDRepository<T : Any> {
 
     public suspend fun update(vararg entities: T): List<Boolean> = update(entities.toList())
 
-    public suspend fun upsert(entities: List<T>): List<T>
-
-    public suspend fun upsert(vararg entities: T): List<T> = upsert(entities.toList())
-
     public suspend fun update(
         entities: List<Map<String, Any?>>,
         predicate: BooleanVariable? = null,
-    ): List<Long>
+    ): Long
+
+    public suspend fun upsert(entities: List<T>): List<T>
+
+    public suspend fun upsert(vararg entities: T): List<T> = upsert(entities.toList())
 
     public fun find(
         sort: List<Order>? = null,

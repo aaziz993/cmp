@@ -16,21 +16,16 @@ import kotlin.reflect.full.memberProperties
 import kotlin.reflect.full.staticFunctions
 import kotlin.reflect.full.staticProperties
 
+public operator fun KFunction<*>.invoke(args: List<Any?>) = call()
+
 private operator fun Collection<KProperty<*>>.get(propertyName: String): KProperty<*>? = find { it.name == propertyName }
 
-public fun KClass<*>.declaredMemberProperty(propertyName: String): KProperty<*>? =
-    declaredMemberProperties[propertyName]
-
-public fun KClass<*>.declaredMemberExtensionProperty(propertyName: String): KProperty<*>? =
-    declaredMemberExtensionProperties[propertyName]
-
-public fun KClass<*>.memberProperty(propertyName: String): KProperty<*>? =
+public operator fun KClass<*>.get(propertyName: String): KProperty<*>? =
     memberProperties[propertyName]
 
-public fun KClass<*>.staticProperty(propertyName: String): KProperty<*>? =
-    staticProperties[propertyName]
+public operator fun Any.get(propertyName: String): Any? = this::class[propertyName]!!.getter.call(this)
 
-private fun Collection<KFunction<*>>.get(funName: String, valueKTypes: List<KType>): KFunction<*>? {
+private fun Collection<KFunction<*>>.get(funName: String, vararg valueKTypes: List<KType>): KFunction<*>? {
     val parametersSize = valueKTypes.size + 1
 
     return find { function ->
@@ -46,48 +41,6 @@ private fun Collection<KFunction<*>>.get(funName: String, valueKTypes: List<KTyp
     }
 }
 
-public fun KClass<*>.declaredMemberFunction(funName: String, valueKTypes: List<KType>): KFunction<*>? =
-    declaredMemberFunctions.get(funName, valueKTypes)
-
-public fun KClass<*>.declaredMemberFunction(funName: String, vararg valueKTypes: KType): KFunction<*>? =
-    declaredMemberFunction(funName, valueKTypes.toList())
-
-public fun Any.callDeclaredMemberFunction(funName: String, valueKTypes: List<Pair<Any?, KType>>): Any? =
-    this::class.declaredMemberFunction(funName, valueKTypes.map(Pair<*, KType>::second))!!
-        .call(this, *valueKTypes.map(Pair<*, *>::first).toTypedArray())
-
-public fun KClass<*>.declaredMemberExtensionFunction(funName: String, valueKTypes: List<KType>): KFunction<*>? =
-    declaredMemberExtensionFunctions.get(funName, valueKTypes)
-
-public fun KClass<*>.declaredMemberExtensionFunction(funName: String, vararg valueKTypes: KType): KFunction<*>? =
-    declaredMemberExtensionFunction(funName, valueKTypes.toList())
-
-public fun Any.callDeclaredMemberExtensionFunction(funName: String, valueKTypes: List<Pair<Any?, KType>>): Any? =
-    this::class.declaredMemberExtensionFunction(funName, valueKTypes.map(Pair<*, KType>::second))!!
-        .call(this, *valueKTypes.map(Pair<*, *>::first).toTypedArray())
-
-public fun KClass<*>.memberFunction(funName: String, valueKTypes: List<KType>): KFunction<*>? =
-    memberFunctions.get(funName, valueKTypes)
-
-public fun KClass<*>.memberFunction(funName: String, vararg valueKTypes: KType): KFunction<*>? =
-    memberFunction(funName, valueKTypes.toList())
-
-public fun Any.callMemberExtensionFunction(funName: String, valueKTypes: List<Pair<Any?, KType>>): Any? =
-    this::class.memberFunction(funName, valueKTypes.map(Pair<*, KType>::second))!!
-        .call(this, *valueKTypes.map(Pair<*, *>::first).toTypedArray())
-
-public fun KClass<*>.staticFunction(funName: String, valueKTypes: List<KType>): KFunction<*>? =
-    staticFunctions.get(funName, valueKTypes)
-
-public fun KClass<*>.staticFunction(funName: String, vararg valueKTypes: KType): KFunction<*>? =
-    staticFunction(funName, valueKTypes.toList())
-
-public fun Any.callStaticExtensionFunction(funName: String, valueKTypes: List<Pair<Any?, KType>>): Any? =
-    this::class.staticFunction(funName, valueKTypes.map(Pair<*, KType>::second))!!
-        .call(*valueKTypes.map(Pair<*, *>::first).toTypedArray())
-
-public fun KClass<*>.declaredFunction(funName: String, valueKTypes: List<KType>): KFunction<*>? =
-    declaredFunctions.get(funName, valueKTypes)
-
-public fun KClass<*>.declaredFunction(funName: String, vararg valueKTypes: KType): KFunction<*>? =
-    declaredFunction(funName, valueKTypes.toList())
+public operator fun Any.invoke(funName: String, vararg argKTypes: Pair<Any?, KType>): Any? =
+    this::class.memberFunctions.get(funName, argKTypes.map(Pair<*, KType>::second))!!
+        .call(this, *argKTypes.map(Pair<*, *>::first).toTypedArray())

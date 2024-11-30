@@ -8,6 +8,7 @@ import ai.tech.core.data.crud.model.query.Order
 import ai.tech.core.data.expression.AggregateExpression
 import ai.tech.core.data.expression.BooleanVariable
 import ai.tech.core.data.expression.Variable
+import ai.tech.core.data.transaction.Transaction
 import ai.tech.core.misc.auth.client.AuthService
 import ai.tech.core.misc.network.http.client.AbstractApiHttpClient
 import ai.tech.core.misc.type.serializer.decodeAnyFromString
@@ -41,13 +42,11 @@ public open class CRUDClient<T : Any>(
         append(HttpHeaders.ContentType, ContentType.Application.Json)
     }
 
-    override suspend fun <R> transactional(block: suspend CRUDRepository<T>.() -> R): R {
+    override suspend fun <R> transactional(block: suspend CRUDRepository<T>.(Transaction) -> R): R =
         throw UnsupportedOperationException("Not supported by remote client yet")
-    }
 
     override suspend fun insert(entities: List<T>): Unit = api.insert(entities)
 
-    @Suppress("UNCHECKED_CAST")
     override suspend fun insertAndReturn(entities: List<T>): List<T> = api.insertAndReturn(entities).execute(HttpResponse::body)
 
     override suspend fun update(entities: List<T>): List<Boolean> = api.update(entities)

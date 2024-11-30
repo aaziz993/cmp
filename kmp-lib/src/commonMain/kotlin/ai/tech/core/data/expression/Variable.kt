@@ -263,7 +263,7 @@ public interface Expression {
 
     public val arguments: List<Variable>
 
-    public val isArgumentsAllValue: Boolean
+    public val isSimple: Boolean
         get() = arguments.all { it is Value<*> }
 
     @Suppress("UNCHECKED_CAST")
@@ -271,7 +271,7 @@ public interface Expression {
         inlineExpression: Expression.(List<Expression>) -> Unit,
         leafExpression: Expression.(List<Expression>) -> Unit
     ) {
-        if (isArgumentsAllValue) {
+        if (isSimple) {
             return leafExpression(emptyList())
         }
 
@@ -291,14 +291,20 @@ public interface Expression {
         }.forEach {}
     }
 
-    public fun breadthMap(transform: (Expression, args: List<Any?>) -> Any?): Any? =
+    public fun breadthMap(
+        complexExpressionTransform: (Expression, args: List<Any?>) -> Any?,
+        simpleExpressionTransform: (Expression) -> Any?
+    ): Any? =
         DeepRecursiveFunction<Any, Any?> { value ->
             if (value is Expression) {
-                transform(value, value.arguments.map { callRecursive(value) })
+                if (value.isSimple) {
+                    return@DeepRecursiveFunction simpleExpressionTransform(value)
+                }
+
+                return@DeepRecursiveFunction complexExpressionTransform(value, value.arguments.map { callRecursive(value) })
             }
-            else {
-                value
-            }
+
+            value
         }(this)
 }
 

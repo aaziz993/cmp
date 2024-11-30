@@ -35,10 +35,12 @@ import ai.tech.core.data.transaction.Transaction
 import ai.tech.core.data.transaction.model.TransactionIsolation
 import ai.tech.core.data.transaction.model.r2dbcTransactionIsolation
 import ai.tech.core.misc.type.callDeclaredMemberFunction
+import ai.tech.core.misc.type.invoke
 import ai.tech.core.misc.type.multiple.toTypedArray
 import ai.tech.core.misc.type.serializer.create
 import kotlin.reflect.KClass
 import kotlin.reflect.full.createType
+import kotlin.reflect.full.starProjectedType
 import kotlin.time.Duration
 import kotlin.time.toJavaDuration
 import kotlinx.coroutines.flow.Flow
@@ -263,8 +265,7 @@ public abstract class AbstractKotysaCRUDRepository<T : Any>(
         }
 
     private fun CoroutinesSqlClientDeleteOrUpdate.Update<T>.set(column: AbstractDbColumn<T, *>, value: Any?) {
-        callDeclaredMemberFunction("set", listOf(column to column::class.createType()))!!
-            .callDeclaredMemberFunction("eq", listOf(value to column::class.valueKType!!))
+        this("set", column to column::class.starProjectedType)!!("eq", value to column::class.starProjectedType.valueKType)
     }
 
     private fun findHelper(sort: List<Order>?, predicate: BooleanVariable?, limitOffset: LimitOffset? = null): Flow<T> =
@@ -321,7 +322,7 @@ public abstract class AbstractKotysaCRUDRepository<T : Any>(
 
         val logValue = StringBuilder()
 
-        (predicate as Expression).map(
+        (predicate as Expression).depthMap(
             {
                 value = value!!.logicExp(this, (expression!!.arguments[0] as Field), logValue)
                     .compareExp(expression!!, logValue)
@@ -354,7 +355,7 @@ public abstract class AbstractKotysaCRUDRepository<T : Any>(
 
         return if (expression is Between) {
             if (isTemporal) {
-                kotysaExp("afterOrEq", expression.arguments[1] as Value<*>)
+              this("afterOrEq", expression.arguments[1] as Value<*>)
                     .kotysaExp("and", expression.arguments[0] as Value<*>)
                     .kotysaExp("beforeOrEq", expression.arguments[2] as Value<*>)
             }
@@ -440,8 +441,6 @@ public abstract class AbstractKotysaCRUDRepository<T : Any>(
         logValue.append(".$it(${field.value})")
         kotysaExp(it, field)
     }
-
-    private fun Any.kotysaExp(name: String, value: Value<*>): Any = exp(name, value) { table[it]!! }
 
     private operator fun AbstractTable<T>.get(columnName: String): AbstractDbColumn<T, *>? =
         columns.find { it.name == columnName }

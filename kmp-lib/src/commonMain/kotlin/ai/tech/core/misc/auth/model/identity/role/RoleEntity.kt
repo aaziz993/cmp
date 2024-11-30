@@ -1,15 +1,14 @@
-package ai.tech.core.data.store5.model
+package ai.tech.core.misc.auth.model.identity.role
 
 import ai.tech.core.data.crud.model.entity.EntityWithMetadata
 import kotlinx.datetime.LocalDateTime
 import kotlinx.serialization.Serializable
 
 @Serializable
-public data class FailedSyncEntity(
+public data class RoleEntity(
     override val id: Long? = null,
-    val operationId: String,
-    // Timestamp of the last failed sync attempt for the given key.
-    val timestamp: Long,
+    val name: String,
+    val principalId: Long,
     override val createdBy: String? = null,
     override val createdAt: LocalDateTime? = null,
     override val updatedBy: String? = null,

@@ -28,7 +28,7 @@ public abstract class BearerAuthService(
     override val authHttpClient: HttpClient = httpClient.config {
         install(Auth) {
             digest()
-            formData()
+
 
             bearer {
                 loadTokens { getToken()?.let { BearerTokens(it.token, it.refreshToken) } }

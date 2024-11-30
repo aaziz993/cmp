@@ -1,8 +1,8 @@
-package ai.tech.core.misc.auth.identity.role.repository
+package ai.tech.core.misc.auth.model.identity.role.repository
 
 import ai.tech.core.data.database.kotysa.AbstractKotysaCRUDRepository
-import ai.tech.core.misc.auth.identity.role.model.RoleEntity
-import ai.tech.core.misc.auth.identity.role.model.RoleKotysaTable
+import ai.tech.core.misc.auth.model.identity.role.RoleEntity
+import ai.tech.core.misc.auth.model.identity.role.model.RoleKotysaTable
 import kotlinx.datetime.TimeZone
 import org.ufoss.kotysa.R2dbcSqlClient
 

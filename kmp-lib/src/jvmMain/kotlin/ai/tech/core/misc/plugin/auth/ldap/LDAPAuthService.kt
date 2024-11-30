@@ -1,6 +1,6 @@
 package ai.tech.core.misc.plugin.auth.ldap
 
-import ai.tech.core.misc.auth.model.User
+import ai.tech.core.misc.auth.model.identity.User
 import ai.tech.core.misc.plugin.auth.AuthProvider
 import ai.tech.core.misc.plugin.auth.ChallengeAuthProvider
 import ai.tech.core.misc.plugin.auth.ValidateAuthProvider

@@ -8,6 +8,7 @@ import java.math.BigDecimal
 import java.time.OffsetDateTime
 import java.util.UUID
 import kotlin.reflect.KClass
+import kotlin.reflect.KType
 import kotlin.reflect.typeOf
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.LocalDateTime
@@ -89,41 +90,41 @@ internal fun <T : AbstractTable<*>> ForeignKey<*, *>.referencedTable(tables: Lis
 }
 
 internal val columnValueKTypes = mapOf(
-    BigDecimalColumnNotNull::class to typeOf<BigDecimal>(),
-    BigDecimalColumnNullable::class to typeOf<BigDecimal?>(),
-    BooleanColumnNotNull::class to typeOf<Boolean>(),
-    ByteArrayColumnNotNull::class to typeOf<ByteArray>(),
-    ByteArrayColumnNullable::class to typeOf<ByteArray?>(),
-    DoubleColumnNotNull::class to typeOf<Double>(),
-    DoubleColumnNullable::class to typeOf<Double?>(),
-    FloatColumnNotNull::class to typeOf<Float>(),
-    FloatColumnNullable::class to typeOf<Float?>(),
-    IntColumnNotNull::class to typeOf<Int>(),
-    IntColumnNullable::class to typeOf<Int?>(),
-    KotlinxLocalDateColumnNotNull::class to typeOf<LocalDate>(),
-    KotlinxLocalDateColumnNullable::class to typeOf<LocalDate?>(),
-    KotlinxLocalDateTimeColumnNotNull::class to typeOf<LocalDateTime>(),
-    KotlinxLocalDateTimeColumnNullable::class to typeOf<LocalDateTime?>(),
-    KotlinxLocalTimeColumnNotNull::class to typeOf<LocalTime>(),
-    KotlinxLocalTimeColumnNullable::class to typeOf<LocalTime?>(),
-    LocalDateColumnNotNull::class to typeOf<java.time.LocalDate>(),
-    LocalDateColumnNullable::class to typeOf<java.time.LocalDate?>(),
-    LocalDateTimeColumnNotNull::class to typeOf<java.time.LocalDateTime>(),
-    LocalDateTimeColumnNullable::class to typeOf<java.time.LocalDateTime?>(),
-    LocalTimeColumnNotNull::class to typeOf<java.time.LocalTime>(),
-    LocalTimeColumnNullable::class to typeOf<java.time.LocalTime?>(),
-    LongColumnNotNull::class to typeOf<Long>(),
-    LongColumnNullable::class to typeOf<Long?>(),
-    OffsetDateTimeColumnNotNull::class to typeOf<OffsetDateTime>(),
-    OffsetDateTimeColumnNullable::class to typeOf<OffsetDateTime?>(),
-    StringColumnNotNull::class to typeOf<String>(),
-    StringColumnNullable::class to typeOf<String?>(),
-    UuidColumnNotNull::class to typeOf<UUID>(),
-    UuidColumnNullable::class to typeOf<UUID?>(),
+    typeOf<BigDecimalColumnNotNull<*>>() to typeOf<BigDecimal>(),
+    typeOf<BigDecimalColumnNullable<*>>() to typeOf<BigDecimal?>(),
+    typeOf<BooleanColumnNotNull<*>>() to typeOf<Boolean>(),
+    typeOf<ByteArrayColumnNotNull<*>>() to typeOf<ByteArray>(),
+    typeOf<ByteArrayColumnNullable<*>>() to typeOf<ByteArray?>(),
+    typeOf<DoubleColumnNotNull<*>>() to typeOf<Double>(),
+    typeOf<DoubleColumnNullable<*>>() to typeOf<Double?>(),
+    typeOf<FloatColumnNotNull<*>>() to typeOf<Float>(),
+    typeOf<FloatColumnNullable<*>>() to typeOf<Float?>(),
+    typeOf<IntColumnNotNull<*>>() to typeOf<Int>(),
+    typeOf<IntColumnNullable<*>>() to typeOf<Int?>(),
+    typeOf<KotlinxLocalDateColumnNotNull<*>>() to typeOf<LocalDate>(),
+    typeOf<KotlinxLocalDateColumnNullable<*>>() to typeOf<LocalDate?>(),
+    typeOf<KotlinxLocalDateTimeColumnNotNull<*>>() to typeOf<LocalDateTime>(),
+    typeOf<KotlinxLocalDateTimeColumnNullable<*>>() to typeOf<LocalDateTime?>(),
+    typeOf<KotlinxLocalTimeColumnNotNull<*>>() to typeOf<LocalTime>(),
+    typeOf<KotlinxLocalTimeColumnNullable<*>>() to typeOf<LocalTime?>(),
+    typeOf<LocalDateColumnNotNull<*>>() to typeOf<java.time.LocalDate>(),
+    typeOf<LocalDateColumnNullable<*>>() to typeOf<java.time.LocalDate?>(),
+    typeOf<LocalDateTimeColumnNotNull<*>>() to typeOf<java.time.LocalDateTime>(),
+    typeOf<LocalDateTimeColumnNullable<*>>() to typeOf<java.time.LocalDateTime?>(),
+    typeOf<LocalTimeColumnNotNull<*>>() to typeOf<java.time.LocalTime>(),
+    typeOf<LocalTimeColumnNullable<*>>() to typeOf<java.time.LocalTime?>(),
+    typeOf<LongColumnNotNull<*>>() to typeOf<Long>(),
+    typeOf<LongColumnNullable<*>>() to typeOf<Long?>(),
+    typeOf<OffsetDateTimeColumnNotNull<*>>() to typeOf<OffsetDateTime>(),
+    typeOf<OffsetDateTimeColumnNullable<*>>() to typeOf<OffsetDateTime?>(),
+    typeOf<StringColumnNotNull<*>>() to typeOf<String>(),
+    typeOf<StringColumnNullable<*>>() to typeOf<String?>(),
+    typeOf<UuidColumnNotNull<*>>() to typeOf<UUID>(),
+    typeOf<UuidColumnNullable<*>>() to typeOf<UUID?>(),
 )
 
-internal val <T : DbColumn<*, *>> KClass<T>.valueKType
-    get() = columnValueKTypes[this]
+internal val KType.valueKType
+    get() = columnValueKTypes[this]!!
 
 private fun <T : AbstractTable<*>> getKotysaTables(
     kClass: KClass<T>,

@@ -1,6 +1,6 @@
 package ai.tech.core.misc.auth.client
 
-import ai.tech.core.misc.auth.model.User
+import ai.tech.core.misc.auth.model.identity.User
 import ai.tech.core.misc.type.multiple.model.AsyncIterator
 import io.ktor.client.HttpClient
 

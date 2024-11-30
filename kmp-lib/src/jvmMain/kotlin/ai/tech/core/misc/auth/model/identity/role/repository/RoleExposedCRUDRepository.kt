@@ -1,22 +1,20 @@
-package ai.tech.core.misc.location.repository;
+package ai.tech.core.misc.auth.model.identity.role.repository
 
 import ai.tech.core.data.database.exposed.AbstractExposedCRUDRepository
 import ai.tech.core.data.transaction.model.TransactionIsolation
-import ai.tech.core.misc.location.model.LocationEntity
-import ai.tech.core.misc.location.model.LocationExposedTable
+import ai.tech.core.misc.auth.model.identity.role.RoleEntity
+import ai.tech.core.misc.auth.model.identity.role.model.RoleExposedTable
 import kotlinx.datetime.TimeZone
 import org.jetbrains.exposed.sql.Database
 
-import org.jetbrains.exposed.sql.Table;
-
-public class LocationExposedCRUDRepository(
+public class RoleExposedCRUDRepository(
     database: Database,
     timeZone: TimeZone = TimeZone.UTC,
     transactionIsolation: TransactionIsolation? = null
-) : AbstractExposedCRUDRepository<LocationEntity>(
-    LocationEntity::class,
+) : AbstractExposedCRUDRepository<RoleEntity>(
+    RoleEntity::class,
     database,
-    LocationExposedTable,
+    RoleExposedTable,
     timeZone = timeZone,
     transactionIsolation = transactionIsolation,
 )

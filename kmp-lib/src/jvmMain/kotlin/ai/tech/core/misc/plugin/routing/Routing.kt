@@ -1,7 +1,7 @@
 package ai.tech.core.misc.plugin.routing
 
 import ai.tech.core.data.model.Compression
-import ai.tech.core.misc.auth.model.User
+import ai.tech.core.misc.auth.model.identity.User
 import ai.tech.core.misc.model.config.EnabledConfig
 import ai.tech.core.misc.plugin.auth.session.model.UserSession
 import ai.tech.core.misc.plugin.cachingheaders.model.config.CacheControlConfig

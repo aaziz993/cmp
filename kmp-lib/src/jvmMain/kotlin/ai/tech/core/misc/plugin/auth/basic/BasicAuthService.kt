@@ -1,14 +1,14 @@
 package ai.tech.core.misc.plugin.auth.basic
 
 import ai.tech.core.data.crud.CRUDRepository
-import ai.tech.core.misc.auth.model.User
+import ai.tech.core.misc.auth.model.identity.User
 import ai.tech.core.misc.plugin.auth.AbstractStorageAuthProvider
 import ai.tech.core.misc.plugin.auth.AuthProvider
 import ai.tech.core.misc.plugin.auth.DigesterAuthProvider
 import ai.tech.core.misc.plugin.auth.ValidateAuthProvider
 import ai.tech.core.misc.plugin.auth.basic.model.config.BasicAuthConfig
-import ai.tech.core.misc.auth.identity.principal.model.PrincipalEntity
-import ai.tech.core.misc.auth.identity.role.model.RoleEntity
+import ai.tech.core.misc.auth.model.identity.principal.PrincipalEntity
+import ai.tech.core.misc.auth.model.identity.role.RoleEntity
 import io.ktor.server.application.*
 import io.ktor.server.auth.*
 import kotlinx.serialization.InternalSerializationApi

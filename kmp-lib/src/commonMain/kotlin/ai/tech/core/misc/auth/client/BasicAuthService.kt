@@ -3,7 +3,7 @@ package ai.tech.core.misc.auth.client
 import ai.tech.core.data.keyvalue.AbstractKeyValue
 import ai.tech.core.data.keyvalue.get
 import ai.tech.core.misc.auth.client.model.Credentials
-import ai.tech.core.misc.auth.model.User
+import ai.tech.core.misc.auth.model.identity.User
 import ai.tech.core.misc.type.multiple.model.AsyncIterator
 import io.ktor.client.*
 import io.ktor.client.plugins.auth.*

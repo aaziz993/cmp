@@ -5,9 +5,9 @@ import ai.tech.core.data.expression.f
 import ai.tech.core.data.filesystem.pathExtension
 import ai.tech.core.data.filesystem.readResourceProperties
 import ai.tech.core.data.filesystem.readResourceText
-import ai.tech.core.misc.auth.model.User
-import ai.tech.core.misc.auth.identity.principal.model.PrincipalEntity
-import ai.tech.core.misc.auth.identity.role.model.RoleEntity
+import ai.tech.core.misc.auth.model.identity.User
+import ai.tech.core.misc.auth.model.identity.principal.PrincipalEntity
+import ai.tech.core.misc.auth.model.identity.role.RoleEntity
 import ai.tech.core.misc.plugin.auth.model.config.StoreAuthProviderConfig
 import ai.tech.core.misc.type.serializer.decodeMapFromString
 import kotlin.collections.component1

@@ -1,18 +1,11 @@
-package ai.tech.core.misc.auth.identity.role.model
+package ai.tech.core.misc.auth.model.identity.role.model
 
-import ai.tech.core.misc.auth.identity.principal.model.PrincipalExposedTable
-import ai.tech.core.misc.auth.identity.principal.model.PrincipalKotysaTable.unique
-import ai.tech.core.misc.type.serializer.Json
-import ai.tech.core.misc.type.serializer.decodeFromAny
-import ai.tech.core.misc.type.serializer.encodeAnyToString
+import ai.tech.core.misc.auth.model.identity.principal.model.PrincipalExposedTable
 import kotlinx.datetime.LocalDateTime
-import kotlinx.serialization.json.Json
 import org.jetbrains.exposed.dao.id.EntityID
 import org.jetbrains.exposed.dao.id.LongIdTable
 import org.jetbrains.exposed.sql.Column
-import org.jetbrains.exposed.sql.json.json
 import org.jetbrains.exposed.sql.kotlin.datetime.datetime
-import org.ufoss.kotysa.columns.StringDbVarcharColumnNullable
 
 public object RoleExposedTable : LongIdTable("role") {
 
