@@ -1,7 +1,8 @@
 package ai.tech.core.data.crud.client
 
 import ai.tech.core.data.crud.CRUDRepository
-import ai.tech.core.data.crud.client.model.RemoteKeysEntity
+import ai.tech.core.data.crud.client.model.EntityRemoteKeys
+import ai.tech.core.data.crud.client.model.EntityRemoteKeysImpl
 import ai.tech.core.data.crud.model.query.LimitOffset
 import ai.tech.core.data.expression.f
 import ai.tech.core.data.paging.AbstractRemoteMediator
@@ -12,7 +13,7 @@ import kotlinx.coroutines.flow.toList
 public class CRUDRemoteMediator<Value : Any, ID : Any>(
     private val remoteRepository: CRUDRepository<Value>,
     private val localRepository: CRUDRepository<Value>,
-    private val keysRepository: CRUDRepository<RemoteKeysEntity<ID>>,
+    private val keysRepository: CRUDRepository<EntityRemoteKeys<ID>>,
     private val getEntityId: (Value) -> ID,
     public val firstItemOffset: Int = 0,
     cacheTimeout: Int?,
@@ -46,10 +47,10 @@ public class CRUDRemoteMediator<Value : Any, ID : Any>(
         }
 
     override suspend fun getRemoteKeys(item: Value): RemoteKeys<Long>? =
-        keysRepository.find(predicate = "id".f eq getEntityId(item).toString())
+        keysRepository.find(predicate = "entityId".f eq getEntityId(item).toString())
             .firstOrNull()
 
-    private fun List<Value>.createRemoteKeys(loadKey: Long?, endOfPaginationReached: Boolean): List<RemoteKeysEntity<ID>> {
+    private fun List<Value>.createRemoteKeys(loadKey: Long?, endOfPaginationReached: Boolean): List<EntityRemoteKeys<ID>> {
         val prevKey = loadKey?.takeIf { it > 0 }?.dec()
 
         val nextKey = if (endOfPaginationReached) {
@@ -59,6 +60,6 @@ public class CRUDRemoteMediator<Value : Any, ID : Any>(
             (loadKey ?: 0).inc()
         }
 
-        return map { item -> RemoteKeysEntity(getEntityId(item), prevKey, loadKey, nextKey) }
+        return map { item -> EntityRemoteKeysImpl(getEntityId(item), prevKey, loadKey, nextKey) }
     }
 }
