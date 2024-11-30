@@ -3,20 +3,25 @@
 package ai.tech.core.data.crud.store5
 
 import ai.tech.core.data.crud.CRUDRepository
-import ai.tech.core.data.expression.f
+import ai.tech.core.data.crud.store5.model.EntityFailedSync
+import ai.tech.core.data.crud.store5.model.EntityOperation
 import ai.tech.core.data.crud.store5.model.EntityOutput
 import ai.tech.core.data.crud.store5.model.EntityWriteResponse
-import ai.tech.core.data.crud.store5.model.EntityFailedSyncEntity
-import ai.tech.core.data.crud.store5.model.EntityOperation
-import ai.tech.core.data.crud.store5.model.EntityWriteResponse.*
+import ai.tech.core.data.crud.store5.model.EntityWriteResponse.Count
+import ai.tech.core.data.crud.store5.model.EntityWriteResponse.Entities
+import ai.tech.core.data.crud.store5.model.EntityWriteResponse.None
+import ai.tech.core.data.crud.store5.model.EntityWriteResponse.Update
+import ai.tech.core.data.expression.BooleanVariable
+import ai.tech.core.data.expression.f
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
-import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
+import kotlinx.serialization.encodeToString
+import kotlinx.serialization.json.Json
 import org.mobilenativefoundation.store.core5.ExperimentalStoreApi
 import org.mobilenativefoundation.store.store5.Bookkeeper
 import org.mobilenativefoundation.store.store5.Converter
@@ -29,23 +34,19 @@ import org.mobilenativefoundation.store.store5.Updater
 import org.mobilenativefoundation.store.store5.UpdaterResult
 import org.mobilenativefoundation.store.store5.Validator
 
-public abstract class AbstractCRUDStoreFactory<Network : Any, Local : Any, Domain : Any>(
+public class CRUDStoreFactory<Network : Any, Local : Any, Domain : Any>(
     private val networkRepository: CRUDRepository<Network>,
     private val localRepository: CRUDRepository<Local>,
-    private val bookKeeperRepository: CRUDRepository<EntityFailedSyncEntity>,
+    private val bookKeeperRepository: CRUDRepository<EntityFailedSync<*>>,
+    private val networkToLocal: (Network) -> Local,
+    private val localToDomain: (Local) -> Domain,
+    private val domainToLocal: (Domain) -> Local,
+    private val domainToNetwork: (Domain) -> Network,
     private val disableCache: Boolean? = null,
     private val memoryPolicy: MemoryPolicy<EntityOperation, EntityOutput<Domain>>? = null,
     private val validator: Validator<EntityOutput<Domain>>? = null,
     private val coroutineScope: CoroutineScope,
 ) {
-
-    protected abstract fun domainToLocal(output: Domain): Local
-
-    protected abstract fun localToDomain(output: Local): Domain
-
-    protected abstract fun domainToNetwork(output: Domain): Network
-
-    protected abstract fun networkToLocal(network: Network): Local
 
     public fun create(): MutableStore<EntityOperation, EntityOutput<Domain>> =
         MutableStoreBuilder
@@ -66,17 +67,31 @@ public abstract class AbstractCRUDStoreFactory<Network : Any, Local : Any, Domai
                 bookkeeper = createBookkeeper(),
             )
 
+    // Using Fetcher.ofFlow allows us to support operations that observe changes over time, such as ObserveOne and ObserveMany.
     private fun createFetcher(): Fetcher<EntityOperation, EntityOutput<Network>> =
-        Fetcher.of { operation ->
+        Fetcher.ofFlow { operation ->
             require(operation is EntityOperation.Query)
 
-            networkRepository.handleRead(operation) { it }
+            val mutableSharedFlow = MutableSharedFlow<EntityOutput<Network>>(
+                replay = 8,
+                extraBufferCapacity = 20,
+                onBufferOverflow = BufferOverflow.DROP_OLDEST,
+            )
+
+            coroutineScope.launch {
+                mutableSharedFlow.emit(networkRepository.handleRead(operation) { it })
+            }
+
+            mutableSharedFlow.asSharedFlow()
         }
 
     @Suppress("UNCHECKED_CAST")
     private fun createSourceOfTruth(): SourceOfTruth<EntityOperation, EntityOutput<Local>, EntityOutput<Domain>> =
         SourceOfTruth.of(
+            // When emitting data, if there is no value to emit (e.g., no entities found), we return null instead of an empty list.
+            // This prevents the Store from considering the operation fulfilled and triggers a fetch from the network.
             reader = { operation ->
+
                 val mutableSharedFlow = MutableSharedFlow<EntityOutput<Domain>?>(
                     replay = 8,
                     extraBufferCapacity = 20,
@@ -86,11 +101,13 @@ public abstract class AbstractCRUDStoreFactory<Network : Any, Local : Any, Domai
                 require(operation is EntityOperation.Query)
 
                 coroutineScope.launch {
-                    mutableSharedFlow.emit(localRepository.handleRead(operation) { it.map(::localToDomain) })
+                    mutableSharedFlow.emit(localRepository.handleRead(operation) { it.map(localToDomain) })
                 }
 
                 mutableSharedFlow.asSharedFlow()
             },
+            // However, our Writer needs to handle all Query and Mutation operations because we write to the Source of Truth on both reads and writes.
+            // Ensure that Writer handles all operation cases, including both mutations and queries, to maintain consistency between the local data and remote sources.
             writer = { operation, output ->
                 require(operation is EntityOperation.Mutation)
 
@@ -102,17 +119,27 @@ public abstract class AbstractCRUDStoreFactory<Network : Any, Local : Any, Domai
     private fun createConverter(): Converter<EntityOutput<Network>, EntityOutput<Local>, EntityOutput<Domain>> =
         Converter
             .Builder<EntityOutput<Network>, EntityOutput<Local>, EntityOutput<Domain>>()
-            .fromOutputToLocal { output -> output.map(::domainToLocal) }
-            .fromNetworkToLocal { output -> output.map(::networkToLocal) }
+            .fromOutputToLocal { output -> output.map(domainToLocal) }
+            .fromNetworkToLocal { output -> output.map(networkToLocal) }
             .build()
 
+    // We never invoke fetcher after local writes
+    // We invoke Updater on reads if conflicts might exist.
+    // This means we need to handle query operations too.
+    // If we do hit code for handling a query operation, it means we are fetching a Post but the Bookkeeper has an unresolved sync failure for that Post.
+    // So, before we can pull the latest value, we need to push our latest local value to the network.
     private fun createUpdater(): Updater<EntityOperation, EntityOutput<Domain>, EntityWriteResponse<Domain>> =
         Updater.by(
             post = { operation, output ->
                 try {
-                    UpdaterResult.Success.Typed(networkRepository.handleWrite(operation, output, ::domainToNetwork))
+                    if (operation is EntityOperation.Query) {
+                        UpdaterResult.Success.Typed(0)
+                    }
+                    else {
+                        UpdaterResult.Success.Typed(networkRepository.handleWrite(operation, output, domainToNetwork))
+                    }
                 }
-                catch (_: Exception) {
+                catch (e: Exception) {
                     UpdaterResult.Error.Message(e.stackTraceToString())
                 }
             },
@@ -124,14 +151,14 @@ public abstract class AbstractCRUDStoreFactory<Network : Any, Local : Any, Domai
                 // We only check with the bookkeeper on reads
                 require(operation is EntityOperation.Query)
 
-                bookKeeperRepository.find(predicate = "operationId".f eq operation.id).firstOrNull()?.timestamp
+                null
             },
             setLastFailedSync = { operation, timestamp ->
                 // We only set failed syncs on writes
                 require(operation is EntityOperation.Mutation)
 
                 try {
-                    bookKeeperRepository.insert(EntityFailedSyncEntity(operationId = operation.id, timestamp = timestamp))
+
                     true
                 }
                 catch (_: Exception) {
@@ -140,7 +167,11 @@ public abstract class AbstractCRUDStoreFactory<Network : Any, Local : Any, Domai
             },
             clear = { operation ->
                 try {
-                    bookKeeperRepository.delete("operationId".f eq operation.id)
+                    when (operation) {
+                        is EntityOperation.Query.Find -> clearFailedSyncs(operation.predicate)
+                        is EntityOperation.Mutation.Delete -> clearFailedSyncs(operation.predicate)
+
+                    }
                     true
                 }
                 catch (_: Exception) {
@@ -158,6 +189,10 @@ public abstract class AbstractCRUDStoreFactory<Network : Any, Local : Any, Domai
             },
         )
 
+    private suspend fun clearFailedSyncs(predicate: BooleanVariable?) {
+        bookKeeperRepository.delete(("predicate".f eq predicate?.id).and(("sync".f eq "INSERT").or("sync".f eq "UPDATE").or("sync".f eq "DELETE")))
+    }
+
     private suspend fun <T : Any, R : Any> CRUDRepository<T>.handleRead(operation: EntityOperation.Query, transform: (Flow<T>) -> Flow<R>): EntityOutput<R> = with(operation) {
         when (this) {
             is EntityOperation.Query.Find -> if (projections == null) {
@@ -171,7 +206,7 @@ public abstract class AbstractCRUDStoreFactory<Network : Any, Local : Any, Domai
         }
     }
 
-    private suspend fun <T : Any, R : Any> CRUDRepository<R>.handleWrite(operation: EntityOperation, output: EntityOutput<T>, transform: (T) -> R): EntityWriteResponse<R> =
+    private suspend fun <T : Any, R : Any> CRUDRepository<R>.handleWrite(operation: EntityOperation.Mutation, output: EntityOutput<T>, transform: (T) -> R): EntityWriteResponse<R> =
         with(operation) {
             when (this) {
                 is EntityOperation.Mutation.Insert -> {
@@ -206,12 +241,9 @@ public abstract class AbstractCRUDStoreFactory<Network : Any, Local : Any, Domai
                 }
 
                 is EntityOperation.Mutation.Delete -> {
-                    require(output is EntityOutput.Typed.Predicate)
-                    val value = delete(output.value)
+                    val value = delete(predicate)
                     Count(value)
                 }
-
-                else -> throw UnsupportedOperationException()
             }
         }
 
@@ -222,3 +254,6 @@ public abstract class AbstractCRUDStoreFactory<Network : Any, Local : Any, Domai
         else -> this as EntityOutput<R>
     }
 }
+
+private val BooleanVariable.id: String
+    get() = Json.Default.encodeToString(this)

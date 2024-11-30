@@ -37,6 +37,6 @@ public sealed interface EntityOperation {
 
         public data object Upsert : Mutation
 
-        public data object Delete : Mutation
+        public data class Delete(val predicate: BooleanVariable? = null) : Mutation
     }
 }

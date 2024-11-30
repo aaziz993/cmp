@@ -72,7 +72,7 @@ public class StoreCRUDRepository<Domain : Any>(
             }
         }
 
-    override suspend fun delete(predicate: BooleanVariable?): Long = (handleWrite(EntityOperation.Mutation.Delete, EntityOutput.Typed.Predicate(predicate))
+    override suspend fun delete(predicate: BooleanVariable?): Long = (handleWrite(EntityOperation.Mutation.Delete(predicate), EntityOutput.Untyped.Single(null))
         as? EntityWriteResponse.Count)?.value ?: 0
 
     @Suppress("UNCHECKED_CAST")

@@ -3,13 +3,12 @@ package ai.tech.core.data.crud.store5.model
 import ai.tech.core.data.expression.BooleanVariable
 import kotlinx.coroutines.flow.Flow
 
-public sealed interface EntityOutput<out Domain : Any> {
-    public sealed interface Typed<out Domain : Any> : EntityOutput<Domain> {
-        public data class Key(val value: BooleanVariable?) : EntityOutput<Nothing>
+public sealed interface EntityOutput<out T : Any> {
+    public sealed interface Typed<out T : Any> : EntityOutput<T> {
 
-        public data class Collection<Domain : Any>(val values: List<Domain>) : Typed<Domain>
+        public data class Collection<T : Any>(val values: List<T>) : Typed<T>
 
-        public data class Stream<Domain : Any>(val values: Flow<Domain>) : Typed<Domain>
+        public data class Stream<T : Any>(val values: Flow<T>) : Typed<T>
     }
 
     public sealed interface Untyped : EntityOutput<Nothing> {
