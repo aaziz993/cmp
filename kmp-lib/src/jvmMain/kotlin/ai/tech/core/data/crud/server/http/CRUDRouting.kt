@@ -49,11 +49,11 @@ public inline fun <reified T : Any> Routing.CrudRouting(
 
 
         authOpt(writeAuth) {
-            post("updateTypeSafe") {
+            post("update") {
                 call.respond(HttpStatusCode.OK, repository.update(call.receive<T>()))
             }
 
-            post("update") {
+            post("updateUntyped") {
                 val form = call.receiveMultipart().readFormData()
 
                 call.respond(

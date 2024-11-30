@@ -20,12 +20,12 @@ internal interface CRUDApi {
     suspend fun insertAndReturn(@Body entities: List<*>): HttpStatement
 
     @Headers("Content-Type: application/json")
-    @POST("updateSafe")
+    @POST("update")
     suspend fun update(@Body entities: List<*>): List<Boolean>
 
     @Multipart
-    @POST("update")
-    suspend fun update(@Body map: MultiPartFormDataContent): List<Long>
+    @POST("updateUntyped")
+    suspend fun update(@Body map: MultiPartFormDataContent): Long
 
     @Headers("Content-Type: application/json")
     @PUT("upsert")

@@ -34,12 +34,10 @@ import ai.tech.core.data.expression.f
 import ai.tech.core.data.transaction.Transaction
 import ai.tech.core.data.transaction.model.TransactionIsolation
 import ai.tech.core.data.transaction.model.r2dbcTransactionIsolation
-import ai.tech.core.misc.type.callDeclaredMemberFunction
 import ai.tech.core.misc.type.invoke
 import ai.tech.core.misc.type.multiple.toTypedArray
 import ai.tech.core.misc.type.serializer.create
 import kotlin.reflect.KClass
-import kotlin.reflect.full.createType
 import kotlin.reflect.full.starProjectedType
 import kotlin.time.Duration
 import kotlin.time.toJavaDuration
@@ -142,14 +140,14 @@ public abstract class AbstractKotysaCRUDRepository<T : Any>(
     final override suspend fun update(
         entities: List<Map<String, Any?>>,
         predicate: BooleanVariable?,
-    ): List<Long> = client.transactional {
+    ): Long = client.transactional {
         if (predicate == null) {
             entities.map { update(it).execute() }
         }
         else {
             entities.map { update(it).predicate(predicate).execute() }
         }
-    }!!
+    }!!.first()
 
     @Suppress("UNCHECKED_CAST")
     final override suspend fun upsert(entities: List<T>): List<T> = client.transactional {
@@ -355,7 +353,7 @@ public abstract class AbstractKotysaCRUDRepository<T : Any>(
 
         return if (expression is Between) {
             if (isTemporal) {
-              this("afterOrEq", expression.arguments[1] as Value<*>)
+                this("afterOrEq", expression.arguments[1] as Value<*>)
                     .kotysaExp("and", expression.arguments[0] as Value<*>)
                     .kotysaExp("beforeOrEq", expression.arguments[2] as Value<*>)
             }

@@ -51,7 +51,7 @@ public open class CRUDClient<T : Any>(
 
     override suspend fun update(entities: List<T>): List<Boolean> = api.update(entities)
 
-    override suspend fun update(entities: List<Map<String, Any?>>, predicate: BooleanVariable?): List<Long> =
+    override suspend fun update(entities: List<Map<String, Any?>>, predicate: BooleanVariable?): Long =
         api.update(
             MultiPartFormDataContent(
                 formData {

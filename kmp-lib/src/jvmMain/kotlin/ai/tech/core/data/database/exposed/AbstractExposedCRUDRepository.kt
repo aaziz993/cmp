@@ -32,15 +32,13 @@ import ai.tech.core.data.expression.Variable
 import ai.tech.core.data.transaction.Transaction
 import ai.tech.core.data.transaction.model.TransactionIsolation
 import ai.tech.core.data.transaction.model.javaSqlTransactionIsolation
-import ai.tech.core.misc.type.get
+import ai.tech.core.misc.type.memberProperty
 import ai.tech.core.misc.type.serializablePropertyValues
 import ai.tech.core.misc.type.serializer.create
 import kotlin.coroutines.CoroutineContext
 import kotlin.reflect.KClass
 import kotlin.reflect.KType
-import kotlin.reflect.full.createType
 import kotlin.reflect.full.starProjectedType
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.asFlow
 import kotlinx.coroutines.flow.flow
@@ -70,7 +68,6 @@ import org.jetbrains.exposed.sql.statements.UpdateBuilder
 import org.jetbrains.exposed.sql.sum
 import org.jetbrains.exposed.sql.transactions.experimental.newSuspendedTransaction
 import org.jetbrains.exposed.sql.update
-import org.jetbrains.kotlinx.dataframe.api.column
 import org.slf4j.LoggerFactory
 
 public abstract class AbstractExposedCRUDRepository<T : Any>(
@@ -179,7 +176,7 @@ public abstract class AbstractExposedCRUDRepository<T : Any>(
         entities.map { entity -> table.update { it.set(entity.withUpdatedAt) } > 0 }
     }
 
-    override suspend fun update(entities: List<Map<String, Any?>>, predicate: BooleanVariable?): List<Long> = transactional {
+    override suspend fun update(entities: List<Map<String, Any?>>, predicate: BooleanVariable?): Long = transactional {
         if (predicate == null) {
             entities.map { entity -> table.update { it.set(entity) } }
         }
@@ -189,7 +186,7 @@ public abstract class AbstractExposedCRUDRepository<T : Any>(
                     it.set(entity)
                 }
             }
-        }.map(Int::toLong)
+        }.first().let(Int::toLong)
     }
 
     @Suppress("UNCHECKED_CAST")
@@ -355,7 +352,7 @@ public abstract class AbstractExposedCRUDRepository<T : Any>(
                     table[arg.value]!!.let { it to it::class.starProjectedType }
                 }
 
-                is Value<*> -> arg.value to arg::class["value"]!!.returnType
+                is Value<*> -> arg.value to arg::class.memberProperty("value")!!.returnType
                 else -> arg to (arg?.let { it::class.starProjectedType } ?: columnValueKType)!!
             }
         }
