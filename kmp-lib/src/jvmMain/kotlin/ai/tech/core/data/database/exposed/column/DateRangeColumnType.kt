@@ -1,16 +1,10 @@
 package ai.tech.core.data.database.exposed.column
 
 import ai.tech.core.misc.datetime.model.DateRange
-import kotlinx.datetime.DatePeriod
-import kotlinx.datetime.DateTimeUnit
 import kotlinx.datetime.LocalDate
-import kotlinx.datetime.minus
-import kotlinx.serialization.Serializable
 import org.jetbrains.exposed.sql.Column
 import org.jetbrains.exposed.sql.Table
 import org.jetbrains.exposed.sql.kotlin.datetime.KotlinLocalDateColumnType
-
-
 
 public class DateRangeColumnType : RangeColumnType<LocalDate, DateRange>(KotlinLocalDateColumnType()) {
 

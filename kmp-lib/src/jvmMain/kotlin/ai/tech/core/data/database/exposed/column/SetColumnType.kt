@@ -2,7 +2,6 @@ package ai.tech.core.data.database.exposed.column
 
 import kotlin.reflect.KClass
 import org.jetbrains.exposed.sql.Column
-import org.jetbrains.exposed.sql.ColumnTransformer
 import org.jetbrains.exposed.sql.StringColumnType
 import org.jetbrains.exposed.sql.Table
 

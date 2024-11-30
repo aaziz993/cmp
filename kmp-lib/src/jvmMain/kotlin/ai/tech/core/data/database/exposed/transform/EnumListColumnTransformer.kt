@@ -5,7 +5,7 @@ import org.jetbrains.exposed.sql.Column
 import org.jetbrains.exposed.sql.ColumnTransformer
 import org.jetbrains.exposed.sql.Table
 
-public class EnumListColumnType<T : Enum<T>>(
+public class EnumListColumnTransformer<T : Enum<T>>(
     private val enumClass: KClass<T>
 ) : ColumnTransformer<String, List<T>> {
 

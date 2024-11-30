@@ -1,6 +1,6 @@
 package ai.tech.core.misc.auth.model.identity.principal.model
 
-import ai.tech.core.data.database.exposed.transform.anyJson
+import ai.tech.core.data.database.exposed.column.anyJson
 import kotlinx.datetime.LocalDateTime
 import org.jetbrains.exposed.dao.id.LongIdTable
 import org.jetbrains.exposed.sql.Column

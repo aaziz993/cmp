@@ -1,4 +1,4 @@
-package ai.tech.core.data.database.exposed.transform
+package ai.tech.core.data.database.exposed.column
 
 import ai.tech.core.misc.type.serializer.decodeFromAny
 import ai.tech.core.misc.type.serializer.encodeAnyToString
