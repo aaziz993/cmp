@@ -1,7 +1,7 @@
 package ai.tech.core.misc.consul.model.parameter
 
 import ai.tech.core.misc.network.http.client.serializableHttpQueryParameters
-import ai.tech.core.misc.type.multiple.filterKeys
+import ai.tech.core.misc.type.multiple.filterKeysIn
 import ai.tech.core.misc.type.serializer.bignum.BigIntegerSerial
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.Transient
@@ -39,7 +39,7 @@ public data class QueryParameters(
     @Transient
     override val query: Map<String, String> = serializableHttpQueryParameters.let {
         if (wait == null) {
-            it.filterKeys("index", "hash")
+            it.filterKeysIn("index", "hash")
         }
         else {
             it

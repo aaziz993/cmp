@@ -1,14 +1,10 @@
 package ai.tech.core.misc.type.multiple
 
-import ai.tech.core.data.model.Charset
 import ai.tech.core.data.model.ImageCompression
 import ai.tech.core.data.model.imageCompressionMap
-import ai.tech.core.data.model.toPlatformCharset
-import ai.tech.core.misc.type.Object
 import js.core.JsLong
 import js.typedarrays.TypedArray
 import js.typedarrays.Uint8ClampedArray
-import js.typedarrays.toUint8Array
 import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
 import kotlin.coroutines.suspendCoroutine
@@ -124,13 +120,3 @@ public suspend fun ByteArray.decompressCanvas(type: String): HTMLCanvasElement =
             src = "data:$type;base64," + btoa(this@decompressCanvas.decode())
         }
     }
-
-// ////////////////////////////////////////////////////STRING////////////////////////////////////////////////////////////
-public actual fun ByteArray.decode(charset: Charset): String =
-    convert(
-        toUint8Array(),
-        Object {
-            to = charset.toPlatformCharset()
-            type = "string"
-        },
-    ) as String

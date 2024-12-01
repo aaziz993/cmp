@@ -3,6 +3,8 @@ package ai.tech.core.misc.type.multiple
 import com.ionspin.kotlin.bignum.decimal.BigDecimal
 import com.ionspin.kotlin.bignum.integer.BigInteger
 import ai.tech.core.data.model.Charset
+import com.fleeksoft.charset.Charsets
+import com.fleeksoft.charset.toByteArray
 import kotlinx.datetime.DatePeriod
 import kotlinx.datetime.DateTimePeriod
 import kotlinx.datetime.LocalDate
@@ -143,7 +145,7 @@ public fun matcher(
     }
 
 // ///////////////////////////////////////////////////////ENUM//////////////////////////////////////////////////////////
-public inline fun <reified T : Enum<T>> String.enumOf(): T = enumValueOf(this)
+public inline fun <reified T : Enum<T>> String.enumValueOf(): T = enumValueOf(this)
 
 // ///////////////////////////////////////////////////////ARRAY//////////////////////////////////////////////////////////
-public expect fun String.encode(charset: Charset = Charset.UTF_8): ByteArray
+public fun String.encode(charset: Charset = Charset.UTF_8): ByteArray = toByteArray(Charsets.forName(charset.name))

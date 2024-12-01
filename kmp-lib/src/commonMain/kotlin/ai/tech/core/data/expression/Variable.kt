@@ -1,12 +1,15 @@
+@file:OptIn(ExperimentalUuidApi::class)
+
 package ai.tech.core.data.expression
 
-import com.benasher44.uuid.Uuid
 import com.ionspin.kotlin.bignum.decimal.BigDecimal
 import com.ionspin.kotlin.bignum.integer.BigInteger
 import ai.tech.core.misc.type.serializer.bignum.BigDecimalSerial
 import ai.tech.core.misc.type.serializer.bignum.BigIntegerSerial
 import ai.tech.core.misc.type.serializer.UuidSerial
 import ai.tech.core.misc.type.multiple.depthIterator
+import kotlin.uuid.ExperimentalUuidApi
+import kotlin.uuid.Uuid
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.LocalDateTime
 import kotlinx.datetime.LocalTime
@@ -279,7 +282,7 @@ public interface Expression {
             this,
             { expressions, value ->
                 if (value is Expression) {
-                    if (!value.isArgumentsAllValue) {
+                    if (!value.isSimple) {
                         return@depthIterator value.arguments.iterator()
                     }
                     value.leafExpression(expressions as List<Expression>)

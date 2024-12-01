@@ -69,6 +69,8 @@ ktlint = "1.4.1"
 ksp = "2.0.21-1.0.28"
 # multiplatform logging
 km-logging = "1.5.0"
+# charsets
+fleeksoft = "0.0.2"
 kotlinx-datetime = "0.6.1"
 kotlinx-uuid-core = "0.0.25"
 kotlinx-serialization = "1.7.3"
@@ -270,6 +272,11 @@ junit = { group = "junit", name = "junit", version.ref = "junit" }
 # Ksp symbol processor api
 symbol-processing-api = { module = "com.google.devtools.ksp:symbol-processing-api", version.ref = "ksp" }
 km-logging = { module = "org.lighthousegames:logging", version.ref = "km-logging" }
+# charsets
+fleeksoft-charset = { module = "com.fleeksoft.charset:charset", version.ref = "fleeksoft" }
+fleeksoft-charset-ext = { module = "com.fleeksoft.charset:charset-ext", version.ref = "fleeksoft" }
+
+
 kotlinx-datetime = { group = "org.jetbrains.kotlinx", name = "kotlinx-datetime", version.ref = "kotlinx-datetime" }
 kotlinx-uuid-core = { module = "app.softwork:kotlinx-uuid-core", version.ref = "kotlinx-uuid-core" }
 # official serialization
@@ -692,6 +699,11 @@ webcam-capture = [
     "webcam-capture-driver-ffmpeg-cli",
 ]
 # Kotlin
+# charsets
+fleeksoft-charset = [
+    "fleeksoft-charset",
+    "fleeksoft-charset-ext",
+]
 # official serialization
 kotlinx-serialization = [
     "kotlinx-serialization-json",

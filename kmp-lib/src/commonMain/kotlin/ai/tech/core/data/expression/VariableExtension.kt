@@ -1,8 +1,11 @@
+@file:OptIn(ExperimentalUuidApi::class)
+
 package ai.tech.core.data.expression
 
-import com.benasher44.uuid.Uuid
 import com.ionspin.kotlin.bignum.decimal.BigDecimal
 import com.ionspin.kotlin.bignum.integer.BigInteger
+import kotlin.uuid.ExperimentalUuidApi
+import kotlin.uuid.Uuid
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.LocalDateTime
 import kotlinx.datetime.LocalTime
@@ -33,7 +36,7 @@ public val <T>  T.v: ComparableOperand
         is LocalDateTime -> v
         is BigInteger -> v
         is BigDecimal -> v
-        is Uuid -> vl
+        is Uuid -> v
         else -> this?.let { throw IllegalArgumentException("Unknown expression value type \"${it::class.simpleName}\"") }
             ?: NullValue
     }
@@ -167,7 +170,7 @@ public val LocalDateTime.v: LocalDateTimeValue
 public val Collection<LocalDateTime?>.v: LocalDateTimeCollection
     get() = LocalDateTimeCollection(this)
 
-public val Uuid.vl: UUIDValue
+public val Uuid.v: UUIDValue
     get() = UUIDValue(this)
 
 public val Collection<Uuid?>.v: UUIDCollection

@@ -14,6 +14,8 @@ import ai.tech.core.misc.type.single.toLongLSB
 import ai.tech.core.misc.type.single.toUIntLSB
 import ai.tech.core.misc.type.single.toULongLSB
 import ai.tech.core.misc.type.single.unsigned
+import com.fleeksoft.charset.Charsets
+import com.fleeksoft.charset.decodeToString
 import kotlin.io.encoding.Base64
 import kotlin.io.encoding.ExperimentalEncodingApi
 
@@ -279,4 +281,4 @@ public fun ByteArray.encodeBase64(startIndex: Int = 0, endIndex: Int = size): St
 public fun String.decodeBase64(startIndex: Int = 0, endIndex: Int = length): ByteArray = Base64.decode(this, startIndex, endIndex)
 
 // /////////////////////////////////////////////////////STRING//////////////////////////////////////////////////////////
-public expect fun ByteArray.decode(charset: Charset = Charset.UTF_8): String
+public fun ByteArray.decode(charset: Charset = Charset.UTF_8): String = decodeToString(Charsets.forName(charset.name))

@@ -3,9 +3,7 @@
 package ai.tech.core.data.crud.store5
 
 import ai.tech.core.data.crud.CRUDRepository
-import ai.tech.core.data.crud.store5.model.EntityFailedSync
 import ai.tech.core.data.crud.store5.model.EntityOperation
-import ai.tech.core.data.crud.store5.model.EntityOutput
 import ai.tech.core.data.crud.store5.model.EntityWriteResponse
 import ai.tech.core.data.crud.store5.model.EntityWriteResponse.Count
 import ai.tech.core.data.crud.store5.model.EntityWriteResponse.Entities
@@ -13,6 +11,8 @@ import ai.tech.core.data.crud.store5.model.EntityWriteResponse.None
 import ai.tech.core.data.crud.store5.model.EntityWriteResponse.Update
 import ai.tech.core.data.expression.BooleanVariable
 import ai.tech.core.data.expression.f
+import ai.tech.core.data.store5.model.FailedSync
+import ai.tech.core.data.store5.model.StoreOutput
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.flow.Flow
@@ -36,19 +36,20 @@ import org.mobilenativefoundation.store.store5.Validator
 
 public class CRUDStoreFactory<Network : Any, Local : Any, Domain : Any>(
     private val networkRepository: CRUDRepository<Network>,
+    private val fallbackRepository: CRUDRepository<Network>? = null,
     private val localRepository: CRUDRepository<Local>,
-    private val bookKeeperRepository: CRUDRepository<EntityFailedSync<*>>,
+    private val bookKeeperRepository: CRUDRepository<FailedSync<String>>,
     private val networkToLocal: (Network) -> Local,
     private val localToDomain: (Local) -> Domain,
     private val domainToLocal: (Domain) -> Local,
     private val domainToNetwork: (Domain) -> Network,
     private val disableCache: Boolean? = null,
-    private val memoryPolicy: MemoryPolicy<EntityOperation, EntityOutput<Domain>>? = null,
-    private val validator: Validator<EntityOutput<Domain>>? = null,
+    private val memoryPolicy: MemoryPolicy<EntityOperation, StoreOutput<Domain>>? = null,
+    private val validator: Validator<StoreOutput<Domain>>? = null,
     private val coroutineScope: CoroutineScope,
 ) {
 
-    public fun create(): MutableStore<EntityOperation, EntityOutput<Domain>> =
+    public fun create(): MutableStore<EntityOperation, StoreOutput<Domain>> =
         MutableStoreBuilder
             .from(
                 fetcher = createFetcher(),
@@ -67,12 +68,14 @@ public class CRUDStoreFactory<Network : Any, Local : Any, Domain : Any>(
                 bookkeeper = createBookkeeper(),
             )
 
+    public fun
+
     // Using Fetcher.ofFlow allows us to support operations that observe changes over time, such as ObserveOne and ObserveMany.
-    private fun createFetcher(): Fetcher<EntityOperation, EntityOutput<Network>> =
+    private fun createFetcher(): Fetcher<EntityOperation, StoreOutput<Network>> =
         Fetcher.ofFlow { operation ->
             require(operation is EntityOperation.Query)
 
-            val mutableSharedFlow = MutableSharedFlow<EntityOutput<Network>>(
+            val mutableSharedFlow = MutableSharedFlow<StoreOutput<Network>>(
                 replay = 8,
                 extraBufferCapacity = 20,
                 onBufferOverflow = BufferOverflow.DROP_OLDEST,
@@ -86,13 +89,13 @@ public class CRUDStoreFactory<Network : Any, Local : Any, Domain : Any>(
         }
 
     @Suppress("UNCHECKED_CAST")
-    private fun createSourceOfTruth(): SourceOfTruth<EntityOperation, EntityOutput<Local>, EntityOutput<Domain>> =
+    private fun createSourceOfTruth(): SourceOfTruth<EntityOperation, StoreOutput<Local>, StoreOutput<Domain>> =
         SourceOfTruth.of(
             // When emitting data, if there is no value to emit (e.g., no entities found), we return null instead of an empty list.
             // This prevents the Store from considering the operation fulfilled and triggers a fetch from the network.
             reader = { operation ->
 
-                val mutableSharedFlow = MutableSharedFlow<EntityOutput<Domain>?>(
+                val mutableSharedFlow = MutableSharedFlow<StoreOutput<Domain>?>(
                     replay = 8,
                     extraBufferCapacity = 20,
                     onBufferOverflow = BufferOverflow.DROP_OLDEST,
@@ -106,6 +109,8 @@ public class CRUDStoreFactory<Network : Any, Local : Any, Domain : Any>(
 
                 mutableSharedFlow.asSharedFlow()
             },
+            // This method is used by RealStore to write data fetched from the network into local storage.
+            // It’s also used by the MutableStore to optimistically update the local data source when a write request is received.
             // However, our Writer needs to handle all Query and Mutation operations because we write to the Source of Truth on both reads and writes.
             // Ensure that Writer handles all operation cases, including both mutations and queries, to maintain consistency between the local data and remote sources.
             writer = { operation, output ->
@@ -116,9 +121,9 @@ public class CRUDStoreFactory<Network : Any, Local : Any, Domain : Any>(
         )
 
     @Suppress("UNCHECKED_CAST")
-    private fun createConverter(): Converter<EntityOutput<Network>, EntityOutput<Local>, EntityOutput<Domain>> =
+    private fun createConverter(): Converter<StoreOutput<Network>, StoreOutput<Local>, StoreOutput<Domain>> =
         Converter
-            .Builder<EntityOutput<Network>, EntityOutput<Local>, EntityOutput<Domain>>()
+            .Builder<StoreOutput<Network>, StoreOutput<Local>, StoreOutput<Domain>>()
             .fromOutputToLocal { output -> output.map(domainToLocal) }
             .fromNetworkToLocal { output -> output.map(networkToLocal) }
             .build()
@@ -128,7 +133,7 @@ public class CRUDStoreFactory<Network : Any, Local : Any, Domain : Any>(
     // This means we need to handle query operations too.
     // If we do hit code for handling a query operation, it means we are fetching a Post but the Bookkeeper has an unresolved sync failure for that Post.
     // So, before we can pull the latest value, we need to push our latest local value to the network.
-    private fun createUpdater(): Updater<EntityOperation, EntityOutput<Domain>, EntityWriteResponse<Domain>> =
+    private fun createUpdater(): Updater<EntityOperation, StoreOutput<Domain>, EntityWriteResponse<Domain>> =
         Updater.by(
             post = { operation, output ->
                 try {
@@ -193,49 +198,49 @@ public class CRUDStoreFactory<Network : Any, Local : Any, Domain : Any>(
         bookKeeperRepository.delete(("predicate".f eq predicate?.id).and(("sync".f eq "INSERT").or("sync".f eq "UPDATE").or("sync".f eq "DELETE")))
     }
 
-    private suspend fun <T : Any, R : Any> CRUDRepository<T>.handleRead(operation: EntityOperation.Query, transform: (Flow<T>) -> Flow<R>): EntityOutput<R> = with(operation) {
+    private suspend fun <T : Any, R : Any> CRUDRepository<T>.handleRead(operation: EntityOperation.Query, transform: (Flow<T>) -> Flow<R>): StoreOutput<R> = with(operation) {
         when (this) {
             is EntityOperation.Query.Find -> if (projections == null) {
-                EntityOutput.Typed.Stream(find(sort, predicate, limitOffset).let(transform))
+                StoreOutput.Typed.Stream(find(sort, predicate, limitOffset).let(transform))
             }
             else {
-                EntityOutput.Untyped.Stream(find(projections, sort, predicate, limitOffset))
+                StoreOutput.Untyped.Stream(find(projections, sort, predicate, limitOffset))
             }
 
-            is EntityOperation.Query.Aggregate -> EntityOutput.Untyped.Single(aggregate(this.aggregate, this.predicate))
+            is EntityOperation.Query.Aggregate -> StoreOutput.Untyped.Single(aggregate(this.aggregate, this.predicate))
         }
     }
 
-    private suspend fun <T : Any, R : Any> CRUDRepository<R>.handleWrite(operation: EntityOperation.Mutation, output: EntityOutput<T>, transform: (T) -> R): EntityWriteResponse<R> =
+    private suspend fun <T : Any, R : Any> CRUDRepository<R>.handleWrite(operation: EntityOperation.Mutation, output: StoreOutput<T>, transform: (T) -> R): EntityWriteResponse<R> =
         with(operation) {
             when (this) {
                 is EntityOperation.Mutation.Insert -> {
-                    require(output is EntityOutput.Typed.Collection<T>)
+                    require(output is StoreOutput.Typed.Collection<T>)
                     insert(output.values.map(transform))
                     None
                 }
 
                 is EntityOperation.Mutation.InsertAndReturn -> {
-                    require(output is EntityOutput.Typed.Collection<T>)
+                    require(output is StoreOutput.Typed.Collection<T>)
                     val values = insertAndReturn(output.values.map(transform))
                     Entities(values)
                 }
 
                 is EntityOperation.Mutation.Update -> {
-                    require(output is EntityOutput.Typed.Collection<T> || output is EntityOutput.Untyped.Collection)
+                    require(output is StoreOutput.Typed.Collection<T> || output is StoreOutput.Untyped.Collection)
 
-                    if (output is EntityOutput.Typed.Collection<T>) {
+                    if (output is StoreOutput.Typed.Collection<T>) {
                         val values = update(output.values.map(transform))
                         Update(values)
                     }
                     else {
-                        val value = update((output as EntityOutput.Untyped.Collection).values)
+                        val value = update((output as StoreOutput.Untyped.Collection).values)
                         Count(value)
                     }
                 }
 
                 is EntityOperation.Mutation.Upsert -> {
-                    require(output is EntityOutput.Typed.Collection<T>)
+                    require(output is StoreOutput.Typed.Collection<T>)
                     val entities = upsert(output.values.map(transform))
                     Entities(entities)
                 }
@@ -248,10 +253,10 @@ public class CRUDStoreFactory<Network : Any, Local : Any, Domain : Any>(
         }
 
     @Suppress("UNCHECKED_CAST")
-    private fun <T : Any, R : Any> EntityOutput<T>.map(transform: (T) -> R): EntityOutput<R> = when (this) {
-        is EntityOutput.Typed.Collection<*> -> EntityOutput.Typed.Collection((this as EntityOutput.Typed.Collection<T>).values.map(transform))
-        is EntityOutput.Typed.Stream<*> -> EntityOutput.Typed.Stream((this as EntityOutput.Typed.Stream<T>).values.map(transform))
-        else -> this as EntityOutput<R>
+    private fun <T : Any, R : Any> StoreOutput<T>.map(transform: (T) -> R): StoreOutput<R> = when (this) {
+        is StoreOutput.Typed.Collection<*> -> StoreOutput.Typed.Collection((this as StoreOutput.Typed.Collection<T>).values.map(transform))
+        is StoreOutput.Typed.Stream<*> -> StoreOutput.Typed.Stream((this as StoreOutput.Typed.Stream<T>).values.map(transform))
+        else -> this as StoreOutput<R>
     }
 }
 

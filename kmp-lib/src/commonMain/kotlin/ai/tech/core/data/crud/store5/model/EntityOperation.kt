@@ -5,6 +5,7 @@ import ai.tech.core.data.crud.model.query.Order
 import ai.tech.core.data.expression.AggregateExpression
 import ai.tech.core.data.expression.BooleanVariable
 import ai.tech.core.data.expression.Variable
+import ai.tech.core.data.store5.model.DataSource
 
 public sealed interface EntityOperation {
 

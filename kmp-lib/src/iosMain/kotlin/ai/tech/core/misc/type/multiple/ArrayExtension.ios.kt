@@ -1,15 +1,17 @@
 package ai.tech.core.misc.type.multiple
 
-import ai.tech.core.data.model.Charset
 import ai.tech.core.data.model.ImageCompression
-import ai.tech.core.data.model.charsetMap
-import kotlinx.cinterop.*
+import kotlinx.cinterop.BetaInteropApi
 import kotlinx.cinterop.ExperimentalForeignApi
 import kotlinx.cinterop.addressOf
 import kotlinx.cinterop.allocArrayOf
 import kotlinx.cinterop.memScoped
 import kotlinx.cinterop.usePinned
-import platform.CoreGraphics.*
+import platform.CoreGraphics.CGBitmapContextCreate
+import platform.CoreGraphics.CGBitmapContextCreateImage
+import platform.CoreGraphics.CGColorSpaceCreateDeviceRGB
+import platform.CoreGraphics.CGImageAlphaInfo
+import platform.CoreGraphics.CGImageRef
 import platform.Foundation.NSData
 import platform.Foundation.create
 import platform.UIKit.UIImage
@@ -53,9 +55,3 @@ public fun ByteArray.decodeCGImageRGBA(
 }
 
 public fun ByteArray.decompressCGImage(): CGImageRef? = UIImage.imageWithData(decodeNSData())?.CGImage
-
-// ////////////////////////////////////////////////////////STRING///////////////////////////////////////////////////////
-public actual fun ByteArray.decode(charset: Charset): String =
-    charsetMap[charset]?.let {
-        decodeNSData().decode(it)
-    } ?: throw IllegalArgumentException("Unsupported charset encoding: ${charset.name}")

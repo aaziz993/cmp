@@ -89,6 +89,7 @@ internal fun Project.configureKotlinMultiplatformExtension(extension: KotlinMult
 
                 dependencies {
                     implementation(lib("km.logging"))
+                    implementation(bundle("fleeksoft.charset"))
                     implementation(lib("kotlinx.datetime"))
                     implementation(lib("kotlinx.uuid.core"))
                     implementation(bundle("kotlinx.serialization"))
@@ -223,8 +224,6 @@ internal fun Project.configureKotlinMultiplatformExtension(extension: KotlinMult
                     api(lib("kotlin-node"))
                     implementation(npm("@js-joda/timezone", version("js.joda.timezone").toString()))
                     implementation(devNpm("copy-webpack-plugin", version("copy.webpack.plugin").toString()))
-                    implementation(npm("encoding-japanese", version("encoding.japanese").toString()))
-                    implementation(npm("@types/encoding-japanese", version("encoding.japanese.types").toString()))
                     // The synchronous sqljs-driver (pre-2.0) has been replaced with the asynchronous web-worker-driver. This requires configuring the generateAsync setting in your Gradle configuration.
                     implementation(lib("okio.nodefilesystem"))
                     implementation(lib("kstore.storage"))

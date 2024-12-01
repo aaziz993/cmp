@@ -4,9 +4,9 @@ import ai.tech.core.misc.type.accessor
 import ai.tech.core.misc.type.set
 
 //////////////////////////////////////////////////////////MAP///////////////////////////////////////////////////////////
-public fun <K, V> Map<K, V>.filterKeys(keys: List<K>): Map<K, V> = filterKeys(keys::contains)
+public fun <K, V> Map<K, V>.filterKeysIn(keys: List<K>): Map<K, V> = filterKeys(keys::contains)
 
-public fun <K, V> Map<K, V>.filterKeys(vararg key: K): Map<K, V> = filterKeys(key::contains)
+public fun <K, V> Map<K, V>.filterKeysIn(vararg key: K): Map<K, V> = filterKeys(key::contains)
 
 public fun <K, V> Map<K, V>.takeIfNotEmpty(): Map<K, V>? = takeIf(Map<K, V>::isNotEmpty)
 
@@ -16,19 +16,17 @@ public fun <K, V : Map<*, *>> Map<K, V>.filterValuesNotEmpty(): Map<K, V> = filt
 
 public fun <K, V> Map<K, V>.filterValuesIsNotNull(): Map<K, V> = filterValues { it != null }
 
-public fun <T> Map<T, *>.firstKey(value: Any?): T? = filterValues { it == value }.keys.firstOrNull()
-
 public fun <K : V, V> Map<K, V>.valueOrKey(key: K): V = this[key] ?: key
 
-public fun Map<String, *>.splitNestedKey(
+public fun Map<String, *>.toDeepMap(
     delimit: (String) -> List<String>,
 ): Map<String, Any?> =
     mutableMapOf<String, Any?>().apply {
-        this@splitNestedKey.forEach { (k, v) ->
-            set(delimit(k), v) { _, _, _ -> mutableMapOf<String, Any?>().accessor() }
+        this@toDeepMap.forEach { (key, value) ->
+            set(delimit(key), value) { _, _, value -> (value ?: mutableMapOf<String, Any?>()).accessor() }
         }
     }
 
-public fun Map<String, *>.splitNestedKey(delimiter: String): Map<String, Any?> = splitNestedKey { it.split(delimiter) }
+public fun Map<String, *>.toDeepMap(delimiter: String): Map<String, Any?> = toDeepMap { key -> key.split(delimiter) }
 
 
