@@ -5,7 +5,7 @@ import ai.tech.core.misc.consul.model.config.LoadBalancer
 import ai.tech.core.misc.network.http.client.model.Pin
 import ai.tech.core.misc.type.multiple.filterValuesIsNotNull
 import ai.tech.core.misc.type.serializablePropertyValues
-import ai.tech.core.misc.type.serializer.encodeAnyToString
+import ai.tech.core.misc.type.serialization.encodeAnyToString
 import io.ktor.client.*
 import io.ktor.http.URLBuilder
 import io.ktor.http.URLProtocol

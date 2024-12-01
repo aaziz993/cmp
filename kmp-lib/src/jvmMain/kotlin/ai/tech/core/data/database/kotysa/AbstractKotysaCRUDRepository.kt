@@ -138,14 +138,14 @@ public abstract class AbstractKotysaCRUDRepository<T : Any>(
     }!!
 
     final override suspend fun update(
-        entities: List<Map<String, Any?>>,
+        propertyValues: List<Map<String, Any?>>,
         predicate: BooleanVariable?,
     ): Long = client.transactional {
         if (predicate == null) {
-            entities.map { update(it).execute() }
+            propertyValues.map { update(it).execute() }
         }
         else {
-            entities.map { update(it).predicate(predicate).execute() }
+            propertyValues.map { update(it).predicate(predicate).execute() }
         }
     }!!.first()
 

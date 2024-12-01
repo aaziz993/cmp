@@ -2,10 +2,10 @@
 
 package ai.tech.core.misc.type.serialization
 
+import ai.tech.core.misc.type.serialization.serializer.bignum.BigDecimalSerializer
+import ai.tech.core.misc.type.serialization.serializer.bignum.BigIntegerSerializer
 import ai.tech.core.misc.type.serialization.serializer.primitive.UuidSerializer
 import ai.tech.core.misc.type.serialization.serializer.primitive.primitive
-import ai.tech.core.misc.type.serializer.bignum.BigDecimalSerializer
-import ai.tech.core.misc.type.serializer.bignum.BigIntegerSerializer
 import com.ionspin.kotlin.bignum.decimal.BigDecimal
 import com.ionspin.kotlin.bignum.integer.BigInteger
 import kotlin.time.Duration
@@ -119,7 +119,7 @@ public inline fun <reified T> Json.decodeFromAny(value: Any?): T = decodeFromAny
 
 public fun Json.encodeAnyToString(value: Any?): String = encodeToString(encodeAnyToJsonElement(value))
 
-private fun Json.decodeAnyFromString(deserializer: DeserializationStrategy<JsonElement>, value: String): Any? =
+public fun Json.decodeAnyFromString(deserializer: DeserializationStrategy<JsonElement>, value: String): Any? =
     decodeAnyFromJsonElement(decodeFromString(deserializer, value))
 
 public fun Json.decodeAnyFromString(value: String): Any? = decodeAnyFromString(JsonElement::class.serializer(), value)

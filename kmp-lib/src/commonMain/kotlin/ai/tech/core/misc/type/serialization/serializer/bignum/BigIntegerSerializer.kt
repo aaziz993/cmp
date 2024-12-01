@@ -1,6 +1,6 @@
 package ai.tech.core.misc.type.serialization.serializer.bignum
 
-import ai.tech.core.misc.type.serializer.primitive.PrimitiveStringSerializer
+import ai.tech.core.misc.type.serialization.serializer.primitive.PrimitiveStringSerializer
 import com.ionspin.kotlin.bignum.integer.BigInteger
 import kotlinx.serialization.Serializable
 

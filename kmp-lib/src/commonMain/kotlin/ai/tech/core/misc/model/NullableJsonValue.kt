@@ -1,7 +1,7 @@
 package ai.tech.core.misc.model
 
-import ai.tech.core.misc.type.serializer.decodeAnyFromString
-import ai.tech.core.misc.type.serializer.encodeAnyToString
+import ai.tech.core.misc.type.serialization.decodeAnyFromString
+import ai.tech.core.misc.type.serialization.encodeAnyToString
 import kotlinx.serialization.json.Json
 import kotlin.reflect.KProperty
 

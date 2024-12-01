@@ -1,6 +1,6 @@
 package ai.tech.core.misc.type.serializer.colorscheme
 
-import ai.tech.core.misc.type.serializer.primitive.PrimitiveStringSerializer
+import ai.tech.core.misc.type.serialization.serializer.primitive.PrimitiveStringSerializer
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.TopAppBarColors
 import kotlinx.serialization.Serializable

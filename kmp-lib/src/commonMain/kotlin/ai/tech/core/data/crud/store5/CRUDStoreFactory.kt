@@ -14,10 +14,12 @@ import ai.tech.core.data.expression.f
 import ai.tech.core.data.store5.model.FailedSync
 import ai.tech.core.data.store5.model.StoreOutput
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
+import kotlinx.coroutines.flow.chunked
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import kotlinx.serialization.encodeToString
@@ -29,6 +31,7 @@ import org.mobilenativefoundation.store.store5.Fetcher
 import org.mobilenativefoundation.store.store5.MemoryPolicy
 import org.mobilenativefoundation.store.store5.MutableStore
 import org.mobilenativefoundation.store.store5.MutableStoreBuilder
+import org.mobilenativefoundation.store.store5.OnUpdaterCompletion
 import org.mobilenativefoundation.store.store5.SourceOfTruth
 import org.mobilenativefoundation.store.store5.Updater
 import org.mobilenativefoundation.store.store5.UpdaterResult
@@ -46,6 +49,9 @@ public class CRUDStoreFactory<Network : Any, Local : Any, Domain : Any>(
     private val disableCache: Boolean? = null,
     private val memoryPolicy: MemoryPolicy<EntityOperation, StoreOutput<Domain>>? = null,
     private val validator: Validator<StoreOutput<Domain>>? = null,
+    public val fetchSyncChunkSize: Int = 100,
+    public val updateSyncChunkSize: Int = 100,
+    public val onUpdateCompletion: OnUpdaterCompletion<EntityWriteResponse<Domain>>? = null,
     private val coroutineScope: CoroutineScope,
 ) {
 
@@ -68,8 +74,6 @@ public class CRUDStoreFactory<Network : Any, Local : Any, Domain : Any>(
                 bookkeeper = createBookkeeper(),
             )
 
-    public fun
-
     // Using Fetcher.ofFlow allows us to support operations that observe changes over time, such as ObserveOne and ObserveMany.
     private fun createFetcher(): Fetcher<EntityOperation, StoreOutput<Network>> =
         Fetcher.ofFlow { operation ->
@@ -88,6 +92,7 @@ public class CRUDStoreFactory<Network : Any, Local : Any, Domain : Any>(
             mutableSharedFlow.asSharedFlow()
         }
 
+    @OptIn(ExperimentalCoroutinesApi::class)
     @Suppress("UNCHECKED_CAST")
     private fun createSourceOfTruth(): SourceOfTruth<EntityOperation, StoreOutput<Local>, StoreOutput<Domain>> =
         SourceOfTruth.of(
@@ -114,9 +119,19 @@ public class CRUDStoreFactory<Network : Any, Local : Any, Domain : Any>(
             // However, our Writer needs to handle all Query and Mutation operations because we write to the Source of Truth on both reads and writes.
             // Ensure that Writer handles all operation cases, including both mutations and queries, to maintain consistency between the local data and remote sources.
             writer = { operation, output ->
-                require(operation is EntityOperation.Mutation)
+                when (operation) {
+                    is EntityOperation.Query -> {
+                        require(output is StoreOutput.Typed.Stream<*>)
 
-                localRepository.handleWrite(operation, output) { it }
+                        localRepository.transactional {
+                            (output as StoreOutput.Typed.Stream<Local>).values.chunked(updateSyncChunkSize).collect { entities ->
+                                upsert(entities)
+                            }
+                        }
+                    }
+
+                    is EntityOperation.Mutation -> localRepository.handleWrite(operation, output) { it }
+                }
             },
         )
 
@@ -128,26 +143,39 @@ public class CRUDStoreFactory<Network : Any, Local : Any, Domain : Any>(
             .fromNetworkToLocal { output -> output.map(networkToLocal) }
             .build()
 
+    // When a data mutation occurs in the local Store, the Updater is invoked to synchronize the change with the network data source.
     // We never invoke fetcher after local writes
     // We invoke Updater on reads if conflicts might exist.
     // This means we need to handle query operations too.
     // If we do hit code for handling a query operation, it means we are fetching a Post but the Bookkeeper has an unresolved sync failure for that Post.
     // So, before we can pull the latest value, we need to push our latest local value to the network.
+    @OptIn(ExperimentalCoroutinesApi::class)
     private fun createUpdater(): Updater<EntityOperation, StoreOutput<Domain>, EntityWriteResponse<Domain>> =
         Updater.by(
             post = { operation, output ->
                 try {
-                    if (operation is EntityOperation.Query) {
-                        UpdaterResult.Success.Typed(0)
+                    when (operation) {
+                        is EntityOperation.Query -> {
+                            require(output is StoreOutput.Typed.Stream<*>)
+
+                            networkRepository.transactional {
+                                (output as StoreOutput.Typed.Stream<Domain>).values
+                                    .map(domainToNetwork)
+                                    .chunked(updateSyncChunkSize).collect { entities ->
+                                        upsert(entities)
+                                    }
+                            }
+                        }
+
+                        is EntityOperation.Mutation -> UpdaterResult.Success.Typed(networkRepository.handleWrite(operation, output, domainToNetwork))
                     }
-                    else {
-                        UpdaterResult.Success.Typed(networkRepository.handleWrite(operation, output, domainToNetwork))
-                    }
+                    UpdaterResult.Error.Message("")
                 }
                 catch (e: Exception) {
                     UpdaterResult.Error.Message(e.stackTraceToString())
                 }
             },
+            onCompletion = onUpdateCompletion,
         )
 
     public fun createBookkeeper(): Bookkeeper<EntityOperation> =

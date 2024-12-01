@@ -1,6 +1,6 @@
 package ai.tech.core.misc.type.serialization.serializer.http
 
-import ai.tech.core.misc.type.serializer.primitive.PrimitiveStringSerializer
+import ai.tech.core.misc.type.serialization.serializer.primitive.PrimitiveStringSerializer
 import io.ktor.http.*
 import kotlinx.serialization.Serializable
 

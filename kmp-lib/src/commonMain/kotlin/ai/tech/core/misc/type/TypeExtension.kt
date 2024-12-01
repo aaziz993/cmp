@@ -11,7 +11,7 @@ import ai.tech.core.misc.type.accessor.MapLikeAccessor
 import ai.tech.core.misc.type.multiple.depthIterator
 import ai.tech.core.misc.type.multiple.model.AsyncIterator
 import ai.tech.core.misc.type.multiple.takeIfNotEmpty
-import ai.tech.core.misc.type.serializer.encodeToAny
+import ai.tech.core.misc.type.serialization.encodeToAny
 import ai.tech.core.misc.type.single.parseOrNull
 import ai.tech.core.misc.type.single.uuidFromOrNull
 import com.benasher44.uuid.Uuid

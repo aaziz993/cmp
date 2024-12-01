@@ -1,6 +1,6 @@
 package ai.tech.core.misc.type.serializer.colorscheme
 
-import ai.tech.core.misc.type.serializer.primitive.PrimitiveLongSerializer
+import ai.tech.core.misc.type.serialization.serializer.primitive.PrimitiveLongSerializer
 import androidx.compose.ui.graphics.Color
 import kotlinx.serialization.Serializable
 

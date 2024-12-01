@@ -1,6 +1,6 @@
 package ai.tech.core.misc.type.serializer.shapes
 
-import ai.tech.core.misc.type.serializer.primitive.PrimitiveFloatSerializer
+import ai.tech.core.misc.type.serialization.serializer.primitive.PrimitiveFloatSerializer
 import androidx.compose.ui.unit.Dp
 import kotlinx.serialization.Serializable
 

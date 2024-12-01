@@ -5,15 +5,14 @@ package ai.tech.core.data.crud.store5
 import ai.tech.core.data.crud.CRUDRepository
 import ai.tech.core.data.crud.model.query.LimitOffset
 import ai.tech.core.data.crud.model.query.Order
+import ai.tech.core.data.crud.store5.model.EntityOperation
+import ai.tech.core.data.crud.store5.model.EntityWriteResponse
 import ai.tech.core.data.expression.AggregateExpression
 import ai.tech.core.data.expression.BooleanVariable
 import ai.tech.core.data.expression.Variable
 import ai.tech.core.data.store5.model.DataSource
-import ai.tech.core.data.crud.store5.model.EntityOperation
 import ai.tech.core.data.store5.model.StoreOutput
-import ai.tech.core.data.crud.store5.model.EntityWriteResponse
-import ai.tech.core.data.store5.model.isLocalOnly
-import ai.tech.core.data.store5.model.isRemoteOnly
+import ai.tech.core.data.store5.model.request
 import ai.tech.core.data.transaction.Transaction
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.emitAll
@@ -21,14 +20,13 @@ import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.flow
 import org.mobilenativefoundation.store.core5.ExperimentalStoreApi
 import org.mobilenativefoundation.store.store5.MutableStore
-import org.mobilenativefoundation.store.store5.StoreReadRequest
 import org.mobilenativefoundation.store.store5.StoreReadResponse
 import org.mobilenativefoundation.store.store5.StoreWriteRequest
 import org.mobilenativefoundation.store.store5.StoreWriteResponse
 
 public class StoreCRUDRepository<Domain : Any>(
     private val store: MutableStore<EntityOperation, StoreOutput<Domain>>,
-    public val dataSource: DataSource = DataSource.all,
+    public val dataSource: DataSource<EntityOperation> = DataSource.Fresh(),
 ) : CRUDRepository<Domain> {
 
     override suspend fun <R> transactional(block: suspend CRUDRepository<Domain>.(Transaction) -> R): R = throw UnsupportedOperationException()
@@ -45,8 +43,8 @@ public class StoreCRUDRepository<Domain : Any>(
     override suspend fun update(entities: List<Domain>): List<Boolean> = (handleWrite(EntityOperation.Mutation.Update, StoreOutput.Typed.Collection(entities))
         as? EntityWriteResponse.Update)?.values.orEmpty()
 
-    override suspend fun update(entities: List<Map<String, Any?>>, predicate: BooleanVariable?): Long =
-        (handleWrite(EntityOperation.Mutation.Update, StoreOutput.Untyped.Collection(entities))
+    override suspend fun update(propertyValues: List<Map<String, Any?>>, predicate: BooleanVariable?): Long =
+        (handleWrite(EntityOperation.Mutation.Update, StoreOutput.Untyped.Collection(propertyValues))
             as? EntityWriteResponse.Count)?.value ?: 0
 
     @Suppress("UNCHECKED_CAST")
@@ -83,17 +81,9 @@ public class StoreCRUDRepository<Domain : Any>(
             output.value
         } as T
 
-    private suspend fun MutableStore<EntityOperation, StoreOutput<Domain>>.handleRead(input: EntityOperation.Query): StoreOutput<Domain>? {
-
-        val request = when {
-            dataSource.isRemoteOnly() -> StoreReadRequest.fresh(input)
-            dataSource.isLocalOnly() -> StoreReadRequest.localOnly(input)
-            else -> StoreReadRequest.fresh(input)
-        }
-
-        return store.stream<EntityWriteResponse<Domain>>(request)
+    private suspend fun MutableStore<EntityOperation, StoreOutput<Domain>>.handleRead(key: EntityOperation.Query): StoreOutput<Domain>? =
+        store.request<EntityOperation, StoreOutput<Domain>, EntityWriteResponse<Domain>>(key,dataSource)
             .firstOrNull { it is StoreReadResponse.Data }?.dataOrNull()
-    }
 
     private suspend fun handleWrite(operation: EntityOperation.Mutation, output: StoreOutput<Domain>): Any? {
         val request = StoreWriteRequest.of<EntityOperation, StoreOutput<Domain>, EntityWriteResponse<Domain>>(operation, output)

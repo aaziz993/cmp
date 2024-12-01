@@ -15,7 +15,7 @@ public abstract class AbstractKeyValue {
 
     protected val lock: ReentrantLock = reentrantLock()
 
-    public val json: Json = ai.tech.core.misc.type.serializer.Json {
+    public val json: Json = ai.tech.core.misc.type.serialization.Json {
         encodeDefaults = false
         ignoreUnknownKeys = true
     }

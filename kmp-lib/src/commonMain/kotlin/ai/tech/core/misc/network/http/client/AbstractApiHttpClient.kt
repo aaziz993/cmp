@@ -4,6 +4,7 @@ import de.jensklingenberg.ktorfit.Ktorfit
 import io.ktor.client.HttpClient
 import io.ktor.client.HttpClientConfig
 import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
+import io.ktor.client.plugins.defaultRequest
 import io.ktor.serialization.kotlinx.json.json
 import kotlinx.serialization.json.Json
 
@@ -13,6 +14,10 @@ public abstract class AbstractApiHttpClient(
 ) {
 
     protected val httpClient: HttpClient = httpClient.config {
+        defaultRequest {
+            url(address)
+        }
+
         install(ContentNegotiation) {
             json(
                 Json {

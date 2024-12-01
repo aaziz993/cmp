@@ -176,12 +176,12 @@ public abstract class AbstractExposedCRUDRepository<T : Any>(
         entities.map { entity -> table.update { it.set(entity.withUpdatedAt) } > 0 }
     }
 
-    override suspend fun update(entities: List<Map<String, Any?>>, predicate: BooleanVariable?): Long = transactional {
+    override suspend fun update(propertyValues: List<Map<String, Any?>>, predicate: BooleanVariable?): Long = transactional {
         if (predicate == null) {
-            entities.map { entity -> table.update { it.set(entity) } }
+            propertyValues.map { entity -> table.update { it.set(entity) } }
         }
         else {
-            entities.map { entity ->
+            propertyValues.map { entity ->
                 table.update({ predicate(predicate) }) {
                     it.set(entity)
                 }

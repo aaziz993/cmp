@@ -6,8 +6,8 @@ import ai.tech.core.misc.auth.keycloak.client.admin.model.RoleRepresentation
 import ai.tech.core.misc.auth.keycloak.client.admin.model.UserInfo
 import ai.tech.core.misc.auth.keycloak.client.admin.model.UserRepresentation
 import ai.tech.core.misc.network.http.client.AbstractApiHttpClient
-import ai.tech.core.misc.type.serializer.encodeAnyToString
-import ai.tech.core.misc.type.serializer.encodeToAny
+import ai.tech.core.misc.type.serialization.encodeAnyToString
+import ai.tech.core.misc.type.serialization.encodeToAny
 import io.ktor.client.*
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.json.Json

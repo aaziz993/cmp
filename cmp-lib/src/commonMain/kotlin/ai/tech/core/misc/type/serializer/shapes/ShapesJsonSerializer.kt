@@ -1,6 +1,6 @@
 package ai.tech.core.misc.type.serializer.shapes
 
-import ai.tech.core.misc.type.serializer.primitive.PrimitiveStringSerializer
+import ai.tech.core.misc.type.serialization.serializer.primitive.PrimitiveStringSerializer
 import androidx.compose.material3.Shapes
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.descriptors.PrimitiveKind

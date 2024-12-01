@@ -11,20 +11,20 @@ public sealed interface EntityOperation {
 
     public sealed interface Query : EntityOperation {
 
-        public val dataSource: DataSource
+        public val dataSource: DataSource<EntityOperation>
 
         public data class Find(
             val projections: List<Variable>? = null,
             val sort: List<Order>? = null,
             val predicate: BooleanVariable? = null,
             val limitOffset: LimitOffset? = null,
-            override val dataSource: DataSource = DataSource.all,
+            override val dataSource: DataSource<EntityOperation> = DataSource.Fresh(),
         ) : Query
 
         public data class Aggregate(
             val aggregate: AggregateExpression<*>,
             val predicate: BooleanVariable? = null,
-            override val dataSource: DataSource = DataSource.all,
+            override val dataSource: DataSource<EntityOperation> = DataSource.Fresh(),
         ) : Query
     }
 

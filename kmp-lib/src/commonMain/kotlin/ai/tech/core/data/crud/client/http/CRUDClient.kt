@@ -3,6 +3,7 @@
 package ai.tech.core.data.crud.client.http
 
 import ai.tech.core.data.crud.CRUDRepository
+import ai.tech.core.data.crud.client.http.model.HttpOperation
 import ai.tech.core.data.crud.model.query.LimitOffset
 import ai.tech.core.data.crud.model.query.Order
 import ai.tech.core.data.expression.AggregateExpression
@@ -11,14 +12,19 @@ import ai.tech.core.data.expression.Variable
 import ai.tech.core.data.transaction.Transaction
 import ai.tech.core.misc.auth.client.AuthService
 import ai.tech.core.misc.network.http.client.AbstractApiHttpClient
-import ai.tech.core.misc.type.serializer.decodeAnyFromString
-import ai.tech.core.misc.type.serializer.json
+import ai.tech.core.misc.type.serialization.decodeAnyFromString
+import ai.tech.core.misc.type.serialization.encodeAnyToJsonElement
+import ai.tech.core.misc.type.serialization.json
 import io.ktor.client.*
-import io.ktor.client.call.body
+import io.ktor.client.call.*
 import io.ktor.client.request.forms.*
 import io.ktor.client.statement.*
 import io.ktor.http.*
+import io.ktor.http.content.*
 import io.ktor.utils.io.*
+import kotlinx.atomicfu.locks.ReentrantLock
+import kotlinx.atomicfu.locks.reentrantLock
+import kotlinx.atomicfu.locks.withLock
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import kotlinx.serialization.InternalSerializationApi
@@ -36,36 +42,99 @@ public open class CRUDClient<T : Any>(
     public val authService: AuthService? = null,
 ) : AbstractApiHttpClient(httpClient, address), CRUDRepository<T> {
 
-    private val api = ktorfit.createCRUDApi()
+    protected val lock: ReentrantLock = reentrantLock()
+
+    private var transactionChannel: ByteWriteChannel? = null
+
+    private val api: CRUDApi = ktorfit.createCRUDApi()
 
     private val jsonHeader = Headers.build {
         append(HttpHeaders.ContentType, ContentType.Application.Json)
     }
 
-    override suspend fun <R> transactional(block: suspend CRUDRepository<T>.(Transaction) -> R): R =
-        throw UnsupportedOperationException("Not supported by remote client yet")
+    @Suppress("UNCHECKED_CAST")
+    override suspend fun <R> transactional(block: suspend CRUDRepository<T>.(Transaction) -> R): R = lock.withLock {
+        try {
+            var result: R? = null
 
-    override suspend fun insert(entities: List<T>): Unit = api.insert(entities)
+            api.transaction {
+                body = object : OutgoingContent.WriteChannelContent() {
+                    override suspend fun writeTo(channel: ByteWriteChannel) {
+                        transactionChannel = channel
+                    }
+                }
 
-    override suspend fun insertAndReturn(entities: List<T>): List<T> = api.insertAndReturn(entities).execute(HttpResponse::body)
+                result = block(
+                    object : Transaction {
+                        override suspend fun rollback() = throw UnsupportedOperationException()
 
-    override suspend fun update(entities: List<T>): List<Boolean> = api.update(entities)
+                        override suspend fun commit() = throw UnsupportedOperationException()
+                    },
+                )
+            }
 
-    override suspend fun update(entities: List<Map<String, Any?>>, predicate: BooleanVariable?): Long =
-        api.update(
-            MultiPartFormDataContent(
-                formData {
-                    append("entities", Json.Default.encodeToString(entities), jsonHeader)
-                    predicate?.let { append("predicate", it, jsonHeader) }
-                },
-            ),
-        )
+            return result as R
+        }
+        catch (e: Exception) {
+            throw e
+        }
+        finally {
+            transactionChannel?.flushAndClose()
+            transactionChannel = null
+        }
+    }
 
-    override suspend fun upsert(entities: List<T>): List<T> = api.upsert(entities).execute(HttpResponse::body)
+    override suspend fun insert(entities: List<T>): Unit = lock.withLock {
+        val operation = HttpOperation.Insert(entities)
+        if (transactionChannel == null) {
+            return api.insert(operation)
+        }
+        transaction(operation)
+    }
 
-    override fun find(sort: List<Order>?, predicate: BooleanVariable?, limitOffset: LimitOffset?): Flow<T> =
-        flow {
-            val channel = findHelper(null, sort, predicate, limitOffset).bodyAsChannel()
+    override suspend fun insertAndReturn(entities: List<T>): List<T> = lock.withLock {
+        val operation = HttpOperation.InsertAndReturn(entities)
+        require(transactionChannel == null) {
+            "In remote transaction \"insertAndReturn\" is not supported"
+            return api.insertAndReturn(operation).execute(HttpResponse::body)
+        }
+        transaction(operation)
+        return emptyList()
+    }
+
+    override suspend fun update(entities: List<T>): List<Boolean> = lock.withLock {
+        val operation = HttpOperation.Update(entities)
+        if (transactionChannel == null) {
+            return api.update(operation)
+        }
+        transaction(operation)
+        return emptyList()
+    }
+
+    override suspend fun update(propertyValues: List<Map<String, Any?>>, predicate: BooleanVariable?): Long = lock.withLock {
+        val operation = HttpOperation.UpdateUntyped(Json.Default.encodeAnyToJsonElement(propertyValues), predicate)
+        if (transactionChannel == null) {
+            return api.update(operation)
+        }
+        transaction(operation)
+        return 0
+    }
+
+    override suspend fun upsert(entities: List<T>): List<T> = lock.withLock {
+        val operation = HttpOperation.Upsert(entities)
+        if (transactionChannel == null) {
+            return api.upsert(operation).execute(HttpResponse::body)
+        }
+        transaction(operation)
+        return emptyList()
+    }
+
+    override fun find(sort: List<Order>?, predicate: BooleanVariable?, limitOffset: LimitOffset?): Flow<T> = lock.withLock {
+        require(transactionChannel == null) {
+            "In remote transaction \"find\" is not supported"
+        }
+        return flow {
+            val channel = api.find(HttpOperation.Find(null, sort, predicate, limitOffset)).execute().bodyAsChannel()
 
             while (!channel.isClosedForRead) {
                 channel.readUTF8Line()?.let {
@@ -73,6 +142,7 @@ public open class CRUDClient<T : Any>(
                 }
             }
         }
+    }
 
     @OptIn(InternalSerializationApi::class)
     override fun find(
@@ -80,43 +150,42 @@ public open class CRUDClient<T : Any>(
         sort: List<Order>?,
         predicate: BooleanVariable?,
         limitOffset: LimitOffset?,
-    ): Flow<List<Any?>> = flow {
-        val channel = findHelper(projections, sort, predicate, limitOffset).bodyAsChannel()
+    ): Flow<List<Any?>> = lock.withLock {
+        require(transactionChannel == null) {
+            "In remote transaction \"find\" is not supported"
+        }
+        return flow {
+            val channel = api.find(HttpOperation.Find(projections, sort, predicate, limitOffset)).execute().bodyAsChannel()
 
-        while (!channel.isClosedForRead) {
-            channel.readUTF8Line()?.let {
-                emit(Json.Default.decodeAnyFromString(JsonArray::class.serializer(), it) as List<Any?>)
+            while (!channel.isClosedForRead) {
+                channel.readUTF8Line()?.let {
+                    emit(Json.Default.decodeAnyFromString(JsonArray::class.serializer(), it) as List<Any?>)
+                }
             }
         }
     }
 
-    override suspend fun delete(predicate: BooleanVariable?): Long =
-        api.delete(predicate)
+    override suspend fun delete(predicate: BooleanVariable?): Long = lock.withLock {
+        val operation = HttpOperation.Delete(predicate)
+        if (transactionChannel == null) {
+            return api.delete(operation)
+        }
+        transaction(operation)
+        return 0
+    }
 
     @Suppress("UNCHECKED_CAST")
-    override suspend fun <T> aggregate(aggregate: AggregateExpression<T>, predicate: BooleanVariable?): T =
-        api.aggregate(
-            MultiPartFormDataContent(
-                formData {
-                    append("aggregate", aggregate, jsonHeader)
-                    predicate?.let { append("predicate", it, jsonHeader) }
-                },
-            ),
+    override suspend fun <T> aggregate(aggregate: AggregateExpression<T>, predicate: BooleanVariable?): T = lock.withLock {
+        require(transactionChannel == null) {
+            "In remote transaction \"aggregate\" is not supported"
+        }
+        return api.aggregate(
+            HttpOperation.Aggregate(aggregate, predicate),
         ).execute().takeIf { it.status != HttpStatusCode.NoContent }?.let { json.decodeFromString(PolymorphicSerializer(Any::class), it.bodyAsText()) } as T
+    }
 
-    private suspend fun findHelper(
-        projections: List<Variable>?,
-        sort: List<Order>?,
-        predicate: BooleanVariable?,
-        limitOffset: LimitOffset?
-    ): HttpResponse = api.find(
-        MultiPartFormDataContent(
-            formData {
-                projections?.let { append("projections", it, jsonHeader) }
-                sort?.let { append("sort", it, jsonHeader) }
-                predicate?.let { append("predicate", it, jsonHeader) }
-                limitOffset?.let { append("limitOffset", it, jsonHeader) }
-            },
-        ),
-    ).execute()
+    private suspend fun transaction(operation: HttpOperation) {
+        transactionChannel!!.writeStringUtf8("${Json.Default.encodeToString(operation)}\n")
+        transactionChannel!!.flush()
+    }
 }
