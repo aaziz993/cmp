@@ -12,7 +12,8 @@ import ai.tech.core.data.expression.Variable
 import ai.tech.core.data.transaction.Transaction
 import ai.tech.core.misc.auth.client.AuthService
 import ai.tech.core.misc.network.http.client.AbstractApiHttpClient
-import ai.tech.core.misc.type.serialization.decodeAnyFromString
+import ai.tech.core.misc.network.http.client.JsonStream
+import ai.tech.core.misc.network.http.client.bodyAsInputStream
 import ai.tech.core.misc.type.serialization.encodeAnyToJsonElement
 import ai.tech.core.misc.type.serialization.json
 import io.ktor.client.*
@@ -25,15 +26,33 @@ import io.ktor.utils.io.*
 import kotlinx.atomicfu.locks.ReentrantLock
 import kotlinx.atomicfu.locks.reentrantLock
 import kotlinx.atomicfu.locks.withLock
+import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.emitAll
 import kotlinx.coroutines.flow.flow
 import kotlinx.serialization.InternalSerializationApi
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.PolymorphicSerializer
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
-import kotlinx.serialization.json.JsonArray
-import kotlinx.serialization.serializer
+import kotlinx.serialization.json.JsonElement
+
+public class BodyOutputStream : OutgoingContent.WriteChannelContent() {
+
+    private lateinit var channel: ByteWriteChannel
+
+    override suspend fun writeTo(channel: ByteWriteChannel) {
+        this.channel = channel
+    }
+
+    public suspend fun write(value: String) {
+        channel.writeStringUtf8("$value\n")
+    }
+
+    public suspend fun writeOutputStream(flow: Flow<String>): Unit = flow.collect { value ->
+        write(value)
+    }
+}
 
 public open class CRUDClient<T : Any>(
     public val serializer: KSerializer<T>,
@@ -44,13 +63,11 @@ public open class CRUDClient<T : Any>(
 
     protected val lock: ReentrantLock = reentrantLock()
 
-    private var transactionChannel: ByteWriteChannel? = null
+    override val json: Json = Json.Default
 
     private val api: CRUDApi = ktorfit.createCRUDApi()
 
-    private val jsonHeader = Headers.build {
-        append(HttpHeaders.ContentType, ContentType.Application.Json)
-    }
+    private var transactionChannel: ByteWriteChannel? = null
 
     @Suppress("UNCHECKED_CAST")
     override suspend fun <R> transactional(block: suspend CRUDRepository<T>.(Transaction) -> R): R = lock.withLock {
@@ -73,7 +90,7 @@ public open class CRUDClient<T : Any>(
                 )
             }
 
-            return result as R
+            result as R
         }
         catch (e: Exception) {
             throw e
@@ -112,7 +129,7 @@ public open class CRUDClient<T : Any>(
     }
 
     override suspend fun update(propertyValues: List<Map<String, Any?>>, predicate: BooleanVariable?): Long = lock.withLock {
-        val operation = HttpOperation.UpdateUntyped(Json.Default.encodeAnyToJsonElement(propertyValues), predicate)
+        val operation = HttpOperation.UpdateUntyped(propertyValues, predicate)
         if (transactionChannel == null) {
             return api.update(operation)
         }
@@ -134,16 +151,11 @@ public open class CRUDClient<T : Any>(
             "In remote transaction \"find\" is not supported"
         }
         return flow {
-            val channel = api.find(HttpOperation.Find(null, sort, predicate, limitOffset)).execute().bodyAsChannel()
-
-            while (!channel.isClosedForRead) {
-                channel.readUTF8Line()?.let {
-                    emit(Json.Default.decodeFromString(serializer, it))
-                }
-            }
+            emitAll(api.find(HttpOperation.Find(null, sort, predicate, limitOffset)).execute().bodyAsInputStream<T>(serializer))
         }
     }
 
+    @Suppress("UNCHECKED_CAST")
     @OptIn(InternalSerializationApi::class)
     override fun find(
         projections: List<Variable>,
@@ -155,13 +167,7 @@ public open class CRUDClient<T : Any>(
             "In remote transaction \"find\" is not supported"
         }
         return flow {
-            val channel = api.find(HttpOperation.Find(projections, sort, predicate, limitOffset)).execute().bodyAsChannel()
-
-            while (!channel.isClosedForRead) {
-                channel.readUTF8Line()?.let {
-                    emit(Json.Default.decodeAnyFromString(JsonArray::class.serializer(), it) as List<Any?>)
-                }
-            }
+            emitAll(api.find(HttpOperation.Find(projections, sort, predicate, limitOffset)).execute().bodyAsInputStream() as Flow<List<Any?>>)
         }
     }
 

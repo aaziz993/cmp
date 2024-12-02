@@ -33,6 +33,7 @@ import ai.tech.core.misc.network.http.client.AbstractApiHttpClient
 import ai.tech.core.misc.type.multiple.model.AbstractAsyncIterator
 import ai.tech.core.misc.type.multiple.model.AsyncIterator
 import io.ktor.client.*
+import io.ktor.client.plugins.DefaultRequest
 import io.ktor.client.plugins.defaultRequest
 import io.ktor.http.parameters
 import kotlin.String
@@ -46,11 +47,9 @@ public class FirebaseAdminClient(
 
     private val api = ktorfit.createFirebaseAdminApi()
 
-    override fun HttpClientConfig<*>.configureHttpClient() {
-        defaultRequest {
-            parameters {
-                append("apiKey", apiKey)
-            }
+    override fun DefaultRequest.DefaultRequestBuilder.configureDefaultRequest() {
+        parameters {
+            append("apiKey", apiKey)
         }
     }
 

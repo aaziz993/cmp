@@ -7,8 +7,6 @@ import ai.tech.core.misc.location.model.LocationExposedTable
 import kotlinx.datetime.TimeZone
 import org.jetbrains.exposed.sql.Database
 
-import org.jetbrains.exposed.sql.Table;
-
 public class LocationExposedCRUDRepository(
     database: Database,
     timeZone: TimeZone = TimeZone.UTC,

@@ -16,14 +16,12 @@ public class WeblateClient(
     httpClient: HttpClient,
     public val address: String,
     public val apiKey: String,
-) : AbstractApiHttpClient(httpClient,address) {
+) : AbstractApiHttpClient(httpClient, address) {
 
     private val api = ktorfit.createWeblateApi()
 
-    override fun HttpClientConfig<*>.configureHttpClient() {
-        defaultRequest {
-            header(HttpHeaders.Authorization, "Token  $apiKey")
-        }
+    override fun DefaultRequest.DefaultRequestBuilder.configureDefaultRequest() {
+        header(HttpHeaders.Authorization, "Token  $apiKey")
     }
 
     public suspend fun get(path: String, page: Int? = null): HttpResponse =

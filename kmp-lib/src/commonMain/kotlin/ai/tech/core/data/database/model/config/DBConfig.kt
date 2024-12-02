@@ -30,7 +30,7 @@ public data class DBConfig(
     val isAutoCommit: Boolean? = null,
     val isReadOnly: Boolean? = null,
     val transactionIsolation: TransactionIsolation? = null,
-    val useNestedTransactions: Boolean = false,
+    val useNestedTransactions: Boolean? = null,
     // exposed
     val defaultFetchSize: Int? = null,
     val defaultIsolationLevel: Int? = null,

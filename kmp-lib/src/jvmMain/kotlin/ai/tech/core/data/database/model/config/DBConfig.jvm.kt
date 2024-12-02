@@ -8,6 +8,9 @@ import ai.tech.core.data.database.kotysa.getKotysaMssqlTables
 import ai.tech.core.data.database.kotysa.getKotysaMysqlTables
 import ai.tech.core.data.database.kotysa.getKotysaOracleTables
 import ai.tech.core.data.database.kotysa.getKotysaPostgresqlTables
+import ai.tech.core.data.database.r2dbc.AUTO_COMMIT
+import ai.tech.core.data.database.r2dbc.R2dbcConnectionFactory
+import ai.tech.core.data.database.r2dbc.USE_NESTED_TRANSACTIONS
 import ai.tech.core.misc.model.config.EnabledConfig
 import com.zaxxer.hikari.HikariConfig
 import com.zaxxer.hikari.HikariDataSource
@@ -58,6 +61,7 @@ public val DBConfig.exposedDatabase: Database
     get() = Database.connect(
         hikariDataSource,
         databaseConfig = DatabaseConfig {
+            this@exposedDatabase.useNestedTransactions?.let { useNestedTransactions = it }
             this@exposedDatabase.defaultFetchSize?.let { defaultFetchSize = it }
             this@exposedDatabase.defaultIsolationLevel?.let { defaultIsolationLevel = it }
             this@exposedDatabase.defaultMaxAttempts?.let { defaultMaxAttempts = it }
@@ -149,7 +153,15 @@ public val DBConfig.r2dbcConnectionFactory: ConnectionFactory
                     }
                 }
                 .build(),
-        )
+        ).let { connectionFactory ->
+            R2dbcConnectionFactory(
+                connectionFactory,
+                ConnectionFactoryOptions.builder()
+                    .option(AUTO_COMMIT, isAutoCommit == true)
+                    .option(USE_NESTED_TRANSACTIONS, useNestedTransactions == true)
+                    .build(),
+            )
+        }
 
 public suspend fun DBConfig.getKotysaR2dbcClient(): R2dbcSqlClient {
     val r2dbcConnectionFactory = r2dbcConnectionFactory

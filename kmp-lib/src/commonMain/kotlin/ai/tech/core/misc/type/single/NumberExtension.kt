@@ -294,14 +294,14 @@ public fun BigDecimal.Companion.parseOrNull(s: String): BigDecimal? = s.runCatch
 /////////////////////////////////////////////////////NUMBER/////////////////////////////////////////////////////////////
 public fun Number.toBigInteger() = BigInteger.parseString(toString())
 
-public fun Any.toBigInteger() = when (this) {
+private fun Any.toBigInteger() = when (this) {
     is BigDecimal -> this
     else -> BigDecimal.parseString(toString())
 }
 
 public fun Number.toBigDecimal() = BigDecimal.parseString(toString())
 
-public fun Any.toBigDecimal() = when (this) {
+private fun Any.toBigDecimal() = when (this) {
     is BigDecimal -> this
     else -> BigDecimal.parseString(toString())
 }

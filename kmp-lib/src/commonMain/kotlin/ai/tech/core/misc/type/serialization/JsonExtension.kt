@@ -122,30 +122,33 @@ public fun Json.encodeAnyToString(value: Any?): String = encodeToString(encodeAn
 public fun Json.decodeAnyFromString(deserializer: DeserializationStrategy<JsonElement>, value: String): Any? =
     decodeAnyFromJsonElement(decodeFromString(deserializer, value))
 
+public fun String.jsonAny(deserializer: DeserializationStrategy<JsonElement>): Any? =
+    Json.Default.decodeAnyFromString(deserializer, this)
+
 public fun Json.decodeAnyFromString(value: String): Any? = decodeAnyFromString(JsonElement::class.serializer(), value)
+
+public val String.jsonAny: Any?
+    get() = Json.Default.decodeAnyFromString(this)
 
 @Suppress("UNCHECKED_CAST")
 public fun Json.decodeListFromString(value: String): List<Any?> =
     decodeAnyFromJsonElement(decodeFromString(JsonArray::class.serializer(), value)) as List<Any?>
 
+public val String.jsonList: List<Any?>
+    get() = Json.Default.decodeListFromString(this)
+
 @Suppress("UNCHECKED_CAST")
 public fun Json.decodeMapFromString(value: String): Map<String, Any?> =
     decodeAnyFromJsonElement(decodeFromString(JsonObject::class.serializer(), value)) as Map<String, Any?>
 
+public val String.jsonMap: Map<String, Any?>
+    get() = Json.Default.decodeMapFromString(this)
+
 // Make deep copy of an object
 @OptIn(InternalSerializationApi::class)
 @Suppress("UNCHECKED_CAST")
-public fun <T : Any> Json.copy(serializer: KSerializer<T>, value: T, block: (Map<String, Any?>) -> Map<String, Any?> = { it }): T =
+public fun <T : Any> Json.decodeFrom(serializer: KSerializer<T>, value: T, block: (Map<String, Any?>) -> Map<String, Any?> = { it }): T =
     decodeFromAny(serializer, block(encodeToAny(serializer, value) as Map<String, Any?>))
 
-public inline fun <reified T : Any> Json.copy(value: T, noinline block: (Map<String, Any?>) -> Map<String, Any?> = { it }): T =
-    copy(serializersModule.serializer(), value, block)
-
-@OptIn(InternalSerializationApi::class)
-@Suppress("UNCHECKED_CAST")
-public fun <T : Any> Json.create(serializer: KSerializer<T>, value: Map<String, Any?> = emptyMap()): T =
-    decodeFromAny(serializer, value)
-
-public inline fun <reified T : Any> Json.create(value: Map<String, Any?> = emptyMap()): T = create(serializersModule.serializer(), value)
-
-
+public inline fun <reified T : Any> Json.decodeFrom(value: T, noinline block: (Map<String, Any?>) -> Map<String, Any?> = { it }): T =
+    decodeFrom(serializersModule.serializer(), value, block)

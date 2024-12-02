@@ -6,6 +6,7 @@ import ai.tech.core.data.crud.AbstractTypeCRUDRepository
 import ai.tech.core.data.crud.CRUDRepository
 import ai.tech.core.data.crud.model.query.LimitOffset
 import ai.tech.core.data.crud.model.query.Order
+import ai.tech.core.data.database.r2dbc.R2dbcConnectionFactory
 import ai.tech.core.data.expression.AggregateExpression
 import ai.tech.core.data.expression.And
 import ai.tech.core.data.expression.Avg
@@ -36,14 +37,21 @@ import ai.tech.core.data.transaction.model.TransactionIsolation
 import ai.tech.core.data.transaction.model.r2dbcTransactionIsolation
 import ai.tech.core.misc.type.invoke
 import ai.tech.core.misc.type.multiple.toTypedArray
+import ai.tech.core.misc.type.serialization.decodeFromAny
 import ai.tech.core.misc.type.serializer.create
+import io.r2dbc.spi.Connection
+import java.lang.reflect.UndeclaredThrowableException
+import java.sql.SQLException
+import kotlin.coroutines.coroutineContext
 import kotlin.reflect.KClass
 import kotlin.reflect.full.starProjectedType
 import kotlin.time.Duration
 import kotlin.time.toJavaDuration
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.toList
+import kotlinx.coroutines.reactive.awaitFirstOrNull
 import kotlinx.coroutines.reactive.awaitSingle
+import kotlinx.coroutines.withContext
 import kotlinx.datetime.TimeZone
 import kotlinx.serialization.InternalSerializationApi
 import kotlinx.serialization.json.Json
@@ -61,7 +69,9 @@ import org.ufoss.kotysa.R2dbcSqlClient
 import org.ufoss.kotysa.SqlClientQuery
 import org.ufoss.kotysa.WholeNumberColumn
 import org.ufoss.kotysa.columns.AbstractDbColumn
+import org.ufoss.kotysa.core.r2dbc.transaction.R2dbcTransaction
 import org.ufoss.kotysa.r2dbc.transaction.R2dbcTransactionImpl
+import org.ufoss.kotysa.r2dbc.SqlClientR2dbc
 
 @OptIn(InternalSerializationApi::class)
 public abstract class AbstractKotysaCRUDRepository<T : Any>(
@@ -90,7 +100,7 @@ public abstract class AbstractKotysaCRUDRepository<T : Any>(
                        timeZone: TimeZone = TimeZone.UTC) : this(
         client,
         table,
-        { Json.Default.create(kClass.serializer(), this) },
+        { Json.Default.decodeFromAny(kClass.serializer(), this) },
         createdAtProperty,
         updatedAtProperty,
         timeZone,
@@ -108,7 +118,7 @@ public abstract class AbstractKotysaCRUDRepository<T : Any>(
     override val updatedAtNow: ((TimeZone) -> Any)? = updatedAtProperty?.let { property -> table[property]!! }?.now
 
     final override suspend fun <R> transactional(block: suspend CRUDRepository<T>.(Transaction) -> R): R =
-        client.transactional {
+        transactionalProtected {
             block(
                 KotysaTransaction(
                     (it as R2dbcTransactionImpl).also {
@@ -124,30 +134,26 @@ public abstract class AbstractKotysaCRUDRepository<T : Any>(
         }!!
 
     @Suppress("UNCHECKED_CAST")
-    final override suspend fun insert(entities: List<T>): Unit = client.transactional {
+    final override suspend fun insert(entities: List<T>): Unit =
         client.insert(*entities.withCreatedAtEntities.toTypedArray())
-    }!!
 
     @Suppress("UNCHECKED_CAST")
-    final override suspend fun insertAndReturn(entities: List<T>): List<T> = client.transactional {
+    final override suspend fun insertAndReturn(entities: List<T>): List<T> =
         client.insertAndReturn(*entities.withCreatedAtEntities.toTypedArray()).toList()
-    }!!
 
-    override suspend fun update(entities: List<T>): List<Boolean> = client.transactional {
+    final override suspend fun update(entities: List<T>): List<Boolean> =
         entities.map { entity -> update(entity.withUpdatedAtEntity).execute() > 0L }
-    }!!
 
     final override suspend fun update(
         propertyValues: List<Map<String, Any?>>,
         predicate: BooleanVariable?,
-    ): Long = client.transactional {
+    ): Long =
         if (predicate == null) {
             propertyValues.map { update(it).execute() }
         }
         else {
             propertyValues.map { update(it).predicate(predicate).execute() }
-        }
-    }!!.first()
+        }.first()
 
     @Suppress("UNCHECKED_CAST")
     final override suspend fun upsert(entities: List<T>): List<T> = client.transactional {
@@ -174,21 +180,20 @@ public abstract class AbstractKotysaCRUDRepository<T : Any>(
         limitOffset: LimitOffset?
     ): Flow<T> = findHelper(sort, predicate, limitOffset)
 
-    override fun find(
+    final override fun find(
         projections: List<Variable>,
         sort: List<Order>?,
         predicate: BooleanVariable?,
         limitOffset: LimitOffset?
     ): Flow<List<Any?>> = findHelper(projections, sort, predicate, limitOffset)
 
-    override suspend fun delete(predicate: BooleanVariable?): Long = client.transactional {
+    final override suspend fun delete(predicate: BooleanVariable?): Long =
         predicate?.let {
             client.deleteFrom(table).predicate(it).execute()
         } ?: client.deleteAllFrom(table)
-    }!!
 
     @Suppress("UNCHECKED_CAST")
-    override suspend fun <T> aggregate(aggregate: AggregateExpression<T>, predicate: BooleanVariable?): T = client.transactional {
+    final override suspend fun <T> aggregate(aggregate: AggregateExpression<T>, predicate: BooleanVariable?): T {
         val column = aggregate.projection?.let { table[it.value]!! }
 
         if (column == null) {
@@ -196,12 +201,12 @@ public abstract class AbstractKotysaCRUDRepository<T : Any>(
                 "Only in count aggregation column is optional"
             }
 
-            return@transactional client.selectCountFrom(table) as T
+            return client.selectCountFrom(table) as T
         }
 
         val distinct = aggregate.projection!!.distinct
 
-        when (aggregate) {
+        return when (aggregate) {
             is Count -> if (distinct) {
                 client.selectDistinct(column).andCount(column)
             }
@@ -250,8 +255,8 @@ public abstract class AbstractKotysaCRUDRepository<T : Any>(
             }
         }.from(table).apply {
             predicate?.let { predicate(it) }
-        }.fetchOne()
-    } as T
+        }.fetchOne() as T
+    }
 
     private fun update(entity: T): CoroutinesSqlClientDeleteOrUpdate.Return = client.update(table).apply {
         columns.forEach { column -> set(column, column.entityGetter(entity)) }
@@ -438,6 +443,77 @@ public abstract class AbstractKotysaCRUDRepository<T : Any>(
     }.let {
         logValue.append(".$it(${field.value})")
         kotysaExp(it, field)
+    }
+
+    protected suspend fun <T> transactionalProtected(block: suspend (R2dbcTransaction) -> T): T? {
+        val connectionFactory = (client as SqlClientR2dbc).connectionFactory as R2dbcConnectionFactory
+
+        // reuse currentTransaction if any or create nested transaction if required and supported, else create new transaction from new established connection
+        val currentTransaction = coroutineContext[R2dbcTransactionImpl]
+        val isOrigin = currentTransaction == null
+        var context = coroutineContext
+        val transaction = if (currentTransaction != null && !currentTransaction.isCompleted()) {
+            currentTransaction
+        }
+        else {
+            // if new transaction : add it to coroutineContext
+            R2dbcTransactionImpl((connectionFactory.create().awaitSingle()).also { context += it }
+        }
+        var throwable: Throwable? = null
+
+        // use transaction's Connection
+        return with(transaction.connection) {
+            setAutoCommit(false).awaitFirstOrNull() // default true
+
+            try {
+                val result = try {
+                    withContext(context) {
+                        block.invoke(transaction)
+                    }
+                }
+                catch (ex: SQLException) { // An expected checked Exception in JDBC
+                    throwable = ex
+                    throw ex
+                }
+                catch (ex: RuntimeException) {
+                    throwable = ex
+                    throw ex
+                }
+                catch (ex: Error) {
+                    throwable = ex
+                    throw ex
+                }
+                catch (ex: Throwable) {
+                    // Transactional block threw unexpected exception
+                    throwable = ex
+                    throw UndeclaredThrowableException(ex, "block threw undeclared checked exception")
+                }
+
+                result
+            }
+            finally {
+                // For original transaction only : commit or rollback, then close connection
+                if (isOrigin) {
+                    try {
+                        if (throwable != null) {
+                            rollbackTransaction().awaitFirstOrNull()
+                        }
+                        else {
+                            commitTransaction().awaitFirstOrNull()
+                        }
+                    }
+                    finally {
+                        try {
+                            transaction.setCompleted()
+                            close().awaitFirstOrNull()
+                        }
+                        catch (_: Throwable) {
+                            // ignore exception of connection.close()
+                        }
+                    }
+                }
+            }
+        }
     }
 
     private operator fun AbstractTable<T>.get(columnName: String): AbstractDbColumn<T, *>? =

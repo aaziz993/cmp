@@ -34,6 +34,7 @@ import ai.tech.core.data.transaction.model.TransactionIsolation
 import ai.tech.core.data.transaction.model.javaSqlTransactionIsolation
 import ai.tech.core.misc.type.memberProperty
 import ai.tech.core.misc.type.serializablePropertyValues
+import ai.tech.core.misc.type.serialization.decodeFromAny
 import ai.tech.core.misc.type.serializer.create
 import kotlin.coroutines.CoroutineContext
 import kotlin.reflect.KClass
@@ -66,7 +67,9 @@ import org.jetbrains.exposed.sql.min
 import org.jetbrains.exposed.sql.selectAll
 import org.jetbrains.exposed.sql.statements.UpdateBuilder
 import org.jetbrains.exposed.sql.sum
+import org.jetbrains.exposed.sql.transactions.TransactionManager
 import org.jetbrains.exposed.sql.transactions.experimental.newSuspendedTransaction
+import org.jetbrains.exposed.sql.transactions.transactionManager
 import org.jetbrains.exposed.sql.update
 import org.slf4j.LoggerFactory
 
@@ -116,7 +119,7 @@ public abstract class AbstractExposedCRUDRepository<T : Any>(
         database,
         table,
         { it.serializablePropertyValues },
-        { resultRow -> Json.Default.create(kClass.serializer(), table.columns.associate { it.name to resultRow[it] }) },
+        { resultRow -> Json.Default.decodeFromAny(kClass.serializer(), table.columns.associate { it.name to resultRow[it] }) },
         createdAtProperty,
         updatedAtProperty,
         timeZone,
@@ -136,12 +139,12 @@ public abstract class AbstractExposedCRUDRepository<T : Any>(
 
     private val createdAtColumn = createdAtProperty?.let { table[it]!! }
 
-    override val T.propertyValues: Map<String, Any?>
+    final override val T.propertyValues: Map<String, Any?>
         get() = getEntityPropertyValues(this)
 
-    override val createdAtNow: ((TimeZone) -> Any)? = createdAtProperty?.let { table[it]!! }?.now
+    final override val createdAtNow: ((TimeZone) -> Any)? = createdAtProperty?.let { table[it]!! }?.now
 
-    override val updatedAtNow: ((TimeZone) -> Any)? = createdAtColumn?.now
+    final override val updatedAtNow: ((TimeZone) -> Any)? = createdAtColumn?.now
 
     private val onUpsertExclude = listOfNotNull(createdAtColumn)
 
@@ -151,7 +154,7 @@ public abstract class AbstractExposedCRUDRepository<T : Any>(
     // CRUD operations in Exposed must be called from within a transaction.
     // By default, a nested transaction block shares the transaction resources of its parent transaction block, so any effect on the child affects the parent
     // Since Exposed 0.16.1 it is possible to use nested transactions as separate transactions by setting useNestedTransactions = true on the desired Database instance.
-    override suspend fun <R> transactional(block: suspend CRUDRepository<T>.(Transaction) -> R): R =
+    final override suspend fun <R> transactional(block: suspend CRUDRepository<T>.(Transaction) -> R): R =
         newSuspendedTransaction(coroutineContext, database, transactionIsolation?.javaSqlTransactionIsolation) {
             this@AbstractExposedCRUDRepository.statementCount?.let { statementCount = it }
             this@AbstractExposedCRUDRepository.duration?.let { duration = it }
@@ -164,19 +167,28 @@ public abstract class AbstractExposedCRUDRepository<T : Any>(
             block(ExposedTransaction(this))
         }
 
-    override suspend fun insert(entities: List<T>): Unit = transactional {
+    private suspend fun <R> internalTransactional(block: suspend () -> R): R =
+        if (database.transactionManager.currentOrNull() == null) {
+            transactional { block() }
+        }
+        else {
+            block()
+        }
+
+    final override suspend fun insert(entities: List<T>): Unit = internalTransactional {
+
         table.batchInsert(entities.withCreatedAt) { entity -> set(entity) }
     }
 
-    override suspend fun insertAndReturn(entities: List<T>): List<T> = transactional {
+    final override suspend fun insertAndReturn(entities: List<T>): List<T> = internalTransactional {
         table.batchInsert(entities.withCreatedAt) { entity -> set(entity) }.map(createEntity)
     }
 
-    override suspend fun update(entities: List<T>): List<Boolean> = transactional {
+    final override suspend fun update(entities: List<T>): List<Boolean> = internalTransactional {
         entities.map { entity -> table.update { it.set(entity.withUpdatedAt) } > 0 }
     }
 
-    override suspend fun update(propertyValues: List<Map<String, Any?>>, predicate: BooleanVariable?): Long = transactional {
+    final override suspend fun update(propertyValues: List<Map<String, Any?>>, predicate: BooleanVariable?): Long = internalTransactional {
         if (predicate == null) {
             propertyValues.map { entity -> table.update { it.set(entity) } }
         }
@@ -190,7 +202,7 @@ public abstract class AbstractExposedCRUDRepository<T : Any>(
     }
 
     @Suppress("UNCHECKED_CAST")
-    override suspend fun upsert(entities: List<T>): List<T> = transactional {
+    final override suspend fun upsert(entities: List<T>): List<T> = internalTransactional {
         table.batchUpsert(
             entities,
             onUpdateExclude = onUpsertExclude,
@@ -199,27 +211,29 @@ public abstract class AbstractExposedCRUDRepository<T : Any>(
         }.map(createEntity)
     }
 
-    override fun find(sort: List<Order>?, predicate: BooleanVariable?, limitOffset: LimitOffset?): Flow<T> = flow {
-        transactional {
+    final override fun find(sort: List<Order>?, predicate: BooleanVariable?, limitOffset: LimitOffset?): Flow<T> = flow {
+        internalTransactional {
             table.selectAll().findHelper(sort, predicate, limitOffset).forEach {
                 emit(createEntity(it))
             }
         }
     }
 
-    override fun find(projections: List<Variable>, sort: List<Order>?, predicate: BooleanVariable?, limitOffset: LimitOffset?): Flow<List<Any?>> {
-        val columns = projections.filterIsInstance<Projection>().map { projection ->
-            table[projection.value]!!.let { column ->
-                projection.alias?.let { column.alias(it) } ?: column
+    final override fun find(projections: List<Variable>, sort: List<Order>?, predicate: BooleanVariable?, limitOffset: LimitOffset?): Flow<List<Any?>> = flow {
+        internalTransactional {
+            val columns = projections.filterIsInstance<Projection>().map { projection ->
+                table[projection.value]!!.let { column ->
+                    projection.alias?.let { column.alias(it) } ?: column
+                }
+            }
+
+            table.select(columns).findHelper(sort, predicate, limitOffset).forEach { resultSet ->
+                emit(columns.map { resultSet[it] })
             }
         }
-
-        return table.select(columns).findHelper(sort, predicate, limitOffset).map { resultSet ->
-            columns.map { resultSet[it] }
-        }.asFlow()
     }
 
-    override suspend fun delete(predicate: BooleanVariable?): Long = transactional {
+    final override suspend fun delete(predicate: BooleanVariable?): Long = internalTransactional {
         if (predicate == null) {
             table.deleteAll()
         }
@@ -229,7 +243,7 @@ public abstract class AbstractExposedCRUDRepository<T : Any>(
     }
 
     @Suppress("UNCHECKED_CAST")
-    override suspend fun <T> aggregate(aggregate: AggregateExpression<T>, predicate: BooleanVariable?): T = transactional {
+    final override suspend fun <T> aggregate(aggregate: AggregateExpression<T>, predicate: BooleanVariable?): T = internalTransactional {
 
         val column: Column<Comparable<Any>>? = aggregate.projection?.let { table[it.value]!! } as Column<Comparable<Any>>?
 
@@ -238,7 +252,7 @@ public abstract class AbstractExposedCRUDRepository<T : Any>(
                 "Only in count aggregation column is optional"
             }
 
-            return@transactional table.selectAll().predicate(predicate).count() as T
+            return@internalTransactional table.selectAll().predicate(predicate).count() as T
         }
 
         val distinct = aggregate.projection!!.distinct

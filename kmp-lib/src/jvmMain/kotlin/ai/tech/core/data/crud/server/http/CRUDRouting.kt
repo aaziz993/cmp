@@ -3,18 +3,19 @@ package ai.tech.core.data.crud.server.http
 import ai.tech.core.data.crud.CRUDRepository
 import ai.tech.core.data.crud.client.http.model.HttpOperation
 import ai.tech.core.misc.auth.model.AuthResource
+import ai.tech.core.misc.network.http.server.receiveAsInputStream
+import ai.tech.core.misc.network.http.server.respondOutputStream
 import ai.tech.core.misc.plugin.auth.authOpt
-import ai.tech.core.misc.type.serialization.decodeAnyFromJsonElement
 import ai.tech.core.misc.type.serialization.encodeAnyToString
 import ai.tech.core.misc.type.serialization.json
 import io.ktor.http.*
 import io.ktor.server.request.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
-import io.ktor.utils.io.*
+import kotlinx.coroutines.flow.filterNotNull
+import kotlinx.coroutines.flow.map
 import kotlinx.serialization.InternalSerializationApi
 import kotlinx.serialization.PolymorphicSerializer
-import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 
 @OptIn(InternalSerializationApi::class)
@@ -29,24 +30,17 @@ public inline fun <reified T : Any> Routing.CrudRouting(
         authOpt(writeAuth) {
             post("transaction") {
 
-                val channel = call.receiveChannel()
+                call.receiveAsInputStream().filterNotNull().collect {
+                    with(Json.Default.decodeFromString<HttpOperation>(it)) {
+                        when (this) {
+                            is HttpOperation.Insert<*> -> repository.insert(values as List<T>)
+                            is HttpOperation.InsertAndReturn<*> -> repository.insertAndReturn(values as List<T>)
+                            is HttpOperation.Update<*> -> repository.update(values as List<T>)
+                            is HttpOperation.UpdateUntyped -> repository.update(propertyValues, predicate)
 
-                while (!channel.isClosedForRead) {
-                    channel.readUTF8Line()?.let {
-                        val operation: HttpOperation = Json.Default.decodeFromString(it)
-                        when (operation) {
-                            is HttpOperation.Insert<*> -> repository.insert(operation.values as List<T>)
-                            is HttpOperation.InsertAndReturn<*> -> repository.insertAndReturn(operation.values as List<T>)
-                            is HttpOperation.Update<*> -> repository.update(operation.values as List<T>)
-                            is HttpOperation.UpdateUntyped -> repository.update(
-                                Json.Default.decodeAnyFromJsonElement(operation.propertyValues) as List<Map<String, Any?>>,
-                                operation.predicate,
-                            )
-
-                            is HttpOperation.Upsert<*> -> repository.upsert(operation.values as List<T>)
+                            is HttpOperation.Upsert<*> -> repository.upsert(values as List<T>)
                             else -> Unit
                         }
-
                     }
                 }
             }
@@ -66,13 +60,7 @@ public inline fun <reified T : Any> Routing.CrudRouting(
 
             post("updateUntyped") {
                 with(call.receive<HttpOperation.UpdateUntyped>()) {
-                    call.respond(
-                        HttpStatusCode.OK,
-                        repository.update(
-                            Json.Default.decodeAnyFromJsonElement(propertyValues) as List<Map<String, Any?>>,
-                            predicate,
-                        ),
-                    )
+                    call.respond(HttpStatusCode.OK, repository.update(propertyValues, predicate))
                 }
             }
 
@@ -89,24 +77,10 @@ public inline fun <reified T : Any> Routing.CrudRouting(
             post("find") {
                 with(call.receive<HttpOperation.Find>()) {
                     if (projections == null) {
-                        repository.find(sort, predicate, limitOffset).let {
-                            call.respondBytesWriter(ContentType.parse("application/stream+json"), HttpStatusCode.OK) {
-                                it.collect {
-                                    writeStringUtf8("${Json.Default.encodeToString(it)}\n")
-                                    flush()
-                                }
-                            }
-                        }
+                        call.respondOutputStream(status = HttpStatusCode.OK, flow = repository.find(sort, predicate, limitOffset))
                     }
                     else {
-                        repository.find(projections, sort, predicate, limitOffset).let {
-                            call.respondBytesWriter(ContentType.parse("application/stream+json"), HttpStatusCode.OK) {
-                                it.collect {
-                                    writeStringUtf8("${Json.Default.encodeAnyToString(it)}\n")
-                                    flush()
-                                }
-                            }
-                        }
+                        call.respondOutputStream(status = HttpStatusCode.OK, flow = repository.find(projections, sort, predicate, limitOffset).map(Json.Default::encodeAnyToString))
                     }
                 }
             }
@@ -121,4 +95,3 @@ public inline fun <reified T : Any> Routing.CrudRouting(
         }
     }
 }
-

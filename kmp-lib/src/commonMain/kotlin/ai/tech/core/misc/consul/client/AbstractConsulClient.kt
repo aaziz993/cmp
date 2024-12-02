@@ -12,11 +12,9 @@ public abstract class AbstractConsulClient(
     public val aclToken: String? = null
 ) : AbstractApiHttpClient(httpClient, address) {
 
-    final override fun HttpClientConfig<*>.configureHttpClient() {
+    final override fun DefaultRequest.DefaultRequestBuilder.configureDefaultRequest() {
         if (aclToken != null) {
-            defaultRequest {
-                header(HttpHeaders.Authorization, "Bearer $aclToken")
-            }
+            header(HttpHeaders.Authorization, "Bearer $aclToken")
         }
     }
 }

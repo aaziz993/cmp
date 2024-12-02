@@ -266,3 +266,4 @@ internal fun getKotysaTables(
 
         else -> throw IllegalArgumentException("Unknown database driver \"$driver\"")
     }
+
