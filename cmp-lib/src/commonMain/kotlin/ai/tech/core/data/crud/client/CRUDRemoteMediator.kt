@@ -24,26 +24,29 @@ public class CRUDRemoteMediator<Value : Any, ID : Any>(
             .toList()
 
     override suspend fun refreshCache(items: List<Value>, loadKey: Long?, pageSize: Int): Boolean = localRepository.transactional {
-        val endOfPaginationReached = items.size < pageSize
+        keysRepository.transactional {
+            val endOfPaginationReached = items.size < pageSize
 
-        localRepository.delete()
-        localRepository.insert(items)
+            localRepository.delete()
+            localRepository.insert(items)
 
-        keysRepository.delete()
-        keysRepository.insert(items.createRemoteKeys(loadKey, endOfPaginationReached))
+            keysRepository.delete()
+            keysRepository.insert(items.createRemoteKeys(loadKey, endOfPaginationReached))
 
-        endOfPaginationReached
+            endOfPaginationReached
+        }
     }
 
     override suspend fun cache(items: List<Value>, loadKey: Long?, pageSize: Int): Boolean =
         localRepository.transactional {
-            val endOfPaginationReached = items.size < pageSize
+            keysRepository.transactional {
+                val endOfPaginationReached = items.size < pageSize
 
-            localRepository.insert(items)
+                localRepository.insert(items)
 
-            keysRepository.insert(items.createRemoteKeys(loadKey, endOfPaginationReached))
-
-            endOfPaginationReached
+                keysRepository.insert(items.createRemoteKeys(loadKey, endOfPaginationReached))
+                endOfPaginationReached
+            }
         }
 
     override suspend fun getRemoteKeys(item: Value): RemoteKeys<Long>? =

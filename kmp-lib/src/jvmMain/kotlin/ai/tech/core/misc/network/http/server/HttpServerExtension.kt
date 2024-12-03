@@ -1,3 +1,6 @@
+@file:Suppress("INVISIBLE_MEMBER", "INVISIBLE_REFERENCE")
+@file:OptIn(InternalAPI::class)
+
 package ai.tech.core.misc.network.http.server
 
 import ai.tech.core.misc.network.http.client.JsonStream
@@ -10,6 +13,7 @@ import io.ktor.server.request.receiveChannel
 import io.ktor.server.response.respondBytesWriter
 import io.ktor.server.response.respondOutputStream
 import io.ktor.server.routing.RoutingCall
+import io.ktor.utils.io.InternalAPI
 import io.ktor.utils.io.readUTF8Line
 import io.ktor.utils.io.writeStringUtf8
 import kotlinx.coroutines.flow.Flow
@@ -38,15 +42,16 @@ public suspend fun RoutingCall.respondOutputStream(
     }
 }
 
-public inline fun <reified T> RoutingCall.respondOutputStream(
+public suspend inline fun <reified T> RoutingCall.respondOutputStream(
     contentType: ContentType? = null,
     status: HttpStatusCode? = null,
     contentLength: Long? = null,
     flow: Flow<T>
-) = {
-    application.plugin(ContentNegotiation)
+) {
+    application.conver .plugin(ContentNegotiation).config.registrations
+
     respondOutputStream(
-        contentType ?: ContentType.Application.JsonStream, status, contentLength,
-        flow.map(Json.Default::encodeToString),
+            contentType ?: ContentType.Application.JsonStream, status, contentLength,
+            flow.map(Json.Default::encodeToString),
     )
 }

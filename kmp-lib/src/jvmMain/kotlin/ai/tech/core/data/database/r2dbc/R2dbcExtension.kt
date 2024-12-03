@@ -1,14 +1,14 @@
 package ai.tech.core.data.database.r2dbc
 
-import io.r2dbc.spi.Connection
+import io.r2dbc.spi.ConnectionMetadata
 import io.r2dbc.spi.Option
 
 public val AUTO_COMMIT: Option<Boolean> = Option.valueOf("autoCommit")
 
 public val USE_NESTED_TRANSACTIONS: Option<Boolean> = Option.valueOf("useNestedTransactions")
 
-public val Connection.supportsNestedTransactions: Boolean
-    get() = metadata.let {
+public val ConnectionMetadata.supportsSavepoints: Boolean
+    get() = let {
         val productName = it.databaseProductName.lowercase()
         val productVersion = it.databaseVersion
 

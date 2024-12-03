@@ -1,28 +1,30 @@
 @file:Suppress("INVISIBLE_MEMBER", "INVISIBLE_REFERENCE")
+@file:OptIn(InternalAPI::class)
 
 package ai.tech.core.misc.network.http.client
 
 import ai.tech.core.misc.consul.client.plugin.ConsulDiscovery
 import ai.tech.core.misc.consul.model.config.LoadBalancer
-import ai.tech.core.misc.network.http.asInputStream
 import ai.tech.core.misc.network.http.client.model.Pin
+import ai.tech.core.misc.network.http.inputStream
 import ai.tech.core.misc.type.multiple.filterValuesIsNotNull
 import ai.tech.core.misc.type.serializablePropertyValues
 import ai.tech.core.misc.type.serialization.decodeAnyFromString
 import ai.tech.core.misc.type.serialization.encodeAnyToString
 import io.ktor.client.*
 import io.ktor.client.plugins.*
-import io.ktor.client.plugins.api.*
 import io.ktor.client.plugins.contentnegotiation.*
 import io.ktor.client.statement.*
 import io.ktor.http.*
 import io.ktor.http.content.*
-import io.ktor.serialization.kotlinx.KotlinxSerializationConverter
+import io.ktor.serialization.*
+import io.ktor.util.reflect.*
 import io.ktor.utils.io.*
+import io.ktor.utils.io.charsets.*
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.map
 import kotlinx.serialization.json.Json
-import kotlinx.serialization.serializer
 
 private val httpPR: Regex = "^https?://.*".toRegex(RegexOption.IGNORE_CASE)
 
@@ -78,25 +80,35 @@ public suspend fun MultiPartData.readParts(): List<PartData> = mutableListOf<Par
 public suspend fun MultiPartData.readFormData(): Map<String?, String> =
     readParts().associate { (it as PartData.FormItem).let { it.name to it.value } }
 
-@Suppress("UNCHECKED_CAST")
-public fun <T> HttpResponse.bodyAsInputStream(deserializer: kotlinx.serialization.DeserializationStrategy<T>): Flow<T> = flow() {
+public fun HttpClient.converters(responseContentType: ContentType): List<ContentConverter>? =
+    plugin(ContentNegotiation)
+        .config
+        .registrations
+        .filter { it.contentTypeMatcher.contains(responseContentType) }
+        .map { it.converter }
+        .takeIf { it.isNotEmpty() }
 
-//    val json: ClientPluginInstance<ContentNegotiationConfig> = call.client.plugin(ContentNegotiation)
-//
-//    val r = json.config.registrations.filter { it.contentType.match(ContentType.Application.Json) }
+@Suppress("UNCHECKED_CAST")
+public fun <T> HttpResponse.bodyAsInputStream(typeInfo: TypeInfo, charset: Charset = Charsets.UTF_8): Flow<T> = flow {
+    val contentType = headers[HttpHeaders.ContentType]?.let(ContentType::parse)
+
+    val suitableConverters = call.client.converters(contentType!!.withoutParameters())
 
     val channel = bodyAsChannel()
 
-    channel.asInputStream { value ->
-        emit(value?.let { Json.Default.decodeFromString(deserializer, it) } as T)
+    channel.inputStream.map { value ->
+        emit(value?.let { suitableConverters!!.deserialize(ByteReadChannel(it), typeInfo, charset) } as T)
     }
 }
 
-public fun HttpResponse.bodyAsInputStream(): Flow<Any?> = flow() {
+public inline fun <reified T> HttpResponse.bodyAsInputStream(charset: Charset = Charsets.UTF_8): Flow<T> =
+    bodyAsInputStream(typeInfo<T>(), charset)
+
+public fun HttpResponse.bodyAsInputStream(): Flow<Any?> = flow {
 
     val channel = bodyAsChannel()
 
-    channel.asInputStream { value ->
+    channel.inputStream.map { value ->
         emit(value?.let { Json.Default.decodeAnyFromString(it) })
     }
 }

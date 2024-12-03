@@ -31,11 +31,14 @@ import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.JsonPrimitive
 import kotlinx.serialization.json.booleanOrNull
 import kotlinx.serialization.json.doubleOrNull
+import kotlinx.serialization.json.io.decodeFromSource
 import kotlinx.serialization.json.longOrNull
+import kotlinx.serialization.json.okio.decodeFromBufferedSource
 import kotlinx.serialization.modules.SerializersModule
 import kotlinx.serialization.modules.contextual
 import kotlinx.serialization.modules.polymorphic
 import kotlinx.serialization.serializer
+import okio.BufferedSource
 
 public val json: Json = Json {
     serializersModule = SerializersModule {
