@@ -1,7 +1,7 @@
 package ai.tech.core.misc.plugin.cors.model.config
 
 import ai.tech.core.misc.model.config.EnabledConfig
-import ai.tech.core.misc.type.serializer.http.HttpMethodSerial
+import ai.tech.core.misc.type.serialization.serializer.http.HttpMethodSerial
 import kotlinx.serialization.Serializable
 
 @Serializable

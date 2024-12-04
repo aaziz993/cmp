@@ -9,7 +9,7 @@ import ai.tech.core.misc.type.multiple.depthIterator
 import ai.tech.core.misc.type.multiple.forEach
 import ai.tech.core.misc.type.multiple.iterator
 import ai.tech.core.misc.type.multiple.model.AsyncIterator
-import ai.tech.core.misc.type.multiple.model.ClosableAbstractIterator
+import ai.tech.core.misc.type.multiple.model.AbstractClosableAbstractIterator
 import okio.Buffer
 import okio.FileSystem
 import okio.Path.Companion.toPath
@@ -129,7 +129,7 @@ public fun String.fsPathCopy(target: String): Unit = fileSystem.copy(toPath(), t
 
 public fun String.fsPathDelete(ifExists: Boolean = false): Unit = fileSystem.deleteRecursively(toPath(), ifExists)
 
-public fun String.fsPathRead(bufferSize: Int = DEFAULT_BUFFER_SIZE): ClosableAbstractIterator<ByteArray> =
+public fun String.fsPathRead(bufferSize: Int = DEFAULT_BUFFER_SIZE): AbstractClosableAbstractIterator<ByteArray> =
     fileSystem.source(toPath()).iterator(bufferSize)
 
 public fun String.fsPathWrite(

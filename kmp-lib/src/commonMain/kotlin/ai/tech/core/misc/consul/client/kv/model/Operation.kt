@@ -1,6 +1,6 @@
 package ai.tech.core.misc.consul.client.kv.model
 
-import ai.tech.core.misc.type.serializer.bignum.BigIntegerSerial
+import ai.tech.core.misc.type.serialization.serializer.bignum.BigIntegerSerial
 import ai.tech.core.misc.type.serialization.serializer.primitive.Base64Serializer
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable

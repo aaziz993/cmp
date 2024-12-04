@@ -1,12 +1,9 @@
 package ai.tech.core.misc.type.multiple
 
 import ai.tech.core.misc.type.multiple.model.AsyncIterator
-import ai.tech.core.misc.type.multiple.model.ClosableAbstractAsyncIterator
-import ai.tech.core.misc.type.multiple.model.ClosableAbstractIterator
 import okio.Buffer
 import okio.Source
 import okio.Timeout
-import kotlin.properties.Delegates
 
 public fun <T> Iterator<T>.next(
     count: Int,

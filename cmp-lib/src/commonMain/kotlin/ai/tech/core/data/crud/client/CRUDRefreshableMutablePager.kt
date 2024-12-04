@@ -12,8 +12,8 @@ import ai.tech.core.data.crud.model.query.Order
 import ai.tech.core.data.expression.BooleanVariable
 import ai.tech.core.data.expression.f
 import ai.tech.core.misc.type.letIf
-import ai.tech.core.misc.type.multiple.replaceAt
-import ai.tech.core.misc.type.multiple.replaceIfFirst
+import ai.tech.core.misc.type.multiple.iterable.replaceAt
+import ai.tech.core.misc.type.multiple.iterable.replaceIfFirst
 import app.cash.paging.ExperimentalPagingApi
 import app.cash.paging.PagingConfig
 import app.cash.paging.PagingSource

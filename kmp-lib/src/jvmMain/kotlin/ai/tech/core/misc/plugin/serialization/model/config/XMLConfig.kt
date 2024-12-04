@@ -1,7 +1,7 @@
 package ai.tech.core.misc.plugin.serialization.model.config
 
-import ai.tech.core.misc.type.serializer.http.ContentTypeSerial
-import ai.tech.core.misc.type.serializer.QNameSerial
+import ai.tech.core.misc.type.serialization.serializer.http.ContentTypeSerial
+import ai.tech.core.misc.type.serialization.serializer.QNameSerial
 import io.ktor.http.*
 import kotlinx.serialization.Serializable
 import nl.adaptivity.xmlutil.XmlDeclMode

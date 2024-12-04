@@ -8,6 +8,7 @@ import kotlinx.datetime.LocalDate
 import kotlinx.datetime.LocalDateTime
 import kotlinx.datetime.LocalTime
 import kotlinx.datetime.TimeZone
+import kotlinx.datetime.atStartOfDayIn
 import kotlinx.datetime.toLocalDateTime
 
 public val nowInstant: Instant
@@ -23,6 +24,8 @@ public fun LocalTime.Companion.now(zone: TimeZone): LocalTime = LocalDateTime.no
 public fun LocalTime.Companion.parseOrNull(s: String): LocalTime? = s.runCatching { parse(this) }.getOrNull()
 
 public val zeroDate: LocalDate = LocalDate.fromEpochDays(0)
+
+public fun LocalDate.toInstant(timeZone: TimeZone): Instant = atStartOfDayIn(timeZone)
 
 public fun LocalDate.Companion.now(zone: TimeZone): LocalDate = LocalDateTime.now(zone).date
 

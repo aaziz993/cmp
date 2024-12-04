@@ -6,8 +6,9 @@ package ai.tech.core.misc.network.http.client
 import ai.tech.core.misc.consul.client.plugin.ConsulDiscovery
 import ai.tech.core.misc.consul.model.config.LoadBalancer
 import ai.tech.core.misc.network.http.client.model.Pin
-import ai.tech.core.misc.network.http.inputStream
+import ai.tech.core.misc.type.multiple.asyncLineIterator
 import ai.tech.core.misc.type.multiple.filterValuesIsNotNull
+import ai.tech.core.misc.type.multiple.forEach
 import ai.tech.core.misc.type.serializablePropertyValues
 import ai.tech.core.misc.type.serialization.decodeAnyFromString
 import ai.tech.core.misc.type.serialization.encodeAnyToString
@@ -23,8 +24,9 @@ import io.ktor.utils.io.*
 import io.ktor.utils.io.charsets.*
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
-import kotlinx.coroutines.flow.map
+import kotlinx.serialization.InternalSerializationApi
 import kotlinx.serialization.json.Json
+import kotlinx.serialization.serializer
 
 private val httpPR: Regex = "^https?://.*".toRegex(RegexOption.IGNORE_CASE)
 
@@ -88,6 +90,7 @@ public fun HttpClient.converters(responseContentType: ContentType): List<Content
         .map { it.converter }
         .takeIf { it.isNotEmpty() }
 
+@OptIn(InternalSerializationApi::class)
 @Suppress("UNCHECKED_CAST")
 public fun <T> HttpResponse.bodyAsInputStream(typeInfo: TypeInfo, charset: Charset = Charsets.UTF_8): Flow<T> = flow {
     val contentType = headers[HttpHeaders.ContentType]?.let(ContentType::parse)
@@ -96,7 +99,13 @@ public fun <T> HttpResponse.bodyAsInputStream(typeInfo: TypeInfo, charset: Chars
 
     val channel = bodyAsChannel()
 
-    channel.inputStream.map { value ->
+    if (suitableConverters == null) {
+        channel.asyncLineIterator().forEach { value ->
+            emit(value?.let { Json.Default.decodeFromString(typeInfo.type.serializer(), it) } as T)
+        }
+    }
+
+    channel.asyncLineIterator().forEach { value ->
         emit(value?.let { suitableConverters!!.deserialize(ByteReadChannel(it), typeInfo, charset) } as T)
     }
 }
@@ -108,7 +117,7 @@ public fun HttpResponse.bodyAsInputStream(): Flow<Any?> = flow {
 
     val channel = bodyAsChannel()
 
-    channel.inputStream.map { value ->
+    channel.asyncLineIterator().forEach { value ->
         emit(value?.let { Json.Default.decodeAnyFromString(it) })
     }
 }

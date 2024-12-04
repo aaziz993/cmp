@@ -1,8 +1,8 @@
 package ai.tech.core.presentation.model.config
 
-import ai.tech.core.misc.type.serializer.colorscheme.ColorSchemeJson
-import ai.tech.core.misc.type.serializer.shapes.ShapesJson
-import ai.tech.core.misc.type.serializer.typography.TypographyJson
+import ai.tech.core.misc.type.serialization.serializer.colorscheme.ColorSchemeJson
+import ai.tech.core.misc.type.serialization.serializer.shapes.ShapesJson
+import ai.tech.core.misc.type.serialization.serializer.typography.TypographyJson
 import androidx.compose.material3.Shapes
 import androidx.compose.material3.Typography
 import kotlinx.serialization.Serializable

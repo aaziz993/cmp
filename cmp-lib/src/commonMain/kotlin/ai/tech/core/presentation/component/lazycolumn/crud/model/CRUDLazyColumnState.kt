@@ -3,9 +3,9 @@ package ai.tech.core.presentation.component.lazycolumn.crud.model
 import ai.tech.core.data.crud.client.model.EntityProperty
 import ai.tech.core.data.crud.model.query.LimitOffset
 import ai.tech.core.data.crud.model.query.Order
-import ai.tech.core.misc.type.multiple.removeFirst
-import ai.tech.core.misc.type.multiple.replaceFirst
-import ai.tech.core.misc.type.multiple.replaceWith
+import ai.tech.core.misc.type.multiple.iterable.removeFirst
+import ai.tech.core.misc.type.multiple.iterable.replaceFirst
+import ai.tech.core.misc.type.multiple.iterable.replaceWith
 import ai.tech.core.presentation.component.textfield.search.model.SearchFieldState
 import ai.tech.core.presentation.component.textfield.search.model.rememberSearchFieldState
 import androidx.compose.runtime.Composable

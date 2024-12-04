@@ -1,6 +1,6 @@
 package ai.tech.core.misc.consul.client.acl.model
 
-import ai.tech.core.misc.type.serializer.bignum.BigIntegerSerial
+import ai.tech.core.misc.type.serialization.serializer.bignum.BigIntegerSerial
 import kotlinx.datetime.LocalDate
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable

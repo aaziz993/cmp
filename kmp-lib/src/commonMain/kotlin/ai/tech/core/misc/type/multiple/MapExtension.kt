@@ -4,7 +4,7 @@ import ai.tech.core.misc.type.accessor
 import ai.tech.core.misc.type.set
 
 //////////////////////////////////////////////////////////MAP///////////////////////////////////////////////////////////
-public fun <K, V> Map<K, V>.filterKeysIn(keys: List<K>): Map<K, V> = filterKeys(keys::contains)
+public fun <K, V> Map<K, V>.filterKeysIn(keys: Collection<K>): Map<K, V> = filterKeys(keys::contains)
 
 public fun <K, V> Map<K, V>.filterKeysIn(vararg key: K): Map<K, V> = filterKeys(key::contains)
 

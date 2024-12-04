@@ -1,6 +1,6 @@
 package ai.tech.core.misc.consul.client.acl.model
 
-import ai.tech.core.misc.type.serializer.bignum.BigIntegerSerial
+import ai.tech.core.misc.type.serialization.serializer.bignum.BigIntegerSerial
 
 public interface BaseRoleResponse {
 

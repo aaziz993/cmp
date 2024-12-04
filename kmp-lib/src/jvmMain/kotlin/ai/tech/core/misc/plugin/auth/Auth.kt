@@ -7,7 +7,7 @@ import ai.tech.core.misc.plugin.auth.jwt.model.JWTConfig
 import ai.tech.core.misc.plugin.auth.model.config.AuthProvidersConfig
 import ai.tech.core.misc.plugin.auth.oauth.OAuthService
 import ai.tech.core.misc.plugin.auth.oauth.model.config.ServerOAuthConfig
-import ai.tech.core.misc.plugin.auth.rbac.rbac
+import ai.tech.core.misc.auth.rbac.rbac
 import ai.tech.core.misc.model.config.EnabledConfig
 import ai.tech.core.misc.plugin.auth.basic.BasicAuthService
 import ai.tech.core.misc.plugin.auth.basic.model.config.BaseBasicAuthConfig
@@ -90,12 +90,12 @@ public fun Application.configureAuth(
 
         it.ldapForm.forEach { (name, config) -> configureForm(name, config, LDAPFormAuthService(name, config)) }
 
-        it.jwtHs256.filterValues(EnabledConfig::enabled).forEach { (name, config) ->
+        it.jwtHS256.filterValues(EnabledConfig::enabled).forEach { (name, config) ->
             val service = JWTHS256AuthService(name, config)
 
             configureJWT(name, config) {
                 // Load the token verification config
-                verifier { service.jwtVerifier(it) }
+                verifier{ service.jwtVerifier }
 
                 // If the token is valid, it also has the indicated audience,
                 // and has the user's field to compare it with the one we want
@@ -110,12 +110,17 @@ public fun Application.configureAuth(
             rbac(name) { roleExtractor = service::roles }
         }
 
-        it.jwtRs256.filterValues(EnabledConfig::enabled).forEach { (name, config) ->
+        it.jwtRS256.filterValues(EnabledConfig::enabled).forEach { (name, config) ->
             val service = JWTRS256AuthService(name, config)
 
             configureJWT(name, config) {
                 // Load the token verification config
-                verifier(service.jwkProvider, config.issuer) { acceptLeeway(3) }
+                verifier(service.jwkProvider, config.issuer){
+                    config.acceptLeeway?.let(::acceptLeeway)
+                    config.acceptExpiresAt?.let(::acceptExpiresAt)
+                    config.acceptNotBefore?.let(::acceptNotBefore)
+                    config.acceptIssuedAt?.let(::acceptIssuedAt)
+                }
 
                 // If the token is valid, it also has the indicated audience,
                 // and has the user's field to compare it with the one we want

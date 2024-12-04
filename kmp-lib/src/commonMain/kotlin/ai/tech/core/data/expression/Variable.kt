@@ -4,10 +4,9 @@ package ai.tech.core.data.expression
 
 import com.ionspin.kotlin.bignum.decimal.BigDecimal
 import com.ionspin.kotlin.bignum.integer.BigInteger
-import ai.tech.core.misc.type.serializer.bignum.BigDecimalSerial
-import ai.tech.core.misc.type.serializer.bignum.BigIntegerSerial
-import ai.tech.core.misc.type.serializer.UuidSerial
-import ai.tech.core.misc.type.multiple.depthIterator
+import ai.tech.core.misc.type.serialization.serializer.bignum.BigDecimalSerial
+import ai.tech.core.misc.type.serialization.serializer.bignum.BigIntegerSerial
+import ai.tech.core.misc.type.serialization.serializer.primitive.UuidSerial
 import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
 import kotlinx.datetime.LocalDate
@@ -269,42 +268,17 @@ public interface Expression {
     public val isSimple: Boolean
         get() = arguments.all { it is Value<*> }
 
-    @Suppress("UNCHECKED_CAST")
-    public fun depthMap(
-        inlineExpression: Expression.(List<Expression>) -> Unit,
-        leafExpression: Expression.(List<Expression>) -> Unit
-    ) {
-        if (isSimple) {
-            return leafExpression(emptyList())
-        }
-
-        arguments.iterator().depthIterator(
-            this,
-            { expressions, value ->
-                if (value is Expression) {
-                    if (!value.isSimple) {
-                        return@depthIterator value.arguments.iterator()
-                    }
-                    value.leafExpression(expressions as List<Expression>)
-                }
-                null
-            },
-        ) { expressions, expression ->
-            (expression as Expression).inlineExpression(expressions as List<Expression>)
-        }.forEach {}
-    }
-
-    public fun breadthMap(
-        complexExpressionTransform: (Expression, args: List<Any?>) -> Any?,
-        simpleExpressionTransform: (Expression) -> Any?
+    public fun map(
+        complexTransform: (Expression, args: List<Any?>) -> Any?,
+        simpleTransform: (Expression) -> Any?
     ): Any? =
         DeepRecursiveFunction<Any, Any?> { value ->
             if (value is Expression) {
                 if (value.isSimple) {
-                    return@DeepRecursiveFunction simpleExpressionTransform(value)
+                    return@DeepRecursiveFunction simpleTransform(value)
                 }
 
-                return@DeepRecursiveFunction complexExpressionTransform(value, value.arguments.map { callRecursive(value) })
+                return@DeepRecursiveFunction complexTransform(value, value.arguments.map { callRecursive(value) })
             }
 
             value
@@ -450,8 +424,8 @@ public sealed class ArithmeticExpression : NumberVariable(), Expression {
 
         public fun divide(vararg values: NumberOperand): Divide = Divide(values.toList() as List<Variable>)
 
-        public fun mod(divident: NumberOperand, divisor: NumberOperand): Mod =
-            Mod(listOf(divident, divisor) as List<Variable>)
+        public fun mod(dividend: NumberOperand, divisor: NumberOperand): Mod =
+            Mod(listOf(dividend, divisor) as List<Variable>)
 
         public fun pow(variable: NumberOperand, power: NumberOperand): Pow =
             Pow(listOf(variable, power) as List<Variable>)

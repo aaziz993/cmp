@@ -35,11 +35,10 @@ import ai.tech.core.data.expression.f
 import ai.tech.core.data.transaction.Transaction
 import ai.tech.core.data.transaction.model.TransactionIsolation
 import ai.tech.core.data.transaction.model.r2dbcTransactionIsolation
+import ai.tech.core.misc.location.model.LocationKotysaTable
 import ai.tech.core.misc.type.invoke
-import ai.tech.core.misc.type.multiple.toTypedArray
+import ai.tech.core.misc.type.multiple.iterable.toTypedArray
 import ai.tech.core.misc.type.serialization.decodeFromAny
-import ai.tech.core.misc.type.serializer.create
-import io.r2dbc.spi.Connection
 import java.lang.reflect.UndeclaredThrowableException
 import java.sql.SQLException
 import kotlin.coroutines.coroutineContext
@@ -319,6 +318,9 @@ public abstract class AbstractKotysaCRUDRepository<T : Any>(
 
     @Suppress("UNCHECKED_CAST")
     private fun <T : SqlClientQuery.Where<T>> SqlClientQuery.Whereable<T>.predicate(predicate: BooleanVariable): T {
+
+        where(LocationKotysaTable.id).eq(100)
+
         var value: Any? = null
 
         var expression: Expression? = null

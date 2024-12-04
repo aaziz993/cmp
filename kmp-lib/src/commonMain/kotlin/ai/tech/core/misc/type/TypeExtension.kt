@@ -8,9 +8,7 @@ import ai.tech.core.data.validator.ValidatorRule
 import ai.tech.core.misc.type.accessor.Accessor
 import ai.tech.core.misc.type.accessor.ListAccessor
 import ai.tech.core.misc.type.accessor.MapLikeAccessor
-import ai.tech.core.misc.type.multiple.depthIterator
-import ai.tech.core.misc.type.multiple.model.AsyncIterator
-import ai.tech.core.misc.type.multiple.takeIfNotEmpty
+import ai.tech.core.misc.type.multiple.iterable.takeIfNotEmpty
 import ai.tech.core.misc.type.serialization.encodeToAny
 import ai.tech.core.misc.type.single.parseOrNull
 import ai.tech.core.misc.type.single.uuidFromOrNull

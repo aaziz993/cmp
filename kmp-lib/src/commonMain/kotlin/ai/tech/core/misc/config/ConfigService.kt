@@ -7,7 +7,7 @@ import ai.tech.core.misc.consul.model.config.ConsulConfig
 import ai.tech.core.misc.model.config.ApplicationConfig
 import ai.tech.core.misc.model.config.EnabledConfig
 import ai.tech.core.misc.network.http.client.createHttpClient
-import ai.tech.core.misc.type.serializer.decoderMapFromString
+import ai.tech.core.misc.type.serialization.serializer.decoderMapFromString
 import kotlinx.serialization.InternalSerializationApi
 import ai.tech.core.misc.type.deepMerge
 import ai.tech.core.misc.type.multiple.filterValuesNotEmpty

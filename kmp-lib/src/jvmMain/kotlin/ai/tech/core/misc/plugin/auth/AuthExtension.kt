@@ -1,8 +1,8 @@
 package ai.tech.core.misc.plugin.auth
 
 import ai.tech.core.misc.auth.model.AuthResource
-import ai.tech.core.misc.plugin.auth.rbac.AuthorizedRouteSelector
-import ai.tech.core.misc.plugin.auth.rbac.RBACPlugin
+import ai.tech.core.misc.auth.rbac.AuthorizedRouteSelector
+import ai.tech.core.misc.auth.rbac.RBACPlugin
 import io.ktor.server.auth.*
 import io.ktor.server.routing.*
 
@@ -12,19 +12,22 @@ public fun Route.authOpt(
     build: Route.() -> Unit
 ): Route =
     if (auth == null) {
-        build().let {
-            this
-        }
-    } else {
+        apply(build)
+    }
+    else {
         authenticate(*auth.providers.toTypedArray(), optional = optional) {
-            auth.role?.let {
+            if (auth.roles == null) {
+                build()
+            }
+            else {
                 createChild(AuthorizedRouteSelector(*auth.providers.toTypedArray())).apply {
                     install(RBACPlugin) {
-                        this.configurations = auth.providers.toSet()
-                        this.role = it
+                        configurations = auth.providers.toSet()
+                        roles = auth.roles
+                        roleResolution = auth.roleResolution
                     }
                     build()
                 }
-            } ?: build()
+            }
         }
     }

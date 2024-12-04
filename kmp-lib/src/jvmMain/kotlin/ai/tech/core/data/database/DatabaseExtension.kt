@@ -1,6 +1,6 @@
 package ai.tech.core.data.database
 
-import ai.tech.core.misc.type.multiple.whileIndexed
+import ai.tech.core.misc.type.multiple.iterable.whileHasIndexItem
 import kotlin.reflect.KClass
 import org.reflections.Reflections
 import org.reflections.scanners.Scanners.SubTypes
@@ -42,7 +42,7 @@ private fun <T : Any> List<T>.sortedByFKReferences(getReferencedTables: T.(List<
         .partition { (_, referencedTables) -> referencedTables.isEmpty() }
         .let { it.first.map(Pair<T, *>::first).toMutableList() to it.second }
 
-    tables.whileIndexed { _, table ->
+    tables.whileHasIndexItem { _, table ->
         dependantTables.forEach { (dependantTable, dependencies) ->
             if (dependencies.remove(table) && dependencies.isEmpty()) {
                 tables.add(dependantTable)

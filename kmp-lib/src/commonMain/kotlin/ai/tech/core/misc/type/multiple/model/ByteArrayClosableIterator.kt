@@ -2,16 +2,16 @@ package ai.tech.core.misc.type.multiple.model
 
 import ai.tech.core.DEFAULT_BUFFER_SIZE
 
-public class ByteReaderClosableAsyncIterator(
-    private val readBlock: suspend (ByteArray) -> Int,
+public class ByteArrayClosableIterator(
+    private val nextBlock: (ByteArray) -> Int,
     private val closeBlock: () -> Unit = {},
     bufferSize: Int = DEFAULT_BUFFER_SIZE,
-) : ClosableAbstractAsyncIterator<ByteArray>() {
+) : AbstractClosableAbstractIterator<ByteArray>() {
 
     private val byteArray = ByteArray(bufferSize)
 
-    override suspend fun computeNext() {
-        val read = readBlock(byteArray)
+    override fun computeNext() {
+        val read = nextBlock(byteArray)
         if (read == -1) {
             close()
             closeBlock()

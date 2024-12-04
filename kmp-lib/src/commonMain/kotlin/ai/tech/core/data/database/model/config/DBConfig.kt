@@ -62,7 +62,7 @@ public data class DBConfig(
     }"
 
     @Transient
-    val r2dbcUrl: String = "$protocol:$driver://${user}:$password@$host:$port/database${
+    val r2dbcUrl: String = "r2dbc:$driver://${user}:$password@$host:$port/database${
         listOfNotNull(
             if (ssl) {
                 when (driver) {
@@ -88,7 +88,38 @@ public data class DBConfig(
 
     public companion object {
 
-        public operator fun invoke(url: String): DBConfig {
+        public operator fun invoke(
+            url: String,
+            username: String = "",
+            password: String = "",
+            initPoolSize: Int? = null,
+            maxPoolSize: Int? = null,
+            connectTimeout: Duration? = null,
+            lockWaitTimeout: Duration? = null,
+            statementTimeout: Duration? = null,
+            table: List<TableConfig> = emptyList(),
+            // Only Exposed with Hikary properties
+            // hikary
+            validationTimeout: Duration? = null,
+            initializationFailTimeout: Duration? = null,
+            keepaliveTime: Duration? = null,
+            isAutoCommit: Boolean? = null,
+            isReadOnly: Boolean? = null,
+            transactionIsolation: TransactionIsolation? = null,
+            useNestedTransactions: Boolean? = null,
+            // exposed
+            defaultFetchSize: Int? = null,
+            defaultIsolationLevel: Int? = null,
+            defaultMaxAttempts: Int? = null,
+            defaultMinRetryDelay: Long? = null,
+            defaultMaxRetryDelay: Long? = null,
+            warnLongQueriesDuration: Long?? = null,
+            maxEntitiesToStoreInCachePerEntity: Int? = null,
+            keepLoadedReferencesOutOfTransaction: Boolean? = null,
+            defaultSchema: SchemaConfig? = null,
+            logTooMuchResultSetsThreshold: Int? = null,
+            preserveKeywordCasing: Boolean? = null,
+        ): DBConfig {
 
             // Try matching JDBC first
             val jdbcMatchResult = jdbcUR.matchEntire(url)
@@ -101,28 +132,56 @@ public data class DBConfig(
                     ?: throw IllegalArgumentException("Database name not found")
 
                 // Default user and password for JDBC
-                var user = ""
-                var password = ""
+                var username = username
+                var password = password
                 var ssl = false
 
                 // Handle query parameters if present
                 jdbcMatchResult.groups[6]?.value?.split("&")?.forEach { param ->
                     val (key, value) = param.split("=").map { it.trim() }
                     when (key) {
-                        "user" -> user = value
+                        "user" -> username = value
                         "password" -> password = value
                         "ssl" -> ssl = value.toBoolean()
                     }
                 }
 
                 return DBConfig(
-                    driver = driver,
-                    host = host,
-                    port = port,
-                    user = user,
-                    password = password,
-                    database = database,
-                    ssl = ssl,
+                    "jdbc",
+                    driver,
+                    host,
+                    port,
+                    username,
+                    password,
+                    database,
+                    ssl,
+                    initPoolSize,
+                    maxPoolSize,
+                    connectTimeout,
+                    lockWaitTimeout,
+                    statementTimeout,
+                    table,
+                    // Only Exposed with Hikary properties
+                    // hikary
+                    validationTimeout,
+                    initializationFailTimeout,
+                    keepaliveTime,
+                    isAutoCommit,
+                    isReadOnly,
+                    transactionIsolation,
+                    useNestedTransactions,
+                    // exposed
+                    defaultFetchSize,
+                    defaultIsolationLevel,
+                    defaultMaxAttempts,
+                    defaultMinRetryDelay,
+                    defaultMaxRetryDelay,
+                    warnLongQueriesDuration,
+                    maxEntitiesToStoreInCachePerEntity,
+                    keepLoadedReferencesOutOfTransaction,
+                    defaultSchema,
+                    logTooMuchResultSetsThreshold,
+                    preserveKeywordCasing,
                 )
             }
 
@@ -130,8 +189,8 @@ public data class DBConfig(
             val r2dbcMatchResult = r2dbcUR.matchEntire(url)
             if (r2dbcMatchResult != null) {
                 // R2DBC URL parsing
-                val user = r2dbcMatchResult.groups[3]?.value ?: throw IllegalArgumentException("User not found")
-                val password = r2dbcMatchResult.groups[4]?.value ?: throw IllegalArgumentException("Password not found")
+                val username = r2dbcMatchResult.groups[3]?.value ?: username
+                val password = r2dbcMatchResult.groups[4]?.value ?: password
                 val host = r2dbcMatchResult.groups[5]?.value ?: throw IllegalArgumentException("Host not found")
                 val port = r2dbcMatchResult.groups[6]?.value?.toInt()
                     ?: throw IllegalArgumentException("Port not found")
@@ -143,13 +202,41 @@ public data class DBConfig(
                 val ssl = r2dbcMatchResult.groups[8]?.value?.contains("ssl=true") == true
 
                 return DBConfig(
-                    driver = driver,
-                    host = host,
-                    port = port,
-                    user = user,
-                    password = password,
-                    database = database,
-                    ssl = ssl,
+                    "r2dbc",
+                    driver,
+                    host,
+                    port,
+                    username,
+                    password,
+                    database,
+                    ssl,
+                    initPoolSize,
+                    maxPoolSize,
+                    connectTimeout,
+                    lockWaitTimeout,
+                    statementTimeout,
+                    table,
+                    // Only Exposed with Hikary properties
+                    // hikary
+                    validationTimeout,
+                    initializationFailTimeout,
+                    keepaliveTime,
+                    isAutoCommit,
+                    isReadOnly,
+                    transactionIsolation,
+                    useNestedTransactions,
+                    // exposed
+                    defaultFetchSize,
+                    defaultIsolationLevel,
+                    defaultMaxAttempts,
+                    defaultMinRetryDelay,
+                    defaultMaxRetryDelay,
+                    warnLongQueriesDuration,
+                    maxEntitiesToStoreInCachePerEntity,
+                    keepLoadedReferencesOutOfTransaction,
+                    defaultSchema,
+                    logTooMuchResultSetsThreshold,
+                    preserveKeywordCasing,
                 )
             }
 
@@ -167,4 +254,66 @@ public val String.isJdbcUrl: Boolean
 public val String.isR2dbcUrl: Boolean
     get() = matches(r2dbcUR)
 
-
+public fun db(
+    url: String,
+    username: String = "",
+    password: String = "",
+    initPoolSize: Int? = null,
+    maxPoolSize: Int? = null,
+    connectTimeout: Duration? = null,
+    lockWaitTimeout: Duration? = null,
+    statementTimeout: Duration? = null,
+    table: List<TableConfig> = emptyList(),
+    // Only Exposed with Hikary properties
+    // hikary
+    validationTimeout: Duration? = null,
+    initializationFailTimeout: Duration? = null,
+    keepaliveTime: Duration? = null,
+    isAutoCommit: Boolean? = null,
+    isReadOnly: Boolean? = null,
+    transactionIsolation: TransactionIsolation? = null,
+    useNestedTransactions: Boolean? = null,
+    // exposed
+    defaultFetchSize: Int? = null,
+    defaultIsolationLevel: Int? = null,
+    defaultMaxAttempts: Int? = null,
+    defaultMinRetryDelay: Long? = null,
+    defaultMaxRetryDelay: Long? = null,
+    warnLongQueriesDuration: Long?? = null,
+    maxEntitiesToStoreInCachePerEntity: Int? = null,
+    keepLoadedReferencesOutOfTransaction: Boolean? = null,
+    defaultSchema: SchemaConfig? = null,
+    logTooMuchResultSetsThreshold: Int? = null,
+    preserveKeywordCasing: Boolean? = null,
+): DBConfig = DBConfig(
+    url,
+    username,
+    password,
+    initPoolSize,
+    maxPoolSize,
+    connectTimeout,
+    lockWaitTimeout,
+    statementTimeout,
+    table,
+    // Only Exposed with Hikary properties
+    // hikary
+    validationTimeout,
+    initializationFailTimeout,
+    keepaliveTime,
+    isAutoCommit,
+    isReadOnly,
+    transactionIsolation,
+    useNestedTransactions,
+    // exposed
+    defaultFetchSize,
+    defaultIsolationLevel,
+    defaultMaxAttempts,
+    defaultMinRetryDelay,
+    defaultMaxRetryDelay,
+    warnLongQueriesDuration,
+    maxEntitiesToStoreInCachePerEntity,
+    keepLoadedReferencesOutOfTransaction,
+    defaultSchema,
+    logTooMuchResultSetsThreshold,
+    preserveKeywordCasing,
+)

@@ -2,7 +2,7 @@ package ai.tech.core.misc.consul.model.parameter
 
 import ai.tech.core.misc.network.http.client.serializableHttpQueryParameters
 import ai.tech.core.misc.type.multiple.filterKeysIn
-import ai.tech.core.misc.type.serializer.bignum.BigIntegerSerial
+import ai.tech.core.misc.type.serialization.serializer.bignum.BigIntegerSerial
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.Transient
 

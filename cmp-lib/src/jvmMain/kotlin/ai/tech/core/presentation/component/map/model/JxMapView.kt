@@ -1,7 +1,7 @@
 package ai.tech.core.presentation.component.map.model
 
 import ai.tech.core.misc.location.model.Location
-import ai.tech.core.misc.type.multiple.outersectUpdate
+import ai.tech.core.misc.type.multiple.iterable.symmetricDifferenceUpdate
 import org.jxmapviewer.JXMapViewer
 import org.jxmapviewer.OSMTileFactoryInfo
 import org.jxmapviewer.VirtualEarthTileFactoryInfo
@@ -66,27 +66,35 @@ public class JxMapView(
             addKeyListener(PanKeyListener(this))
         }
 
-        overlayPainter = CompoundPainter(mutableListOf<Painter<JXMapViewer>>().apply {
+        overlayPainter = CompoundPainter(
+            mutableListOf<Painter<JXMapViewer>>().apply {
 
-            markers?.let { add(SwingWaypointPainter(this@JxMapView, it)) }
+                markers?.let { add(SwingWaypointPainter(this@JxMapView, it)) }
 
-            routes?.forEach { add(RoutePainter(it)) }
+                routes?.forEach { add(RoutePainter(it)) }
 
-            onSelect?.let { os ->
-                add(
-                    SelectionPainter(SelectionAdapter(this@JxMapView).also {
-                        addMouseListener(it)
-                        addMouseMotionListener(it)
-                    }, markers?.let { ms ->
-                        { rectangle ->
-                            selectedMarkers.outersectUpdate(ms.filter {
-                                isSelected(it.position, rectangle)
-                            }).let { os(it.first.toSet(), it.second.toSet()) }
-                        }
-                    })
-                )
-            }
-        })
+                onSelect?.let { os ->
+                    add(
+                        SelectionPainter(
+                            SelectionAdapter(this@JxMapView).also {
+                                addMouseListener(it)
+                                addMouseMotionListener(it)
+                            },
+                            markers?.let { ms ->
+                                { rectangle ->
+                                    val (left, right) = selectedMarkers.symmetricDifferenceUpdate(
+                                        ms.filter {
+                                            isSelected(it.position, rectangle)
+                                        },
+                                    )
+                                    os(left, right)
+                                }
+                            },
+                        ),
+                    )
+                }
+            },
+        )
 
         val tileLicenseLabel = JLabel(tileFactory.toLicenseText())
 
@@ -95,20 +103,21 @@ public class JxMapView(
                 JPanel().apply {
                     layout = GridLayout()
                     add(JLabel(localization.selectTile))
-                    add(JComboBox(factories.map { it.first }.toTypedArray()).apply {
-                        addItemListener {
-                            tileFactory = factories[selectedIndex].second
-                            initialZoom?.let { zoom = it }
-                            tileLicenseLabel.setText(tileFactory.toLicenseText())
-                        }
-                    })
-                }
+                    add(
+                        JComboBox(factories.map { it.first }.toTypedArray()).apply {
+                            addItemListener {
+                                tileFactory = factories[selectedIndex].second
+                                initialZoom?.let { zoom = it }
+                                tileLicenseLabel.setText(tileFactory.toLicenseText())
+                            }
+                        },
+                    )
+                },
             )
         }
 
         add(tileLicenseLabel)
     }
-
 
     public fun toScreenPixel(geoPosition: GeoPosition): Point2D = tileFactory.geoToPixel(geoPosition, zoom).let {
         Point2D.Double(it.x - center.x + width / 2, it.y - center.y + height / 2)
@@ -117,14 +126,13 @@ public class JxMapView(
     public fun isSelected(geoPosition: GeoPosition, rectangle: Rectangle): Boolean = toScreenPixel(geoPosition).let {
         it.x.toInt() in rectangle.x until rectangle.x + rectangle.width && it.y.toInt() in rectangle.y until rectangle.y + rectangle.height
     }
-
 }
 
 private fun TileFactoryInfo.toCachedDefaultTileFactory() = DefaultTileFactory(this).apply {
     setLocalCache(
         FileBasedLocalCache(
-            File(System.getProperty("user.home") + File.separator + ".$name" + ".jxmapviewer2"), false
-        )
+            File(System.getProperty("user.home") + File.separator + ".$name" + ".jxmapviewer2"), false,
+        ),
     )
     setThreadPoolSize(8)
 }

@@ -119,6 +119,9 @@ public val DBConfig.exposedDatabase: Database
         }
     }
 
+public val DBConfig.jdbc: Database
+    get() = exposedDatabase
+
 public val DBConfig.r2dbcConnectionFactory: ConnectionFactory
     get() =
         ConnectionFactories.get(
@@ -163,7 +166,7 @@ public val DBConfig.r2dbcConnectionFactory: ConnectionFactory
             )
         }
 
-public suspend fun DBConfig.getKotysaR2dbcClient(): R2dbcSqlClient {
+public suspend fun DBConfig.kotysaR2dbcClient(): R2dbcSqlClient {
     val r2dbcConnectionFactory = r2dbcConnectionFactory
 
     val createTables: List<Pair<List<Table<*>>, Creation>>
@@ -256,3 +259,5 @@ public suspend fun DBConfig.getKotysaR2dbcClient(): R2dbcSqlClient {
 
     return client
 }
+
+public suspend fun DBConfig.r2dbc(): R2dbcSqlClient = kotysaR2dbcClient()

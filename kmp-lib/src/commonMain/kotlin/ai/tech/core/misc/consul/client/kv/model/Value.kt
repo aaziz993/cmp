@@ -2,7 +2,7 @@ package ai.tech.core.misc.consul.client.kv.model
 
 import ai.tech.core.misc.type.multiple.decode
 import ai.tech.core.misc.type.multiple.decodeBase64
-import ai.tech.core.misc.type.serializer.bignum.BigIntegerSerial
+import ai.tech.core.misc.type.serialization.serializer.bignum.BigIntegerSerial
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.Transient

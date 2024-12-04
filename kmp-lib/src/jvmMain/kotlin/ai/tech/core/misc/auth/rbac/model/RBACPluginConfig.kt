@@ -1,4 +1,4 @@
-package ai.tech.core.misc.plugin.auth.rbac.model
+package ai.tech.core.misc.auth.rbac.model
 
 public class RBACPluginConfig {
     public var roleExtractor: ((Any) -> Set<String>) = { emptySet() }

@@ -2,7 +2,7 @@ package ai.tech.core.presentation.component.lazycolumn.crud
 
 import ai.tech.core.data.crud.client.model.EntityProperty
 import ai.tech.core.data.crud.client.model.EntityItem
-import ai.tech.core.misc.type.multiple.all
+import ai.tech.core.misc.type.multiple.iterable.all
 import ai.tech.core.presentation.component.lazycolumn.crud.model.CRUDLazyColumnState
 import ai.tech.core.presentation.component.textfield.AdvancedTextField
 import ai.tech.core.presentation.component.textfield.model.TextField

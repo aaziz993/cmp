@@ -1,12 +1,12 @@
 package ai.tech.core.misc.type.multiple
 
-import ai.tech.core.misc.type.multiple.model.ByteReaderClosableIterator
+import ai.tech.core.misc.type.multiple.model.ByteArrayClosableIterator
 import java.io.InputStream
 import java.io.OutputStream
 
 // /////////////////////////////////////////////////////ITERATOR////////////////////////////////////////////////////////
-public fun InputStream.iterator(closeBlock: () -> Unit = {}, bufferSize: Int = DEFAULT_BUFFER_SIZE): ByteReaderClosableIterator =
-    ByteReaderClosableIterator(
+public fun InputStream.iterator(closeBlock: () -> Unit = {}, bufferSize: Int = DEFAULT_BUFFER_SIZE): ByteArrayClosableIterator =
+    ByteArrayClosableIterator(
         ::read,
         {
             close()

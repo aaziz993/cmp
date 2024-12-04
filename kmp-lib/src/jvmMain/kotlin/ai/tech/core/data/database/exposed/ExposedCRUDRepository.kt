@@ -35,13 +35,11 @@ import ai.tech.core.data.transaction.model.javaSqlTransactionIsolation
 import ai.tech.core.misc.type.memberProperty
 import ai.tech.core.misc.type.serializablePropertyValues
 import ai.tech.core.misc.type.serialization.decodeFromAny
-import ai.tech.core.misc.type.serializer.create
 import kotlin.coroutines.CoroutineContext
 import kotlin.reflect.KClass
 import kotlin.reflect.KType
 import kotlin.reflect.full.starProjectedType
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.asFlow
 import kotlinx.coroutines.flow.flow
 import kotlinx.datetime.TimeZone
 import kotlinx.serialization.InternalSerializationApi
@@ -67,13 +65,12 @@ import org.jetbrains.exposed.sql.min
 import org.jetbrains.exposed.sql.selectAll
 import org.jetbrains.exposed.sql.statements.UpdateBuilder
 import org.jetbrains.exposed.sql.sum
-import org.jetbrains.exposed.sql.transactions.TransactionManager
 import org.jetbrains.exposed.sql.transactions.experimental.newSuspendedTransaction
 import org.jetbrains.exposed.sql.transactions.transactionManager
 import org.jetbrains.exposed.sql.update
 import org.slf4j.LoggerFactory
 
-public abstract class AbstractExposedCRUDRepository<T : Any>(
+public open class ExposedCRUDRepository<T : Any>(
     private val database: Database,
     private val table: Table,
     private val getEntityPropertyValues: (T) -> Map<String, Any?>,
@@ -156,14 +153,14 @@ public abstract class AbstractExposedCRUDRepository<T : Any>(
     // Since Exposed 0.16.1 it is possible to use nested transactions as separate transactions by setting useNestedTransactions = true on the desired Database instance.
     final override suspend fun <R> transactional(block: suspend CRUDRepository<T>.(Transaction) -> R): R =
         newSuspendedTransaction(coroutineContext, database, transactionIsolation?.javaSqlTransactionIsolation) {
-            this@AbstractExposedCRUDRepository.statementCount?.let { statementCount = it }
-            this@AbstractExposedCRUDRepository.duration?.let { duration = it }
-            this@AbstractExposedCRUDRepository.warnLongQueriesDuration?.let { warnLongQueriesDuration = it }
-            this@AbstractExposedCRUDRepository.debug?.let { debug = it }
-            this@AbstractExposedCRUDRepository.maxAttempts?.let { maxAttempts = it }
-            this@AbstractExposedCRUDRepository.minRetryDelay?.let { minRetryDelay = it }
-            this@AbstractExposedCRUDRepository.maxRetryDelay?.let { maxRetryDelay = it }
-            this@AbstractExposedCRUDRepository.queryTimeout?.let { queryTimeout = it }
+            this@ExposedCRUDRepository.statementCount?.let { statementCount = it }
+            this@ExposedCRUDRepository.duration?.let { duration = it }
+            this@ExposedCRUDRepository.warnLongQueriesDuration?.let { warnLongQueriesDuration = it }
+            this@ExposedCRUDRepository.debug?.let { debug = it }
+            this@ExposedCRUDRepository.maxAttempts?.let { maxAttempts = it }
+            this@ExposedCRUDRepository.minRetryDelay?.let { minRetryDelay = it }
+            this@ExposedCRUDRepository.maxRetryDelay?.let { maxRetryDelay = it }
+            this@ExposedCRUDRepository.queryTimeout?.let { queryTimeout = it }
             block(ExposedTransaction(this))
         }
 
@@ -374,7 +371,80 @@ public abstract class AbstractExposedCRUDRepository<T : Any>(
 
     @Suppress("UNCHECKED_CAST")
     private fun ISqlExpressionBuilder.predicate(predicate: BooleanVariable): Op<Boolean> =
-        (predicate as Expression).breadthMap(
+        (predicate as Expression).map(
             { expression, args -> eval(expression, args) },
         ) { expression -> eval(expression, expression.arguments) } as Op<Boolean>
 }
+
+public fun <T : Any> Database.repository(
+    table: Table,
+    getEntityPropertyValues: (T) -> Map<String, Any?>,
+    createEntity: (ResultRow) -> T,
+    createdAtProperty: String? = "createdAt",
+    updatedAtProperty: String? = "updatedAt",
+    timeZone: TimeZone = TimeZone.currentSystemDefault(),
+    coroutineContext: CoroutineContext? = null,
+    transactionIsolation: TransactionIsolation? = null,
+    statementCount: Int? = null,
+    duration: Long? = null,
+    warnLongQueriesDuration: Long? = null,
+    debug: Boolean? = null,
+    maxAttempts: Int? = null,
+    minRetryDelay: Long? = null,
+    maxRetryDelay: Long? = null,
+    queryTimeout: Int? = null,
+): CRUDRepository<T> = ExposedCRUDRepository(
+    this,
+    table,
+    getEntityPropertyValues,
+    createEntity,
+    createdAtProperty,
+    updatedAtProperty,
+    timeZone,
+    coroutineContext,
+    transactionIsolation,
+    statementCount,
+    duration,
+    warnLongQueriesDuration,
+    debug,
+    maxAttempts,
+    minRetryDelay,
+    maxRetryDelay,
+    queryTimeout,
+)
+
+public fun <T : Any> Database.repository(
+    kClass: KClass<T>,
+    table: Table,
+    createdAtProperty: String? = "createdAt",
+    updatedAtProperty: String? = "updatedAt",
+    timeZone: TimeZone = TimeZone.UTC,
+    coroutineContext: CoroutineContext? = null,
+    transactionIsolation: TransactionIsolation? = null,
+    statementCount: Int? = null,
+    duration: Long? = null,
+    warnLongQueriesDuration: Long? = null,
+    debug: Boolean? = null,
+    maxAttempts: Int? = null,
+    minRetryDelay: Long? = null,
+    maxRetryDelay: Long? = null,
+    queryTimeout: Int? = null,
+): CRUDRepository<T> = ExposedCRUDRepository(
+    kClass,
+    this,
+    table,
+    createdAtProperty,
+    updatedAtProperty,
+    timeZone,
+    coroutineContext,
+    transactionIsolation,
+    statementCount,
+    duration,
+    warnLongQueriesDuration,
+    debug,
+    maxAttempts,
+    minRetryDelay,
+    maxRetryDelay,
+    queryTimeout,
+)
+

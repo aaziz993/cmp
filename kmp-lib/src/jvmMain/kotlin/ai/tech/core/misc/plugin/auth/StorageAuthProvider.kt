@@ -9,7 +9,7 @@ import ai.tech.core.misc.auth.model.identity.User
 import ai.tech.core.misc.auth.model.identity.principal.PrincipalEntity
 import ai.tech.core.misc.auth.model.identity.role.RoleEntity
 import ai.tech.core.misc.plugin.auth.model.config.StoreAuthProviderConfig
-import ai.tech.core.misc.type.serializer.decodeMapFromString
+import ai.tech.core.misc.type.serialization.serializer.decodeMapFromString
 import kotlin.collections.component1
 import kotlin.collections.component2
 import kotlin.collections.ifEmpty

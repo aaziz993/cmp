@@ -1,8 +1,9 @@
-package ai.tech.core.misc.plugin.auth.rbac
+package ai.tech.core.misc.auth.rbac
 
-import ai.tech.core.misc.auth.model.AuthRole
 import ai.tech.core.misc.auth.model.exception.UnauthorizedAccessException
-import ai.tech.core.misc.plugin.auth.rbac.model.RBACPluginConfig
+import ai.tech.core.misc.auth.rbac.model.RBACPluginConfig
+import ai.tech.core.misc.type.multiple.iterable.contains
+import ai.tech.core.misc.type.multiple.iterable.model.ContainResolution
 import io.ktor.http.*
 import io.ktor.server.application.*
 import io.ktor.server.auth.*
@@ -19,7 +20,8 @@ public fun rbac(name: String? = null, config: RBACPluginConfig.() -> Unit) {
 public class RBACConfiguration {
 
     public lateinit var configurations: Set<String?>
-    public lateinit var role: AuthRole
+    public lateinit var roles: Set<String>
+    public lateinit var roleResolution: ContainResolution
 }
 
 public val RBACPlugin: RouteScopedPlugin<RBACConfiguration> =
@@ -35,13 +37,13 @@ public val RBACPlugin: RouteScopedPlugin<RBACConfiguration> =
             on(AuthenticationChecked) { call ->
                 call.principal<Any>()?.let { principal ->
 
-                    val roles = globalPluginConfigs.flatMap { it.roleExtractor(principal) }.toSet()
+                    val principalRoles = globalPluginConfigs.flatMap { it.roleExtractor(principal) }.toSet()
 
-                    if (!role.validate(roles)) {
+                    if (!roles.contains(principalRoles, roleResolution)) {
                         val message =
-                            "Authorization failed for ${call.request.path()} should be ${role.resolution.name.lowercase()} of the roles [${
-                                roles.joinToString(", ")
-                            }] in [${role.roles.joinToString(", ")}]"
+                            "Authorization failed for ${call.request.path()} should be ${roleResolution.name.lowercase()} of the required roles [${
+                                roles.joinToString()
+                            }] in principal roles [${principalRoles.joinToString()}]"
                         if (application.developmentMode) {
                             application.log.warn(message)
                         }

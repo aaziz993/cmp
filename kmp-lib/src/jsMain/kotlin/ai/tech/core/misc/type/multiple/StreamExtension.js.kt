@@ -4,8 +4,8 @@ import ai.tech.core.data.model.AudioFormat
 import ai.tech.core.misc.type.Object
 import ai.tech.core.misc.type.multiple.model.AbstractAsyncIterator
 import ai.tech.core.misc.type.multiple.model.AsyncIterator
-import ai.tech.core.misc.type.multiple.model.ClosableAbstractAsyncIterator
-import ai.tech.core.misc.type.multiple.model.ClosableAbstractIterator
+import ai.tech.core.misc.type.multiple.model.AbstractClosableAbstractAsyncIterator
+import ai.tech.core.misc.type.multiple.model.AbstractClosableAbstractIterator
 import ai.tech.core.misc.type.single.denormalizeInt
 import ai.tech.core.misc.type.single.toByteArray
 import js.typedarrays.Float32Array
@@ -48,7 +48,7 @@ public fun MediaStream.rgbaIterator(
     height: Double,
     x: Double = 0.0,
     y: Double = 0.0,
-): ClosableAbstractIterator<ByteArray> =
+): AbstractClosableAbstractIterator<ByteArray> =
     MediaStreamImageIterator(
         this,
         width,
@@ -63,7 +63,7 @@ private class MediaStreamImageIterator(
     private val height: Double,
     private val x: Double = 0.0,
     private val y: Double = 0.0,
-) : ClosableAbstractIterator<ByteArray>() {
+) : AbstractClosableAbstractIterator<ByteArray>() {
 
     val canvas = document.createElement("canvas") as HTMLCanvasElement
     val context = canvas.getContext(CanvasRenderingContext2D.ID) as CanvasRenderingContext2D
@@ -88,7 +88,7 @@ public fun MediaStream.audioIterator(
     audioFormat: AudioFormat,
     bufferSize: Int,
     audioContext: AudioContext,
-): ClosableAbstractAsyncIterator<ByteArray> =
+): AbstractClosableAbstractAsyncIterator<ByteArray> =
     MediaStreamAudioAsyncIterator(
         this,
         audioFormat,
@@ -101,7 +101,7 @@ private class MediaStreamAudioAsyncIterator(
     private val audioFormat: AudioFormat,
     bufferSize: Int,
     private val audioContext: AudioContext,
-) : ClosableAbstractAsyncIterator<ByteArray>() {
+) : AbstractClosableAbstractAsyncIterator<ByteArray>() {
 
     private val channel = Channel<ByteArray>(1)
     private val sampleSizeInBytes = audioFormat.sampleSizeInBits / 8

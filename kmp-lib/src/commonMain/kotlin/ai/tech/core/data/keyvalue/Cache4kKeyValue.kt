@@ -1,5 +1,7 @@
 package ai.tech.core.data.keyvalue
 
+import ai.tech.core.misc.cache.model.CacheConfig
+import ai.tech.core.misc.cache.model.CacheExpiration
 import ai.tech.core.misc.type.model.Entry
 import io.github.reactivecircus.cache4k.Cache
 import io.github.reactivecircus.cache4k.CacheEvent
@@ -17,6 +19,26 @@ public open class Cache4kKeyValue(
     public val keyDelimiter: Char = '.',
     public val nullValue: String = "null",
 ) : AbstractKeyValue() {
+
+    public constructor(
+        config: CacheConfig? = null,
+        keyDelimiter: Char = '.',
+        nullValue: String = "null",
+    ) : this(
+        {
+            config?.let {
+                it.size?.let(::maximumCacheSize)
+                if (it.expiresIn != null) {
+                    when (it.expiration) {
+                        CacheExpiration.AFTER_WRITE -> expireAfterWrite(it.expiresIn)
+                        CacheExpiration.AFTER_ACCESS -> expireAfterAccess(it.expiresIn)
+                    }
+                }
+            }
+            this
+        },
+        keyDelimiter, nullValue,
+    )
 
     private val cache = Cache.Builder<String, String>()
         .config()
