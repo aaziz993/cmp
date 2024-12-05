@@ -1,10 +1,10 @@
 package ai.tech.core.misc.auth.firebase
 
 import ai.tech.core.data.keyvalue.AbstractKeyValue
-import ai.tech.core.misc.auth.client.BearerAuthService
+import ai.tech.core.misc.auth.client.bearer.AbstractBearerAuthService
 import ai.tech.core.misc.auth.firebase.client.admin.FirebaseAdminClient
 import ai.tech.core.misc.auth.model.identity.User
-import ai.tech.core.misc.auth.model.bearer.BearerToken
+import ai.tech.core.misc.auth.client.bearer.model.BearerToken
 import ai.tech.core.misc.type.multiple.toList
 import io.ktor.client.*
 
@@ -14,7 +14,7 @@ public class FirebaseService(
     address: String,
     apiKey: String,
     keyValue: AbstractKeyValue,
-) : BearerAuthService(
+) : AbstractBearerAuthService(
     name,
     httpClient,
     address,

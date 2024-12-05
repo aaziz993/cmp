@@ -1,6 +1,6 @@
 package ai.tech.core.misc.auth.firebase.client.admin.model
 
-import ai.tech.core.misc.auth.model.bearer.BearerToken
+import ai.tech.core.misc.auth.client.bearer.model.BearerToken
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 

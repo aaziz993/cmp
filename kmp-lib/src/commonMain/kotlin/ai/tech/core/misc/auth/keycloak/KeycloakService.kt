@@ -1,7 +1,7 @@
 package ai.tech.core.misc.auth.keycloak
 
 import ai.tech.core.data.keyvalue.AbstractKeyValue
-import ai.tech.core.misc.auth.client.BearerAuthService
+import ai.tech.core.misc.auth.client.bearer.AbstractBearerAuthService
 import ai.tech.core.misc.auth.keycloak.client.admin.KeycloakAdminClient
 import ai.tech.core.misc.auth.keycloak.client.admin.model.ExecuteActionsEmail
 import ai.tech.core.misc.auth.keycloak.client.admin.model.ResetPassword
@@ -9,14 +9,12 @@ import ai.tech.core.misc.auth.keycloak.client.admin.model.UserInfo
 import ai.tech.core.misc.auth.keycloak.client.admin.model.UserRepresentation
 import ai.tech.core.misc.auth.keycloak.client.token.KeycloakTokenClient
 import ai.tech.core.misc.auth.model.identity.User
-import ai.tech.core.misc.auth.model.bearer.BearerToken
+import ai.tech.core.misc.auth.client.bearer.model.BearerToken
 import io.ktor.client.*
 import io.ktor.client.call.body
 import io.ktor.client.plugins.auth.providers.RefreshTokensParams
 import io.ktor.client.request.forms.submitForm
-import io.ktor.http.ParametersBuilder
 import io.ktor.http.parameters
-import kotlin.text.append
 
 public class KeycloakService(
     name: String,
@@ -25,7 +23,7 @@ public class KeycloakService(
     public val realm: String,
     public val clientId: String,
     keyValue: AbstractKeyValue,
-) : BearerAuthService(
+) : AbstractBearerAuthService(
     name,
     httpClient,
     address,
@@ -41,7 +39,7 @@ public class KeycloakService(
     )
 
     private val adminClient = KeycloakAdminClient(
-        authHttpClient,
+        this@KeycloakService.httpClient,
         address,
         realm,
     )

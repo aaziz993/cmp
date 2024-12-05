@@ -1,6 +1,6 @@
 package ai.tech.core.misc.plugin.auth.oauth.model.config
 
-import ai.tech.core.misc.auth.model.oauth.config.OAuthConfig
+import ai.tech.core.misc.auth.client.oauth.config.OAuthConfig
 import ai.tech.core.misc.plugin.auth.model.config.AuthProviderConfig
 import ai.tech.core.misc.plugin.session.model.config.CookieConfig
 import ai.tech.core.misc.type.serialization.serializer.http.HttpMethodSerial

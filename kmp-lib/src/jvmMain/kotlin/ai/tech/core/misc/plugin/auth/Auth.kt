@@ -250,7 +250,7 @@ private fun AuthenticationConfig.configureOAuth(
     val service = OAuthService(name, config)
 
     oauth(name) {
-        urlProvider = { "$redirectUrl/callback" }
+        urlProvider = { redirectUrl }
 
         providerLookup = {
             OAuthServerSettings.OAuth2ServerSettings(

@@ -59,6 +59,7 @@ import org.slf4j.LoggerFactory
 import org.ufoss.kotysa.AbstractTable
 import org.ufoss.kotysa.CoroutinesSqlClientDeleteOrUpdate
 import org.ufoss.kotysa.CoroutinesSqlClientSelect
+import org.ufoss.kotysa.DefaultSqlClientCommon
 import org.ufoss.kotysa.KotlinxLocalDateColumn
 import org.ufoss.kotysa.KotlinxLocalDateTimeColumn
 import org.ufoss.kotysa.KotlinxLocalTimeColumn
@@ -73,7 +74,7 @@ import org.ufoss.kotysa.r2dbc.transaction.R2dbcTransactionImpl
 import org.ufoss.kotysa.r2dbc.SqlClientR2dbc
 
 @OptIn(InternalSerializationApi::class)
-public abstract class AbstractKotysaCRUDRepository<T : Any>(
+public class KotysaCRUDRepository<T : Any>(
     public val client: R2dbcSqlClient,
     public val table: AbstractTable<T>,
     createEntity: Map<String, Any?>. () -> T,
@@ -116,7 +117,7 @@ public abstract class AbstractKotysaCRUDRepository<T : Any>(
 
     override val updatedAtNow: ((TimeZone) -> Any)? = updatedAtProperty?.let { property -> table[property]!! }?.now
 
-    final override suspend fun <R> transactional(block: suspend CRUDRepository<T>.(Transaction) -> R): R =
+    override suspend fun <R> transactional(block: suspend CRUDRepository<T>.(Transaction) -> R): R =
         transactionalProtected {
             block(
                 KotysaTransaction(
@@ -133,17 +134,17 @@ public abstract class AbstractKotysaCRUDRepository<T : Any>(
         }!!
 
     @Suppress("UNCHECKED_CAST")
-    final override suspend fun insert(entities: List<T>): Unit =
+    override suspend fun insert(entities: List<T>): Unit =
         client.insert(*entities.withCreatedAtEntities.toTypedArray())
 
     @Suppress("UNCHECKED_CAST")
-    final override suspend fun insertAndReturn(entities: List<T>): List<T> =
+    override suspend fun insertAndReturn(entities: List<T>): List<T> =
         client.insertAndReturn(*entities.withCreatedAtEntities.toTypedArray()).toList()
 
-    final override suspend fun update(entities: List<T>): List<Boolean> =
+    override suspend fun update(entities: List<T>): List<Boolean> =
         entities.map { entity -> update(entity.withUpdatedAtEntity).execute() > 0L }
 
-    final override suspend fun update(
+    override suspend fun update(
         propertyValues: List<Map<String, Any?>>,
         predicate: BooleanVariable?,
     ): Long =
@@ -155,7 +156,7 @@ public abstract class AbstractKotysaCRUDRepository<T : Any>(
         }.first()
 
     @Suppress("UNCHECKED_CAST")
-    final override suspend fun upsert(entities: List<T>): List<T> = client.transactional {
+    override suspend fun upsert(entities: List<T>): List<T> = client.transactional {
         val (exists, news) = entities.withIndex().partition { (_, entity) ->
             val id = table.kotysaPk.columns.single().entityGetter(entity)
 
@@ -173,26 +174,26 @@ public abstract class AbstractKotysaCRUDRepository<T : Any>(
             }).sortedBy(IndexedValue<T>::index).map(IndexedValue<T>::value)
     }!!
 
-    final override fun find(
+    override fun find(
         sort: List<Order>?,
         predicate: BooleanVariable?,
         limitOffset: LimitOffset?
     ): Flow<T> = findHelper(sort, predicate, limitOffset)
 
-    final override fun find(
+    override fun find(
         projections: List<Variable>,
         sort: List<Order>?,
         predicate: BooleanVariable?,
         limitOffset: LimitOffset?
     ): Flow<List<Any?>> = findHelper(projections, sort, predicate, limitOffset)
 
-    final override suspend fun delete(predicate: BooleanVariable?): Long =
+    override suspend fun delete(predicate: BooleanVariable?): Long =
         predicate?.let {
-            client.deleteFrom(table).predicate(it).execute()
+            client.deleteFrom(table).wheres().predicate(it).execute()
         } ?: client.deleteAllFrom(table)
 
     @Suppress("UNCHECKED_CAST")
-    final override suspend fun <T> aggregate(aggregate: AggregateExpression<T>, predicate: BooleanVariable?): T {
+    override suspend fun <T> aggregate(aggregate: AggregateExpression<T>, predicate: BooleanVariable?): T {
         val column = aggregate.projection?.let { table[it.value]!! }
 
         if (column == null) {
@@ -252,7 +253,7 @@ public abstract class AbstractKotysaCRUDRepository<T : Any>(
                     client.selectSum(column)
                 }
             }
-        }.from(table).apply {
+        }.from(table).wheres().apply {
             predicate?.let { predicate(it) }
         }.fetchOne() as T
     }
@@ -319,7 +320,7 @@ public abstract class AbstractKotysaCRUDRepository<T : Any>(
     @Suppress("UNCHECKED_CAST")
     private fun <T : SqlClientQuery.Where<T>> SqlClientQuery.Whereable<T>.predicate(predicate: BooleanVariable): T {
 
-        where(LocationKotysaTable.id).eq(100)
+        where(LocationKotysaTable.id).eq(90)
 
         var value: Any? = null
 

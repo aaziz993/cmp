@@ -10,12 +10,9 @@ import ai.tech.core.data.expression.AggregateExpression
 import ai.tech.core.data.expression.BooleanVariable
 import ai.tech.core.data.expression.Variable
 import ai.tech.core.data.transaction.Transaction
-import ai.tech.core.misc.auth.client.AuthService
+import ai.tech.core.misc.auth.client.AbstractAuthService
 import ai.tech.core.misc.network.http.client.AbstractApiHttpClient
-import ai.tech.core.misc.network.http.client.JsonStream
 import ai.tech.core.misc.network.http.client.bodyAsInputStream
-import ai.tech.core.misc.type.serialization.encodeAnyToJsonElement
-import ai.tech.core.misc.type.serialization.json
 import io.ktor.client.*
 import io.ktor.client.call.*
 import io.ktor.client.request.forms.*
@@ -26,7 +23,6 @@ import io.ktor.utils.io.*
 import kotlinx.atomicfu.locks.ReentrantLock
 import kotlinx.atomicfu.locks.reentrantLock
 import kotlinx.atomicfu.locks.withLock
-import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.emitAll
 import kotlinx.coroutines.flow.flow
@@ -35,7 +31,6 @@ import kotlinx.serialization.KSerializer
 import kotlinx.serialization.PolymorphicSerializer
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
-import kotlinx.serialization.json.JsonElement
 
 public class BodyOutputStream : OutgoingContent.WriteChannelContent() {
 
@@ -58,7 +53,7 @@ public open class CRUDClient<T : Any>(
     public val serializer: KSerializer<T>,
     httpClient: HttpClient,
     public val address: String,
-    public val authService: AuthService? = null,
+    public val authService: AbstractAuthService? = null,
 ) : AbstractApiHttpClient(httpClient, address), CRUDRepository<T> {
 
     protected val lock: ReentrantLock = reentrantLock()

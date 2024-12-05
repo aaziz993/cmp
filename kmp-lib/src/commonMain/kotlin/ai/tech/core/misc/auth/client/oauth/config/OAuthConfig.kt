@@ -1,4 +1,4 @@
-package ai.tech.core.misc.auth.model.oauth.config
+package ai.tech.core.misc.auth.client.oauth.config
 
 public interface OAuthConfig {
 

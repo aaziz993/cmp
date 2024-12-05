@@ -217,6 +217,8 @@ public suspend fun hmacSha1Key(): HMAC.Key = hmacSha1KeyGenerator.generateKey()
 
 public suspend fun ByteArray.hmacSha1KeyDecode(format: HMAC.Key.Format): HMAC.Key = hmacSha1KeyDecoder.decodeFrom(format, this)
 
+public fun ByteArray.hmacSha1KeyDecodeBlocking(format: HMAC.Key.Format): HMAC.Key = hmacSha1KeyDecoder.decodeFromBlocking(format, this)
+
 public suspend fun hmacSha224Key(): HMAC.Key = hmacSha224KeyGenerator.generateKey()
 
 public suspend fun ByteArray.hmacSha224KeyDecode(format: HMAC.Key.Format): HMAC.Key = hmacSha224KeyDecoder.decodeFrom(format, this)
@@ -250,6 +252,8 @@ public suspend fun hmacSha3512Key(): HMAC.Key = hmacSha3512KeyGenerator.generate
 public suspend fun ByteArray.hmacSha3512KeyDecode(format: HMAC.Key.Format): HMAC.Key = hmacSha3512KeyDecoder.decodeFrom(format, this)
 
 public suspend fun ByteArray.hmacSignature(key: HMAC.Key): ByteArray = key.signatureGenerator().generateSignature(this)
+
+public fun ByteArray.hmacSignatureBlocking(key: HMAC.Key): ByteArray = key.signatureGenerator().generateSignatureBlocking(this)
 
 public suspend fun ByteArray.hmacVerifySignature(
     key: HMAC.Key,

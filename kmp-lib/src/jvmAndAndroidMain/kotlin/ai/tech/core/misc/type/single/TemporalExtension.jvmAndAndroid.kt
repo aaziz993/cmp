@@ -36,10 +36,10 @@ public val ZonedDateTime.isToday: Boolean get() = onSameLocalDay(ZonedDateTime.n
 
 public fun ZonedDateTime.toGMTDate(): GMTDate = toInstant().toGMTDate()
 
-public fun Date.toLocalDate(): java.time.LocalDate? = java.time.LocalDate.ofInstant(toInstant(), ZoneId.systemDefault())
+public fun Date.toLocalDate(zoneId: ZoneId = ZoneId.systemDefault()): java.time.LocalDate? = java.time.LocalDate.ofInstant(toInstant(), zoneId)
 
-public fun Date.toLocalTime(): java.time.LocalTime? = java.time.LocalTime.ofInstant(toInstant(), ZoneId.systemDefault())
+public fun Date.toLocalTime(zoneId: ZoneId = ZoneId.systemDefault()): java.time.LocalTime? = java.time.LocalTime.ofInstant(toInstant(), zoneId)
 
-public fun Date.toLocalDateTime(): java.time.LocalDateTime = java.time.LocalDateTime.ofInstant(toInstant(), ZoneId.systemDefault())
+public fun Date.toLocalDateTime(zoneId: ZoneId = ZoneId.systemDefault()): java.time.LocalDateTime = java.time.LocalDateTime.ofInstant(toInstant(), zoneId)
 
 public fun Date.toZonedDateTime(): ZonedDateTime = ZonedDateTime.ofInstant(toInstant(), GreenwichMeanTime)

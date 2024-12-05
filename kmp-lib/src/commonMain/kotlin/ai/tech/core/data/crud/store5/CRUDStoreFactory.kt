@@ -133,6 +133,11 @@ public class CRUDStoreFactory<Network : Any, Local : Any, Domain : Any>(
                     is EntityOperation.Mutation -> localRepository.handleWrite(operation, output) { it }
                 }
             },
+            delete = { operation ->
+                require(operation is EntityOperation.Mutation.Delete)
+                localRepository.handleWrite(operation, StoreOutput.Typed.Single(null)) { it }
+            },
+            deleteAll = { localRepository.handleWrite(EntityOperation.Mutation.Delete(), StoreOutput.Typed.Single(null)) { it } },
         )
 
     @Suppress("UNCHECKED_CAST")
@@ -235,7 +240,7 @@ public class CRUDStoreFactory<Network : Any, Local : Any, Domain : Any>(
                 StoreOutput.Untyped.Stream(find(projections, sort, predicate, limitOffset))
             }
 
-            is EntityOperation.Query.Aggregate -> StoreOutput.Untyped.Single(aggregate(this.aggregate, this.predicate))
+            is EntityOperation.Query.Aggregate -> StoreOutput.Typed.Single(aggregate(this.aggregate, this.predicate))
         }
     }
 

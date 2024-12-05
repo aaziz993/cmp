@@ -19,4 +19,4 @@ public inline fun <reified T> Claim.asList(): List<T?>? = asList(T::class.java)
 
 public inline fun <reified T> Claim.asArray(): Array<out T?>? = asArray(T::class.java)
 
-public fun Claim.asKotlinLocalDateTime(): LocalDateTime? = asDate()?.toInstant()?.toKotlinInstant()?.toLocalDateTime(TimeZone.currentSystemDefault())
+public fun Claim.asKotlinLocalDateTime(timeZone: TimeZone = TimeZone.currentSystemDefault()): LocalDateTime? = asDate()?.toInstant()?.toKotlinInstant()?.toLocalDateTime(timeZone)
