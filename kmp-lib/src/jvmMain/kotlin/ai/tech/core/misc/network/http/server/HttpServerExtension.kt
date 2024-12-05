@@ -4,7 +4,7 @@
 package ai.tech.core.misc.network.http.server
 
 import ai.tech.core.misc.network.http.client.JsonStream
-import ai.tech.core.misc.type.multiple.asyncLineIterator
+import ai.tech.core.misc.type.multiple.asyncIterator
 import ai.tech.core.misc.type.multiple.toByteWriteChannel
 import io.ktor.http.ContentType
 import io.ktor.http.HttpStatusCode
@@ -52,7 +52,7 @@ public fun Application.converters(contentType: ContentType): List<ContentConvert
         .takeIf { it.isNotEmpty() }
 
 public suspend fun RoutingCall.receiveInputStream() =
-    receiveChannel().asyncLineIterator()
+    receiveChannel().asyncIterator()
 
 public suspend fun RoutingCall.respondOutputStream(
     contentType: ContentType? = null,

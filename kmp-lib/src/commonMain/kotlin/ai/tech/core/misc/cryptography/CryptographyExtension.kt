@@ -149,21 +149,27 @@ private val aesGcmKeyDecoder: KeyDecoder<AES.Key.Format, AES.GCM.Key> by lazy { 
 
 public suspend fun aesGcmB128Key(): AES.GCM.Key = aesGcmB128KeyGenerator.generateKey()
 
+public fun aesGcmB128KeyBlocking(): AES.GCM.Key = aesGcmB128KeyGenerator.generateKeyBlocking()
+
 public suspend fun aesGcmB192Key(): AES.GCM.Key = aesGcmB192KeyGenerator.generateKey()
+
+public fun aesGcmB192KeyBlocking(): AES.GCM.Key = aesGcmB192KeyGenerator.generateKeyBlocking()
 
 public suspend fun aesGcmB256Key(): AES.GCM.Key = aesGcmB256KeyGenerator.generateKey()
 
+public fun aesGcmB256KeyBlocking(): AES.GCM.Key = aesGcmB256KeyGenerator.generateKeyBlocking()
+
 public suspend fun ByteArray.aesGcmKeyDecode(format: AES.Key.Format): AES.GCM.Key = aesGcmKeyDecoder.decodeFrom(format, this)
 
-public suspend fun ByteArray.encrypt(
-    key: AES.GCM.Key,
-    tagSize: BinarySize = 128.bits,
-): ByteArray = key.cipher(tagSize).encrypt(this)
+public fun ByteArray.aesGcmKeyDecodeBlocking(format: AES.Key.Format): AES.GCM.Key = aesGcmKeyDecoder.decodeFromBlocking(format, this)
 
-public suspend fun ByteArray.decrypt(
-    key: AES.GCM.Key,
-    tagSize: BinarySize = 128.bits,
-): ByteArray = key.cipher(tagSize).decrypt(this)
+public suspend fun ByteArray.encrypt(key: AES.GCM.Key, tagSize: BinarySize = 128.bits): ByteArray = key.cipher(tagSize).encrypt(this)
+
+public fun ByteArray.encryptBlocking(key: AES.GCM.Key, tagSize: BinarySize = 128.bits): ByteArray = key.cipher(tagSize).encryptBlocking(this)
+
+public suspend fun ByteArray.decrypt(key: AES.GCM.Key, tagSize: BinarySize = 128.bits): ByteArray = key.cipher(tagSize).decrypt(this)
+
+public fun ByteArray.decryptBlocking(key: AES.GCM.Key, tagSize: BinarySize = 128.bits): ByteArray = key.cipher(tagSize).decryptBlocking(this)
 
 // ///////////////////////////////////////////////////////HMAC//////////////////////////////////////////////////////////
 
@@ -211,9 +217,15 @@ private val hmacSha3512KeyDecoder: KeyDecoder<HMAC.Key.Format, HMAC.Key> by lazy
 
 public suspend fun hmacMd5Key(): HMAC.Key = hmacMd5KeyGenerator.generateKey()
 
+public fun hmacMd5KeyBlocking(): HMAC.Key = hmacMd5KeyGenerator.generateKeyBlocking()
+
 public suspend fun ByteArray.hmacMd5KeyDecode(format: HMAC.Key.Format): HMAC.Key = hmacMd5KeyDecoder.decodeFrom(format, this)
 
+public fun ByteArray.hmacMd5KeyDecodeBlocking(format: HMAC.Key.Format): HMAC.Key = hmacMd5KeyDecoder.decodeFromBlocking(format, this)
+
 public suspend fun hmacSha1Key(): HMAC.Key = hmacSha1KeyGenerator.generateKey()
+
+public suspend fun hmacSha1KeyBlocking(): HMAC.Key = hmacSha1KeyGenerator.generateKey()
 
 public suspend fun ByteArray.hmacSha1KeyDecode(format: HMAC.Key.Format): HMAC.Key = hmacSha1KeyDecoder.decodeFrom(format, this)
 
@@ -221,44 +233,75 @@ public fun ByteArray.hmacSha1KeyDecodeBlocking(format: HMAC.Key.Format): HMAC.Ke
 
 public suspend fun hmacSha224Key(): HMAC.Key = hmacSha224KeyGenerator.generateKey()
 
+public fun hmacSha224KeyBlocking(): HMAC.Key = hmacSha224KeyGenerator.generateKeyBlocking()
+
 public suspend fun ByteArray.hmacSha224KeyDecode(format: HMAC.Key.Format): HMAC.Key = hmacSha224KeyDecoder.decodeFrom(format, this)
+
+public fun ByteArray.hmacSha224KeyDecodeBlocking(format: HMAC.Key.Format): HMAC.Key = hmacSha224KeyDecoder.decodeFromBlocking(format, this)
 
 public suspend fun hmacSha256Key(): HMAC.Key = hmacSha256KeyGenerator.generateKey()
 
+public fun hmacSha256KeyBlocking(): HMAC.Key = hmacSha256KeyGenerator.generateKeyBlocking()
+
 public suspend fun ByteArray.hmacSha256KeyDecode(format: HMAC.Key.Format): HMAC.Key = hmacSha256KeyDecoder.decodeFrom(format, this)
+
+public fun ByteArray.hmacSha256KeyDecodeBlocking(format: HMAC.Key.Format): HMAC.Key = hmacSha256KeyDecoder.decodeFromBlocking(format, this)
 
 public suspend fun hmacSha384Key(): HMAC.Key = hmacSha384KeyGenerator.generateKey()
 
+public fun hmacSha384KeyBlocking(): HMAC.Key = hmacSha384KeyGenerator.generateKeyBlocking()
+
 public suspend fun ByteArray.hmacSha384KeyDecode(format: HMAC.Key.Format): HMAC.Key = hmacSha384KeyDecoder.decodeFrom(format, this)
+
+public fun ByteArray.hmacSha384KeyDecodeBlocking(format: HMAC.Key.Format): HMAC.Key = hmacSha384KeyDecoder.decodeFromBlocking(format, this)
 
 public suspend fun hmacSha512Key(): HMAC.Key = hmacSha512KeyGenerator.generateKey()
 
+public fun hmacSha512KeyBlocking(): HMAC.Key = hmacSha512KeyGenerator.generateKeyBlocking()
+
 public suspend fun ByteArray.hmacSha512KeyDecode(format: HMAC.Key.Format): HMAC.Key = hmacSha512KeyDecoder.decodeFrom(format, this)
+
+public fun ByteArray.hmacSha512KeyDecodeBlocking(format: HMAC.Key.Format): HMAC.Key = hmacSha512KeyDecoder.decodeFromBlocking(format, this)
 
 public suspend fun hmacSha3224Key(): HMAC.Key = hmacSha3224KeyGenerator.generateKey()
 
+public fun hmacSha3224KeyBlocking(): HMAC.Key = hmacSha3224KeyGenerator.generateKeyBlocking()
+
 public suspend fun ByteArray.hmacSha3224KeyDecode(format: HMAC.Key.Format): HMAC.Key = hmacSha3224KeyDecoder.decodeFrom(format, this)
+
+public fun ByteArray.hmacSha3224KeyDecodeBlocking(format: HMAC.Key.Format): HMAC.Key = hmacSha3224KeyDecoder.decodeFromBlocking(format, this)
 
 public suspend fun hmacSha3256Key(): HMAC.Key = hmacSha3256KeyGenerator.generateKey()
 
+public fun hmacSha3256KeyBlocking(): HMAC.Key = hmacSha3256KeyGenerator.generateKeyBlocking()
+
 public suspend fun ByteArray.hmacSha3256KeyDecode(format: HMAC.Key.Format): HMAC.Key = hmacSha3256KeyDecoder.decodeFrom(format, this)
+
+public fun ByteArray.hmacSha3256KeyDecodeBlocking(format: HMAC.Key.Format): HMAC.Key = hmacSha3256KeyDecoder.decodeFromBlocking(format, this)
 
 public suspend fun hmacSha3384Key(): HMAC.Key = hmacSha3384KeyGenerator.generateKey()
 
+public fun hmacSha3384KeyBlocking(): HMAC.Key = hmacSha3384KeyGenerator.generateKeyBlocking()
+
 public suspend fun ByteArray.hmacSha3384KeyDecode(format: HMAC.Key.Format): HMAC.Key = hmacSha3384KeyDecoder.decodeFrom(format, this)
+
+public fun ByteArray.hmacSha3384KeyDecodeBlocking(format: HMAC.Key.Format): HMAC.Key = hmacSha3384KeyDecoder.decodeFromBlocking(format, this)
 
 public suspend fun hmacSha3512Key(): HMAC.Key = hmacSha3512KeyGenerator.generateKey()
 
+public fun hmacSha3512KeyBlocking(): HMAC.Key = hmacSha3512KeyGenerator.generateKeyBlocking()
+
 public suspend fun ByteArray.hmacSha3512KeyDecode(format: HMAC.Key.Format): HMAC.Key = hmacSha3512KeyDecoder.decodeFrom(format, this)
+
+public fun ByteArray.hmacSha3512KeyDecodeBlocking(format: HMAC.Key.Format): HMAC.Key = hmacSha3512KeyDecoder.decodeFromBlocking(format, this)
 
 public suspend fun ByteArray.hmacSignature(key: HMAC.Key): ByteArray = key.signatureGenerator().generateSignature(this)
 
 public fun ByteArray.hmacSignatureBlocking(key: HMAC.Key): ByteArray = key.signatureGenerator().generateSignatureBlocking(this)
 
-public suspend fun ByteArray.hmacVerifySignature(
-    key: HMAC.Key,
-    signature: ByteArray,
-): Boolean = key.signatureVerifier().verifySignature(this, signature)
+public suspend fun ByteArray.hmacVerifySignature(key: HMAC.Key, signature: ByteArray): Boolean = key.signatureVerifier().verifySignature(this, signature)
+
+public fun ByteArray.hmacVerifySignatureBlocking(key: HMAC.Key, signature: ByteArray): Boolean = key.signatureVerifier().verifySignatureBlocking(this, signature)
 
 // //////////////////////////////////////////////////////ECDSA//////////////////////////////////////////////////////////
 private val ecdsa: ECDSA by lazy { provider.get(ECDSA) }
@@ -284,18 +327,27 @@ private val ecdsaP521PublicKeyDecoder: KeyDecoder<PublicKey.Format, ECDSA.Public
 
 public suspend fun ecdsaP256KeyPair(): ECDSA.KeyPair = ecdsaP256KeyGenerator.generateKey()
 
+public fun ecdsaP256KeyPairBlocking(): ECDSA.KeyPair = ecdsaP256KeyGenerator.generateKeyBlocking()
+
 public suspend fun ecdsaP384KeyPair(): ECDSA.KeyPair = ecdsaP384KeyGenerator.generateKey()
+
+public fun ecdsaP384KeyPairBlocking(): ECDSA.KeyPair = ecdsaP384KeyGenerator.generateKeyBlocking()
 
 public suspend fun ecdsaP521KeyPair(): ECDSA.KeyPair = ecdsaP521KeyGenerator.generateKey()
 
-public suspend fun ByteArray.ecdsaP256PublicKeyDecode(format: PublicKey.Format): ECDSA.PublicKey =
-    ecdsaP256PublicKeyDecoder.decodeFrom(format, this)
+public fun ecdsaP521KeyPairBlocking(): ECDSA.KeyPair = ecdsaP521KeyGenerator.generateKeyBlocking()
 
-public suspend fun ByteArray.ecdsaP384PublicKeyDecode(format: PublicKey.Format): ECDSA.PublicKey =
-    ecdsaP384PublicKeyDecoder.decodeFrom(format, this)
+public suspend fun ByteArray.ecdsaP256PublicKeyDecode(format: PublicKey.Format): ECDSA.PublicKey = ecdsaP256PublicKeyDecoder.decodeFrom(format, this)
 
-public suspend fun ByteArray.ecdsaP521PublicKeyDecode(format: PublicKey.Format): ECDSA.PublicKey =
-    ecdsaP521PublicKeyDecoder.decodeFrom(format, this)
+public fun ByteArray.ecdsaP256PublicKeyDecodeBlocking(format: PublicKey.Format): ECDSA.PublicKey = ecdsaP256PublicKeyDecoder.decodeFromBlocking(format, this)
+
+public suspend fun ByteArray.ecdsaP384PublicKeyDecode(format: PublicKey.Format): ECDSA.PublicKey = ecdsaP384PublicKeyDecoder.decodeFrom(format, this)
+
+public fun ByteArray.ecdsaP384PublicKeyDecodeBlocking(format: PublicKey.Format): ECDSA.PublicKey = ecdsaP384PublicKeyDecoder.decodeFromBlocking(format, this)
+
+public suspend fun ByteArray.ecdsaP521PublicKeyDecode(format: PublicKey.Format): ECDSA.PublicKey = ecdsaP521PublicKeyDecoder.decodeFrom(format, this)
+
+public fun ByteArray.ecdsaP521PublicKeyDecodeBlocking(format: PublicKey.Format): ECDSA.PublicKey = ecdsaP521PublicKeyDecoder.decodeFromBlocking(format, this)
 
 public suspend fun ByteArray.ecdsaP521Signature(
     key: ECDSA.PrivateKey,
@@ -303,12 +355,25 @@ public suspend fun ByteArray.ecdsaP521Signature(
     format: SignatureFormat = SignatureFormat.RAW,
 ): ByteArray = key.signatureGenerator(digest, format).generateSignature(this)
 
+public fun ByteArray.ecdsaP521SignatureBlocking(
+    key: ECDSA.PrivateKey,
+    digest: CryptographyAlgorithmId<Digest>,
+    format: SignatureFormat = SignatureFormat.RAW,
+): ByteArray = key.signatureGenerator(digest, format).generateSignatureBlocking(this)
+
 public suspend fun ByteArray.ecdsaP521VerifySignature(
     key: ECDSA.PublicKey,
     signature: ByteArray,
     digest: CryptographyAlgorithmId<Digest>,
     format: SignatureFormat = SignatureFormat.RAW,
 ): Boolean = key.signatureVerifier(digest, format).verifySignature(this, signature)
+
+public fun ByteArray.ecdsaP521VerifySignatureBlocking(
+    key: ECDSA.PublicKey,
+    signature: ByteArray,
+    digest: CryptographyAlgorithmId<Digest>,
+    format: SignatureFormat = SignatureFormat.RAW,
+): Boolean = key.signatureVerifier(digest, format).verifySignatureBlocking(this, signature)
 
 // ///////////////////////////////////////////////SECURE RANDOM/////////////////////////////////////////////////////////
 

@@ -6,7 +6,7 @@ package ai.tech.core.misc.network.http.client
 import ai.tech.core.misc.consul.client.plugin.ConsulDiscovery
 import ai.tech.core.misc.consul.model.config.LoadBalancer
 import ai.tech.core.misc.network.http.client.model.Pin
-import ai.tech.core.misc.type.multiple.asyncLineIterator
+import ai.tech.core.misc.type.multiple.asyncIterator
 import ai.tech.core.misc.type.multiple.filterValuesIsNotNull
 import ai.tech.core.misc.type.multiple.forEach
 import ai.tech.core.misc.type.multiple.toByteWriteChannel
@@ -131,14 +131,14 @@ public fun <T : Any> HttpResponse.bodyAsInputStream(kClass: KClass<T>, charset: 
     val channel = bodyAsChannel()
 
     if (suitableConverters == null) {
-        channel.asyncLineIterator().forEach { value ->
+        channel.asyncIterator().forEach { value ->
             value?.let { emit(Json.Default.decodeFromString(kClass.serializer(), it)) }
         }
     }
 
     val typeInfo = TypeInfo(kClass)
 
-    channel.asyncLineIterator().forEach { value ->
+    channel.asyncIterator().forEach { value ->
         value?.let { emit(suitableConverters!!.deserialize(ByteReadChannel(it, charset), typeInfo, charset) as T) }
     }
 }
@@ -150,7 +150,7 @@ public fun HttpResponse.bodyAsInputStream(): Flow<Any?> = flow {
 
     val channel = bodyAsChannel()
 
-    channel.asyncLineIterator().forEach { value ->
+    channel.asyncIterator().forEach { value ->
         value?.let { emit(Json.Default.decodeAnyFromString(it)) }
     }
 }

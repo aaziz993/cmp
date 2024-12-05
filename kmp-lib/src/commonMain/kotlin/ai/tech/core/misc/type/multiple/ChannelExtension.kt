@@ -9,10 +9,3 @@ import io.ktor.utils.io.*
 // ///////////////////////////////////////////////////ASYNCITERATOR//////////////////////////////////////////////////////
 public fun ByteReadChannel.asyncIterator(bufferSize: Int = DEFAULT_BUFFER_SIZE): ByteArrayClosableAsyncIterator =
     ByteArrayClosableAsyncIterator(::readAvailable, ::cancel, bufferSize)
-
-public fun ByteReadChannel.asyncLineIterator(): AbstractClosableAbstractAsyncIterator<String?> =
-    ClosableAsyncIterator<String?>(
-        { !isClosedForRead },
-        ::readUTF8Line,
-        ::cancel,
-    )
