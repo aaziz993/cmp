@@ -5,12 +5,12 @@ import io.ktor.client.*
 import io.ktor.client.plugins.auth.*
 import io.ktor.client.plugins.auth.providers.*
 
-public class BasicAuthService(
+public class BasicAuthProvider(
     name: String?,
     httpClient: HttpClient,
     public val realm: String?,
     keyValue: AbstractKeyValue,
-) : AbstractCredentialAuthService(
+) : AbstractCredentialAuthProvider(
     name,
     httpClient,
     keyValue,
@@ -18,7 +18,7 @@ public class BasicAuthService(
 
     override fun AuthConfig.configureAuth() {
         basic {
-            this@BasicAuthService.realm?.let { realm = it }
+            this@BasicAuthProvider.realm?.let { realm = it }
             credentials { getToken()?.let { BasicAuthCredentials(it.username, it.password) } }
         }
     }

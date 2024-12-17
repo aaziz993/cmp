@@ -10,7 +10,7 @@ import ai.tech.core.data.expression.AggregateExpression
 import ai.tech.core.data.expression.BooleanVariable
 import ai.tech.core.data.expression.Variable
 import ai.tech.core.data.transaction.Transaction
-import ai.tech.core.misc.auth.client.AbstractAuthService
+import ai.tech.core.misc.auth.client.AbstractAuthProvider
 import ai.tech.core.misc.network.http.client.AbstractApiHttpClient
 import ai.tech.core.misc.network.http.client.bodyAsInputStream
 import io.ktor.client.*
@@ -53,7 +53,7 @@ public open class CRUDClient<T : Any>(
     public val serializer: KSerializer<T>,
     httpClient: HttpClient,
     public val address: String,
-    public val authService: AbstractAuthService? = null,
+    public val authService: AbstractAuthProvider? = null,
 ) : AbstractApiHttpClient(httpClient, address), CRUDRepository<T> {
 
     protected val lock: ReentrantLock = reentrantLock()

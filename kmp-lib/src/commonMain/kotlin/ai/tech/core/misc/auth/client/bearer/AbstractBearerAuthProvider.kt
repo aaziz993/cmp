@@ -1,13 +1,11 @@
 package ai.tech.core.misc.auth.client.bearer
 
 import ai.tech.core.data.keyvalue.AbstractKeyValue
-import ai.tech.core.data.keyvalue.get
-import ai.tech.core.misc.auth.client.AbstractAuthService
+import ai.tech.core.misc.auth.client.AbstractAuthProvider
 import ai.tech.core.misc.auth.client.bearer.model.BearerToken
 import ai.tech.core.misc.auth.client.bearer.model.BearerTokenImpl
 import ai.tech.core.misc.network.http.client.httpUrl
 import io.ktor.client.HttpClient
-import io.ktor.client.plugins.auth.Auth
 import io.ktor.client.plugins.auth.AuthConfig
 import io.ktor.client.plugins.auth.authProvider
 import io.ktor.client.plugins.auth.providers.BearerAuthProvider
@@ -18,11 +16,11 @@ import kotlinx.serialization.InternalSerializationApi
 import kotlinx.serialization.serializer
 
 @OptIn(InternalSerializationApi::class)
-public abstract class AbstractBearerAuthService(
+public abstract class AbstractBearerAuthProvider(
     name: String?,
     httpClient: HttpClient,
     public val keyValue: AbstractKeyValue
-) : AbstractAuthService<BearerToken>(
+) : AbstractAuthProvider<BearerToken>(
     name,
     httpClient,
     BearerTokenImpl::class.serializer(),

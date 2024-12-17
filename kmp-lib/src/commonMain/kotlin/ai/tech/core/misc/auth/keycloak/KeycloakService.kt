@@ -1,7 +1,7 @@
 package ai.tech.core.misc.auth.keycloak
 
 import ai.tech.core.data.keyvalue.AbstractKeyValue
-import ai.tech.core.misc.auth.client.bearer.AbstractBearerAuthService
+import ai.tech.core.misc.auth.client.bearer.AbstractBearerAuthProvider
 import ai.tech.core.misc.auth.keycloak.client.admin.KeycloakAdminClient
 import ai.tech.core.misc.auth.keycloak.client.admin.model.ExecuteActionsEmail
 import ai.tech.core.misc.auth.keycloak.client.admin.model.ResetPassword
@@ -23,7 +23,7 @@ public class KeycloakService(
     public val realm: String,
     public val clientId: String,
     keyValue: AbstractKeyValue,
-) : AbstractBearerAuthService(
+) : AbstractBearerAuthProvider(
     name,
     httpClient,
     address,

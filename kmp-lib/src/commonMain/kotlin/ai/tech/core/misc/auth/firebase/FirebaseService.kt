@@ -1,7 +1,7 @@
 package ai.tech.core.misc.auth.firebase
 
 import ai.tech.core.data.keyvalue.AbstractKeyValue
-import ai.tech.core.misc.auth.client.bearer.AbstractBearerAuthService
+import ai.tech.core.misc.auth.client.bearer.AbstractBearerAuthProvider
 import ai.tech.core.misc.auth.firebase.client.admin.FirebaseAdminClient
 import ai.tech.core.misc.auth.model.identity.User
 import ai.tech.core.misc.auth.client.bearer.model.BearerToken
@@ -14,7 +14,7 @@ public class FirebaseService(
     address: String,
     apiKey: String,
     keyValue: AbstractKeyValue,
-) : AbstractBearerAuthService(
+) : AbstractBearerAuthProvider(
     name,
     httpClient,
     address,

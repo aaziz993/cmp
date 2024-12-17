@@ -1,7 +1,7 @@
 package ai.tech.core.misc.auth.client.oauth
 
 import ai.tech.core.data.keyvalue.AbstractKeyValue
-import ai.tech.core.misc.auth.client.CredentialAuthService
+import ai.tech.core.misc.auth.client.CredentialAuthProvider
 import ai.tech.core.misc.auth.client.oauth.model.AuthenticationFailedCause
 import ai.tech.core.misc.auth.client.oauth.model.OAuth2Exception
 import ai.tech.core.misc.auth.client.oauth.model.OAuth2RedirectError
@@ -24,12 +24,13 @@ import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.JsonPrimitive
 
 public abstract class OAuth2Implicit(
-    name: String,
+    name: String?,
     httpClient: HttpClient,
     public val authorizeUrl: String,
     public val accessTokenUrl: String,
+    refreshTokenUrl: String,
     public val requestMethod: HttpMethod = HttpMethod.Get,
-    public val clientId: String,
+    clientId: String,
     public val clientSecret: String,
     public val defaultScopes: List<String> = emptyList(),
     public val accessTokenRequiresBasicAuth: Boolean = false,
@@ -42,13 +43,15 @@ public abstract class OAuth2Implicit(
     callbackRedirectUrl: String,
     keyValue: AbstractKeyValue,
     private val onRedirectAuthenticateOAuth2: suspend (url: Url) -> Unit
-) : AbstractOAuth<OAuthAccessTokenResponse.OAuth2>(
+) : AbstractOAuth2Provider(
     name,
     httpClient,
+    clientId,
+    refreshTokenUrl,
     callbackRedirectUrl,
     keyValue,
     onRedirectAuthenticateOAuth2,
-), CredentialAuthService {
+), CredentialAuthProvider {
 
     // Implements Resource Owner Password Credentials Grant.
     // Takes UserPasswordCredential and validates it using OAuth2 sequence, provides OAuthAccessTokenResponse.

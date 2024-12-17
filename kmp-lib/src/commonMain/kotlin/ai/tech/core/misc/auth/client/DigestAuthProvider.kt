@@ -5,13 +5,13 @@ import io.ktor.client.*
 import io.ktor.client.plugins.auth.*
 import io.ktor.client.plugins.auth.providers.*
 
-public class DigestAuthService(
+public class DigestAuthProvider(
     name: String?,
     httpClient: HttpClient,
     public val algorithmName: String?,
     public val realm: String?,
-    private val keyValue: AbstractKeyValue,
-) : AbstractCredentialAuthService(
+    keyValue: AbstractKeyValue,
+) : AbstractCredentialAuthProvider(
     name,
     httpClient,
     keyValue,
@@ -19,8 +19,8 @@ public class DigestAuthService(
 
     override fun AuthConfig.configureAuth() {
         digest {
-            this@DigestAuthService.algorithmName?.let { algorithmName = it }
-            this@DigestAuthService.realm?.let { realm = it }
+            this@DigestAuthProvider.algorithmName?.let { algorithmName = it }
+            this@DigestAuthProvider.realm?.let { realm = it }
             credentials { getToken()?.let { DigestAuthCredentials(it.username, it.password) } }
         }
     }

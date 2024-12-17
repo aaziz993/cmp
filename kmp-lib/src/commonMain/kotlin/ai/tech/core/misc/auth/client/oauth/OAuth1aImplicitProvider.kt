@@ -20,8 +20,8 @@ import io.ktor.utils.io.*
 import io.ktor.utils.io.core.*
 import kotlinx.io.IOException
 
-public class OAuth1aImplicit(
-    name: String,
+public class OAuth1aImplicitProvider(
+    name: String?,
     httpClient: HttpClient,
     public val requestTokenUrl: String,
     public val authorizeUrl: String,
@@ -35,7 +35,7 @@ public class OAuth1aImplicit(
     callbackRedirectUrl: String,
     keyValue: AbstractKeyValue,
     onRedirectAuthenticate: suspend (url: Url) -> Unit
-) : AbstractOAuth<OAuthAccessTokenResponse.OAuth1a>(
+) : AbstractOAuthProvider<OAuthAccessTokenResponse.OAuth1a>(
     name,
     httpClient,
     callbackRedirectUrl,

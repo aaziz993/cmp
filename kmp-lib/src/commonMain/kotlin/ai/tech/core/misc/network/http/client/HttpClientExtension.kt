@@ -3,6 +3,8 @@
 
 package ai.tech.core.misc.network.http.client
 
+import ai.tech.core.data.keyvalue.AbstractKeyValue
+import ai.tech.core.misc.auth.client.oauth.OAuth1aExplicitProvider
 import ai.tech.core.misc.consul.client.plugin.ConsulDiscovery
 import ai.tech.core.misc.consul.model.config.LoadBalancer
 import ai.tech.core.misc.network.http.client.model.Pin
@@ -15,6 +17,7 @@ import ai.tech.core.misc.type.serialization.decodeAnyFromString
 import ai.tech.core.misc.type.serialization.encodeAnyToString
 import io.ktor.client.*
 import io.ktor.client.plugins.*
+import io.ktor.client.plugins.auth.AuthConfig
 import io.ktor.client.plugins.contentnegotiation.*
 import io.ktor.client.request.*
 import io.ktor.client.statement.*
@@ -85,7 +88,6 @@ public suspend fun MultiPartData.readParts(): List<PartData> = mutableListOf<Par
 public suspend fun MultiPartData.readFormData(): Map<String?, String> =
     readParts().associate { (it as PartData.FormItem).let { it.name to it.value } }
 
-
 public fun HttpClient.converters(contentType: ContentType): List<ContentConverter>? =
     plugin(ContentNegotiation)
         .config
@@ -118,7 +120,6 @@ public fun <T : Any> HttpRequestBuilder.setBody(
         ?.firstOrNull()
 
     suitableConverter.serialize()
-
 }
 
 @OptIn(InternalSerializationApi::class)

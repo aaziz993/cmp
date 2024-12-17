@@ -1,7 +1,7 @@
 package ai.tech.core.misc.auth.client.oauth
 
 import ai.tech.core.data.keyvalue.AbstractKeyValue
-import ai.tech.core.misc.auth.client.bearer.AbstractBearerAuthService
+import ai.tech.core.misc.auth.client.bearer.AbstractBearerAuthProvider
 import ai.tech.core.misc.auth.client.bearer.model.BearerToken
 import ai.tech.core.misc.auth.client.oauth.model.AuthenticationFailedCause
 import io.ktor.client.HttpClient
@@ -14,13 +14,13 @@ import kotlinx.coroutines.suspendCancellableCoroutine
 
 private val Logger: Logger = KtorSimpleLogger("io.ktor.auth.oauth")
 
-public abstract class AbstractOAuth<T : BearerToken>(
-    name: String,
+public abstract class AbstractOAuthProvider<T : BearerToken>(
+    name: String?,
     httpClient: HttpClient,
     public val callbackRedirectUrl: String,
     keyValue: AbstractKeyValue,
     protected val onRedirectAuthenticate: suspend (url: Url) -> Unit
-) : AbstractBearerAuthService(
+) : AbstractBearerAuthProvider(
     name,
     httpClient,
     keyValue,
@@ -30,13 +30,13 @@ public abstract class AbstractOAuth<T : BearerToken>(
 
     protected abstract suspend fun getRedirectUrl(): Url
 
-    public suspend fun signIn(): Unit = setToken(getToken())
+    public suspend fun signIn(): Unit = setToken(requestToken())
 
-    protected suspend fun getToken(): T {
+    protected suspend fun requestToken(): T {
         onRedirectAuthenticate(getRedirectUrl())
 
         val accessToken = suspendCancellableCoroutine<T> { continuation ->
-            this@AbstractOAuth.continuation = continuation
+            this@AbstractOAuthProvider.continuation = continuation
         }
 
         continuation = null

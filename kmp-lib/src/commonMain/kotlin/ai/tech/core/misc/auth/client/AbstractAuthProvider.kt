@@ -8,7 +8,7 @@ import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.serialization.DeserializationStrategy
 
-public abstract class AbstractAuthService<T : Any>(
+public abstract class AbstractAuthProvider<T : Any>(
     public val name: String?,
     httpClient: HttpClient,
     private val deserializer: DeserializationStrategy<T>,
@@ -22,6 +22,7 @@ public abstract class AbstractAuthService<T : Any>(
 
     public val httpClient: HttpClient = httpClient.config {
         install(Auth) {
+
             configureAuth()
         }
     }

@@ -9,14 +9,14 @@ import io.ktor.client.request.*
 import io.ktor.http.*
 import io.ktor.http.auth.*
 
-public class OAuth1aExplicit(
-    name: String,
+public class OAuth1aExplicitProvider(
+    name: String?,
     httpClient: HttpClient,
     public val loginUrl: Url,
     callbackRedirectUrl: String,
     keyValue: AbstractKeyValue,
     onRedirectAuthenticate: suspend (url: Url) -> Unit
-) : AbstractOAuth<OAuthAccessTokenResponse.OAuth1a>(
+) : AbstractOAuthProvider<OAuthAccessTokenResponse.OAuth1a>(
     name,
     httpClient,
     callbackRedirectUrl,
